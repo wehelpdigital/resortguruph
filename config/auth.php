@@ -14,6 +14,12 @@ return [
             'driver' => 'session',
             'provider' => 'owners',
         ],
+        // Alias used by member-only comment + review forms. Mirrors web so
+        // both @auth('owner') and @auth resolve to the same logged-in owner.
+        'owner' => [
+            'driver' => 'session',
+            'provider' => 'owners',
+        ],
     ],
 
     'providers' => [

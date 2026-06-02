@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RgKeyword;
+use App\Models\RgTouristSpot;
 use Illuminate\Support\Collection;
 
 class DestinationsController extends Controller
@@ -10,7 +11,10 @@ class DestinationsController extends Controller
     public function index()
     {
         $clusters = self::clusterMetadata();
+        // Hard-filter to category=resort: food keywords have their own
+        // /food-trip index and must never appear on /destinations.
         $keywords = RgKeyword::query()
+            ->where('category', 'resort')
             ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
             ->orderByDesc('search_volume_monthly')
             ->get();
@@ -35,7 +39,210 @@ class DestinationsController extends Controller
             'top_volume' => (int) $keywords->max('search_volume_monthly'),
         ];
 
-        return view('destinations.index', compact('orderedClusters', 'stats'));
+        $featuredSpots = $this->buildFeaturedSpots();
+        $searchIndex   = $this->buildSearchIndex($orderedClusters);
+
+        return view('destinations.index', compact('orderedClusters', 'stats', 'featuredSpots', 'searchIndex'));
+    }
+
+    /**
+     * Flat, client-side-searchable list of regions, keyword landing pages,
+     * and every published tourist spot from rg_tourist_spots. Shipped inline
+     * to the page as JSON (~30-60KB) so typeahead matches are instant.
+     */
+    private function buildSearchIndex($orderedClusters): array
+    {
+        $idx = [];
+
+        foreach ($orderedClusters as $c) {
+            $idx[] = [
+                'type'     => 'region',
+                'label'    => $c['name'],
+                'sub'      => $c['count'] . ' destinations',
+                'url'      => route('destinations.cluster', $c['slug']),
+                'haystack' => mb_strtolower($c['name'] . ' ' . ($c['tagline'] ?? '')),
+                'volume'   => (int) $c['total_volume'],
+            ];
+        }
+
+        foreach ($orderedClusters as $c) {
+            foreach ($c['keywords'] as $kw) {
+                $cleanLoc = trim(preg_replace(
+                    '/^(beach\s+resort|resort|hotel|hotels|airbnb|villa|tourist\s+spot)\s+in\s+/i',
+                    '',
+                    $kw->phrase
+                ));
+                $idx[] = [
+                    'type'     => 'destination',
+                    'label'    => $kw->phrase,
+                    'sub'      => $c['name'] . ' · ' . number_format($kw->search_volume_monthly) . ' people search this monthly',
+                    'url'      => url('/' . $kw->slug),
+                    'haystack' => mb_strtolower($kw->phrase . ' ' . $c['name'] . ' ' . $cleanLoc),
+                    'volume'   => (int) $kw->search_volume_monthly,
+                ];
+            }
+        }
+
+        // Every published tourist spot that has a linked keyword. Eager-load
+        // media + keyword so the index builds in two queries, not N+M.
+        $spots = RgTouristSpot::query()
+            ->where('status', 'published')
+            ->whereNotNull('keyword_id')
+            ->with(['media', 'keyword'])
+            ->get();
+
+        foreach ($spots as $s) {
+            $idx[] = [
+                'type'     => 'spot',
+                'label'    => $s->name,
+                'sub'      => $s->location ?: ($s->region_label ?? ''),
+                'url'      => url('/' . $s->keyword->slug),
+                'haystack' => mb_strtolower(
+                    $s->name . ' ' . ($s->location ?? '') . ' ' . ($s->region_label ?? '')
+                ),
+                'volume'   => 0,
+                'image'    => $s->media ? asset('storage/' . $s->media->path) : null,
+            ];
+        }
+
+        return $idx;
+    }
+
+    /**
+     * Tourist spots flagged with featured_order > 0 in rg_tourist_spots,
+     * ordered. Each row needs both a linked keyword (so the card has a
+     * "see nearby stays" target) and a media row (so the photo renders).
+     * Managed via the mother-app admin under Resort Guru → Tourist Spots.
+     */
+    private function buildFeaturedSpots(): array
+    {
+        return RgTouristSpot::query()
+            ->where('status', 'published')
+            ->whereNotNull('featured_order')
+            ->whereNotNull('keyword_id')
+            ->whereNotNull('media_id')
+            ->with(['media', 'keyword'])
+            ->orderBy('featured_order')
+            ->get()
+            ->map(function ($s) {
+                return [
+                    'name'     => $s->name,
+                    'location' => $s->location ?? '',
+                    'region'   => $s->region_label ?? '',
+                    'image'    => $s->media->path,
+                    'slug'     => $s->keyword->slug,
+                ];
+            })
+            ->filter(fn($row) => is_file(storage_path('app/public/' . $row['image']))
+                && filesize(storage_path('app/public/' . $row['image'])) > 5000)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * (Legacy hand-curated array retained only as fallback if ever needed —
+     * no longer reachable in the index() flow.)
+     */
+    private function legacyFeaturedSpotsArray(): array
+    {
+        return [
+            [
+                'name' => 'Hundred Islands',
+                'location' => 'Alaminos, Pangasinan',
+                'region' => 'North Luzon',
+                'image' => 'rg-media/destinations/alaminos-hundred-islands-1.jpg',
+                'slug' => 'resort-in-alaminos-pangasinan',
+            ],
+            [
+                'name' => 'Big Lagoon',
+                'location' => 'El Nido, Palawan',
+                'region' => 'Palawan',
+                'image' => 'rg-media/spots/el-nido-big-lagoon-tour-a.jpg',
+                'slug' => 'resort-in-el-nido',
+                'size' => 'normal',
+            ],
+            [
+                'name' => 'Cagsawa Ruins',
+                'location' => 'Daraga, Albay',
+                'region' => 'Bicol',
+                'image' => 'rg-media/spots/albay-legazpi-cagsawa-ruins.jpg',
+                'slug' => 'resort-in-albay',
+                'size' => 'normal',
+            ],
+            [
+                'name' => "Magellan's Cross",
+                'location' => 'Cebu City',
+                'region' => 'Visayas',
+                'image' => 'rg-media/spots/cebu-city-magellans-cross-and-basilica-del-santo-nino.jpg',
+                'slug' => 'resort-in-cebu-city',
+                'size' => 'wide',
+            ],
+            [
+                'name' => 'Mt. Apo',
+                'location' => 'Davao',
+                'region' => 'Mindanao',
+                'image' => 'rg-media/spots/kidapawan-mt-apo-natural-park.jpg',
+                'slug' => 'resort-in-davao-city',
+                'size' => 'normal',
+            ],
+            [
+                'name' => 'Mayon Volcano',
+                'location' => 'Legazpi, Albay',
+                'region' => 'Bicol',
+                'image' => 'rg-media/destinations/albay-legazpi-1.jpg',
+                'slug' => 'resort-in-albay',
+                'size' => 'normal',
+            ],
+            [
+                'name' => 'Surf Beach',
+                'location' => 'San Juan, La Union',
+                'region' => 'La Union',
+                'image' => 'rg-media/spots/la-union-san-juan-surf-beach-urbiztondo.jpg',
+                'slug' => 'beach-resort-in-la-union',
+            ],
+            [
+                'name' => 'Tangadan Falls',
+                'location' => 'La Union',
+                'region' => 'La Union',
+                'image' => 'rg-media/spots/la-union-tangadan-falls.jpg',
+                'slug' => 'beach-resort-in-la-union',
+            ],
+            [
+                'name' => 'Bangui Windmills',
+                'location' => 'Bangui, Ilocos Norte',
+                'region' => 'Ilocos',
+                'image' => 'rg-media/destinations/ilocos-norte-2.jpg',
+                'slug' => 'tourist-spot-in-ilocos-norte',
+            ],
+            [
+                'name' => 'Patar Beach',
+                'location' => 'Bolinao, Pangasinan',
+                'region' => 'North Luzon',
+                'image' => 'rg-media/spots/bolinao-patar-beach.jpg',
+                'slug' => 'resort-in-bolinao',
+            ],
+            [
+                'name' => 'Manaoag Shrine',
+                'location' => 'Pangasinan',
+                'region' => 'North Luzon',
+                'image' => 'rg-media/destinations/manaoag-1.jpg',
+                'slug' => 'hotel-in-manaoag-pangasinan',
+            ],
+            [
+                'name' => 'Dasol Beach',
+                'location' => 'Dasol, Pangasinan',
+                'region' => 'North Luzon',
+                'image' => 'rg-media/destinations/dasol-1.jpg',
+                'slug' => 'resort-in-dasol-pangasinan',
+            ],
+        ];
+
+        // Filter: only include entries whose image actually exists on disk so
+        // the carousel never renders broken slides.
+        return array_values(array_filter($candidates, function ($c) {
+            return is_file(storage_path('app/public/' . $c['image']))
+                && filesize(storage_path('app/public/' . $c['image'])) > 5000;
+        }));
     }
 
     public function cluster(string $cluster)
@@ -44,6 +251,7 @@ class DestinationsController extends Controller
         if (!$meta) abort(404);
 
         $keywords = RgKeyword::where('cluster_tag', $cluster)
+            ->where('category', 'resort')
             ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
             ->orderByDesc('search_volume_monthly')
             ->get();
@@ -55,6 +263,7 @@ class DestinationsController extends Controller
             ->map(function ($m, $slug) {
                 $m['slug'] = $slug;
                 $m['count'] = RgKeyword::where('cluster_tag', $slug)
+                    ->where('category', 'resort')
                     ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
                     ->count();
                 return $m;

@@ -155,6 +155,93 @@ class SchemaGenerator
         ];
     }
 
+    /**
+     * Article schema for keyword landing pages. Provides Google + AI engines with
+     * author, publish/modify dates, image, and publisher info — material for the
+     * E-E-A-T signals that drive Helpful Content + AI Overviews ranking.
+     */
+    public function article(\App\Models\RgSeoPage $page, ?\App\Models\RgAuthor $author, ?string $imageUrl, string $url): array
+    {
+        $org = $this->organization();
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $page->h1 ?: $page->title,
+            'description' => $page->meta_description,
+            'url' => $url,
+            'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $url],
+            'datePublished' => optional($page->published_at ?? $page->created_at)->toIso8601String(),
+            'dateModified' => optional($page->updated_at)->toIso8601String(),
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => $org['name'],
+                'logo' => ['@type' => 'ImageObject', 'url' => $org['logo']],
+            ],
+            'inLanguage' => 'en-PH',
+        ];
+        if ($author) {
+            $authorUrl = url('/author/' . $author->slug);
+            $schema['author'] = array_filter([
+                '@type' => 'Person',
+                'name' => $author->name,
+                'url' => $authorUrl,
+                'image' => $author->avatarUrl(),
+                'jobTitle' => $author->role ?: null,
+                'description' => $author->bio ?: null,
+                'sameAs' => array_values(array_filter([
+                    $author->instagram ? 'https://instagram.com/' . ltrim($author->instagram, '@') : null,
+                    $author->facebook ? (str_contains($author->facebook, 'http') ? $author->facebook : 'https://facebook.com/' . $author->facebook) : null,
+                ])),
+            ]);
+        } else {
+            $schema['author'] = ['@type' => 'Organization', 'name' => $org['name']];
+        }
+        if ($imageUrl) {
+            $schema['image'] = $imageUrl;
+        }
+        return array_filter($schema, fn($v) => $v !== null && $v !== '' && $v !== []);
+    }
+
+    /**
+     * AggregateRating + Review schema rolled into a TouristAttraction so the
+     * stars surface on the SERP. Includes the individual reviews as Review
+     * entities for richer rich-result eligibility.
+     */
+    public function aggregateRating(RgKeyword $keyword, \Illuminate\Support\Collection $reviews, string $url): array
+    {
+        $count = $reviews->count();
+        $avg = $count > 0 ? round($reviews->avg('rating'), 2) : 0;
+        $reviewItems = $reviews->map(function ($r) {
+            return [
+                '@type' => 'Review',
+                'author' => ['@type' => 'Person', 'name' => $r->reviewer_name],
+                'datePublished' => optional($r->review_date)->format('Y-m-d'),
+                'reviewRating' => [
+                    '@type' => 'Rating',
+                    'ratingValue' => (int) $r->rating,
+                    'bestRating' => 5,
+                    'worstRating' => 1,
+                ],
+                'reviewBody' => $r->review_text,
+            ];
+        })->all();
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'TouristAttraction',
+            'name' => ucwords($keyword->phrase) . ' destinations',
+            'url' => $url,
+            'aggregateRating' => [
+                '@type' => 'AggregateRating',
+                'ratingValue' => $avg,
+                'reviewCount' => $count,
+                'bestRating' => 5,
+                'worstRating' => 1,
+            ],
+            'review' => $reviewItems,
+        ];
+    }
+
     public function blogPosting(RgBlogPost $post): array
     {
         $org = $this->organization();

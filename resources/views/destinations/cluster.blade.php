@@ -62,7 +62,7 @@
         @foreach($keywords as $k)
             <a href="{{ url($k->slug) }}" class="group block p-5 rounded-xl border border-slate-200 hover:border-brand-300 hover:shadow-md hover:bg-brand-50/30 rg-card-lift">
                 <h3 class="font-semibold text-slate-900 group-hover:text-brand-700 capitalize mb-1">{{ $k->phrase }}</h3>
-                <p class="text-xs text-slate-500">{{ number_format($k->search_volume_monthly) }} monthly searches</p>
+                <p class="text-xs text-slate-500">{{ number_format($k->search_volume_monthly) }} people search this each month</p>
                 <p class="text-sm text-brand-600 mt-2 font-medium">Browse options &rarr;</p>
             </a>
         @endforeach

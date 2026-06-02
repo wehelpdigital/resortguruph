@@ -14,6 +14,7 @@ class HomeController extends Controller
     {
         $jsonld = $schema->emit($schema->website()) . $schema->emit($schema->organization());
         $featuredKeywords = RgKeyword::query()
+            ->where('category', 'resort')
             ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
             ->orderByDesc('search_volume_monthly')
             ->limit(12)
@@ -36,6 +37,7 @@ class HomeController extends Controller
 
         $clusterMeta = DestinationsController::clusterMetadata();
         $regions = RgKeyword::query()
+            ->where('category', 'resort')
             ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
             ->get()
             ->groupBy('cluster_tag')

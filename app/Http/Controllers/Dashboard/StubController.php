@@ -15,6 +15,24 @@ class StubController extends Controller
         ]);
     }
 
+    public function restaurants()
+    {
+        return view('dashboard.stub', [
+            'title' => 'My Restaurants',
+            'description' => 'Register your restaurant, manage cuisine + hours + photos, and bid on Food Trip keyword pages plus the Restaurant Recommendations sections of resort pages where your diners are already searching.',
+            'phase' => 'Phase 2',
+        ]);
+    }
+
+    public function adventures()
+    {
+        return view('dashboard.stub', [
+            'title' => 'My Adventures',
+            'description' => 'Register your experience business (surf school, ATV trail, dive shop, paintball arena, island-hopping, treks) and bid on the Memorable Adventures sections of resort keyword pages near you.',
+            'phase' => 'Phase 2',
+        ]);
+    }
+
     public function ai()
     {
         return view('dashboard.stub', [

@@ -47,6 +47,8 @@
             @if($resort->price_range)<span class="px-3 py-1 rounded-full bg-slate-100">{{ $resort->price_range }}</span>@endif
             @if($resort->capacity)<span class="px-3 py-1 rounded-full bg-slate-100">Capacity: {{ $resort->capacity }}</span>@endif
         </div>
+
+        @include('partials.social-share', ['url' => url()->current(), 'title' => $resort->name . ' — Resort Guru PH', 'align' => 'start'])
     </div>
 </div>
 

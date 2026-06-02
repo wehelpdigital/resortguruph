@@ -28,6 +28,8 @@
             @endphp
             <a href="{{ route('dashboard.index') }}" class="block px-3 py-2 rounded {{ request()->routeIs('dashboard.index') ? 'bg-slate-800 text-white' : 'hover:bg-slate-800' }}">🏠 Overview</a>
             <a href="{{ route('dashboard.resorts.index') }}" class="block px-3 py-2 rounded {{ request()->routeIs('dashboard.resorts.*') ? 'bg-slate-800 text-white' : 'hover:bg-slate-800' }}">🏨 My Resorts</a>
+            <a href="{{ route('dashboard.restaurants') }}" class="block px-3 py-2 rounded {{ request()->routeIs('dashboard.restaurants*') ? 'bg-slate-800 text-white' : 'hover:bg-slate-800' }}">🍴 My Restaurants <span class="text-xs opacity-60 ml-1">soon</span></a>
+            <a href="{{ route('dashboard.adventures') }}" class="block px-3 py-2 rounded {{ request()->routeIs('dashboard.adventures*') ? 'bg-slate-800 text-white' : 'hover:bg-slate-800' }}">🪂 My Adventures <span class="text-xs opacity-60 ml-1">soon</span></a>
             <a href="{{ route('dashboard.listings') }}" class="block px-3 py-2 rounded {{ request()->routeIs('dashboard.listings') ? 'bg-slate-800 text-white' : 'hover:bg-slate-800' }}">📊 Listings &amp; Bids <span class="text-xs opacity-60 ml-1">soon</span></a>
             <a href="{{ route('dashboard.gp.index') }}" class="block px-3 py-2 rounded {{ request()->routeIs('dashboard.gp.*') ? 'bg-slate-800 text-white' : 'hover:bg-slate-800' }}">🪙 Gold Points <span class="float-right text-xs bg-amber-500/20 text-amber-200 px-2 rounded-full">{{ number_format($bal) }}</span></a>
             <a href="{{ route('dashboard.ai') }}" class="block px-3 py-2 rounded {{ request()->routeIs('dashboard.ai') ? 'bg-slate-800 text-white' : 'hover:bg-slate-800' }}">🤖 AI Assistant <span class="text-xs opacity-60 ml-1">soon</span></a>

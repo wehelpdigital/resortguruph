@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\ResortsController;
 use App\Http\Controllers\Dashboard\StubController;
 use App\Http\Controllers\DestinationsController;
+use App\Http\Controllers\FoodTripController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KeywordPageController;
 use App\Http\Controllers\ResortPageController;
@@ -24,8 +25,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/destinations', [DestinationsController::class, 'index'])->name('destinations.index');
 Route::get('/destinations/{cluster}', [DestinationsController::class, 'cluster'])->name('destinations.cluster')->where('cluster', '[a-z0-9-]+');
+Route::get('/food-trip', [FoodTripController::class, 'index'])->name('food-trip.index');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::post('/blog/{post:slug}/comment', [BlogController::class, 'storeComment'])
+    ->middleware('auth:owner')
+    ->name('blog.comments.store');
 Route::get('/listing/{resort:slug}', [ResortPageController::class, 'show'])->name('resort.show');
 
 // Contact form
@@ -88,10 +93,17 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
     Route::post('/listings/{listing}/bid', [ListingsController::class, 'bid'])->name('listings.bid');
 
     // Stubs for deferred features
+    Route::get('/restaurants', [StubController::class, 'restaurants'])->name('restaurants');
+    Route::get('/adventures', [StubController::class, 'adventures'])->name('adventures');
     Route::get('/ai', [StubController::class, 'ai'])->name('ai');
     Route::get('/notifications', [StubController::class, 'notifications'])->name('notifications');
     Route::get('/tutorials', [StubController::class, 'tutorials'])->name('tutorials');
 });
+
+// Member-only review submission for destination/keyword pages
+Route::post('/destination-review', [KeywordPageController::class, 'storeReview'])
+    ->middleware('auth:owner')
+    ->name('keyword.review.store');
 
 // ============ KEYWORD PAGE CATCH-ALL (must be LAST) ============
 Route::get('/{page:slug}', [KeywordPageController::class, 'show'])->name('keyword.show')

@@ -10,15 +10,16 @@ class RgSeoPage extends Model
 
     protected $fillable = [
         'keyword_id', 'slug', 'title', 'meta_title', 'meta_description', 'meta_keywords',
-        'canonical_url', 'robots', 'og_image_path', 'h1', 'intro_html', 'body_html',
-        'faq_json', 'schema_json', 'fallback_listing_html', 'is_published', 'is_primary',
-        'published_at', 'pageviews_30d', 'pageviews_total',
+        'canonical_url', 'robots', 'og_image_path', 'h1', 'subtitle', 'tldr', 'wwww_json',
+        'intro_html', 'body_html', 'faq_json', 'schema_json', 'fallback_listing_html',
+        'is_published', 'is_primary', 'published_at', 'pageviews_30d', 'pageviews_total',
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
         'is_primary' => 'boolean',
         'published_at' => 'datetime',
+        'wwww_json' => 'array',
     ];
 
     public function keyword()
