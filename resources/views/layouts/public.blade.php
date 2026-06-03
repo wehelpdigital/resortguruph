@@ -393,6 +393,65 @@
         .rg-hero-splide .splide__slide,
         .rg-hero-splide .splide__slide > div { height: 100%; width: 100%; }
 
+        /* Card-style hero slider used by food / keyword pages. Lives in
+           hero_slider blocks (style: card). Originally these styles
+           shipped inline inside the seeded hero_html column; after
+           migrating to a structured block we lift them to the layout so
+           every page gets the same look. */
+        .rg-area-hero { width: 100%; }
+        .rg-area-hero__splide .splide__list { align-items: stretch; }
+        .rg-area-hero__slide {
+            position: relative;
+            margin: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+        .rg-area-hero__slide img {
+            width: 100%;
+            aspect-ratio: 21/9;
+            object-fit: cover;
+            display: block;
+            height: auto;
+        }
+        @media (max-width: 640px) {
+            .rg-area-hero__slide img { aspect-ratio: 16/10; }
+        }
+        .rg-area-hero__slide figcaption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 1.1rem 1.5rem 1.3rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(15,23,42,0.93) 100%);
+            color: #fff;
+        }
+        .rg-area-hero__slide figcaption strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+        .rg-area-hero__slide figcaption span,
+        .rg-area-hero__slide figcaption small {
+            font-size: 0.85rem;
+            opacity: 0.92;
+            display: block;
+            line-height: 1.35;
+        }
+        .rg-area-hero__splide .splide__arrow {
+            background: rgba(15,23,42,0.75);
+            width: 2.75rem;
+            height: 2.75rem;
+            opacity: 0.95;
+        }
+        .rg-area-hero__splide .splide__arrow:hover { background: rgb(37, 99, 235); }
+        .rg-area-hero__splide .splide__arrow svg { fill: #fff; width: 1rem; height: 1rem; }
+        .rg-area-hero__splide .splide__pagination { bottom: -1.5rem; }
+        .rg-area-hero__splide .splide__pagination__page { background: #cbd5e1; opacity: 1; }
+        .rg-area-hero__splide .splide__pagination__page.is-active {
+            background: #fbbf24;
+            transform: scale(1.3);
+        }
+
         /* H2 spacing,tightened globally. Previous values pushed H2s way
            down because Tailwind prose defaults compound with section gaps and
            the page-scoped CSS. We now override prose + page-scope with a near-

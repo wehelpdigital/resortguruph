@@ -119,19 +119,12 @@
         @include('partials.listings-rows', ['listings' => $listings, 'listingGalleries' => $listingGalleries ?? []])
     @endif
 
-    {{-- Optional hero/slider strip rendered RIGHT BELOW the listings offer.
-         Pages without hero_html skip this entirely. --}}
-    @if(!empty($page->hero_html))
-        {!! $page->hero_html !!}
-    @endif
-
-    {{-- Location-anchored content section header. Marks the start of the
-         editorial body so the H1 (page-level) → H2 (location body) heading
-         hierarchy reads cleanly for SEO. --}}
-    <section class="mt-10 mb-2">
-        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">What's in {{ $areaForHeader }}?</h2>
-        <p class="text-sm text-slate-500 mt-1">The local read on the area, who it's for, and how to plan a trip that actually works.</p>
-    </section>
+    {{-- The hero slider AND the "What's in [Area]?" section header were
+         previously rendered here from the rg_seo_pages.hero_html column
+         and a hardcoded <section> block. Both are now real
+         rg_content_blocks rows (hero_slider + section_header) so they
+         render through $cleanedBlocks below — single source of truth,
+         editable in the admin builder. --}}
 
     {{-- TL;DR + WWWW summary cards moved here (below the listings + below the
          section H2). Editable in the mother system; render only when populated. --}}
@@ -294,33 +287,10 @@
         </section>
     @endisset
 
-    {{-- Author byline lives at the bottom of the article, right above related
-         destinations. Gives the writeup a magazine-style credit instead of a
-         stacked header at the top. --}}
-    @isset($author)
-        @if($author)
-            <section class="mt-14 pt-8 border-t border-slate-200">
-                <div class="flex items-start gap-4 flex-wrap">
-                    <img src="{{ $author->avatarUrl() }}" alt="{{ $author->name }}" class="w-16 h-16 rounded-full ring-2 ring-slate-100 bg-slate-50 object-cover">
-                    <div class="flex-1 min-w-0 text-sm">
-                        <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-0.5">Written by</div>
-                        <div class="text-slate-900 font-bold text-base">
-                            {{ $author->name }}
-                            @if($author->role)<span class="font-normal text-slate-500"> · {{ $author->role }}</span>@endif
-                        </div>
-                        @if($author->bio)
-                            <p class="text-slate-600 mt-2 max-w-2xl leading-relaxed">{{ $author->bio }}</p>
-                        @endif
-                        <div class="text-slate-400 text-xs mt-2">
-                            @if($author->home_base)Based in {{ $author->home_base }}@endif
-                            @if($author->home_base && $page->updated_at) · @endif
-                            @if($page->updated_at)Last updated {{ $page->updated_at->format('M j, Y') }}@endif
-                        </div>
-                    </div>
-                </div>
-            </section>
-        @endif
-    @endisset
+    {{-- Author byline now renders as an `author` content block via the
+         BlockRenderer (one per page, seeded at the bottom of the content
+         stream). The hardcoded byline that used to live here was redundant
+         once the block existed, so it was removed. --}}
 
     @if($related->isNotEmpty() && $cluster)
         <section class="mt-14 pt-10 border-t border-slate-200">

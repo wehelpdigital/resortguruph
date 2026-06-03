@@ -105,6 +105,14 @@ Route::post('/destination-review', [KeywordPageController::class, 'storeReview']
     ->middleware('auth:owner')
     ->name('keyword.review.store');
 
+// Builder preview — renders a single rg_content_blocks row in a standalone
+// page with Tailwind + Splide so the mother admin can iframe it as a true
+// miniature. Must sit BEFORE the keyword-page catch-all so the slug
+// matcher doesn't claim "_preview" as a keyword.
+Route::get('/_preview/block/{block}', [\App\Http\Controllers\BuilderPreviewController::class, 'show'])
+    ->where('block', '[0-9]+')
+    ->name('builder.preview.block');
+
 // ============ KEYWORD PAGE CATCH-ALL (must be LAST) ============
 Route::get('/{page:slug}', [KeywordPageController::class, 'show'])->name('keyword.show')
     ->where('keyword', '[a-z0-9-]+');

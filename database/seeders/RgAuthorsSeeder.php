@@ -23,8 +23,8 @@ class RgAuthorsSeeder extends Seeder
         $authors = [
             [
                 'name' => 'Maria Clara Mendoza',
-                'role' => 'Senior Travel Writer',
-                'bio' => 'Maria Clara grew up in Quezon City and has spent the last six years writing about weekend escapes around Luzon. She covers Antipolo, Bulacan, and the Manila side of Resort Guru PH. Big fan of Pinto Art Museum on a quiet weekday. Photo by Ike Louie Natividad on Pexels.',
+                'role' => 'Freelance travel writer, Luzon',
+                'bio' => 'Maria Clara grew up in Quezon City and has spent the last six years freelancing for Filipino travel sites and weekend-trip blogs around Luzon. She gravitates toward Antipolo, Bulacan, and the Manila side trips most family travelers can pull off in a Saturday. Big fan of Pinto Art Museum on a quiet weekday.',
                 'home_base' => 'Quezon City',
                 'instagram' => 'mariaclaraonthego',
                 'covers_clusters' => 'rizal,bulacan,metro-manila',
@@ -34,8 +34,8 @@ class RgAuthorsSeeder extends Seeder
             ],
             [
                 'name' => 'Joaquin Reyes',
-                'role' => 'Visayas + Palawan Correspondent',
-                'bio' => 'Joaquin is a Cebuano food and travel writer who has been ferry-hopping between Cebu, Bohol, and Palawan since 2019. He spends most weekends documenting the restaurants and resorts that locals queue at, not the ones with billboard ads. Photo by Ike Louie Natividad on Pexels.',
+                'role' => 'Freelance travel writer, Visayas + Palawan',
+                'bio' => 'Joaquin is a Cebuano food and travel writer who has been ferry-hopping between Cebu, Bohol, and Palawan since 2019. He spends most weekends documenting the restaurants and resorts that locals queue at, not the ones with billboard ads.',
                 'home_base' => 'Cebu City',
                 'instagram' => 'joaquineats',
                 'covers_clusters' => 'visayas,palawan',
@@ -45,8 +45,8 @@ class RgAuthorsSeeder extends Seeder
             ],
             [
                 'name' => 'Trisha Bautista',
-                'role' => 'Airbnb + City Stays Writer',
-                'bio' => 'Trisha started Resort Guru PH as a side project after booking 70 different Airbnbs in two years across Metro Manila and Cavite. She is the resident expert on what makes a city stay actually comfortable, not just photogenic. Photo by Philip Justin Mamelic on Pexels.',
+                'role' => 'Freelance writer, city stays + Airbnb',
+                'bio' => 'Trisha is a freelance travel writer who has stayed at more than 70 different Airbnbs across Metro Manila and Cavite while juggling remote-work contracts. She writes about what makes a city stay actually comfortable, not just photogenic, and tends to ignore listings whose photos look a little too staged.',
                 'home_base' => 'Makati',
                 'instagram' => 'trishawanders',
                 'covers_clusters' => 'metro-manila,cavite',
@@ -56,8 +56,8 @@ class RgAuthorsSeeder extends Seeder
             ],
             [
                 'name' => 'Miguel "Migs" Santos',
-                'role' => 'Outdoor + Mindanao Editor',
-                'bio' => 'Migs grew up in Davao and writes about the southern half of the country that gets too little coverage. From Mt. Apo trails to Samal cove resorts, he is the one to read for honest takes on Mindanao travel. He cycles to most of his assignments.',
+                'role' => 'Freelance outdoor writer, Mindanao',
+                'bio' => 'Migs grew up in Davao and writes about the southern half of the country that gets too little coverage. From Mt. Apo trails to Samal cove resorts, his beat is honest takes on Mindanao travel for the Filipino DIY crowd. He cycles to most of his assignments.',
                 'home_base' => 'Davao City',
                 'instagram' => 'migs.south',
                 'covers_clusters' => 'mindanao,north-luzon',
@@ -67,8 +67,8 @@ class RgAuthorsSeeder extends Seeder
             ],
             [
                 'name' => 'Bea Villanueva',
-                'role' => 'Batangas + Laguna Specialist',
-                'bio' => 'Bea is from Lipa and knows every back road between Tagaytay and Calatagan. She writes about the family-resort circuit her own relatives book every summer, and is unforgiving about overpriced bulalo joints. Photo by Ike Louie Natividad on Pexels.',
+                'role' => 'Freelance travel writer, Batangas + Laguna',
+                'bio' => 'Bea is from Lipa and knows every back road between Tagaytay and Calatagan. She writes about the family-resort circuit her own relatives book every summer, and is unforgiving about overpriced bulalo joints.',
                 'home_base' => 'Lipa, Batangas',
                 'instagram' => 'beasouthbound',
                 'covers_clusters' => 'batangas,laguna,quezon',
@@ -78,7 +78,7 @@ class RgAuthorsSeeder extends Seeder
             ],
             [
                 'name' => 'Jasper Cruz',
-                'role' => 'Bicol + Northern Luzon Contributor',
+                'role' => 'Freelance travel writer, Bicol + Northern Luzon',
                 'bio' => 'Jasper is a Naga native turned freelance writer who covers the volcanic-belt provinces and the long road north. He has eaten Bicol Express in 14 versions across the region and ranks them by spice level.',
                 'home_base' => 'Naga City',
                 'instagram' => 'jaspernortheast',
