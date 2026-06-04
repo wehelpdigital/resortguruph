@@ -1,0 +1,902 @@
+[
+    {
+        "token": "manila",
+        "name": "Manila (Old Manila \/ Malate \/ Ermita \/ Intramuros)",
+        "short_version": "This is where the country's oldest Filipino-Spanish kitchens still run, most inside heritage buildings or along Manila Bay. Think Aristocrat chicken BBQ since 1936, Cafe Adriatico's tsokolate eh at Remedios Circle, Barbara's buffet in Plaza San Luis, Ilustrado near San Agustin. The area shifts character by the hour.",
+        "pros": [
+            "Aristocrat chicken BBQ and Java rice since 1936",
+            "Barbara's heritage buffet with live rondalla in Intramuros",
+            "Ilustrado sampaguita ice cream beside Silahis Center",
+            "Cafe Adriatico tsokolate eh at Remedios Circle",
+            "Manila Bay sunset seafood at Harbor View pier",
+            "Walkable kalesa-and-lunch loop inside the walls"
+        ],
+        "cons": [
+            "Traffic on Roxas Boulevard kills any quick food run",
+            "Most heritage spots close earlier than BGC equivalents",
+            "Malate nightlife stretch feels rougher after midnight",
+            "Not the place for trendy cafe-hopping or specialty coffee",
+            "Intramuros mostly dead on Sundays after 6pm"
+        ],
+        "tags": [
+            "FilipinoSpanish",
+            "OldManila",
+            "Intramuros",
+            "Malate",
+            "HeritageDining",
+            "ManilaBay",
+            "RemediosCircle"
+        ],
+        "tip": "Time your Intramuros lunch at Barbara's or Ilustrado for 11am before the tour buses unload at noon, then walk to San Agustin and Casa Manila while everyone else is eating. If you want the Manila Bay sunset, book Harbor View by 4:30pm because the pier tables fill up fast, and skip the Roxas Boulevard drive after 5pm, ride in via Kalaw or Pedro Gil instead."
+    },
+    {
+        "token": "bgc",
+        "name": "Bonifacio Global City (BGC, Taguig)",
+        "short_version": "BGC holds most of the Philippines' chef-led fine dining in one walkable grid, with Michelin rooms like Gallery by Chele, Toyo Eatery and Lore by Tatung next to pizza counters like A Mano. Burgos Circle skews al fresco, High Street is casual mall dining, Uptown and Aura handle date nights and tasting menus. Reservations matter, especially Friday and Saturday.",
+        "pros": [
+            "Michelin-recognized tasting menus at Toyo, Gallery by Chele, Locavore",
+            "Modern Filipino plates from Lore by Chef Tatung and COCHI",
+            "A Mano pizzas, ranked among the world's top 50",
+            "Burgos Circle al fresco dining and brunch on weekends",
+            "Late-night bars and clubs around Uptown Parade after dinner",
+            "Walkable grid lets you bar-hop between Aura, High Street, Uptown"
+        ],
+        "cons": [
+            "Weekend traffic at One Bonifacio and 32nd Street is brutal",
+            "Parking fills by noon at Uptown Mall and SM Aura",
+            "Limited true budget carinderia options inside the grid",
+            "Fine dining spots need reservations days in advance",
+            "Crowd skews corporate, can feel sterile vs Poblacion"
+        ],
+        "tags": [
+            "BGC",
+            "Taguig",
+            "FineDining",
+            "ChefLed",
+            "ModernFilipino",
+            "BurgosCircle",
+            "MichelinManila"
+        ],
+        "tip": "Park at One Bonifacio High Street basement on weekends instead of Uptown or Aura, then walk across to wherever you are eating. The lot rarely fills before 1pm Saturday and the 5th Avenue stretch between 30th and 28th is closed to cars on weekends anyway, so you would be walking either way."
+    },
+    {
+        "token": "san-juan",
+        "name": "San Juan City, Metro Manila (Greenhills area, F. Salgado, Polaris)",
+        "short_version": "San Juan eats like an older Manila neighborhood that grew up around Greenhills Shopping Center. The food map runs along Connecticut, Wilson, and side streets like F. Salgado and Polaris, with Filipino-Chinese banquet halls, family-run Japanese counters, and standalone restaurants in converted houses. It is a sit-down district, not a nightlife strip.",
+        "pros": [
+            "Cantonese dim sum at Lugang Cafe and Dimsum N Dumplings",
+            "Old-school banquet Chinese at Gloria Maris and Greenhills Uno",
+            "Standalone Connecticut Street spots like Torch and Ricksha",
+            "Filipino comfort food at Manam inside Greenhills Promenade",
+            "Japanese omakase counters at Yumi and Ichō in Promenade",
+            "Polaris side streets for quiet family lunches away from mall traffic"
+        ],
+        "cons": [
+            "No real late-night bar strip after malls close",
+            "Parking around Connecticut gets tight on weekends",
+            "Mostly sit-down restaurants, thin street-food culture",
+            "Quiet at night, not for after-dinner drinking crowds",
+            "Layout favors car commuters over walk-in foot traffic"
+        ],
+        "tags": [
+            "GreenhillsFood",
+            "SanJuanCity",
+            "FilipinoChinese",
+            "DimSum",
+            "JapaneseRestaurants",
+            "ConnecticutStreet",
+            "FamilyDining"
+        ],
+        "tip": "Skip the main Greenhills mall food court at lunch and walk one block out to Connecticut or Wilson Street. The standalone restaurants in the converted houses there have the same kitchens as the mall branches but seat faster, and parking is easier on the residential side streets like F. Salgado and Polaris than inside the Connecticut Carpark Arcade."
+    },
+    {
+        "token": "greenhills",
+        "name": "Greenhills Shopping Center (San Juan)",
+        "short_version": "Greenhills food works around the tiangge. People come for the pearl and bag stalls, then break for dim sum at Le Ching or Gloria Maris, or Korean BBQ at Sibyullee in the Promenade wing. The Chinese-Filipino restaurants here are the kind that have outlasted three mall renovations, so the regulars are families who have been ordering the same hakaw for twenty years.",
+        "pros": [
+            "Long-running Cantonese dim sum at Gloria Maris and Le Ching",
+            "Tim Ho Wan branch in the newer GH Mall wing",
+            "Sibyullee unlimited Korean BBQ in the Promenade strip",
+            "Eat between tiangge runs without leaving the complex",
+            "Theatre Mall food court for quick budget meals",
+            "Choi Garden, TaiOne, and Tuantuan for noodles and porridge"
+        ],
+        "cons": [
+            "Parking gets brutal on Saturday afternoons and Sundays",
+            "Three separate wings mean lots of walking between meals",
+            "Tiangge noise carries into nearby casual restaurants",
+            "Not the spot if you want quiet date-night dining",
+            "Older Promenade wing feels dated next to GH Mall"
+        ],
+        "tags": [
+            "ChineseFilipino",
+            "DimSum",
+            "SanJuan",
+            "KoreanBBQ",
+            "MallFood",
+            "Tiangge",
+            "FamilyDining"
+        ],
+        "tip": "Park at the new GH Mall basement and eat there for dim sum or Tim Ho Wan, then walk across to Promenade only if you want the older Chinese restaurants like Gloria Maris or Choi Garden. The Theatre Mall side is the quietest entry point on weekends, and the food court there clears out by 2pm if you want a calm late lunch after the tiangge."
+    },
+    {
+        "token": "san-fernando-pampanga",
+        "name": "San Fernando, Pampanga",
+        "short_version": "San Fernando is where Kapampangan cooking sits in its everyday form, not the show-kitchen version you get in Manila. The city runs on turo-turo institutions like Everybody's Cafe and Susie's Cuisine along MacArthur Highway, plus Chef Sau del Rosario's 25 Seeds inside the old Dychiaco Mansion for a heritage sit-down.",
+        "pros": [
+            "Everybody's Cafe for betute and camaru, open since post-war",
+            "Susie's Cuisine for tibok-tibok and pancit luglug since 1972",
+            "25 Seeds by Chef Sau del Rosario inside Dychiaco Mansion",
+            "Sweet Pampanga tocino and longganisa at the city wet market",
+            "Nathaniel's Bakeshop buko pandan for pasalubong",
+            "Heritage Spanish-era streets walkable between food stops"
+        ],
+        "cons": [
+            "Few late-night options, most kitchens close by 9pm",
+            "Exotic dishes like frog and crickets not for everyone",
+            "Pampanga tocino runs sweet, not for savory palates",
+            "Limited vegetarian menus at heritage turo-turo spots",
+            "Traffic on MacArthur Highway slows weekend food crawls"
+        ],
+        "tags": [
+            "Kapampangan",
+            "Sisig",
+            "HeritageFood",
+            "TuroTuro",
+            "Pasalubong",
+            "CentralLuzon",
+            "Pampanga"
+        ],
+        "tip": "Hit Everybody's Cafe by 11am for betute and camaru before the Capitol office lunch rush, then drive down MacArthur Highway to Susie's Cuisine for tibok-tibok as merienda. Buy your tocino and longganisa from the San Fernando wet market vendors, they vacuum-pack for the Manila drive."
+    },
+    {
+        "token": "antipolo",
+        "name": "Antipolo, Rizal",
+        "short_version": "Antipolo is the overlooking-restaurant capital for Metro Manila weekenders, with Sumulong Highway lined by cafes facing the city lights from a hill 25 km east of EDSA. Outside that stretch, the food identity is built on three pasalubong items sold around the Cathedral: suman in kampil, salted kasoy, and Tagalog mangoes.",
+        "pros": [
+            "Sumulong Highway overlooking cafes facing Metro skyline",
+            "Cafe Lupe and Kaulayaw Coffee for sunset and night lights",
+            "Crescent Moon Cafe weekend buffet with homemade suman",
+            "Vieux Chalet Swiss fondue, a 20-plus-year Taktak Road institution",
+            "Suman, kasoy, mangga stalls beside Antipolo Cathedral",
+            "Tahanan Bistro and Tipulo for modern Filipino set meals"
+        ],
+        "cons": [
+            "Sumulong Highway crawls bumper to bumper on weekends",
+            "View cafes get foggy and cold during rainy months",
+            "Most overlooking spots focus on view, not food refinement",
+            "Cathedral pasalubong stalls are chaotic on Sundays after Mass",
+            "Far drive back to QC or Makati late at night"
+        ],
+        "tags": [
+            "Antipolo",
+            "SumulongHighway",
+            "OverlookingDining",
+            "FilipinoFood",
+            "SumanAtKasoy",
+            "PilgrimEats",
+            "RizalProvince"
+        ],
+        "tip": "Skip Sumulong Highway on Saturday afternoons because the climb past Masinag junction backs up to Marcos Highway. Go up Friday night for the city lights, or do a Tuesday lunch at Crescent Moon Cafe when the buffet line is short and the pottery studio is browsable."
+    },
+    {
+        "token": "podium",
+        "name": "The Podium (Ortigas)",
+        "short_version": "The Podium sits across Megamall on ADB Avenue, and the food mix leans grown up. The 6th floor Podium Social opened in 2025 as a chef-led cluster with Brotzeit, Osteria Antica, Bistro Aurora, H Proper coffee and Wolfgang's nearby. The weekday crowd is mostly Ortigas office workers and ADB staff doing business lunches, so service moves quickly and the noise level stays manageable.",
+        "pros": [
+            "Podium Social cluster on 6th floor with city views",
+            "Brotzeit German beer hall with bigger Podium branch",
+            "Wolfgang's Steakhouse for dry-aged ribeye dinners",
+            "PUTIEN Singapore-Fujian, one Michelin star kitchen",
+            "Weekday lunches move fast for ADB office crowd",
+            "Marketplace by Rustan's groceries on Lower Ground"
+        ],
+        "cons": [
+            "Mostly chain and franchise dining, not indie kitchens",
+            "Office building energy, not a weekend leisure mall",
+            "Smaller footprint than Megamall across the street",
+            "Parking gets tight during ADB conference weeks",
+            "Few late-night options outside Podium Social floor"
+        ],
+        "tags": [
+            "Ortigas",
+            "ADB Avenue",
+            "BusinessLunch",
+            "PodiumSocial",
+            "Steakhouse",
+            "GermanFood",
+            "ChefLed"
+        ],
+        "tip": "Skip the ground floor food rush at noon and go straight up to 6th floor Podium Social. The floor-to-ceiling windows face the Ortigas skyline, and on weekdays after 2pm the kitchens stay open while the lunch crowd clears out. H Proper coffee is the quieter work spot before dinner service starts at Osteria Antica."
+    },
+    {
+        "token": "sm-fairview",
+        "name": "SM Fairview",
+        "short_version": "SM Fairview sits on Quirino Highway corner Regalado in Novaliches, far enough north that it works as the weekend mall for Fairview, Lagro, and North Caloocan families. The food mix leans family casual, anchored by Vikings buffet, Tong Yang shabu-shabu, Gerry's Grill, and Lydia's Lechon, plus a wide SM Foodcourt for everyday Pinoy lunch.",
+        "pros": [
+            "Vikings buffet branch for birthday barkadas",
+            "Tong Yang shabu-shabu and grill for group dinners",
+            "Lydia's Lechon and Gerry's Grill for Pinoy lunch",
+            "Big SM Foodcourt with Jollibee, KFC, McDo under one roof",
+            "Khao Khai for Thai food in the north QC area",
+            "Belle-Ville Pancake Cafe for fluffy meringue pancakes"
+        ],
+        "cons": [
+            "Far from central QC, long drive from Cubao or Katipunan",
+            "Crowd skews family casual, not date-night romantic",
+            "Heavy weekend traffic on Quirino Highway access roads",
+            "Chain-heavy lineup, few independent or chef-driven spots",
+            "Parking fills fast by 11AM on Saturdays and Sundays"
+        ],
+        "tags": [
+            "SMFairview",
+            "Novaliches",
+            "QuezonCity",
+            "FilipinoFood",
+            "BuffetDining",
+            "FamilyMall",
+            "NorthQC"
+        ],
+        "tip": "If you are doing Vikings or Tong Yang on a weekend, book the lunch slot online before 10AM or come in by 2PM for the merienda window, the 6PM dinner wave from Lagro and North Caloocan fills both buffets fast. Park at the Annex side near the cinema entrance, the main building parking jams up by noon on paydays."
+    },
+    {
+        "token": "up-town-center",
+        "name": "UP Town Center (Katipunan)",
+        "short_version": "Ayala mall along Katipunan that openly leans student and young-professional, with over half the tenant mix dedicated to food. The roster skews casual chef-led: Silantro Fil-Mex, Mendokoro ramen, Nono's comfort plates, Korean grills like Gokizip, plus indie cafes like The Fat Seed and Scout's Honor.",
+        "pros": [
+            "Silantro Fil-Mex paella fajita for group sharing",
+            "Mendokoro-tier ramen without going to BGC",
+            "Korean BBQ row with Gokizip and Kuya Korean",
+            "Scout's Honor cookies and board games for barkada hangs",
+            "The Fat Seed kimchi rice and ube waffle brunch",
+            "Open-air walkways between Ateneo and UP study sessions"
+        ],
+        "cons": [
+            "Loud during semester exam weeks and org nights",
+            "Parking fills up fast Friday after 6pm",
+            "Skews student-casual, not for formal dining occasions",
+            "Long Silantro and Mendokoro queues on weekends",
+            "Far drive if you are based south of EDSA"
+        ],
+        "tags": [
+            "Katipunan",
+            "QuezonCity",
+            "KoreanBBQ",
+            "RamenManila",
+            "StudentEats",
+            "CasualDining",
+            "AyalaMalls"
+        ],
+        "tip": "Park at the open-air deck near the Maginhawa-side entrance, not the main Katipunan drop-off, because the Katipunan side jams during Ateneo dismissal around 4 to 6pm. If you want Mendokoro or Silantro without the wait, walk in right at 11am opening or after 9pm when the student crowd has cleared out."
+    },
+    {
+        "token": "estancia",
+        "name": "Estancia Mall (Capitol Commons, Pasig)",
+        "short_version": "Estancia is the calmer alternative to Megamall and Podium, with a tenant mix that leans chef-led and brunch-friendly instead of mass food court. Crowds are mostly Capitol Commons residents, Ortigas office workers on a slow lunch, and date-night couples who want to eat then walk the park next door. The food floors stay quiet even on weekends, so reservations are usually not needed.",
+        "pros": [
+            "Chef-led spots like Florabel and Crisostomo under one roof",
+            "Capitol Commons Park right outside for post-meal walks",
+            "Brunch lineup with Le Reve, Tokyo Milk Cheese, Manila Baker",
+            "Quiet weekend service compared to Megamall and Podium",
+            "Strong Asian bench: Wu's Kitchen, Coco Ichibanya, Red House Hot Pot",
+            "Park-view outdoor seats at select cafes"
+        ],
+        "cons": [
+            "Limited budget or carinderia-style options inside",
+            "Smaller floor count, full food crawl ends fast",
+            "Few late-night kitchens once office crowd leaves",
+            "Parking fills up on Sunday family lunch hours",
+            "Not the place for big group barkada food courts"
+        ],
+        "tags": [
+            "PasigEats",
+            "CapitolCommons",
+            "OrtigasFood",
+            "BrunchSpots",
+            "ChefLed",
+            "DateNight",
+            "UpscaleMall"
+        ],
+        "tip": "Park at the Estancia basement, not the Capitol Commons Park lot, because the basement empties out faster after lunch and connects straight to the dining floors. If you came for brunch, walk through the mall to the park exit on the Meralco Avenue side after eating, that loop around the park takes about 20 minutes and most diners skip it."
+    },
+    {
+        "token": "market-market",
+        "name": "Market! Market! (BGC, Taguig)",
+        "short_version": "Market! Market! is the working class corner of BGC, the south end Ayala mall built around an open air Fiesta Market with regional Pinoy food stalls instead of cafes. The food court is Food Choices on the upper level, plus chains like Mang Inasal and Chowking, with Cabalen and Kamay Kainan buffets pulling weekend families. It is where C5 bus commuters eat, not where High Street workers do client lunches.",
+        "pros": [
+            "Outdoor Fiesta Market stalls with Vigan longganisa and bagnet",
+            "Food Choices court on Level 4 with Pinoy turo turo plates",
+            "Cabalen and Kamay Kainan Filipino buffets for weekend family eat",
+            "Lasa BBQ for inihaw and lechon belly walk in seating",
+            "Mr. Korea BBQ unli samgyup on the C5 wing",
+            "Pasalubong kiosks for chicharon, polvoron, dried mangoes before flights"
+        ],
+        "cons": [
+            "No specialty coffee or third wave cafes worth a detour",
+            "Aircon weak on the outdoor Fiesta Market side at noon",
+            "Crowd thick with strollers and balikbayan boxes on weekends",
+            "No fine dining or chef driven concepts, all chain or buffet",
+            "Service slow at peak hours, billing can take 20 plus minutes"
+        ],
+        "tags": [
+            "FilipinoFood",
+            "FoodCourt",
+            "BGC",
+            "Taguig",
+            "PinoyBuffet",
+            "Pasalubong",
+            "MallEats"
+        ],
+        "tip": "Skip the indoor food court if you came for Pinoy food and head straight to the outdoor Fiesta Market rows behind the cinema wing. The regional stalls there sell Ilocos empanada, Vigan longganisa silog, and Cebu lechon by the kilo, cooked in front of you, and you can eat at the plastic table seating beside the stalls instead of queueing inside."
+    },
+    {
+        "token": "ayala-malls-manila-bay",
+        "name": "Ayala Malls Manila Bay (ASEANA \/ Parañaque)",
+        "short_version": "Ayala Malls Manila Bay leans on its country zones for food identity, with Japan Town and Korea Town stacking sit down places like Sibyullee, Myeong Ryun Jinsa Galbi, and Japan Fudo Street on the upper floors. The Aseana location pulls Solaire and Entertainment City spillover, so dinner stays busy past 9pm. Built for cinema then dinner, not quick food court runs.",
+        "pros": [
+            "Korea Town floor with Sibyullee unli samgyup",
+            "Japan Fudo Street ramen and donburi stalls in one row",
+            "Casa Reyes Filipino heirloom dishes near Central Garden",
+            "Late dinner crowd from Solaire and Aseana BPOs",
+            "Tong Yang Plus shabu plus grill combo for groups",
+            "Cinema and dinner pairing on the 5th floor"
+        ],
+        "cons": [
+            "No real bayside al fresco strip despite the name",
+            "Layout is huge so food hunting tires the legs",
+            "Weekend cinema crowds clog Korea Town queues",
+            "Few cheap turo turo style options on lower floors",
+            "Drive from QC or Marikina takes the whole evening"
+        ],
+        "tags": [
+            "KoreanBBQ",
+            "JapaneseFood",
+            "ParanaqueEats",
+            "AseanaCity",
+            "MallDining",
+            "DinnerAndCinema",
+            "FilipinoBistro"
+        ],
+        "tip": "Park on the upper levels near the cinema side, not the ground floor entrance, because Korea Town and Japan Town both sit on floors 4 and 5. Take the cinema lobby escalators going down after eating, you skip the long mall walk back to the car. Weeknight after 8pm is the sweet spot, the Solaire shuttle crowd thins out and Sibyullee stops capping refills."
+    },
+    {
+        "token": "white-plains",
+        "name": "White Plains (Quezon City)",
+        "short_version": "White Plains used to be a sleepy village off Katipunan Extension where Bawai's Vietnamese was the only reason outsiders drove in. The Bellitudo strip and inner village pockets now hold Bar Pintxos, Grapevine, Buttery and Co., and a jazz bar with around 9,000 vinyl records. The scene is residential and chef-led, closer to a quiet Salcedo side street than a mall food hall.",
+        "pros": [
+            "Bar Pintxos for proper San Sebastian style Spanish bites",
+            "Bawai's Vietnamese Kitchen as the long-running area anchor",
+            "Grapevine glass-roof cafe for daylight brunch shoots",
+            "Bellitudo strip groups several restaurants in one walk",
+            "Jazz bar stocked with around 9,000 vinyl records",
+            "Weeknight sit-down dinners with Katipunan and Ateneo crowd"
+        ],
+        "cons": [
+            "No nightlife district, kitchens close fairly early",
+            "Tight village parking on Friday and weekend nights",
+            "Not walkable from MRT or LRT, you need a car or Grab",
+            "Inner village access goes through subdivision gates with logs",
+            "Limited budget canteen options, mostly mid sit-down"
+        ],
+        "tags": [
+            "WhitePlains",
+            "QuezonCity",
+            "Katipunan",
+            "Bellitudo",
+            "SpanishFood",
+            "VietnameseFood",
+            "QCFoodScene"
+        ],
+        "tip": "Enter from Katipunan Extension and park at Bellitudo first, the small strip between Gates 1 and 2 where Bawai's sits. Weekdays before 6pm you can still find a slot near the entrance. After dinner, walk one block deeper into the village pocket instead of driving out, that is where Grapevine and the newer chef-led places hide."
+    },
+    {
+        "token": "katipunan",
+        "name": "Katipunan Avenue (Quezon City)",
+        "short_version": "Katipunan is the long strip between Ateneo and Miriam where the food scene runs on student schedules and alumni nostalgia. You get indie spots like Tetsuo on Esteban Abada, Korean fried chicken places along Xavierville, and the UP Town Center mall crowd on the other end. The mix leans casual and study-friendly, with a few sit-down picks the barkadas come back to after they graduate.",
+        "pros": [
+            "Tetsuo Japanese fusion on Esteban Abada",
+            "Korean fried chicken row on Xavierville Street",
+            "Study cafes with outlets like Tyler's and Almusal",
+            "Gino's brick oven pizza beside Tyler's Cafe",
+            "UP Town Center for chain dining on the UP side",
+            "Xocolat for chocolate savory dishes and hot xocolat"
+        ],
+        "cons": [
+            "Traffic on Katipunan southbound is brutal after 5pm",
+            "Parking near Ateneo gate is a daily fight",
+            "Dead quiet on long weekends when students go home",
+            "Small indie spots fill up fast during exam season",
+            "Strip walking means crossing a busy avenue often"
+        ],
+        "tags": [
+            "Katipunan",
+            "QuezonCity",
+            "StudentEats",
+            "JapaneseFood",
+            "KoreanFood",
+            "StudyCafe",
+            "AteneoStrip"
+        ],
+        "tip": "Skip the main Katipunan Avenue frontage and walk one block into Esteban Abada or Rosa Alvero. That is where the older indie spots like Tetsuo and Brickfire sit, and the side streets are where Ateneo alumni still bring their families on Sundays after mass at the Church of the Gesu."
+    },
+    {
+        "token": "angeles-pampanga",
+        "name": "Angeles City, Pampanga (Clark-adjacent)",
+        "short_version": "Angeles is two food cities running side by side. On one end you have the Kapampangan canon at Aling Lucing, Mila's Tokwa't Baboy, and Bale Dutung, where sisig was actually invented. On the other end you have Korea Town off Friendship Highway and the Clark expat strip around Fields, with grills, late breakfasts, and Italian spots that stay open past midnight.",
+        "pros": [
+            "Original sisig at Aling Lucing where the dish started",
+            "Bale Dutung private Kapampangan dining by reservation",
+            "Korea Town off Friendship with over 200 Korean spots",
+            "25 Seeds farm-to-table inside the old Dychiaco Mansion",
+            "Late-night Clark crowd around Fields and Walking Street",
+            "Binulo and Matam-ih for full Kapampangan kare-kare spreads"
+        ],
+        "cons": [
+            "Walking Street area not for families with kids at night",
+            "Heavy pork and offal focus, tough for vegetarians",
+            "Bale Dutung needs advance booking, not a walk-in",
+            "Korea Town menus assume you already know Korean BBQ",
+            "Clark Freeport feels suburban, you will need a car"
+        ],
+        "tags": [
+            "Kapampangan",
+            "Sisig",
+            "Clark",
+            "KoreaTown",
+            "BBQ",
+            "ExpatDining",
+            "FarmToTable"
+        ],
+        "tip": "For the real Aling Lucing experience, go to the original branch on Glaciano Valdez near the railway, not the mall offshoots. Order the sisig plain first before they pour the calamansi and egg so you taste what Lucia Cunanan actually built the recipe on. Pair it with a cold San Mig, not rice."
+    },
+    {
+        "token": "lipa",
+        "name": "Lipa, Batangas",
+        "short_version": "Lipa eats like a weekend in coffee country. Lomi houses run all day, bulalo joints fill up after Tagaytay drives, and the old downtown around San Sebastian Cathedral still smells like kapeng barako from the roasters around the block. The tier is casual heritage with one or two slow Italian and ramen spots for the Manila crowd who drove down to escape.",
+        "pros": [
+            "Thick Batangas lomi at Lomi King, Liam's, and Chibong's",
+            "Kapeng barako roasted fresh at Cafe de Lipa",
+            "Bulalo houses busy on cool Malarayat evenings",
+            "Casa Marikit for slow Italian inside a heritage house",
+            "Ippon Yari ramen at Manila quality without Manila traffic",
+            "Walkable downtown food crawl around San Sebastian Cathedral"
+        ],
+        "cons": [
+            "No real nightlife scene after the lomi houses close",
+            "Few vegetarian options outside the cafes",
+            "Downtown parking is rough on Sunday Mass hours",
+            "Not for travelers who want a beach town food trip",
+            "Limited late-night eats once shops shutter by 10pm"
+        ],
+        "tags": [
+            "BatangasFood",
+            "Lomi",
+            "KapengBarako",
+            "Bulalo",
+            "LipaCity",
+            "HeritageDining",
+            "CoffeeCountry"
+        ],
+        "tip": "Do the lomi crawl on a weekday lunch, not weekends. Start at Lomi King 2.0, then walk to Cafe de Lipa for barako and pastel de Lipa to take home. Sunday mornings the whole downtown clogs up because of Mass at San Sebastian Cathedral, and the lomi houses near Sabang get a one to two hour wait."
+    },
+    {
+        "token": "one-ayala",
+        "name": "One Ayala (Makati EDSA-Ayala junction)",
+        "short_version": "One Ayala sits right on top of the EDSA-Ayala bus and jeepney terminal, so the food crowd skews commuter and BPO worker. The mix runs from terminal kiosks like Pick-up Coffee and Potato Corner to sit-down spots upstairs like Crisostomo, Hawker Chan, and Bom Gosto. It works more as a transit-anchored food cluster than a destination mall.",
+        "pros": [
+            "Crisostomo by Chef Florabel for Filipino sit-down",
+            "Hawker Chan soya chicken rice on the way home",
+            "Bom Gosto on Level 3 for Portuguese and Spanish plates",
+            "Pick-up Coffee and Lawson inside the bus terminal itself",
+            "Air-conditioned food stops while waiting for P2P buses",
+            "Karayama, Marugame, Ikinari Steak cluster for Japanese"
+        ],
+        "cons": [
+            "Weeknight crowd is mostly tired office commuters",
+            "Layout confusing if you do not know terminal levels",
+            "Heavy chain restaurant presence, few independent kitchens",
+            "Weekends feel emptier than Glorietta or Greenbelt",
+            "Not a place for long leisurely group dinners"
+        ],
+        "tags": [
+            "Makati",
+            "AyalaCenter",
+            "Filipino",
+            "Japanese",
+            "SpecialtyCoffee",
+            "CommuterEats",
+            "ChainRestaurants"
+        ],
+        "tip": "If you are catching a P2P bus to Nuvali or Cavite, eat at Hawker Chan or grab Pick-up Coffee on the terminal level instead of walking up to Level 3, since the upper floor restaurants get a long wait around 6 to 7pm when offices empty out. The lower ground PUV side also has Julie's Bakeshop and Siomai King if you just need something fast before boarding."
+    },
+    {
+        "token": "opus-mall",
+        "name": "Opus Mall (Bridgetowne, Quezon City)",
+        "short_version": "Opus is the newer Robinsons mall sitting on the QC-Pasig border inside Bridgetowne, and the food lineup is curated more than crammed. You get first-Manila branches like St. Ali from Melbourne next to Korean BBQ at Sogeum, Hoshino souffle pancakes, Wildflour, and Sea Salt for seafood. The crowd skews Bridgetowne BPO workers on weekdays and families doing weekend cinema, so it stays calmer than Eastwood or Trinoma.",
+        "pros": [
+            "First Manila branch of Melbourne's St. Ali coffee",
+            "Sogeum and Soban for premium Korean BBQ",
+            "Hoshino souffle pancakes and Key Coffee on one floor",
+            "VIP cinema dinner combo with Il Lupino steaks",
+            "Quieter weekday lunches than Eastwood or Capitol Commons",
+            "Wildflour open from breakfast to cocktails"
+        ],
+        "cons": [
+            "Tenant mix still thin compared to Megamall or SM North",
+            "Awkward to reach without a car from Cubao",
+            "Polished setting feels too quiet for barkada nights",
+            "Few true budget carinderia or food-court Pinoy options",
+            "Layout favors slow strolling, not quick grab-and-go meals"
+        ],
+        "tags": [
+            "KoreanBBQ",
+            "JapaneseCafes",
+            "Bridgetowne",
+            "QuezonCity",
+            "MallDining",
+            "WeekdayLunch",
+            "CinemaDining"
+        ],
+        "tip": "Park at the upper basement levels and take the elevator straight to the 4th floor food row before 11:30am on weekdays. Sogeum and Tsukemen seat you without a wait, and you can catch the Bridgetowne BPO lunch rush from a window seat instead of standing in queue. Skip the C5 entrance during 5pm to 7pm and enter from Ortigas Avenue Extension instead."
+    },
+    {
+        "token": "mandaluyong",
+        "name": "Mandaluyong (city, esp. Shaw \/ EDSA Central)",
+        "short_version": "Mandaluyong food around Shaw and EDSA runs on two rhythms. Inside Shangri-La Plaza and Mandala Park you get sit-down places like Green Pastures, Senju and Yoshimeatsu. One jeepney into Boni and Pioneer drops you into 24-hour bulalohan, Pakistani halal joints, and old carinderia rows feeding the office crowd.",
+        "pros": [
+            "Green Pastures farm-to-table at Shangri-La Plaza",
+            "Yoshimeatsu unli Korean BBQ inside Mandala Park",
+            "R&J Bulalohan open 24 hours on Boni Avenue",
+            "Tanveer Halal Kitchenette for Pakistani curry and naan",
+            "Senju Japanese at EDSA Shangri-La with Sunday buffet",
+            "Old Boni and Barangka carinderia rows for sisig and lechon manok"
+        ],
+        "cons": [
+            "Shaw and EDSA traffic punishes anyone arriving by car",
+            "Mall dining dominates, not a heritage food district",
+            "Office crowd makes weekday lunch lines long",
+            "Few late-night options outside Boni Avenue itself",
+            "Walking between Shaw, Boni and Pioneer is not pedestrian friendly"
+        ],
+        "tags": [
+            "Mandaluyong",
+            "ShawBoulevard",
+            "BoniAvenue",
+            "FilipinoChinese",
+            "MallDining",
+            "BPOFood",
+            "OfficeLunch"
+        ],
+        "tip": "Take the MRT to Boni Station instead of driving down Shaw. From the Pioneer exit you can walk to Robinsons Cybergate food row for office lunch, then loop into Boni Avenue after dark for R&J bulalo and the small mami and Pakistani spots that only fill up after 9pm when the BPO night shift starts eating."
+    },
+    {
+        "token": "subic",
+        "name": "Subic Bay Freeport (Olongapo \/ Zambales)",
+        "short_version": "Subic eats unlike the rest of Zambales because the old US Navy base left behind American steakhouses, Korean BBQ joints, and bayside seafood pavilions in one drivable zone. The Boardwalk and CBD menus run on expat tastes and Manila weekenders, so portions skew big and ingredients skew imported thanks to duty free shelves.",
+        "pros": [
+            "Texas Joe's House of Ribs for slow-smoked American BBQ",
+            "Meat Plus Cafe char-grilled steaks for weekend family dinners",
+            "Seafood By The Bay and Crab and Belly along the waterfront",
+            "Xtremely Xpresso 22-inch Big Ben pizza for big groups",
+            "Korean BBQ row near CBD, Bulgogi Brothers and Tong Kyung Am",
+            "Imported pantry runs at Royal Duty Free after dinner"
+        ],
+        "cons": [
+            "Restaurants spread across the zone, you will need a car",
+            "Limited late-night options once Boardwalk lights dim",
+            "Long weekends jam Harbor Point parking past lunch",
+            "Heavy steak and BBQ menus, fewer light Filipino options",
+            "Gate pass and ID checks slow first-time visitors down"
+        ],
+        "tags": [
+            "Subic",
+            "Freeport",
+            "American BBQ",
+            "Seafood",
+            "Korean",
+            "Family Dining",
+            "Weekend Trip"
+        ],
+        "tip": "Skip Harbor Point on Saturday lunch and drive straight to the Boardwalk seafood pavilions before 11am, you get the bay-facing tables without queueing. After eating, swing by Royal Duty Free on Palm Street for imported cheese and wine to bring back, the Manila Avenue branch near the Olongapo gate gets picked over by late afternoon."
+    },
+    {
+        "token": "pasig",
+        "name": "Pasig City (Ortigas-adjacent, Kapitolyo, Mercedes)",
+        "short_version": "Pasig food is two scenes stitched together. Kapitolyo is the walkable indie-kitchen grid where bloggers shoot brunch and you can hop from Locavore to Tittos to Poco Deli in one afternoon. Ortigas-side Estancia handles the airconditioned mall crowd, while East Capitol and Mercedes keep older barbecue houses alive.",
+        "pros": [
+            "Modern Filipino at Locavore on Brixton",
+            "Tittos Latin BBQ and Silantro Mexican in one block",
+            "Three Sisters lechon, decades older than the food strip",
+            "East Capitol Drive late-night Poco Deli bacon slab",
+            "Capitol Commons Estancia for airconditioned mall dining",
+            "Cosmic Kapitolyo for vegan and plant-based menus"
+        ],
+        "cons": [
+            "Friday night parking in Kapitolyo is a war zone",
+            "Most indie kitchens are tiny, walk-ins wait long",
+            "Mercedes Avenue closes earlier than Kapitolyo",
+            "Ortigas weekday traffic to get in and out",
+            "Not a single-stop food court, you walk blocks"
+        ],
+        "tags": [
+            "Kapitolyo",
+            "ModernFilipino",
+            "FoodStrip",
+            "OrtigasFood",
+            "BrunchSpots",
+            "EastCapitolDrive",
+            "PasigEats"
+        ],
+        "tip": "Park once on United Street or inside Estancia, then walk the Kapitolyo grid on foot. If you arrive after 7pm on a Friday, skip Brixton Street and start at East Capitol Drive instead. The strip is longer and the waitlist at Locavore and Tittos clears around 9pm when the office crowd leaves."
+    },
+    {
+        "token": "sm-clark",
+        "name": "SM City Clark (Pampanga)",
+        "short_version": "SM City Clark sits at the Clark Freeport edge along Roxas Highway, so the food floor reads less like a standard SM and more like a mix of Pampanga locals, Korean expats from Friendship Road, and travelers waiting on Clark flights. Mid-tier mall casual, with Kapampangan sisig at Mesa next to Yami Bulgogi samgyupsal and the usual Bonchon and Kenny Rogers anchors.",
+        "pros": [
+            "Kapampangan sisig and kare-kare at Mesa Filipino Moderne",
+            "Yami Bulgogi for Korean BBQ and army stew (budae jjigae)",
+            "Strong Korean food presence thanks to nearby Korea Town",
+            "Food court has Thai, Vietnamese, and Japanese stalls beyond the usual",
+            "Easy stop for travelers killing time before Clark airport flights",
+            "Ground floor chains (Bonchon, Kenny Rogers, Sbarro) for picky kids"
+        ],
+        "cons": [
+            "Serious Korean food fans still prefer Friendship Road in Korea Town",
+            "Smaller and older than SM City Pampanga in San Fernando",
+            "No real fine dining, ceiling is casual chain restaurants",
+            "Mall closes at 8 or 9 PM so no late-night dining option",
+            "Limited Kapampangan heritage spots compared to Angeles proper"
+        ],
+        "tags": [
+            "SMClark",
+            "Pampanga",
+            "AngelesCity",
+            "KoreanBBQ",
+            "Kapampangan",
+            "MallDining",
+            "ClarkFreeport"
+        ],
+        "tip": "Skip the ground floor chains and head straight to Mesa Filipino Moderne for the sisig and crispy pata, then walk over to Yami Bulgogi for the dolsot bibimbap if you have a second meal in you. If you came for Korean specifically, finish at SM then drive ten minutes to Friendship Road in Korea Town for the real Korean-owned grills the expats actually eat at."
+    },
+    {
+        "token": "panglao",
+        "name": "Panglao Island (Bohol)",
+        "short_version": "Panglao's food scene runs on two tracks. Alona Beach is dive-trip territory with open-air grills, wood-fired Italian, and Korean fusion catering to a foreigner and Filipino weekender mix. Inland you get Bohol Bee Farm's organic flower salads and farm ice cream, plus paluto spots where you pick the fish and tell them how to cook it.",
+        "pros": [
+            "Bohol Bee Farm flower salad and malunggay ice cream",
+            "Alona Beach grills firing up squid and pork from 5pm",
+            "Giuseppe Pizzeria wood-fired Italian on Coastal Road",
+            "Paluto seafood at Jose Panglao, you pick the catch",
+            "Saffron at Amorita Resort for cliffside dinner with a view",
+            "Late-night acoustic sets at beach bars after dive day"
+        ],
+        "cons": [
+            "Alona strip is loud and tourist-skewed near peak hours",
+            "Mostly foreigner crowd, not deep local Boholano cuisine",
+            "Resort restaurants close earlier than Cebu equivalents",
+            "Tricycle hop needed to reach Bee Farm and inland spots",
+            "Italian and Korean fusion outweighs regional Visayan food"
+        ],
+        "tags": [
+            "Panglao",
+            "Bohol",
+            "AlonaBeach",
+            "Seafood",
+            "OrganicFarm",
+            "DiveTownEats",
+            "ItalianPH"
+        ],
+        "tip": "Book the Bohol Bee Farm lunch slot before the Chocolate Hills day-tour buses roll in around 12:30, take the buggy ride down to the seaside deck for the herb bread basket, then save the cassava cone for after. At Alona, walk past the main strip toward the Ester Lim side for the cheaper grills the dive instructors actually eat at."
+    },
+    {
+        "token": "cabanatuan",
+        "name": "Cabanatuan City (Nueva Ecija)",
+        "short_version": "Cabanatuan is a working capital city that eats well without trying to be Manila. The food identity is anchored on three things, the beef batutay longganisa, the smoky Burgos Street lechon manok row, and Novo Ecijano native cooking at Hapag Vicentico's. Expect casual diners, family carinderias, and a small Japanese and Korean scene around the malls, not fine dining.",
+        "pros": [
+            "Beef batutay longganisa breakfasts you cannot find elsewhere",
+            "Burgos Street lechon manok row, smoky and charcoal grilled",
+            "Hapag Vicentico's for crispy kare-kare and binakol",
+            "Puno's Ice Cream sherbet flavors like cheese cashew macapuno",
+            "Casual Japanese fix at Tempura Japanese Grill and Tomo's",
+            "NE Pacific Mall food court works for family dinners"
+        ],
+        "cons": [
+            "No real fine dining or chef driven tasting menus",
+            "Cafe scene is limited, mostly milk tea and franchise coffee",
+            "Most spots close earlier than Manila and Pampanga",
+            "Heavy meat focus, thin pickings for strict vegetarians",
+            "Not a craft beer or cocktail bar town"
+        ],
+        "tags": [
+            "Filipino",
+            "BatutayLongganisa",
+            "LechonManok",
+            "NovoEcijano",
+            "BurgosStreet",
+            "NEPacificMall",
+            "CentralLuzon"
+        ],
+        "tip": "Hit Burgos Street late afternoon around 4 to 5 pm when the lechon manok stalls pull fresh batches off the rotisserie. Buy a whole chicken with extra sarsa, then drive over to Maharlika Highway for batutay longganisa to bring home. That is the real Cabanatuan pasalubong run, not the mall."
+    },
+    {
+        "token": "marikina",
+        "name": "Marikina City",
+        "short_version": "Marikina is the food side of the shoe capital, with two eating zones. Lilac Street in Concepcion Dos is a long row of small independent restaurants packed close together, and San Roque is the quieter brunch pocket where Rustic Mornings sits in a garden off Isabelo Mendoza. You also get Marikeño home cooking like Everlasting meatloaf and Waknatoy.",
+        "pros": [
+            "Lilac Street food crawl with Mandi's, Locavore, Burrito Brothers",
+            "Rustic Mornings garden brunch in San Roque",
+            "Everlasting meatloaf and Waknatoy as Marikeño specialties",
+            "Late-night sisig and liempo at Riverbanks Night Food Park",
+            "Tahanan Bistro and Hapag for modern Filipino plating",
+            "Sundays Cafe and Over Easy for weekend hangouts"
+        ],
+        "cons": [
+            "Lilac Street parking is genuinely difficult on weekends",
+            "Riverbanks food park closes Fridays for vendor rest day",
+            "No single mall food court, you drive between spots",
+            "Far from Makati or BGC without a car at night",
+            "Heritage dishes need pre-order at some family kitchens"
+        ],
+        "tags": [
+            "Marikina",
+            "LilacStreet",
+            "FilipinoFood",
+            "Brunch",
+            "Riverbanks",
+            "HeritageFood",
+            "MetroManilaEast"
+        ],
+        "tip": "Park near the 73 Lilac Street building and do the strip on foot, because the road is one-way and circling back by car wastes thirty minutes on a Saturday night. If you want Rustic Mornings without the wait, go on a weekday before 10am, the weekend brunch line in San Roque builds fast after church hours."
+    },
+    {
+        "token": "vigan",
+        "name": "Vigan City (Ilocos Sur)",
+        "short_version": "Vigan eats like a heritage Ilocano town that never stopped being one. The food trail runs from Calle Crisologo restaurants inside old bahay na bato to the open-air empanada stalls at Plaza Burgos, with longganisa, bagnet, and rice-flour empanada dipped in sukang Iloko as the constants. Weekends fill up with Manila tourists, but locals still eat at the plaza past sundown.",
+        "pros": [
+            "Calle Crisologo dining inside old bahay na bato",
+            "Cafe Leona for bagnet maki and Vigan sampler",
+            "Hidden Garden Lilong and Lilang for inasal lunch",
+            "Plaza Burgos Empanadahan stalls open until late",
+            "Irene's Empanada with longganisa and egg filling",
+            "Sinanglao and dinakdakan as Ilocano comfort food"
+        ],
+        "cons": [
+            "Weekend crowds clog Calle Crisologo dinner tables",
+            "Heavy Ilocano salt and pork dominates menus",
+            "Limited vegan options outside pinakbet and dinengdeng",
+            "Cafe Leona caters more to tourists than locals",
+            "Most kitchens close earlier than Manila standards"
+        ],
+        "tags": [
+            "Ilocano",
+            "Vigan",
+            "Bagnet",
+            "Empanada",
+            "Heritage",
+            "CalleCrisologo",
+            "StreetFood"
+        ],
+        "tip": "Skip the Calle Crisologo restaurants for dinner and walk to Plaza Burgos Empanadahan after the Salcedo dancing fountain show. The empanada stalls fire up around 6pm and the okoy and sinanglao taste better when the locals are eating beside you, not the tour bus crowd."
+    },
+    {
+        "token": "ortigas",
+        "name": "Ortigas Center (Pasig\/Mandaluyong border)",
+        "short_version": "Ortigas Center is where Metro Manila's office crowd eats, so the food map runs from Megamall food courts to Shangri-La Plaza's Streetscape row and EDSA Shangri-La's Summer Palace. Din Tai Fung and a mano pizza sit in one mall, K-BBQ and Argentine steaks in the next, with Capitol Commons and Tiendesitas a short ride away.",
+        "pros": [
+            "Din Tai Fung xiaolongbao inside SM Megamall",
+            "Streetscape row at Shangri-La Plaza for a mano pizza and La Cabrera",
+            "Summer Palace Cantonese at EDSA Shangri-La for occasions",
+            "Niu by Vikings buffet for big family gatherings",
+            "Capitol Commons Estancia and park for al fresco weekend meals",
+            "Matgalne K-BBQ at Shangri-La 6F for late office dinners"
+        ],
+        "cons": [
+            "EDSA traffic makes weeknight arrivals stressful and slow",
+            "Mall fatigue sets in if you want street-level character",
+            "Parking at Megamall fills up by Saturday lunchtime",
+            "Not the district for cheap carinderia or palengke eats",
+            "Crowd skews corporate, less of a date-night intimate feel"
+        ],
+        "tags": [
+            "Ortigas",
+            "Megamall",
+            "ShangriLaPlaza",
+            "BusinessDistrict",
+            "MallDining",
+            "KBBQ",
+            "DimSum"
+        ],
+        "tip": "Skip Megamall on payday Fridays and head to Capitol Commons instead. The Gastro Strip beside Estancia has shorter waits, the park-side tables at Roti Shop and James and Daughters are quieter, and you can walk straight to Shaw MRT after without crossing EDSA at rush hour."
+    },
+    {
+        "token": "bohol",
+        "name": "Bohol (province, esp. Tagbilaran + Loboc)",
+        "short_version": "Outside Panglao, Bohol's food scene splits into two moods. Tagbilaran City has ancestral-house restaurants like Gerarda's Place and Payag where Boholano dishes such as kinilaw, kalderetang kanding, and ube kinampay show up on the same table as Chinese-Filipino classics. Loboc is the floating-buffet circuit on the river, more about scenery and the cultural show stop than the actual food.",
+        "pros": [
+            "Heritage Boholano cooking at Gerarda's restored ancestral house",
+            "Ube kinampay desserts and seafood kare-kare in Tagbilaran proper",
+            "Loboc River floating buffet with live rondalla and tinikling stop",
+            "Pasalubong run for kalamay sa bagol and peanut kisses at Dao Market",
+            "Payag Restaurant for kinilaw and inasal in Filipiniana setting",
+            "Casual Boholano comfort food before Chocolate Hills day tours"
+        ],
+        "cons": [
+            "Loboc buffets are tour-group food, not a food destination",
+            "Tagbilaran dinner scene closes earlier than Panglao strips",
+            "Limited late-night options once mall hours end",
+            "Floating restaurants get repetitive after the first cruise",
+            "Vegetarians get thin pickings on heritage Filipino menus"
+        ],
+        "tags": [
+            "Boholano",
+            "Tagbilaran",
+            "Loboc",
+            "HeritageFilipino",
+            "Pasalubong",
+            "RiverCruise",
+            "VisayanFood"
+        ],
+        "tip": "Treat the Loboc River buffet as a scenic snack, not lunch. Book the 10am cruise to beat the Cebu tour-bus wave, then eat your real meal back in Tagbilaran at Gerarda's or Payag. For pasalubong, hit Dao Market stalls, not the SuperCat terminal shops."
+    },
+    {
+        "token": "puerto-princesa",
+        "name": "Puerto Princesa (Palawan)",
+        "short_version": "Puerto Princesa is the rare Philippine city where Vietnamese chaolong shops sit beside Palaweno grill houses, a legacy of 1970s refugee camps that stayed. The scene runs on three tracks: seafood on stilts over mangroves, cushion-floor dining at Kalui, and adventurous plates like crocodile sisig at Kinabuch on Rizal Avenue.",
+        "pros": [
+            "Chaolong noodle soup with toasted French bread for breakfast",
+            "Kalui floor-cushion seafood set menu by reservation",
+            "Crocodile sisig and tamilok at Kinabuch Grill",
+            "Badjao Seafront mangrove walkway and fresh catch",
+            "Bona's Chaolong on Manalo Street for late merienda",
+            "Palaweno BBQ and grilled blue marlin along Rizal Ave"
+        ],
+        "cons": [
+            "Tamilok mangrove worm is not for squeamish eaters",
+            "Kalui requires advance booking, often days ahead",
+            "Limited vegetarian options outside Kalui set menu",
+            "Late-night dining thins out after 10pm on weekdays",
+            "Most seafood spots need a tricycle, not walkable from airport"
+        ],
+        "tags": [
+            "Palawan",
+            "Chaolong",
+            "SeafoodPH",
+            "RizalAvenue",
+            "PuertoPrincesa",
+            "PalawanonBBQ",
+            "ExoticFood"
+        ],
+        "tip": "Book Kalui at least two days before your arrival, the front desk on Rizal Avenue takes phone reservations and the 6pm slot fills up first during dry season. For chaolong, skip the mall versions and ride to Bona's on Manalo Street in the morning, the broth tastes cleaner before lunch rush and French bread comes out warm around 8am."
+    },
+    {
+        "token": "kapitolyo",
+        "name": "Kapitolyo (Pasig)",
+        "short_version": "Kapitolyo is a residential pocket off East Capitol Drive in Pasig where converted houses became small owner-run kitchens. The crowd is young foodies, food bloggers, and Ortigas office workers who come for the tight cluster of cuisines packed into a few blocks: Fil-Mex at Silantro, modern Filipino at Locavore, BBQ at Three Sisters, Taiwanese, Japanese, ramen, and a row of dessert cafes on Brixton and West Capitol.",
+        "pros": [
+            "Modern Filipino at Locavore (sizzling sinigang, lechon sisig)",
+            "Silantro Fil-Mex Cantina for nachos and tacos crowd",
+            "Three Sisters smokey pork BBQ predates the food-trip boom",
+            "Brixton Street dessert cafes: Crepeman, Kissako matcha, Caferista",
+            "Late-night eats: Goto Believe after a night out",
+            "Food Haven at 77 food park with 20 plus concepts"
+        ],
+        "cons": [
+            "Weekend dinner waits at Silantro and Locavore can drag",
+            "Street parking on Brixton and United fills by 6pm",
+            "Mostly small dining rooms, not built for big barkadas",
+            "Limited cover if it rains while walking between houses",
+            "Few halal or strict vegan options outside Cosmic"
+        ],
+        "tags": [
+            "Kapitolyo",
+            "PasigFood",
+            "FilMex",
+            "ModernFilipino",
+            "FoodCrawl",
+            "BrunchManila",
+            "DessertCafes"
+        ],
+        "tip": "Park once at Food Haven at 77 or Main Street's lot on East Capitol, then do the whole crawl on foot. The houses are within five minutes of each other and driving between them eats your dinner window because of one-way streets around Brixton and West Capitol. Hit Silantro first for the name list, eat dessert at Kissako or Crepeman while you wait."
+    }
+]
