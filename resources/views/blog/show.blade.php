@@ -70,8 +70,8 @@
                         @endif
                         <div class="text-slate-400 text-xs mt-2">
                             @if($author->home_base)Based in {{ $author->home_base }}@endif
-                            @if($author->home_base && $post->updated_at) · @endif
-                            @if($post->updated_at)Updated {{ \Carbon\Carbon::parse($post->updated_at)->format('M j, Y') }}@endif
+                            {{-- "Updated <date>" hidden per editorial direction
+                                 so evergreen posts don't look stale. --}}
                         </div>
                     </div>
                 </div>

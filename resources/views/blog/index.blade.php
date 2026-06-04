@@ -21,7 +21,9 @@
                         </div>
                         <h2 class="font-bold text-lg text-slate-900 group-hover:text-brand-600 mb-1">{{ $p->title }}</h2>
                         <p class="text-sm text-slate-600 line-clamp-3 mb-2">{{ $p->excerpt }}</p>
-                        <p class="text-xs text-slate-400">{{ optional($p->published_at)->format('F j, Y') }}</p>
+                        {{-- Published-date hidden per editorial direction —
+                             the date was making evergreen pieces look stale.
+                             $p->published_at is still set in the DB. --}}
                     </a>
                 </article>
             @endforeach

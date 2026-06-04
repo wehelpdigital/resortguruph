@@ -66,6 +66,7 @@ class BlockRenderer
             'author' => $this->author($p),
             'nearby_destinations' => $this->nearbyDestinations($p),
             'related_blogs' => $this->relatedBlogs($p),
+            'facts_list' => $this->factsList($p),
             default => '',
         };
     }
@@ -391,9 +392,14 @@ class BlockRenderer
                 . '</div></li>';
         }
 
+        // Dot pagination removed — the arrows already give navigation
+        // and the dots were rendering outside the rounded clip, looking
+        // like the slider was getting cropped at the bottom. heightRatio
+        // also bumped from 0.55 to 0.5 so the section feels tighter at
+        // the bottom edge.
         return '<section id="' . $sliderId . '" class="rg-hero-splide splide not-prose my-6 overflow-hidden rounded-xl" aria-label="Hero gallery"'
             . ' data-splide-config="{&quot;type&quot;:&quot;loop&quot;,&quot;autoplay&quot;:' . $autoplay
-            . ',&quot;interval&quot;:' . $interval . ',&quot;arrows&quot;:true,&quot;pagination&quot;:true,&quot;heightRatio&quot;:0.55,&quot;cover&quot;:true}">'
+            . ',&quot;interval&quot;:' . $interval . ',&quot;arrows&quot;:true,&quot;pagination&quot;:false,&quot;heightRatio&quot;:0.5,&quot;cover&quot;:true}">'
             . '<div class="splide__track"><ul class="splide__list">' . $slides . '</ul></div>'
             . $this->splideAutoMount($sliderId)
             . '</section>';
@@ -1062,16 +1068,22 @@ class BlockRenderer
         $body = trim($p['body'] ?? '');
         if ($body === '') return '';
         $accent = $p['accent_color'] ?? 'amber';
+        // Body colour is now pure white instead of slate-100 — earlier
+        // contrast against the dark gradient was just under WCAG 4.5:1
+        // and read as "washed-out" on smaller screens. Eyebrow keeps
+        // its accent-coloured tint so the hierarchy still reads.
         $palettes = [
-            'amber'  => ['bg' => 'linear-gradient(135deg,#0f172a 0%,#1e293b 100%)', 'fg' => '#f1f5f9', 'eyebrow' => '#fbbf24'],
-            'emerald'=> ['bg' => 'linear-gradient(135deg,#064e3b 0%,#065f46 100%)', 'fg' => '#ecfdf5', 'eyebrow' => '#6ee7b7'],
-            'rose'   => ['bg' => 'linear-gradient(135deg,#4c0519 0%,#881337 100%)', 'fg' => '#fff1f2', 'eyebrow' => '#fda4af'],
-            'blue'   => ['bg' => 'linear-gradient(135deg,#1e3a8a 0%,#1e40af 100%)', 'fg' => '#eff6ff', 'eyebrow' => '#93c5fd'],
+            'amber'  => ['bg' => 'linear-gradient(135deg,#0f172a 0%,#1e293b 100%)', 'fg' => '#ffffff', 'eyebrow' => '#fbbf24'],
+            'emerald'=> ['bg' => 'linear-gradient(135deg,#064e3b 0%,#065f46 100%)', 'fg' => '#ffffff', 'eyebrow' => '#6ee7b7'],
+            'rose'   => ['bg' => 'linear-gradient(135deg,#4c0519 0%,#881337 100%)', 'fg' => '#ffffff', 'eyebrow' => '#fda4af'],
+            'blue'   => ['bg' => 'linear-gradient(135deg,#1e3a8a 0%,#1e40af 100%)', 'fg' => '#ffffff', 'eyebrow' => '#93c5fd'],
         ];
         $pal = $palettes[$accent] ?? $palettes['amber'];
-        return '<div class="not-prose my-8 p-6 rounded-2xl" style="background:' . $pal['bg'] . ';color:' . $pal['fg'] . '">'
-            . '<div class="text-[10px] uppercase tracking-[0.2em] font-bold mb-3" style="color:' . $pal['eyebrow'] . '">' . $eyebrow . '</div>'
-            . '<p class="text-base leading-relaxed m-0">' . $this->e($body) . '</p>'
+        // Body text bumped from text-base (16px) to text-lg (18px) with
+        // wider leading. m-0 keeps it flush against the eyebrow row.
+        return '<div class="not-prose my-8 p-6 sm:p-7 rounded-2xl" style="background:' . $pal['bg'] . ';color:' . $pal['fg'] . '">'
+            . '<div class="text-[11px] uppercase tracking-[0.2em] font-bold mb-3" style="color:' . $pal['eyebrow'] . '">' . $eyebrow . '</div>'
+            . '<p class="text-lg sm:text-xl leading-relaxed font-medium m-0" style="color:' . $pal['fg'] . '">' . $this->e($body) . '</p>'
             . '</div>';
     }
 
@@ -1083,26 +1095,47 @@ class BlockRenderer
     {
         $prosLabel = $this->e($p['pros_label'] ?? 'Best for');
         $consLabel = $this->e($p['cons_label'] ?? 'Skip if');
-        $pros = array_values(array_filter((array) ($p['pros'] ?? []), fn($x) => trim((string) $x) !== ''));
-        $cons = array_values(array_filter((array) ($p['cons'] ?? []), fn($x) => trim((string) $x) !== ''));
+        $pros = array_values(array_filter((array) ($p['pros'] ?? []), fn ($x) => trim((string) $x) !== ''));
+        $cons = array_values(array_filter((array) ($p['cons'] ?? []), fn ($x) => trim((string) $x) !== ''));
         if (!$pros && !$cons) return '';
 
-        $renderColumn = function (string $label, array $items, string $bg, string $border, string $eyebrowColor, string $bulletColor, string $bulletChar): string {
+        // SVG icons for the check / x marks. Inlined so the cards render
+        // without any external asset dependency.
+        $checkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 flex-none mt-0.5"><polyline points="20 6 9 17 4 12"/></svg>';
+        $xSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 flex-none mt-0.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+        $renderColumn = function (
+            string $label,
+            array $items,
+            string $accent,
+            string $accentDark,
+            string $iconBg,
+            string $headerIcon,
+            string $rowIcon
+        ): string {
             $lis = '';
             foreach ($items as $item) {
-                $lis .= '<li class="flex items-start gap-2 text-sm text-slate-700">'
-                    . '<span class="flex-none mt-1" style="color:' . $bulletColor . '">' . $bulletChar . '</span>'
-                    . '<span>' . $this->e($item) . '</span></li>';
+                $lis .= '<li class="flex items-start gap-3 text-sm text-slate-700 leading-snug">'
+                    . '<span class="flex-none" style="color:' . $accent . '">' . $rowIcon . '</span>'
+                    . '<span class="flex-1">' . $this->e($item) . '</span></li>';
             }
-            return '<div class="p-5 rounded-2xl" style="background:' . $bg . ';border:1px solid ' . $border . '">'
-                . '<div class="text-[10px] uppercase tracking-wide font-bold mb-3" style="color:' . $eyebrowColor . '">' . $label . '</div>'
-                . '<ul class="space-y-2 m-0 p-0 list-none">' . $lis . '</ul></div>';
+            return '<div class="relative rounded-2xl border border-slate-200 bg-white overflow-hidden"'
+                . ' style="border-top:4px solid ' . $accent . '">'
+                . '<div class="flex items-center gap-3 p-5 pb-3">'
+                . '<div class="flex-none w-10 h-10 rounded-full flex items-center justify-center"'
+                . ' style="background:' . $iconBg . ';color:' . $accentDark . '">' . $headerIcon . '</div>'
+                . '<div class="text-base font-bold uppercase tracking-wide" style="color:' . $accentDark . '">'
+                . $label . '</div></div>'
+                . '<ul class="space-y-2.5 m-0 p-5 pt-2 list-none">' . $lis . '</ul></div>';
         };
 
-        $left = $renderColumn($prosLabel, $pros, '#ecfdf5', '#a7f3d0', '#047857', '#10b981', '▸');
-        $right = $renderColumn($consLabel, $cons, '#fef2f2', '#fecaca', '#b91c1c', '#f43f5e', '▸');
+        $headerCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><polyline points="20 6 9 17 4 12"/></svg>';
+        $headerX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
-        return '<div class="not-prose my-8 grid grid-cols-1 md:grid-cols-2 gap-4">' . $left . $right . '</div>';
+        $left = $renderColumn($prosLabel, $pros, '#10b981', '#047857', '#d1fae5', $headerCheck, $checkSvg);
+        $right = $renderColumn($consLabel, $cons, '#f43f5e', '#be123c', '#ffe4e6', $headerX, $xSvg);
+
+        return '<div class="not-prose my-10 grid grid-cols-1 md:grid-cols-2 gap-4">' . $left . $right . '</div>';
     }
 
     /**
@@ -1292,30 +1325,85 @@ class BlockRenderer
         $items = $p['items'] ?? [];
         if (!$items) return '';
         $label = $p['label'] ?? '';
+        // Each pill is now rendered as a hashtag chip — text gets PascalCased
+        // (e.g. "Filipino chains" → "FilipinoChains"), prefixed with "#", and
+        // wrapped in an outbound link to Facebook's hashtag search so visitors
+        // can follow the trend on social. Twitter/X is offered as a secondary
+        // mini link on hover for those who prefer that platform.
 
         $palettes = [
-            'amber'   => ['bg' => '#fef3c7', 'fg' => '#78350f'],
-            'rose'    => ['bg' => '#fee2e2', 'fg' => '#7f1d1d'],
-            'emerald' => ['bg' => '#dcfce7', 'fg' => '#14532d'],
-            'indigo'  => ['bg' => '#e0e7ff', 'fg' => '#3730a3'],
-            'pink'    => ['bg' => '#fce7f3', 'fg' => '#831843'],
-            'cyan'    => ['bg' => '#cffafe', 'fg' => '#155e75'],
-            'violet'  => ['bg' => '#ede9fe', 'fg' => '#5b21b6'],
-            'slate'   => ['bg' => '#e2e8f0', 'fg' => '#1e293b'],
+            'amber'   => ['bg' => '#fef3c7', 'fg' => '#78350f', 'hi' => '#b45309'],
+            'rose'    => ['bg' => '#fee2e2', 'fg' => '#7f1d1d', 'hi' => '#be123c'],
+            'emerald' => ['bg' => '#dcfce7', 'fg' => '#14532d', 'hi' => '#047857'],
+            'indigo'  => ['bg' => '#e0e7ff', 'fg' => '#3730a3', 'hi' => '#4338ca'],
+            'pink'    => ['bg' => '#fce7f3', 'fg' => '#831843', 'hi' => '#be185d'],
+            'cyan'    => ['bg' => '#cffafe', 'fg' => '#155e75', 'hi' => '#0e7490'],
+            'violet'  => ['bg' => '#ede9fe', 'fg' => '#5b21b6', 'hi' => '#6d28d9'],
+            'slate'   => ['bg' => '#e2e8f0', 'fg' => '#1e293b', 'hi' => '#475569'],
         ];
         $cycle = array_keys($palettes);
 
         $pillHtml = '';
         foreach ($items as $i => $item) {
-            $text = is_array($item) ? ($item['text'] ?? '') : (string) $item;
+            $text = trim(is_array($item) ? ($item['text'] ?? '') : (string) $item);
+            if ($text === '') continue;
             $color = is_array($item) ? ($item['color'] ?? '') : '';
             $pal = $palettes[$color] ?? $palettes[$cycle[$i % count($cycle)]];
-            $pillHtml .= '<span class="px-3 py-1.5 rounded-full text-xs font-bold"'
-                . ' style="background:' . $pal['bg'] . ';color:' . $pal['fg'] . '">'
-                . $this->e($text) . '</span>';
+
+            $hashtag = $this->hashtagify($text);
+            $facebookUrl = 'https://www.facebook.com/hashtag/' . rawurlencode($hashtag);
+            $twitterUrl = 'https://twitter.com/search?q=%23' . rawurlencode($hashtag) . '&src=hashtag_click';
+
+            $pillHtml .= '<span class="group inline-flex items-center rounded-full overflow-hidden border transition hover:shadow-sm"'
+                . ' style="background:' . $pal['bg'] . ';border-color:' . $pal['fg'] . '20">'
+                // Main chip → Facebook hashtag search.
+                . '<a href="' . $this->e($facebookUrl) . '" rel="noopener nofollow" target="_blank"'
+                . ' class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold transition hover:opacity-80"'
+                . ' style="color:' . $pal['fg'] . '"'
+                . ' aria-label="Search Facebook for #' . $this->e($hashtag) . '">'
+                . '<span class="opacity-60">#</span><span>' . $this->e($hashtag) . '</span>'
+                . '</a>'
+                // Twitter / X mini-button — small bird icon on the right.
+                . '<a href="' . $this->e($twitterUrl) . '" rel="noopener nofollow" target="_blank"'
+                . ' class="inline-flex items-center justify-center w-6 h-7 transition hover:opacity-80 border-l"'
+                . ' style="color:' . $pal['hi'] . ';border-color:' . $pal['fg'] . '20"'
+                . ' aria-label="Search X for #' . $this->e($hashtag) . '">'
+                . '<svg viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path d="M18.244 2H21.5l-7.5 8.57L23 22h-6.844l-5.36-7.01L4.7 22H1.44l8.04-9.19L1 2h7.014l4.847 6.41L18.244 2zm-1.198 18.273h1.83L7.045 3.61H5.082l11.964 16.663z"/></svg>'
+                . '</a>'
+                . '</span>';
         }
         $ariaLabel = $label !== '' ? ' aria-label="' . $this->e($label) . '"' : '';
-        return '<div class="not-prose my-7 flex flex-wrap gap-2"' . $ariaLabel . '>' . $pillHtml . '</div>';
+        $headingHtml = $label !== ''
+            ? '<div class="text-[10px] uppercase tracking-[0.18em] font-bold text-slate-500 mb-3">' . $this->e($label) . '</div>'
+            : '';
+        return '<div class="not-prose my-7"' . $ariaLabel . '>'
+            . $headingHtml
+            . '<div class="flex flex-wrap gap-2">' . $pillHtml . '</div>'
+            . '</div>';
+    }
+
+    /**
+     * Convert a free-text tag like "Filipino chains" or "fast-casual" into
+     * a hashtag-safe PascalCased token: "FilipinoChains", "FastCasual".
+     * Strips diacritics and punctuation; collapses runs of non-letters
+     * into a single word boundary so the resulting tag is safe for
+     * Facebook/Twitter hashtag URLs.
+     */
+    private function hashtagify(string $text): string
+    {
+        // Strip accents / fold to ASCII when possible.
+        if (function_exists('transliterator_transliterate')) {
+            $text = (string) transliterator_transliterate('Any-Latin; Latin-ASCII; [-翿] Remove', $text);
+        }
+        // Split on anything that's not a unicode letter or digit, drop empties.
+        $parts = preg_split('~[^\p{L}\p{N}]+~u', $text) ?: [];
+        $out = '';
+        foreach ($parts as $part) {
+            if ($part === '') continue;
+            $out .= mb_strtoupper(mb_substr($part, 0, 1, 'UTF-8'), 'UTF-8')
+                . mb_strtolower(mb_substr($part, 1, null, 'UTF-8'), 'UTF-8');
+        }
+        return $out !== '' ? $out : 'Tag';
     }
 
     /**
@@ -2072,11 +2160,80 @@ class BlockRenderer
                 'cover' => $post->cover_path ? '/storage/' . ltrim($post->cover_path, '/') : '',
                 'excerpt' => $post->excerpt ? mb_strimwidth($post->excerpt, 0, 160, '…', 'UTF-8') : '',
                 'eyebrow' => $row['tag'] ?? '',
-                'meta' => $post->published_at
-                    ? 'Published ' . date('M j, Y', strtotime((string) $post->published_at))
-                    : '',
+                // Published date hidden per editorial direction so
+                // evergreen pieces don't look stale. Leaving the field
+                // wired into the payload as an empty string keeps the
+                // shape stable for admins who might re-enable it.
+                'meta' => '',
             ];
         }
         return $items;
+    }
+
+    /**
+     * Vertical list variant of quick_facts. Designed for destination
+     * pages where the facts (travel time, best season, local rules) are
+     * each a full sentence — reads better as a scannable list with the
+     * icon + eyebrow on one column and the prose on the other, than as
+     * a 4-up grid where the prose gets truncated.
+     *
+     * Payload shape mirrors quick_facts: `cards[]` of
+     * { icon, color, label, big, detail } — so existing quick_facts
+     * payloads migrate to facts_list by changing block_type only.
+     */
+    private function factsList(array $p): string
+    {
+        $cards = $p['cards'] ?? [];
+        if (!$cards) return '';
+
+        $palettes = [
+            'blue'    => ['bg' => '#eff6ff', 'br' => '#bfdbfe', 'fg' => '#1d4ed8', 'sm' => '#1e3a8a'],
+            'emerald' => ['bg' => '#ecfdf5', 'br' => '#a7f3d0', 'fg' => '#047857', 'sm' => '#064e3b'],
+            'rose'    => ['bg' => '#fff1f2', 'br' => '#fecdd3', 'fg' => '#be123c', 'sm' => '#881337'],
+            'amber'   => ['bg' => '#fffbeb', 'br' => '#fcd34d', 'fg' => '#b45309', 'sm' => '#78350f'],
+            'violet'  => ['bg' => '#f5f3ff', 'br' => '#ddd6fe', 'fg' => '#6d28d9', 'sm' => '#4c1d95'],
+            'slate'   => ['bg' => '#f8fafc', 'br' => '#cbd5e1', 'fg' => '#334155', 'sm' => '#0f172a'],
+        ];
+
+        $out = '';
+        if (!empty($p['heading'])) {
+            $out .= '<h2 class="text-2xl font-bold text-slate-900 mt-8 mb-3">'
+                . $this->e($p['heading']) . '</h2>';
+        }
+
+        $out .= '<div class="not-prose my-8 rounded-2xl border border-slate-200 bg-white overflow-hidden">';
+        $out .= '<ul class="divide-y divide-slate-100 m-0 list-none p-0">';
+
+        foreach ($cards as $card) {
+            $pal = $palettes[$card['color'] ?? 'blue'] ?? $palettes['blue'];
+            $svg = $this->quickFactIconSvg($card['icon'] ?? 'info');
+            $label = $this->e($card['label'] ?? '');
+            $big = $this->e($card['big'] ?? '');
+            $detail = $this->e($card['detail'] ?? '');
+
+            // Each row: gradient icon disc on the left + uppercase
+            // eyebrow stacked over the big-text headline on the right,
+            // with the optional detail wrapping below.
+            $out .= '<li class="flex items-start gap-4 p-5 sm:p-6">';
+            $out .= '<div class="flex-none w-12 h-12 rounded-xl flex items-center justify-center"'
+                . ' style="background:' . $pal['bg'] . ';border:1px solid ' . $pal['br'] . ';color:' . $pal['fg'] . '">'
+                . $svg . '</div>';
+            $out .= '<div class="flex-1 min-w-0">';
+            if ($label !== '') {
+                $out .= '<div class="text-[10px] uppercase tracking-[0.15em] font-bold mb-1"'
+                    . ' style="color:' . $pal['sm'] . '">' . $label . '</div>';
+            }
+            if ($big !== '') {
+                $out .= '<div class="text-base sm:text-lg font-bold text-slate-900 leading-snug">'
+                    . $big . '</div>';
+            }
+            if ($detail !== '') {
+                $out .= '<p class="text-sm text-slate-600 leading-relaxed mt-1 m-0">' . $detail . '</p>';
+            }
+            $out .= '</div></li>';
+        }
+
+        $out .= '</ul></div>';
+        return $out;
     }
 }

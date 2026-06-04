@@ -50,6 +50,11 @@ class RgContentBlock extends Model
         // blog posts. Both render on food / restaurant pages so visitors
         // can dive deeper after the main content stream.
         'nearby_destinations', 'related_blogs',
+        // Vertical-list variant of quick_facts — destinations use this
+        // instead of the 4-up grid because their facts (travel time,
+        // best season, local rules) read better as a scannable list
+        // than a card row.
+        'facts_list',
     ];
 
     public function getPayloadAttribute(): array
