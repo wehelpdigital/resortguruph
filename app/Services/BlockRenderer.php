@@ -6,6 +6,7 @@ use App\Models\RgContentBlock;
 use App\Models\RgKeyword;
 use App\Models\RgListing;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class BlockRenderer
 {
@@ -63,6 +64,8 @@ class BlockRenderer
             'tag_pills' => $this->tagPills($p),
             'external_guides' => $this->externalGuides($p),
             'author' => $this->author($p),
+            'nearby_destinations' => $this->nearbyDestinations($p),
+            'related_blogs' => $this->relatedBlogs($p),
             default => '',
         };
     }
@@ -960,14 +963,28 @@ class BlockRenderer
     private function textSection(array $p): string
     {
         $heading = trim($p['heading'] ?? '');
-        $level = in_array($p['heading_level'] ?? 'h2', ['h2', 'h3', 'h4'], true)
-            ? $p['heading_level']
-            : 'h2';
+        $rawLevel = $p['heading_level'] ?? 'h2';
+        $level = in_array($rawLevel, ['h2', 'h3', 'h4'], true) ? $rawLevel : 'h2';
         $anchor = trim($p['anchor'] ?? '');
-        $paragraphs = array_values(array_filter(
-            (array) ($p['paragraphs'] ?? []),
-            fn($x) => trim((string) $x) !== ''
-        ));
+
+        // Body field (new canonical shape) takes precedence: a single
+        // multi-line text field where blank lines separate paragraphs.
+        // Legacy shape — paragraphs[] array — still resolves correctly so
+        // pre-migration blocks keep rendering until the seeder catches up.
+        $paragraphs = [];
+        $body = trim((string) ($p['body'] ?? ''));
+        if ($body !== '') {
+            $chunks = preg_split('~\n\s*\n+~', $body) ?: [];
+            foreach ($chunks as $chunk) {
+                $chunk = trim($chunk);
+                if ($chunk !== '') $paragraphs[] = $chunk;
+            }
+        } else {
+            $paragraphs = array_values(array_filter(
+                (array) ($p['paragraphs'] ?? []),
+                fn ($x) => trim((string) $x) !== ''
+            ));
+        }
 
         if ($heading === '' && !$paragraphs) return '';
 
@@ -1795,5 +1812,271 @@ class BlockRenderer
         }
         $out .= '</tbody></table></div></div>';
         return $out;
+    }
+
+    /**
+     * Nearby destinations card grid. Each card links to a destination
+     * keyword page (vertical=resort) the visitor might want to explore
+     * after their meal. Items can be authored explicitly, or — when the
+     * payload's `items` array is empty — auto-resolved at render time
+     * from the page's own cluster_tag via [[fetchNearbyDestinations]].
+     */
+    private function nearbyDestinations(array $p): string
+    {
+        $heading = $p['heading'] ?? 'Stay nearby after the meal';
+        $intro = trim((string) ($p['intro'] ?? ''));
+        $items = $p['items'] ?? [];
+
+        // Auto-resolve mode: admin left items blank, so we pull a list of
+        // sibling destination keyword pages from the same cluster.
+        if (!$items && !empty($p['auto_from_cluster'])) {
+            $items = $this->fetchNearbyDestinations(
+                (string) $p['auto_from_cluster'],
+                (int) ($p['max'] ?? 6),
+                (string) ($p['exclude_slug'] ?? '')
+            );
+        }
+        if (!$items) return '';
+
+        $clusterLabels = [
+            'metro-manila' => 'Metro Manila',
+            'cavite' => 'Cavite',
+            'batangas' => 'Batangas',
+            'laguna' => 'Laguna',
+            'rizal' => 'Rizal',
+            'bulacan' => 'Bulacan',
+            'pampanga' => 'Pampanga',
+            'north-luzon' => 'North Luzon',
+            'bicol' => 'Bicol',
+            'quezon' => 'Quezon Province',
+            'visayas' => 'Visayas',
+            'palawan' => 'Palawan',
+            'mindanao' => 'Mindanao',
+            'other' => 'Philippines',
+        ];
+
+        $out = '<section class="not-prose my-12">';
+        $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $this->e($heading) . '</h2>';
+        if ($intro === '') {
+            $intro = 'Done eating? Here are the resorts, hotels, and weekend escapes within a comfortable drive from the area.';
+        }
+        $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $this->e($intro) . '</p>';
+
+        $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">';
+        foreach ($items as $item) {
+            $title = trim((string) ($item['title'] ?? ''));
+            $url = trim((string) ($item['url'] ?? ''));
+            if ($title === '' || $url === '') continue;
+            $img = trim((string) ($item['image'] ?? ''));
+            $blurb = trim((string) ($item['blurb'] ?? ''));
+            $clusterKey = (string) ($item['cluster'] ?? '');
+            $eyebrow = $item['eyebrow'] ?? ($clusterLabels[$clusterKey] ?? '');
+            $distance = trim((string) ($item['distance_label'] ?? ''));
+
+            $hero = $img !== ''
+                ? '<div class="relative aspect-[16/10] overflow-hidden bg-slate-100">'
+                    . '<img src="' . $this->e($this->normalizeMediaUrl($img)) . '" alt="' . $this->e($title)
+                    . '" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">'
+                    . '<div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-slate-900/70 to-transparent pointer-events-none"></div>'
+                    . ($distance !== ''
+                        ? '<div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/95 text-[10px] uppercase tracking-wider font-bold text-slate-700 shadow-sm">'
+                            . $this->e($distance) . '</div>'
+                        : '')
+                    . '</div>'
+                : '<div class="aspect-[16/10] bg-gradient-to-br from-emerald-50 to-slate-100"></div>';
+
+            $external = !str_starts_with($url, '/');
+            $rel = $external ? ' rel="noopener nofollow" target="_blank"' : '';
+            $out .= '<a href="' . $this->e($url) . '"' . $rel
+                . ' class="group block rounded-xl border border-slate-200 bg-white overflow-hidden transition hover:shadow-lg hover:-translate-y-px">'
+                . $hero
+                . '<div class="p-4">'
+                . ($eyebrow ? '<div class="text-[10px] uppercase tracking-wider font-bold text-emerald-700 mb-1">' . $this->e($eyebrow) . '</div>' : '')
+                . '<h3 class="font-bold text-slate-900 text-base mb-1 leading-tight group-hover:text-emerald-700 transition">' . $this->e($title)
+                . ' <span class="inline-block transition group-hover:translate-x-0.5">&rarr;</span>'
+                . '</h3>'
+                . ($blurb !== '' ? '<p class="text-sm text-slate-600 leading-snug m-0">' . $this->e($blurb) . '</p>' : '')
+                . '</div></a>';
+        }
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * Look up to N resort-category keyword pages in the same cluster,
+     * pulling cover image + h1 + cluster label so the block renders rich
+     * without per-page authoring. Excludes the current page's own slug
+     * to avoid self-recommendation. Caller may broaden the candidate
+     * pool by passing additional cluster keys in the future; for now
+     * we stick to exact-cluster matches and rank by search volume DESC
+     * so the most-trafficked nearby destinations float to the top.
+     */
+    private function fetchNearbyDestinations(string $cluster, int $max, string $excludeSlug): array
+    {
+        if ($cluster === '') return [];
+        $rows = DB::table('rg_keywords as k')
+            ->leftJoin('rg_seo_pages as p', 'p.keyword_id', '=', 'k.id')
+            ->where('k.category', 'resort')
+            ->where('k.cluster_tag', $cluster)
+            ->when($excludeSlug !== '', fn ($q) => $q->where('k.slug', '!=', $excludeSlug))
+            ->orderByDesc('k.search_volume_monthly')
+            ->orderBy('k.id')
+            ->limit($max)
+            ->get([
+                'k.slug as slug',
+                'k.phrase as phrase',
+                'k.cluster_tag as cluster_tag',
+                'p.og_image_path as og_image_path',
+                'p.h1 as h1',
+                'p.meta_description as meta_description',
+            ]);
+
+        $items = [];
+        foreach ($rows as $r) {
+            $items[] = [
+                'title' => $r->h1 ?: ucwords(str_replace('-', ' ', (string) $r->phrase)),
+                'url' => '/' . $r->slug,
+                'image' => $r->og_image_path ? '/storage/' . ltrim($r->og_image_path, '/') : '',
+                'blurb' => $r->meta_description ?: '',
+                'cluster' => $r->cluster_tag,
+            ];
+        }
+        return $items;
+    }
+
+    /**
+     * Related blog posts strip. Three-col card grid with cover image +
+     * tag eyebrow + title + excerpt + a thin meta row underneath. As
+     * with [[nearbyDestinations]], items can be authored explicitly or
+     * left empty to trigger auto-resolution by area keywords.
+     */
+    private function relatedBlogs(array $p): string
+    {
+        $heading = $p['heading'] ?? 'More reads on the area';
+        $intro = trim((string) ($p['intro'] ?? ''));
+        $items = $p['items'] ?? [];
+
+        if (!$items && !empty($p['auto_from_keywords'])) {
+            $items = $this->fetchRelatedBlogs(
+                (array) $p['auto_from_keywords'],
+                (int) ($p['max'] ?? 3)
+            );
+        }
+        if (!$items) return '';
+
+        $out = '<section class="not-prose my-12">';
+        $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $this->e($heading) . '</h2>';
+        if ($intro === '') {
+            $intro = 'Long-form takes and trip plans from our editorial team on the same part of the country.';
+        }
+        $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $this->e($intro) . '</p>';
+
+        $out .= '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">';
+        foreach ($items as $item) {
+            $title = trim((string) ($item['title'] ?? ''));
+            $url = trim((string) ($item['url'] ?? ''));
+            if ($title === '' || $url === '') continue;
+            $cover = trim((string) ($item['cover'] ?? ''));
+            $excerpt = trim((string) ($item['excerpt'] ?? ''));
+            $eyebrow = trim((string) ($item['eyebrow'] ?? ''));
+            $meta = trim((string) ($item['meta'] ?? ''));
+
+            $hero = $cover !== ''
+                ? '<div class="relative aspect-[16/9] overflow-hidden bg-slate-100">'
+                    . '<img src="' . $this->e($this->normalizeMediaUrl($cover)) . '" alt="' . $this->e($title)
+                    . '" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">'
+                    . '</div>'
+                : '<div class="aspect-[16/9] bg-gradient-to-br from-amber-50 to-slate-100"></div>';
+
+            $external = !str_starts_with($url, '/');
+            $rel = $external ? ' rel="noopener nofollow" target="_blank"' : '';
+            $out .= '<a href="' . $this->e($url) . '"' . $rel
+                . ' class="group rounded-xl border border-slate-200 bg-white overflow-hidden transition hover:shadow-lg hover:-translate-y-px flex flex-col">'
+                . $hero
+                . '<div class="p-5 flex-1 flex flex-col">'
+                . ($eyebrow ? '<div class="text-[10px] uppercase tracking-wider font-bold text-amber-700 mb-2">' . $this->e($eyebrow) . '</div>' : '')
+                . '<h3 class="font-bold text-slate-900 text-base leading-snug mb-2 group-hover:text-emerald-700 transition">' . $this->e($title) . '</h3>'
+                . ($excerpt !== '' ? '<p class="text-sm text-slate-600 leading-relaxed m-0 flex-1">' . $this->e($excerpt) . '</p>' : '')
+                . ($meta !== '' ? '<div class="text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-100">' . $this->e($meta) . '</div>' : '')
+                . '</div></a>';
+        }
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * Search blog posts whose `tags` column (comma-separated string)
+     * matches any of the provided area keywords. Scoring is a sum of
+     * keyword hits per post, ties broken by published_at DESC so fresh
+     * content surfaces. Falls back to recent posts overall when no
+     * matches exist so the section never renders empty.
+     */
+    private function fetchRelatedBlogs(array $keywords, int $max): array
+    {
+        $keywords = array_values(array_filter(array_map('trim', $keywords), fn ($k) => $k !== ''));
+        if (!$keywords) return [];
+
+        $query = DB::table('rg_blog_posts')->where('status', 'published');
+        $query->where(function ($q) use ($keywords) {
+            foreach ($keywords as $k) {
+                $q->orWhere('tags', 'like', '%' . $k . '%');
+            }
+        });
+        $posts = $query
+            ->orderByDesc('published_at')
+            ->limit($max * 3)  // overscan then rerank by hit-count
+            ->get(['title', 'slug', 'excerpt', 'cover_path', 'tags', 'published_at']);
+
+        // Rerank by match count.
+        $scored = [];
+        foreach ($posts as $post) {
+            $hay = strtolower((string) $post->tags);
+            $score = 0;
+            $matchedTag = '';
+            foreach ($keywords as $k) {
+                if (str_contains($hay, strtolower($k))) {
+                    $score++;
+                    if ($matchedTag === '') $matchedTag = $k;
+                }
+            }
+            if ($score > 0) {
+                $scored[] = ['score' => $score, 'post' => $post, 'tag' => $matchedTag];
+            }
+        }
+        usort($scored, function ($a, $b) {
+            if ($a['score'] !== $b['score']) return $b['score'] <=> $a['score'];
+            return strcmp((string) $b['post']->published_at, (string) $a['post']->published_at);
+        });
+        $scored = array_slice($scored, 0, $max);
+
+        // Fallback: nothing matched — pull recent published posts so the
+        // section still renders something useful.
+        if (!$scored) {
+            $recent = DB::table('rg_blog_posts')
+                ->where('status', 'published')
+                ->orderByDesc('published_at')
+                ->limit($max)
+                ->get(['title', 'slug', 'excerpt', 'cover_path', 'tags', 'published_at']);
+            foreach ($recent as $r) {
+                $tag = explode(',', (string) $r->tags)[0] ?? '';
+                $scored[] = ['post' => $r, 'tag' => trim($tag)];
+            }
+        }
+
+        $items = [];
+        foreach ($scored as $row) {
+            $post = $row['post'];
+            $items[] = [
+                'title' => $post->title,
+                'url' => '/blog/' . $post->slug,
+                'cover' => $post->cover_path ? '/storage/' . ltrim($post->cover_path, '/') : '',
+                'excerpt' => $post->excerpt ? mb_strimwidth($post->excerpt, 0, 160, '…', 'UTF-8') : '',
+                'eyebrow' => $row['tag'] ?? '',
+                'meta' => $post->published_at
+                    ? 'Published ' . date('M j, Y', strtotime((string) $post->published_at))
+                    : '',
+            ];
+        }
+        return $items;
     }
 }

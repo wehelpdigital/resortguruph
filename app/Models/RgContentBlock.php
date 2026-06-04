@@ -46,6 +46,10 @@ class RgContentBlock extends Model
         // page so the editorial voice is attributed without competing with
         // the listing band at the top.
         'author',
+        // Cross-vertical cards: nearby destination keyword pages + related
+        // blog posts. Both render on food / restaurant pages so visitors
+        // can dive deeper after the main content stream.
+        'nearby_destinations', 'related_blogs',
     ];
 
     public function getPayloadAttribute(): array
