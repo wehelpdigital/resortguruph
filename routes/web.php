@@ -113,6 +113,14 @@ Route::get('/_preview/block/{block}', [\App\Http\Controllers\BuilderPreviewContr
     ->where('block', '[0-9]+')
     ->name('builder.preview.block');
 
+// ============ FIESTAS (activities vertical) ============
+// Must sit BEFORE the keyword-page catch-all so "/fiestas" doesn't get
+// claimed as a keyword slug. Detail pages bind by slug.
+Route::get('/fiestas', [\App\Http\Controllers\FiestaController::class, 'index'])
+    ->name('fiestas.index');
+Route::get('/fiestas/{fiesta:slug}', [\App\Http\Controllers\FiestaController::class, 'show'])
+    ->name('fiestas.show');
+
 // ============ KEYWORD PAGE CATCH-ALL (must be LAST) ============
 Route::get('/{page:slug}', [KeywordPageController::class, 'show'])->name('keyword.show')
     ->where('keyword', '[a-z0-9-]+');

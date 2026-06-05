@@ -1,0 +1,1181 @@
+[
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "blue",
+                "label": "When",
+                "big": "3rd Sunday of January",
+                "detail": "Grand Parade falls on the third Sunday. The novena masses, Walk with Jesus, and fluvial procession fill the nine days leading up to it."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "Cebu City, Cebu",
+                "detail": "Heart of the celebration is the Basilica Minore del Santo Nino. The grand parade loops through Osmena Boulevard, General Maxilom, and the Cebu City Sports Center."
+            },
+            {
+                "icon": "star",
+                "color": "amber",
+                "label": "Patron",
+                "big": "Senor Santo Nino",
+                "detail": "Image of the Holy Child Jesus, said to have been gifted by Magellan to Rajah Humabon in 1521 and rediscovered by Spanish forces in 1565."
+            },
+            {
+                "icon": "info",
+                "color": "rose",
+                "label": "Crowd",
+                "big": "5.2 million in 2026",
+                "detail": "Cebu City Disaster Risk Reduction Office logged about 5.2 million spectators across the 2026 festivities, one of the largest crowds in festival history."
+            }
+        ],
+        "history": {
+            "heading": "From pagan ritual dance to the country's biggest Holy Child devotion",
+            "body": "The Sinulog dance traces back to a pre-colonial ritual that native Cebuanos performed for their anito gods. The word sinulog comes from the Cebuano sulog, meaning water current, a reference to the forward and backward steps of the dance set to drumbeats. When Ferdinand Magellan landed in Cebu on March 16, 1521, he presented an image of the Santo Nino to Hara Amihan, the wife of Rajah Humabon, as a baptismal gift. The same image was rediscovered in a burned hut in 1565 by a soldier in the expedition of Miguel Lopez de Legazpi, and the ritual dance was redirected from the old anito to the Holy Child. For centuries the Sinulog stayed a quiet candle dance offered by women vendors outside the basilica. The modern street festival is much newer. The first organized Sinulog parade was held on January 20, 1980, put together by David Odilao, then regional director of the Ministry of Youth and Sports Development. Cebu City took over the year after, and the Sinulog Foundation now runs the event each January.",
+            "founded": "1980",
+            "citation_label": "Sinulog Foundation Inc.",
+            "citation_url": "https:\/\/www.sinulogfoundationinc.com\/history\/"
+        },
+        "key_events": [
+            {
+                "name": "Walk with Jesus",
+                "blurb": "Dawn penitential procession on the first Friday of the novena, walking from Fuente Osmena to the Basilica Minore del Santo Nino with lit candles."
+            },
+            {
+                "name": "Fluvial Procession",
+                "blurb": "Re-enactment of the image's arrival, with the Santo Nino on a flower-decked galleon across the Mactan Channel at sunrise, escorted by smaller boats of devotees."
+            },
+            {
+                "name": "Solemn Foot Procession",
+                "blurb": "Held the Saturday before the grand parade, the image is carried from the basilica around the city streets, drawing close to a million barefoot devotees."
+            },
+            {
+                "name": "Sinulog Grand Parade",
+                "blurb": "Day-long street dancing contest along Osmena Boulevard, with contingents from across Visayas and Mindanao in body paint, sequined costumes, and chanting Pit Senyor."
+            },
+            {
+                "name": "Ritual Showdown",
+                "blurb": "Final judging of the dance contingents inside the Cebu City Sports Center, with full choreography, props, and live percussion."
+            },
+            {
+                "name": "Sinulog Festival Queen",
+                "blurb": "Coronation pageant on the eve of the grand parade where candidates perform a Sinulog dance routine in full festival regalia at the sports center."
+            }
+        ],
+        "place_intro": "Sinulog is the festival Cebu City is known for, the third Sunday of January every year, when the whole downtown shuts to traffic and turns into one long dance floor for the Senor Santo Nino. The center of everything is the Basilica Minore del Santo Nino on P. Burgos Street, the oldest Roman Catholic church in the country, where the image of the Holy Child has been venerated since 1565.\\n\\nIt is not a one-day thing. The nine-day novena starts mid-January, and the festival weekend stretches across three days. Friday is Walk with Jesus at dawn, Saturday is the fluvial procession across the Mactan Channel and the foot procession at night, and Sunday is the grand parade. Cebu City turns into one big block party from Fuente Osmena down to Colon, with food stalls, street dancers in body paint, and the constant chant of Pit Senyor.\\n\\nFor 2026 the city counted around 5.2 million people across the festivities, the second biggest crowd in Sinulog history. Locals know to expect closed streets, packed jeepneys, hotel rates that triple, and the smell of lechon coming from every corner.",
+        "why_go": "Three big reasons. First, the grand parade itself is something you do not see anywhere else. Contingents from across Visayas and Mindanao spend almost a year on the choreography, props, and costumes. They start at the Cebu City Sports Center around 8:30 in the morning and the last contingent does not finish until past sunset. You can watch the start at the sports center, the middle along General Maxilom Avenue, or stake out a spot on Osmena Boulevard for the long view.\\n\\nSecond, the religious side is the real heart and most travelers never see it. The Walk with Jesus at 4 a.m. on the first Friday, the fluvial procession across the Mactan Channel at sunrise on Saturday, and the solemn foot procession on Saturday night are quieter, older, and more moving than the street party. The Mananita Mass at the basilica at 4 a.m. on Sunday is packed shoulder to shoulder.\\n\\nThird, the side events. The Sinulog Festival Queen coronation, the Sinulog Dance Crew Grand Showdown at 7:30 p.m. at the sports center, the cultural show at Fuente Osmena Circle, plus the smaller barangay-level Sinulog sa Lalawigan competitions across the province in the days before.",
+        "slug": "sinulog",
+        "tags": [
+            "sinulog",
+            "cebu-city",
+            "santo-nino",
+            "january-fiesta",
+            "visayas-festival",
+            "fluvial-procession",
+            "pit-senyor"
+        ],
+        "tip": "Skip the grandstand tickets and watch from the upper floor of a small carinderia along General Maxilom Avenue. Order lechon and rice, sit by the window, and you get a clean elevated view without the sun on your head. Get there before 8 a.m. or the seats are gone. Wear shoes you can throw away after.",
+        "what_unique": "What sets Sinulog apart from Ati-Atihan in Aklan or Dinagyang in Iloilo is the dance itself. The Sinulog step is two steps forward, one step back, in time with the drums, meant to imitate the sulog or river current. Every contingent in the grand parade has to incorporate this basic step somewhere in their routine, even when the choreography is otherwise very modern. The chant Pit Senyor, short for Sangpit sa Senyor, meaning a call to the Lord, is shouted by the dancers and answered by the crowd.\\n\\nThe costumes lean heavy on sequins, feathers, and body paint in red, gold, and royal blue. Most contingents carry a replica image of the Santo Nino as their central prop. Drum and bugle corps from local schools provide the live music, and the percussion carries down the boulevard for blocks.\\n\\nThe religious roots are also more visible than at most Philippine fiestas. The image of the Santo Nino enshrined at the basilica dates to the Magellan expedition of 1521. The fluvial procession is a literal re-enactment of the image being brought across the Mactan Channel. Outside the basilica, vendors still perform the original slow candle Sinulog for a small offering."
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "3rd Sunday of January",
+                "detail": "Week-long buildup with the climax on the third Sunday of January, in honor of the Santo Nino."
+            },
+            {
+                "icon": "location",
+                "color": "blue",
+                "label": "Where",
+                "big": "Kalibo, Aklan",
+                "detail": "Pastrana Park and the streets around Kalibo Cathedral, the capital of Aklan on Panay Island."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Patron",
+                "big": "Senor Santo Nino",
+                "detail": "The Holy Child Jesus. Official name is the Kalibo Senor Sto. Nino Ati-Atihan Festival."
+            },
+            {
+                "icon": "info",
+                "color": "rose",
+                "label": "Known As",
+                "big": "Mother of PH Festivals",
+                "detail": "Considered the oldest Santo Nino fiesta, the festival that inspired Cebu Sinulog and Iloilo Dinagyang."
+            }
+        ],
+        "history": {
+            "heading": "From a 13th-century peace pact to a Santo Nino fiesta",
+            "body": "The story most often told traces Ati-Atihan to around 1212 AD, when ten Malay datus fleeing Borneo were welcomed by the Ati, the dark-skinned indigenous people of Panay. A peace pact was struck, the lowlanders bought the lowlands from Ati chief Marikudo, and the two groups feasted together. The Malay settlers smeared soot on their faces to look like their Ati hosts, and the imitation gave the celebration its name. Ati-Atihan literally means to act like or imitate the Ati.\n\nThe Catholic layer came centuries later. By the 17th century, Spanish friars had folded the older revelry into the fiesta system around the image of the Santo Nino, the same Holy Child devotion that anchors Cebu's Sinulog and Iloilo's Dinagyang. Today the formal name is the Kalibo Senor Sto. Nino Ati-Atihan Festival, and the third Sunday of January closes the week with a High Mass and a long procession of Santo Nino images carried by families through the streets.",
+            "founded": "c. 1212 AD",
+            "citation_label": "Wikipedia: Ati-Atihan festival",
+            "citation_url": "https:\/\/en.wikipedia.org\/wiki\/Ati-Atihan_festival"
+        },
+        "key_events": [
+            {
+                "name": "Opening Mass and Procession",
+                "blurb": "The week opens with a Mass at Kalibo Cathedral, followed by the first procession with drumbeats spilling into the streets."
+            },
+            {
+                "name": "Sadsad Street Dance",
+                "blurb": "The signature shuffle. Foot drags along the ground in time with the marching band, and onlookers are pulled in to dance with the tribes."
+            },
+            {
+                "name": "Tribes Competition",
+                "blurb": "Groups compete in Tradisyunal nga Ati, Tribal Big, Tribal Small, and Modern Tribal categories, judged on costume, music, and choreography."
+            },
+            {
+                "name": "Search for Mutya ag Lakan",
+                "blurb": "Pageant for the festival's muse and prince, held during the buildup nights at Pastrana Park."
+            },
+            {
+                "name": "Higante Contest",
+                "blurb": "Giant papier-mache figures parade through town, a community-made spectacle that brings barangays into the lineup."
+            },
+            {
+                "name": "Sunday High Mass and Procession",
+                "blurb": "The closing day. A High Mass at the Cathedral, then thousands carry their own Santo Nino images through Kalibo until nightfall."
+            }
+        ],
+        "place_intro": "Ati-Atihan is the January fiesta of Kalibo, the capital town of Aklan on the northern tip of Panay Island. For about a week leading up to the third Sunday of January, the streets around Pastrana Park and the Kalibo Cathedral fill with drumbeats, soot-painted faces, feathered headdresses, and marching bands. The official name is the Kalibo Senor Sto. Nino Ati-Atihan Festival, and the fiesta is held in honor of the Santo Nino, the Holy Child Jesus.\\n\\nKalibo itself is a working town, not a beach resort. It is the jump-off point most travelers know as the gateway to Boracay through Kalibo International Airport, but during fiesta week the town stops being a transit stop. Pastrana Park becomes the main stage, the cathedral becomes the heart of the religious side, and the grid of streets around them becomes one continuous dance floor.\\n\\nThe rhythm is the thing. You hear it before you see it. A bass drum, a snare, brass on top, and the slow shuffle of feet that locals call Sadsad. Once you fall into step, you are no longer watching the festival. You are in it.",
+        "why_go": "Ati-Atihan is often called the Mother of All Philippine Festivals, and it is the festival that shaped Cebu's Sinulog and Iloilo's Dinagyang. The case for picking Kalibo is that the line between performer and audience is the thinnest here. There is no roped-off parade route. The tribes move through the same streets the crowd is standing on, and within a few beats you are dancing alongside them.\\n\\nThe schedule gives you real reasons to stay multiple days. The opening Mass sets the religious tone. The middle of the week brings the Search for Mutya ag Lakan, the Aklan Festivals Parade, and the Higante Contest with its giant papier-mache figures. The Tribes Competition splits into four categories, and you can spend hours watching the costume work up close.\\n\\nThe closer is the third Sunday. A High Mass at Kalibo Cathedral, then a procession of thousands carrying their own Santo Nino images, walking through streets still covered in soot from the night before. It is one of the few times a Catholic procession and a pre-colonial street dance happen on the same pavement, on the same day.",
+        "what_unique": "The thing that sets Kalibo Ati-Atihan apart from Sinulog and Dinagyang is the soot. Performers smear black on their faces and bodies to imitate the Ati, the indigenous people who lived on Panay long before the Malay datus arrived. This is rooted in the story of the 1212 peace pact, when the newcomers painted themselves in solidarity with their hosts. No other major Philippine festival keeps this physical act of imitation at the center of the costume.\\n\\nThe second distinction is Sadsad, the foot-dragging shuffle. It is not a choreographed parade dance. It is a way of walking that matches the band's beat, and locals do it whether they are in a tribe costume or in a t-shirt with a beer in their hand. Tribes are still judged seriously, with full costumes, headdresses, and live percussion, but the parade itself is not a barrier. You can step in.\\n\\nThe third layer is the religious one. Families bring their own Santo Nino images, sometimes heirloom pieces passed down for generations, and carry them in the closing procession. The chant Hala Bira, Puera Pasma rolls through the crowd. It is at once the loudest street party in the Visayas and a sincere act of devotion.",
+        "tip": "Stay within walking distance of Pastrana Park or the Kalibo Cathedral, and book your room months ahead because Kalibo fills up fast in mid-January. Bring a plain white shirt you do not mind ruining, because once you step into the Sadsad the soot will find you, and that is the whole point.",
+        "tags": [
+            "AtiAtihan",
+            "Kalibo",
+            "Aklan",
+            "SantoNino",
+            "Visayas",
+            "Sadsad",
+            "PanayIsland"
+        ],
+        "slug": "ati-atihan"
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "4th Sunday of January",
+                "detail": "Main tribes competition day. Week-long lineup of religious and cultural events leads up to it, typically from mid-January."
+            },
+            {
+                "icon": "location",
+                "color": "blue",
+                "label": "Where",
+                "big": "Iloilo City",
+                "detail": "Performance routes pass through Iloilo Freedom Grandstand, Iloilo Sports Complex, and Calle Real in the downtown area."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Patron",
+                "big": "Santo Nino",
+                "detail": "Held in honor of the Holy Child. Devotion was started at San Jose Parish in 1968 after a replica of the Santo Nino de Cebu was gifted to the parish."
+            },
+            {
+                "icon": "info",
+                "color": "emerald",
+                "label": "Main draw",
+                "big": "Ati Tribes Competition",
+                "detail": "School-based tribus in black body paint and feathered headdresses perform choreographed war dances with live drums."
+            }
+        ],
+        "history": {
+            "heading": "From a parish devotion to a city-wide festival",
+            "body": "The roots of Dinagyang trace back to November 1967, when Rev. Fr. Ambrosio Galindez, the first Filipino rector of the Augustinian community and parish priest of San Jose Parish in Iloilo City, introduced the devotion to the Santo Nino after observing the Ati-Atihan in Aklan. The devotion took off in 1968 when Fr. Sulpicio Enderez of Cebu brought a replica of the Santo Nino de Cebu image to Iloilo as a gift to San Jose Parish. Devotees, led by the local chapter of the Cofradia del Santo Nino de Cebu, organized a grand reception that started at the Iloilo Airport and moved through the city streets. For several years it was simply called the Iloilo Ati-Atihan. In 1977, the late Ilonggo broadcaster Pacifico Sumagpao Sudario coined the word Dinagyang, from the Hiligaynon dagyang meaning merrymaking, to distinguish it from Kalibo's Ati-Atihan. From 1978 onward the festival grew from a parish event into a city-wide religious and cultural celebration honoring the Santo Nino and commemorating the legendary pact between the Malay settlers and the indigenous Ati of Panay.",
+            "founded": "1968",
+            "citation_label": "Dinagyang (Wikipedia)",
+            "citation_url": "https:\/\/en.wikipedia.org\/wiki\/Dinagyang"
+        },
+        "key_events": [
+            {
+                "name": "Opening Salvo",
+                "blurb": "Kickoff ceremony that launches the festival weeks, usually paired with the lighting of the city and the opening of the Dinagyang Village."
+            },
+            {
+                "name": "Novena Masses at San Jose Parish",
+                "blurb": "Nine days of masses leading up to the feast. The religious heart of the festival, often skipped by tourists but central for locals."
+            },
+            {
+                "name": "Fluvial and Solemn Foot Procession",
+                "blurb": "Held on the Saturday before the main day. The Santo Nino image is brought through the Iloilo River and city streets accompanied by devotees."
+            },
+            {
+                "name": "Kasadyahan sa Kabanwahanan",
+                "blurb": "Saturday street-dance competition featuring festival contingents from towns across Iloilo province, each performing their own local fiesta in miniature."
+            },
+            {
+                "name": "Ati Tribes Competition",
+                "blurb": "The Sunday main event. School-based tribus in black body paint and feathered headdresses perform at the Freedom Grandstand and Sports Complex."
+            },
+            {
+                "name": "Sadsad sa Calle Real",
+                "blurb": "Community street-dancing show along the heritage stretch of Calle Real downtown, open to barangay contingents and walk-along revelers."
+            }
+        ],
+        "place_intro": "Dinagyang takes over Iloilo City every fourth Sunday of January, with religious events and side activities running for about two weeks before that. The city is the capital of Iloilo province and the regional center of Western Visayas, sitting on the southeastern tip of Panay Island. It is a walkable, food-loving city known for Calle Real's Spanish-era facades, La Paz batchoy, and a calmer pace compared to Cebu or Manila.\\n\\nThe festival is built around two things, a religious devotion to the Santo Nino and a re-telling of the Maragtas legend about Malay settlers buying the lowlands of Panay from the indigenous Ati. Performances center on the Iloilo Freedom Grandstand, the Iloilo Sports Complex, and the downtown stretch of Calle Real. Expect drum-driven street dances, painted dancers in feathered headdresses, novena masses at San Jose Parish, food stalls along JM Basa Street, and a fluvial procession along the Iloilo River the day before the main competition.\\n\\nIloilo City is easy to base yourself in. Most key venues are within a tricycle or short jeepney ride from each other, and the airport in Cabatuan is about 40 minutes from downtown by van or shuttle.",
+        "why_go": "The performances are the reason most people come. The Ati Tribes Competition on the final Sunday features school-based tribus, each fielding dozens of dancers in black body paint, feathered headdresses, and warrior costumes, performing choreographed war dances with live percussion. The rivalry between schools like Tribu Paghidaet, Tribu Pan-ay, and Tribu Bola-Bola is genuinely intense.\\n\\nThe day before, the Kasadyahan sa Kabanwahanan brings in festival contingents from towns across Iloilo province. You get a sampler of regional fiestas in one afternoon, from Miag-ao's Salakayan to Maasin's Tultugan and Banate's Kasag. The same weekend usually includes the Dinagyang Ilumination Streetdance Competition and the Floats Parade of Lights, which run in the evenings around SM City Iloilo and Iloilo Business Park.\\n\\nOutside the competitions, the city itself becomes the venue. Food stalls fill the downtown streets, bands play at the Dinagyang Village, and Calle Real hosts the Sadsad sa Calle Real community dance. Iloilo is also a UNESCO Creative City of Gastronomy, so batchoy and chicken inasal are everywhere.",
+        "what_unique": "Dinagyang is often compared to Kalibo's Ati-Atihan and Cebu's Sinulog, but it has its own look and feel. Dancers paint their skin with black soot and indigenous patterns rather than the white-faced or mixed designs of Ati-Atihan. The costumes lean heavily into Ati warrior imagery with bamboo, abaca, capiz shells, and large feathered headdresses. Performances are tightly choreographed competition pieces rather than the loose street-party feel of Kalibo.\\n\\nThe festival is also unusually school-driven. The main competing tribus are based in Iloilo public and private high schools, so what you are watching is the product of months of after-class rehearsals. This is why the formations are so precise and why the crowd is full of parents, alumni, and barangay supporters cheering for specific schools.\\n\\nThe religious layer stays visible throughout. The festival is anchored at San Jose de Placer Parish, novena masses run for nine days, and the fluvial procession of the Santo Nino image still happens on the Saturday before the main event. The name Dinagyang was coined in 1977 from the Hiligaynon word dagyang, meaning merrymaking.",
+        "tip": "Stake out a spot at the Freedom Grandstand judging area as early as 6 a.m. on Sunday if you want a clear view, or skip the main venues entirely and watch from the performance areas along Iznart or Mabini Streets where the tribus pass between stages. Bring water, sunblock, and a folded cardboard or fan, the January sun in Iloilo is hotter than people expect.",
+        "tags": [
+            "dinagyang",
+            "iloilo-city",
+            "santo-nino",
+            "western-visayas",
+            "ati-tribes",
+            "philippine-festivals",
+            "january-fiesta"
+        ],
+        "slug": "dinagyang"
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "October",
+                "detail": "Held every October with highlights on the third Sunday nearest the 19th, which is Bacolod's Charter Day. The festival runs for weeks leading up to it."
+            },
+            {
+                "icon": "location",
+                "color": "blue",
+                "label": "Where",
+                "big": "Bacolod City",
+                "detail": "Capital of Negros Occidental in Western Visayas. Main events happen at the Bacolod Public Plaza, Lacson Street, and the Bacolod Government Center."
+            },
+            {
+                "icon": "star",
+                "color": "rose",
+                "label": "Known For",
+                "big": "Festival of Smiles",
+                "detail": "Smiling masks worn by dancers gave Bacolod its nickname, the City of Smiles. Performers dance to Latin and electronic beats in colorful costumes."
+            },
+            {
+                "icon": "info",
+                "color": "violet",
+                "label": "First Held",
+                "big": "1980",
+                "detail": "Started during a sugar industry crisis and the MV Don Juan tragedy, when city leaders chose to mount a festival of resilience instead of mourning."
+            }
+        ],
+        "history": {
+            "heading": "From sugar crisis to a festival of smiles",
+            "body": "The MassKara Festival began in 1980, organized for the first time during Bacolod's Charter Day celebration on October 19 of that year. It was a heavy season for Negros Occidental. The global price of sugar, the lifeblood of the province, had crashed after the United States shifted to corn syrup substitutes. Months earlier, on April 22, 1980, the inter-island ferry MV Don Juan sank in Tablas Strait after colliding with a tanker, taking with it many Negrense passengers including members of prominent Bacolod families.\n\nLocal artists, civic leaders, and City Hall decided to respond with celebration rather than grief. The organizing push was led by then city tourism officer Evelio Leonardia and the late councilor Romeo Geocadin, with the late artist Ely Santiago coining the name MassKara, a portmanteau of the English mass, meaning a multitude of people, and the Spanish cara, meaning face. The smiling masks were chosen as a public message that Bacolodnons could still find joy in hard times, and the festival has been held every October since.",
+            "founded": "1980",
+            "citation_label": "MassKara Festival, Wikipedia",
+            "citation_url": "https:\/\/en.wikipedia.org\/wiki\/MassKara_Festival"
+        },
+        "key_events": [
+            {
+                "name": "Street and Arena Dance Competition",
+                "blurb": "The flagship event. Contingents from barangays and schools dance through Lacson Street in smiling masks and elaborate costumes, then perform a full choreography inside the arena."
+            },
+            {
+                "name": "Electric MassKara",
+                "blurb": "A night parade of LED-lit dancers, floats, and marching bands along Lacson Street. Crowds line up early because the street fills up fast once the lights start moving."
+            },
+            {
+                "name": "MassKara Festival Queen",
+                "blurb": "The official beauty pageant that crowns the festival's queen. Candidates wear gowns inspired by MassKara mask motifs and Negrense heritage."
+            },
+            {
+                "name": "MassKaralympics",
+                "blurb": "A multi-sport opening event that brings together barangays, schools, and city offices in friendly competition before the main festival week."
+            },
+            {
+                "name": "Charter Day Civic Parade",
+                "blurb": "Held on or near October 19, marking the anniversary of Bacolod becoming a chartered city in 1938. Government units and schools join the morning march."
+            },
+            {
+                "name": "Food festivals along Lacson",
+                "blurb": "Lacson Street and the Bacolod Public Plaza turn into open-air food strips. Chicken inasal, cansi, piaya, and napoleones from local stalls sit beside craft beer tents."
+            }
+        ],
+        "place_intro": "Bacolod is the capital of Negros Occidental and the biggest city in the western half of the island, sitting along the Guimaras Strait facing Iloilo. It is sugar country first and foremost, surrounded by haciendas, old ancestral homes, and a food scene built on chicken inasal, cansi, piaya, and napoleones. Locals call it the City of Smiles, and that nickname comes directly from the MassKara Festival.\\n\\nThe festival happens every October, with the biggest weekend landing on the third Sunday closest to October 19, which is the city's Charter Day. For two to three weeks before that, Lacson Street and the Bacolod Public Plaza turn into one long block party. There are dance competitions, a beauty pageant, food strips, drum and bugle corps, civic parades, and a night parade called the Electric MassKara that takes over the main road with LED-lit costumes and floats.\\n\\nWhat people come to see is the street dance, where contingents from barangays and schools move in unison wearing the smiling MassKara masks. It is loud, it is colorful, and the energy in the crowd is the part you remember after.\"",
+        "slug": "masskara",
+        "tags": [
+            "masskara",
+            "bacolod",
+            "negros occidental",
+            "philippine festivals",
+            "city of smiles",
+            "october festival",
+            "visayas"
+        ],
+        "tip": "Book your Bacolod accommodation by August at the latest if you want to be near Lacson Street, because hotels along the parade route get fully reserved well before October. If you arrive late and everything near the route is gone, base yourself near the Capitol Lagoon or SM City Bacolod and use Grab or tricycles to get to the night events.",
+        "what_unique": "MassKara is one of the few major Philippine festivals that is not rooted in a Catholic patron saint or a pre-colonial ritual. There is no fluvial procession, no santo, no novena. The whole thing was invented in 1980 as a civic response to back to back disasters: a collapse in sugar prices and the sinking of the MV Don Juan. That makes it closer in spirit to a modern carnival than to the older Sinulog or Ati-Atihan traditions.\\n\\nThe defining symbol is the smiling mask. Unlike masks used in other cultures to hide identity or invoke spirits, the MassKara mask is always grinning. It is made from papier mache, cloth, beads, and feathers, with bright colors and exaggerated features. Each contingent designs its own set, and you will see whole choreographies built around the mask aesthetic.\\n\\nThe music is also different. Instead of the rondalla or kulintang you might hear in other Philippine festivals, MassKara street dancers move to Latin percussion and, in recent years, electronic dance music for the Electric MassKara night parade. It is a festival that openly leans modern, urban, and theatrical.\"",
+        "why_go": "Go for the street dance. This is the part of MassKara that no video really captures, because the sound of the drums bouncing off the buildings along Lacson Street, plus the heat, plus the crowd singing along, is the actual experience. The contingents practice for months, and the choreography is genuinely tight. You can watch the early heats along the parade route for free, then catch the finals at the arena.\\n\\nGo also for the Electric MassKara. The night parade transforms Lacson Street into a moving light show, with dancers in LED-wired costumes and floats blasting music. If you have only one night in Bacolod during the festival, make it this one. Stake out a spot by early evening because the curb fills up quickly.\\n\\nAnd go for the food. Festival season is when Bacolod's eating culture is at its loudest. Chicken inasal stalls run late into the night, food parks open along Lacson and the Public Plaza, and the dessert shops selling piaya, napoleones, and barquillos stay open longer than usual. Pair this with a side trip to The Ruins in Talisay and a Silay heritage house tour, and you have a full long weekend.\""
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "June 29",
+                "detail": "Feast day of Senor Santo Nino de Leyte. Pagrayhak Grand Parade and Ritual Dance Presentation happen on this date every year."
+            },
+            {
+                "icon": "location",
+                "color": "blue",
+                "label": "Where",
+                "big": "Tacloban City",
+                "detail": "Parade starts at Leyte Sports Development Center and runs through major city streets back to the grandstand for the dance competition."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Patron",
+                "big": "Sto. Nino",
+                "detail": "Cultural-religious festival honoring Senor Santo Nino de Leyte, organized since 1986 by the Pintados Foundation, Inc."
+            },
+            {
+                "icon": "info",
+                "color": "emerald",
+                "label": "First Held",
+                "big": "1987",
+                "detail": "First Pintados Festival staged on June 29, 1987. Later merged with the Kasadyaan Festival of Leyte province."
+            }
+        ],
+        "history": {
+            "heading": "From warrior tattoos to a feast day for the Santo Nino",
+            "body": "The Pintados Foundation, Inc. was formed in 1986 by residents of Tacloban to organize religious-cultural activities in honor of Senor Santo Nino de Leyte. A year later, on June 29, 1987, the first Pintados Festival was held. The word pintados, meaning the painted ones, comes from how Spanish chroniclers in the 16th century described the tattooed warriors and natives they met across the Visayas. Tattoos were a status symbol back then, earned through bravery in battle. The most decorated warriors carried ink from head to foot.\n\nThe Kasadyaan Festival is a separate event organized by the Province of Leyte, also celebrated around June 29. Over time the two were merged into the Pintados-Kasadyaan Festival, billed as the Festival of Festivals of Leyte, since contingents from municipalities across the province join in. The folk dances reenact pre-Spanish practices of the early Visayans, including idol worship and indigenous music. Kasadyaan, or kasadya-an in Waray and Visayan, simply means joy or merriment.",
+            "founded": "1987",
+            "citation_label": "National Museum of the Philippines",
+            "citation_url": "https:\/\/www.nationalmuseum.gov.ph\/2022\/06\/29\/pintados-festival\/"
+        },
+        "key_events": [
+            {
+                "name": "Pagrayhak Grand Parade",
+                "blurb": "The street parade that gives the festival its scale. Starts around 8 a.m. at the Leyte Sports Development Center, then winds through downtown Tacloban back to the grandstand."
+            },
+            {
+                "name": "Ritual Dance Presentation",
+                "blurb": "Contingents from Leyte towns face off in a tribal dance competition at the grandstand, performing local legends, battle cries, and warrior rituals for the judges."
+            },
+            {
+                "name": "Body-Paint Procession",
+                "blurb": "Dancers wear intricate full-body paint patterned after the ancient pintados warriors. Many wear loincloth-style costumes built around the paintwork."
+            },
+            {
+                "name": "Feast of Senor Santo Nino de Leyte",
+                "blurb": "The religious core of June 29. Masses and veneration of the Santo Nino image happen alongside the cultural events organized by the Pintados Foundation."
+            },
+            {
+                "name": "Kasadyaan Festival of Festivals",
+                "blurb": "The provincial side of the celebration. Leyte municipalities each send a contingent representing their own town fiesta, which is why locals call it the Festival of Festivals."
+            }
+        ],
+        "place_intro": "Pintados-Kasadyaan is the big June fiesta of Tacloban City, the capital of Leyte in Eastern Visayas. The main day is June 29, the feast of Senor Santo Nino de Leyte. By sunrise that morning, dancers from towns all over the province are already lining up at the Leyte Sports Development Center, their skin painted in full-body warrior patterns that copy the tattoos worn by pre-colonial Visayans.\\n\\nThe day has two anchor events. First is the Pagrayhak Grand Parade, where contingents march through the main streets of Tacloban in costume, with drumbeats carrying for blocks. Then everyone heads back to the grandstand for the Ritual Dance Presentation, a competition where each town performs its own local legend or warrior ritual in front of judges. The whole thing is run by the Pintados Foundation, Inc.\\n\\nTacloban itself sits on the northeastern tip of Leyte, across the San Juanico Strait from Samar. It carries a strong World War II memory because of the MacArthur Landing in nearby Palo. During fiesta week, the downtown blocks near the grandstand are the busiest, and most visitors base themselves within walking distance of the parade route.",
+        "slug": "pintados-kasadyaan",
+        "tags": [
+            "#PintadosKasadyaan",
+            "#TaclobanFiesta",
+            "#LeyteFestival",
+            "#SantoNinoDeLeyte",
+            "#EasternVisayas",
+            "#PagrayhakParade",
+            "#FestivalOfFestivals"
+        ],
+        "tip": "Stake out a spot near the Leyte Sports Development Center grandstand before 7 a.m. on June 29. Parade contingents form up here and the Ritual Dance Presentation is judged here later, so you catch both the start of the parade and the dance finals without moving. Bring water and a cap, the sun on the open field is no joke by 10 a.m.",
+        "what_unique": "The body paint is the giveaway. Where other Visayan fiestas lean on flowers, fruit, or saint imagery, Pintados-Kasadyaan dancers paint full-body designs based on the tattoos that Spanish chroniclers in the 1500s documented on Visayan warriors. The patterns are the costume. Some dancers wear almost nothing else, just loincloth-cut wraps so the painted geometry across the chest, back, and legs reads clearly from the bleachers.\\n\\nThe other distinct piece is the structure. Pintados-Kasadyaan is two festivals stitched into one. Pintados is the cultural-religious side organized by the Pintados Foundation in honor of Senor Santo Nino de Leyte. Kasadyaan is the provincial Festival of Festivals, where each Leyte municipality sends its own contingent representing its own town fiesta.\\n\\nThe choreography itself sets it apart. The dances are built around pre-Spanish practices, idol worship, war chants, and indigenous epics, rather than the Catholic processions you see at most patronal feasts. The Santo Nino devotion frames the day, but what you watch on the field is older than the saint.",
+        "why_go": "Go for the scale of one single day. June 29 packs the parade and the dance competition into the same daylight window, so you do not need a multi-day plan to catch the main events. The Pagrayhak Grand Parade fills the downtown streets with painted dancers, drumlines, and float-style contingents from town after town. The same groups then regroup at the grandstand for the Ritual Dance Presentation, which is judged like a competition, so each town brings its best.\\n\\nIt is also one of the few Philippine fiestas where the visual hook is the human body itself. Photographers come specifically for the body-paint warriors, since the patterns are different on every contingent and every year. If you like documenting fiestas, the lighting at the grandstand and the close-quarters parade route give you angles you do not get at bigger but more cordoned-off events.\\n\\nTacloban as a base also makes the trip worth it on its own. You can pair the fiesta with day trips to the MacArthur Landing Memorial in Palo, the Santo Nino Shrine in the city, and a crossing of the San Juanico Bridge, the longest bridge in the country, just outside town.<\/parameter>\n"
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "April 13 to 19, 2026",
+                "detail": "The 30th edition runs for a week, traditionally falling within April."
+            },
+            {
+                "icon": "location",
+                "color": "blue",
+                "label": "Where",
+                "big": "Panaad Park, Bacolod",
+                "detail": "Panaad Sports and Recreational Park in Barangay Mansilingan, about 20 minutes by taxi from Bacolod airport."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Scale",
+                "big": "32 LGUs, 1 venue",
+                "detail": "All 13 cities and 19 municipalities of Negros Occidental build their own pavilions inside the park."
+            },
+            {
+                "icon": "info",
+                "color": "emerald",
+                "label": "Meaning",
+                "big": "Vow or promise",
+                "detail": "Panaad is Hiligaynon for vow, a thanksgiving to Divine Providence for a good life."
+            }
+        ],
+        "history": {
+            "heading": "From a Capitol Park vow to the mother of Negros festivals",
+            "body": "The first Panaad sa Negros Festival opened on April 30, 1993 at the Capitol Park and Lagoon in Bacolod City as a three-day affair. It was conceptualized that year by the Negros Occidental Provincial Government together with private-sector representatives, designed as a single platform where every city and municipality could put its history, cuisine, crafts, and tourism on display. The word panaad comes from the Hiligaynon root saad, meaning vow or promise, and the festival frames itself as a collective thanksgiving to Divine Providence for the good life given to Negrenses.\n\nThe celebration stayed at the Capitol lagoon for its first four years. In 1997 it moved briefly to the reclaimed area near what is now Bredco Port, and in 1998 it settled at the newly built Panaad Park and Sports Complex in Barangay Mansilingan, originally built for the Palarong Pambansa. The park has been its permanent home ever since. In 2017 the festival was inducted into the ATOP-DOT Pearl Awards Hall of Fame after winning Best Tourism Event in the Provincial Festival category three years running.",
+            "founded": "1993",
+            "citation_label": "Panaad sa Negros Festival, Wikipedia",
+            "citation_url": "https:\/\/en.wikipedia.org\/wiki\/Panaad_sa_Negros_Festival"
+        },
+        "key_events": [
+            {
+                "name": "Pavilion Showcase",
+                "blurb": "Each of the 32 LGUs builds its own themed pavilion with interactive exhibits, food stalls, and crafts that mirror its hometown."
+            },
+            {
+                "name": "Best of Festival Dances",
+                "blurb": "Cities and towns send their festival contingents to perform their signature street dances in one big competition."
+            },
+            {
+                "name": "Lin-ay sang Negros",
+                "blurb": "The provincial search for Lin-ay sang Negros, running since 1994, crowns a young woman who represents Negrense culture."
+            },
+            {
+                "name": "Negros Trade Fair",
+                "blurb": "Pavilions and kiosks sell muscovado, handicrafts, furniture, and farm produce direct from local makers."
+            },
+            {
+                "name": "Negros First Food Alley",
+                "blurb": "Open-air food stretch with chicken inasal, seafood, kakanin, and sweet treats from across the province."
+            },
+            {
+                "name": "Nightly Concerts at the Grandstand",
+                "blurb": "The Panaad Stadium grandstand hosts free nightly shows with local bands and visiting Filipino acts."
+            }
+        ],
+        "place_intro": "Panaad sa Negros is the week-long provincial fiesta of Negros Occidental, held every April at Panaad Park and Sports Complex in Barangay Mansilingan, Bacolod City. The 2026 edition runs from April 13 to 19, the 30th since it began in 1993. The word panaad is Hiligaynon for vow or promise, and the festival is framed as a thanksgiving to Divine Providence for a year of good living. All 13 cities and 19 municipalities of the province take part, which is why locals call it the mother of all Negros festivals.\\n\\nThe action centers inside Panaad Park, where each LGU builds its own pavilion. Walking the grounds feels like a quick tour of the whole province in one afternoon. Inasal smoke from Bacolod, muscovado from Victorias, handicrafts from Sipalay, lechon from Cadiz, weaves from Hinoba-an, all within a short walk. Outside the pavilions, the football oval and grandstand host parades, dance showdowns, the Lin-ay sang Negros pageant night, and free concerts.\\n\\nBacolod itself is reachable in about 20 minutes from Bacolod-Silay Airport. Most visitors base themselves near the Capitol or along Lacson Street, then ride a jeepney, tricycle, or Grab to Mansilingan for the festival proper.",
+        "slug": "pana-ad",
+        "tags": [
+            "panaad",
+            "negros-occidental",
+            "bacolod",
+            "philippine-festivals",
+            "visayas-fiesta",
+            "april-festival",
+            "cultural-festival"
+        ],
+        "tip": "Go in the late afternoon, not at noon. The park gets brutally hot in April and most pavilions feel lifeless under the midday sun. By 4pm the breeze picks up, the food stalls start grilling, lights inside the pavilions switch on, and the grandstand programs begin. Bring your own water and an eco-bag for pasalubong, and wear closed shoes because the grounds get dusty.",
+        "what_unique": "Panaad is not a single street-dance fiesta like Sinulog or Ati-Atihan. It is a gathered fiesta, an umbrella event where the festivals of the whole province come to one park for one week. The Best of Festival Dances alone lets you see contingents from MassKara, Pasalamat, Sinigayan, Bailes de Luces, Mudpack, and others perform on the same field on the same night.\\n\\nThe other distinct thing is the pavilions. They are not booths. Each city and town invests in a permanent or semi-permanent structure inside Panaad Park, designed to look like a miniature version of itself. Silay shows off its ancestral-house heritage, La Carlota leans on sugar-mill history, Sagay highlights marine reserves, Talisay plays up its Ruins. You can eat, shop, and chat with LGU tourism staff inside each one, which makes Panaad a working tourism trade fair on top of being a fiesta.\\n\\nThe religious thread is quieter than in patronal fiestas, but it is the core. The word panaad itself is a vow, and the festival was set up as a collective act of thanksgiving rather than a feast for one patron saint. That is why it sits in April instead of on a saint's day.",
+        "why_go": "Go for the pavilions. In one afternoon you can taste, see, and shop from every corner of Negros Occidental without taking a bus ride out of Bacolod. Each LGU staffs its own pavilion with local cooks and artisans, so kansi from Kabankalan, napoleones from Silay, piaya from Bacolod, muscovado from Victorias, and seafood from Sagay are all in one place. It is the easiest way to plan a longer Negros trip because you can scout the towns you want to visit later.\\n\\nGo for the competitions. The Best of Festival Dances brings together winning contingents from the major town festivals so you can watch MassKara, Pasalamat, Bailes de Luces, and others perform back to back. The Lin-ay sang Negros coronation night is a real provincial pageant with serious production. Float parades, drum-and-lyre competitions, and agricultural exhibits round out the week.\\n\\nAnd go for the nights. The grandstand programs at Panaad Stadium are free and run almost every evening, with local bands, OPM acts, and culminating concerts toward the weekend. Pair that with inasal at Manokan Country and a side trip to The Ruins in Talisay for a full Negros week."
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "blue",
+                "label": "When",
+                "big": "Mid to late October",
+                "detail": "Buglasan 2025 ran October 16 to 26, with the main showdown and street dancing competition held October 17 in Dumaguete City."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "Dumaguete City",
+                "detail": "Activities are spread across Freedom Park, Quezon Park, Perdices Street, and the Lamberto Macias Sports and Cultural Complex, all within walking distance in the city center."
+            },
+            {
+                "icon": "star",
+                "color": "amber",
+                "label": "What it is",
+                "big": "Festival of Festivals",
+                "detail": "Buglasan gathers the festivals of 24 out of 25 LGUs of Negros Oriental in one province-wide showcase, not a single patronal fiesta."
+            },
+            {
+                "icon": "info",
+                "color": "violet",
+                "label": "Founded",
+                "big": "1981",
+                "detail": "Started by Sandurot Promotions theater group to pick provincial representatives for the Philippine Folk Arts Festival, then grew into the annual provincial celebration."
+            }
+        ],
+        "slug": "buglasan",
+        "place_intro": "Buglasan Festival is the provincial celebration of Negros Oriental, and it always lands in Dumaguete City, the capital. The name comes from Buglas, the old pre-Hispanic word for Negros Island, after the tall reed-like grass that used to grow across the island. Locals call it the Festival of Festivals because it does not have its own dance suite. Instead, it gathers the official festivals of the towns and cities of the province and lets them compete in one place over about ten days.\n\nThe main venues are Freedom Park beside the Provincial Capitol, Quezon Park in front of the cathedral, Perdices Street for the parade route, and the Lamberto Macias Sports and Cultural Complex for the grand showdown. Dumaguete itself is a small, walkable university town facing the Bohol Sea, known to most travelers as the City of Gentle People and as the jump-off for Apo Island, Dauin, and the dolphin trips out of Bais.\n\nFor 2025 the festival ran from October 16 to 26, with the headline street dancing and showdown on October 17. Around 50 contests and activities were lined up that year, with 24 of the 25 LGUs of Negros Oriental joining in.",
+        "why_go": "You go to Buglasan when you want to see many Visayan festivals in one trip without hopping between provinces. On showdown day, contingents from places like Sibulan, Tayasan, Bayawan, and Bais bring their own costumes, props, and choreography down Perdices Street, then perform the full piece inside the Macias complex. If you have ever wondered how the smaller town festivals of Negros Oriental actually look up close, this is the cleanest way to see them side by side.\n\nFreedom Park is the second reason. Each town puts up a booth with its own products and food, so you can taste things like Ayungon grilled dalupapa or town-specific kakanin without taking a separate bus ride. Nights at the park run on a steady mix of concerts, band competitions, beauty pageants, and cultural shows, and the booths stay open late.\n\nSmaller side events are worth planning around too. There is a folk dance competition, a cooking contest for Negrense flavors, a pyro-musical competition, and the International Negros Oriental Marathon that starts at midnight. The closing and awarding ceremonies at Freedom Park Stage are where the winning festival of the year gets named.",
+        "what_unique": "What sets Buglasan apart from most Philippine fiestas is that it is not tied to a patron saint or to a single town's harvest. It is a meta festival. The contingents that perform are not from Dumaguete itself. They are sent in by other towns and cities of Negros Oriental, each bringing the dance, costumes, and story of their own home festival. In one afternoon you can watch the Yag Yag of Sibulan, the Dalit Tayasanon of Tayasan, the Sandurot of Dumaguete, and several others perform back to back.\n\nThe other distinct layer is the LGU booth setup at Freedom Park. Instead of one big tiangge, each town runs its own booth, so the products, snacks, and cooking style change as you walk from one stall to the next. It feels more like a working map of the province than a generic food fair.\n\nThe format itself is competitive at every level. There are separate awards for street dancing, showdown, headdress, festival king and queen, cooking, folk dance, and band competitions, plus a Terno Designers Gala for fashion.",
+        "history": {
+            "heading": "From a 1981 talent search to the Festival of Festivals",
+            "body": "Buglasan Festival started in 1981. According to local accounts collected by Dumaguete MetroPost, the idea came from a group of theater enthusiasts working under Sandurot Promotions in Dumaguete, including Bobby Villasis, Prudi Sirilan, Bobby Cafe, Bing Cipres, Oscar Ong, and Ting-Ting Delfin. They were looking for a way to pick provincial representatives for the Philippine Folk Arts Festival, and the cleanest way to do that was to invite every town and city in Negros Oriental to send their own festival contingent to one event in the capital.\n\nThe name Buglas was chosen because it is the pre-Hispanic name of Negros Island. Diego Lope Povedano's 1572 map of the island already labels it Buglas Insulis, after the tall reed grass that once grew across the lowlands. By using that name, the organizers framed the festival as a celebration of the whole Negrense identity rather than any single town fiesta.\n\nOver the decades the event grew from a talent search into the official provincial festival of Negros Oriental, anchored at the Provincial Capitol and Freedom Park in Dumaguete City. It is now branded as the Festival of Festivals, and in its 2025 edition it drew 24 of the 25 LGUs of the province with about 50 contests and activities on the calendar.",
+            "citation_label": "Dumaguete MetroPost: Buglasan Festival and its roots",
+            "citation_url": "https:\/\/metropost-online.com\/buglasan-festival-and-its-roots\/",
+            "founded": "1981"
+        },
+        "key_events": [
+            {
+                "name": "Street Dancing Competition",
+                "blurb": "Contingents from around 10 town and city festivals parade and dance along Perdices Street in full costume, the main daytime draw of the festival."
+            },
+            {
+                "name": "Festival of Festivals Showdown",
+                "blurb": "Full performances by each LGU contingent inside the Lamberto Macias Sports and Cultural Complex, where the winning festival of the year is judged."
+            },
+            {
+                "name": "Buglasan Booths at Freedom Park",
+                "blurb": "Town and city booths inside Freedom Park sell local products and regional food, doubling as a mini trade fair of Negros Oriental."
+            },
+            {
+                "name": "Civic Military Parade and Headdress Competition",
+                "blurb": "Morning parade along Dumaguete streets with a separate judging for the most striking festival headdresses."
+            },
+            {
+                "name": "Lutong Ato Negrense Flavors",
+                "blurb": "Cooking competition built around dishes and ingredients from Negros Oriental towns, paired with hospitality skills contests."
+            },
+            {
+                "name": "International Negros Oriental Marathon",
+                "blurb": "Midnight marathon through the streets of Negros Oriental, run during the Buglasan calendar and open to international entries."
+            }
+        ],
+        "tip": "Base yourself near Quezon Park or Silliman, not at the edges of the city. The street dancing route runs through Perdices and ends near Freedom Park, so anything within a few blocks lets you walk to the parade in the morning, eat at the LGU booths in the afternoon, and still catch the night concerts without hailing a tricycle in heavy festival traffic.",
+        "tags": [
+            "buglasan",
+            "dumaguete",
+            "negros oriental",
+            "visayas festival",
+            "festival of festivals",
+            "october festival",
+            "philippine fiesta"
+        ]
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "Mid to late May",
+                "detail": "The 2026 edition ran from May 15 to May 24. Dates shift each year but the festival always wraps around the province founding date of May 22."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "Jordan, Guimaras",
+                "detail": "Main grounds are at Mangga Village and the provincial capitol grounds in Jordan, the capital town. Side events spread across the four other municipalities."
+            },
+            {
+                "icon": "food",
+                "color": "amber",
+                "label": "Headliner",
+                "big": "Mango Eat-All-You-Can",
+                "detail": "Registered batches get 30 minutes to eat as many ripe and green Guimaras mangoes as they can. The province prepared about 18 metric tons for 2026."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Anchor event",
+                "big": "Cultural Competition",
+                "detail": "Street dancing and tribe performances from the five municipalities of Guimaras face off on the final day. The 2026 finals landed on May 24."
+            }
+        ],
+        "history": {
+            "heading": "From a province birthday to the country's sweetest party",
+            "body": "Guimaras was carved out of Iloilo and ratified as a full province through a plebiscite on May 11, 1992, then officially proclaimed on May 22, 1992. A year later, then-governor Emily Lopez wanted a signature event to mark the first anniversary of provincehood. The timing lined up with the peak harvest of the island's most famous crop, so the first Manggahan Festival was held on May 22, 1993.\n\nWhat started as a week of agri-fair activities and a parade has grown into a multi-day celebration that now stretches past ten days. The festival is secular at its core, tied to the province birthday and the mango harvest rather than a patron saint feast, although Jordan itself honors John the Baptist as its town patron. Over the years, organizers added the Mango Eat-All-You-Can, the cultural dance competition, the Tour de Guimaras, and the agri-eco trade fair, turning a local civic event into one of the most attended fiestas in Western Visayas.",
+            "founded": "1993",
+            "citation_label": "Manggahan Festival, Wikipedia",
+            "citation_url": "https:\/\/en.wikipedia.org\/wiki\/Manggahan_Festival"
+        },
+        "key_events": [
+            {
+                "name": "Mango Eat-All-You-Can",
+                "blurb": "The signature event at Mangga Village in Jordan. Sign up, get 30 minutes, eat as many ripe and green mangoes as your stomach can hold."
+            },
+            {
+                "name": "Manggahan Cultural Competition",
+                "blurb": "Street dance and tribe performances from the five municipalities of Guimaras. This is the festival closer, usually on the final Sunday."
+            },
+            {
+                "name": "Agri-Eco Trade Fair",
+                "blurb": "Booths from local farms and cooperatives selling fresh mangoes, mango ketchup, cashew, dragonfruit, cacao, and Trappist sweets."
+            },
+            {
+                "name": "Tour de Guimaras",
+                "blurb": "Multi-stage cycling race that loops around the island. Open to amateur and competitive riders, with the route passing all five towns."
+            },
+            {
+                "name": "Mango Mash-up Dance Battle",
+                "blurb": "Open-format dance crew showdown held in the days before the cultural finals. Free to watch at the capitol grounds."
+            },
+            {
+                "name": "Manggahan Clash of Rockstars",
+                "blurb": "Battle of the bands night that draws local rock acts from Iloilo and Guimaras."
+            }
+        ],
+        "place_intro": "Manggahan sa Guimaras is the island province's biggest annual event, a multi-day celebration that wraps around May 22, the day Guimaras was proclaimed a full province in 1992. The festival was first staged in 1993 to mark the first provincehood anniversary, and since the date lines up with the peak mango harvest, the whole thing built itself around the fruit Guimaras is most known for.\\n\\nThe main venue is Jordan, the capital town, where Mangga Village and the provincial capitol grounds host most of the activities. From there, side events spread to Buenavista, Nueva Valencia, San Lorenzo, and Sibunag, the other four municipalities of the island. Expect street dancing competitions, an agri-trade fair, sports events, pageants, food stalls, and the famous Mango Eat-All-You-Can sessions running in batches through the day.\\n\\nGetting to Jordan is part of the experience. Most visitors come from Iloilo City and take the pumpboat from Parola Wharf to Jordan Wharf, a 15 to 20 minute crossing. From the wharf, jeepneys and tricycles run straight to the capitol area where the main festival grounds are set up.",
+        "why_go": "The simplest reason is the mangoes. Guimaras carabao mangoes are widely considered the sweetest in the Philippines, and during the festival you can eat your fill at the Mango Eat-All-You-Can sessions. Registration is cheap, queues move in batches, and the 30-minute timer is real. Even outside the eat-all-you-can tent, the whole festival site smells like ripe mango because every other stall sells something made from it. Mango pizza, mango ketchup, mango ice cream, dried mango, green mango shake.\\n\\nThe second reason is the cultural competition on the final day. Each of the five Guimaras towns sends a tribe, and the choreography pulls from mango harvesting, fishing, and island folklore. It is smaller and more grassroots than Dinagyang or Ati-Atihan, so the crowd stays manageable and you can actually see the dancers up close.\\n\\nThe third reason is that you can fold the festival into a real Guimaras trip. The island is small, the roads are quiet, and within the same weekend you can hit the Trappist Monastery for mango sweets, swim at Alubihod Beach, hop to Guisi Lighthouse, and still make it back to Jordan in time for the night events.",
+        "what_unique": "Most major Philippine fiestas trace back to a patron saint feast. Manggahan does not. It is a civic festival built around the founding of the province and the harvest of a single crop, which gives it a different feel from the religious processions you see at Sinulog or Peñafrancia. There is no fluvial procession, no santo, no novena. The center of gravity is the agri-fair and the dance competition, not the church.\\n\\nThat civic identity shows up in how the festival is organized. The five municipalities compete on equal footing, the tribe performances tell stories about mango farming and island life rather than saints and conversions, and the trade fair doubles as a working showcase for Guimaras producers. The Mango Eat-All-You-Can is itself unique to this festival, you will not find it anywhere else in the country at this scale.\\n\\nThe other distinguishing feature is the geography. Guimaras has only five towns, so the festival genuinely involves the whole island. The cycling race loops past all of them, and visitors usually explore beaches and lighthouses between events.",
+        "tip": "Skip the Iloilo hotels for the main festival weekend and book a homestay in Jordan or Nueva Valencia instead. The last pumpboats back to Iloilo stop in the early evening, and you will miss the night events at the capitol grounds if you rush for the crossing. If you day-trip, take the first boat out of Parola Wharf so you can register early for the eat-all-you-can.",
+        "tags": [
+            "#ManggahanFestival",
+            "#Guimaras",
+            "#JordanGuimaras",
+            "#MangoFestival",
+            "#WesternVisayas",
+            "#PhilippineFestivals",
+            "#MayFiesta"
+        ],
+        "slug": "manggahan-sa-guimaras"
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "rose",
+                "label": "When",
+                "big": "Nov 3 to 5",
+                "detail": "Annual celebration peaking on November 5 with the streetdance and ritual showdown competition."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "San Carlos City",
+                "detail": "Northern Negros Occidental, Visayas. Streetdance routes through the city proper, finals at the San Carlos City Auditorium."
+            },
+            {
+                "icon": "star",
+                "color": "amber",
+                "label": "Patron Saint",
+                "big": "San Carlos Borromeo",
+                "detail": "Feast day falls on November 4, the religious anchor of the civic festival."
+            },
+            {
+                "icon": "info",
+                "color": "violet",
+                "label": "Festival Theme",
+                "big": "Pinta + Flores",
+                "detail": "Tattooed flowers. Dancers wear floral body paint inspired by the pre-colonial Pintados of Negros."
+            }
+        ],
+        "history": {
+            "heading": "Two festivals folded into one identity",
+            "body": "Pintaflores is a relatively young festival in its current form, born from San Carlos City's effort to find a single cultural identity for its November fiesta. Before the merger, the city ran two separate annual highlights, the Dances of Flowers and the Nabingkalan Tattoo Festival. Local government eventually combined the two, and the result is the Pintaflores we see today, painted dancers moving in flower formations.\n\nThe name itself is rooted in Spanish colonial observation. When the Spaniards arrived in Negros, they encountered indigenous people whose skin was marked with floral tattoo patterns. They called them Pintados de Flores, painted with flowers, and that phrase is the source of the modern festival name. The Nabingkalan half of the heritage refers to Princess Nabingka, a figure in San Carlos oral tradition said to have come over from Cebu, and whose name was once attached to the area that became San Carlos City.\n\nThe religious anchor is the Feast of San Carlos Borromeo on November 4, the city's patron saint, which is why the celebration always lands on the first week of November.",
+            "citation_label": "ExperienceNegros, HICAPS, Visayan Daily Star",
+            "citation_url": "https:\/\/experiencenegros.com\/san-carlos-citys-pintaflores-festival\/"
+        },
+        "key_events": [
+            {
+                "name": "Streetdance Competition",
+                "blurb": "Open Invitational division open to contingents from cities and municipalities across Negros Island, judged along the city streets."
+            },
+            {
+                "name": "Ritual Showdown",
+                "blurb": "The streetdance culminates inside the San Carlos City Auditorium with the ritual performance round, where the big awards are decided."
+            },
+            {
+                "name": "Pinta Bata",
+                "blurb": "Elementary school division of the streetdance, smaller dancers in the same floral body paint and ethnic-inspired costumes."
+            },
+            {
+                "name": "Search for Miss San Carlos City",
+                "blurb": "Pageant night that runs alongside the festival, showcasing local designers through the contestants' costumes."
+            },
+            {
+                "name": "Feast of San Carlos Borromeo",
+                "blurb": "Religious observance on November 4 honoring the patron saint, the spiritual core of the civic festival."
+            },
+            {
+                "name": "Human Flower Formation",
+                "blurb": "A judged category in the streetdance where contingents arrange themselves into large flower shapes on the performance floor."
+            }
+        ],
+        "place_intro": "San Carlos City sits on the northeastern coast of Negros Occidental, facing Cebu across the Tanon Strait. It is a quieter city than Bacolod or Dumaguete, more known to locals for Sipaway Island just offshore, the rice terraces in Codcod, and the caves and falls in the upland barangays. Every November the whole city shifts into festival mode for Pintaflores, the annual celebration that doubles as the fiesta of its patron, San Carlos Borromeo.\\n\\nThe festival runs from November 3 to 5, with the religious feast day falling on November 4 and the cultural peak on November 5. Most of the action happens along the main streets of the city proper, where the streetdance competition winds through the route, and at the San Carlos City Auditorium, where the ritual showdown is judged. Smaller community programs, the Miss San Carlos City pageant, and cultural presentations fill out the days in between.\\n\\nIt is the kind of fiesta where you can still walk up close to the dancers in line at the staging area, watch the body paint being touched up, and grab a spot at the curb without paying for a grandstand seat.\"",
+        "slug": "pintaflores",
+        "tags": [
+            "#PintafloresFestival",
+            "#SanCarlosCity",
+            "#NegrosOccidental",
+            "#VisayasFiesta",
+            "#NovemberFestival",
+            "#PintadosDeFlores",
+            "#PhilippineFiesta"
+        ],
+        "tip": "Position yourself near the auditorium entrance late afternoon on November 5. The contingents stage there before the ritual showdown, which is the best spot to photograph the floral body paint up close without fighting the parade crowd along the street route. Bring water and a hand fan, the auditorium gets warm once all the contingents pack in.",
+        "what_unique": "The signature element is the body paint. Dancers are not just wearing flower costumes, they are painted head to limb with floral patterns, a direct reference to the Pintados, the tattooed pre-colonial Visayans the Spanish encountered when they first reached Negros. Very few Philippine fiestas put indigenous body marking at the visual center the way Pintaflores does.\\n\\nThe second distinct piece is the Human Flower Formation, a judged category where the whole contingent on the floor arranges itself into a giant flower shape, petals and all. Combined with the Best in Ritual, Best in Headdress, and Best in Musicality awards, the competition rewards choreography that looks as good from a drone overhead as it does from the curb.\\n\\nThird, the festival is a deliberate merger. It is not one old tradition handed down whole, it is the Dances of Flowers and the Nabingkalan Tattoo Festival fused into a single identity, which is why the rituals feel both botanical and tribal in the same performance.",
+        "why_go": "Go for the streetdance on November 5. The Open Invitational pulls in contingents from cities and municipalities all over Negros Island, so you are not just watching San Carlos perform, you are watching an inter-city competition where each town brings its own choreographer, costume designer, and percussion section. The judging categories include Best in Choreography, Best in Human Flower Formation, Best in Ritual, Best in Headdress, Best in Musicality, and Best in Costume, which tells you how much craft goes into each contingent.\\n\\nGo for the Pinta Bata division if you are traveling with kids or just want a softer angle on the festival. Elementary schools field their own smaller dancers in the same floral body paint and ethnic costumes, and the energy is completely different from the senior division.\\n\\nGo because San Carlos is still an unhurried city. You can pair the festival with a half day on Sipaway Island, a quick run up to Mayana for the city overlook, or a side trip to Cave Lapus or Magon-on Falls in the uplands. The festival gives you the reason to come, the surrounding geography gives you something to do on the other side of the calendar."
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "rose",
+                "label": "When",
+                "big": "February",
+                "detail": "Month-long festival every February, with the Grand Street Dance Parade and Grand Floral Float Parade closing the celebration on the last weekend, leading into Session Road in Bloom in early March."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "Baguio City",
+                "detail": "City of Pines in Benguet, northern Luzon. Main events run along Session Road, Harrison Road, and Athletic Bowl at Burnham Park."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Highlights",
+                "big": "Float Parade",
+                "detail": "Grand Floral Float Parade with flower-covered floats, Bendian-inspired street dancing in bahag and floral costumes, plus the week-long Session Road in Bloom market."
+            },
+            {
+                "icon": "info",
+                "color": "amber",
+                "label": "First Held",
+                "big": "1996",
+                "detail": "Launched in February 1996 as the Baguio Flower Festival, renamed Panagbenga (Kankanaey for season of blooming) by 1997 after a suggestion by curator Ike Picpican."
+            }
+        ],
+        "history": {
+            "heading": "From a city in ruins to a city in bloom",
+            "body": "Panagbenga traces its start to 1995, when lawyer Damaso E. Bangaoet, Jr., then managing director of Camp John Hay, pitched the idea of a flower festival to the board of the John Hay Poro Point Development Corporation. The first edition was launched in February 1996 as the Baguio Flower Festival. The timing was deliberate. Five years earlier, the July 1990 Luzon earthquake had devastated Baguio, flattening hotels and homes and shaking the city's identity. Local leaders wanted an event that would help the city stand up again and remind Filipinos of what Baguio still had to offer.\n\nBy late 1996, archivist and curator Ike Picpican suggested renaming the event Panagbenga, a Kankanaey word meaning a season of blossoming, a time for flowering. The name stuck from 1997 onward. The festival borrowed from Cordilleran life early on. The street dancing component is patterned after the Bendian, an Ibaloi circle dance of celebration where the formation itself signals unity. Today the festival is run by the Baguio Flower Festival Foundation, and 2026 marks its 30th edition.",
+            "founded": "1996",
+            "citation_label": "Panagbenga Festival, Wikipedia",
+            "citation_url": "https:\/\/en.wikipedia.org\/wiki\/Panagbenga_Festival"
+        },
+        "key_events": [
+            {
+                "name": "Grand Opening Parade",
+                "blurb": "Kicks off the month on February 1 along Session Road, with marching bands, school contingents, and the official Panagbenga banner leading the way."
+            },
+            {
+                "name": "Grand Street Dance Parade",
+                "blurb": "The flagship dance event on the last Saturday of February. Performers in bahag and floral costumes move to gongs and drums, with choreography rooted in the Ibaloi Bendian."
+            },
+            {
+                "name": "Grand Floral Float Parade",
+                "blurb": "Held the Sunday after the street dance. Giant floats are covered almost entirely in fresh-cut blooms from La Trinidad and Benguet farms, rolling down Session and Harrison."
+            },
+            {
+                "name": "Session Road in Bloom",
+                "blurb": "A week-long open-air market on a fully pedestrianized Session Road, March 2 to 8, with hundreds of stalls selling food, crafts, plants, and Cordillera products."
+            },
+            {
+                "name": "Panagbengascapes",
+                "blurb": "A landscape and garden design exhibition at Burnham Park where landscapers compete with themed installations using highland flowers and ornamentals."
+            },
+            {
+                "name": "Flowers in the Sky",
+                "blurb": "The closing fireworks display on March 8 that caps the festival above Burnham Park, drawing the biggest crowds of the final weekend."
+            }
+        ],
+        "place_intro": "Panagbenga is Baguio's month-long flower festival every February, and it is the loudest cultural event the City of Pines holds all year. The name comes from the Kankanaey word for a season of blooming. The action spreads across the city center, but the spine of it is Session Road, with major parades running through Harrison Road and program nights at the Athletic Bowl inside Burnham Park. By mid-February, hotels in the upper Session and Legarda stretch are usually full, and the cool 18 to 22 degree weather makes walking around easy.\\n\\nThe two anchor events are the Grand Street Dance Parade on the last Saturday of February and the Grand Floral Float Parade the next morning, when floats covered almost entirely in fresh cut flowers from La Trinidad and the Benguet farms roll down the main road. After that, Session Road is closed to vehicles for about a week for Session Road in Bloom, an open-air market of food, plants, crafts, and Cordillera goods. The festival officially closes the following Sunday with a fireworks display called Flowers in the Sky over Burnham Park.",
+        "slug": "panagbenga",
+        "tags": [
+            "#PanagbengaFestival",
+            "#BaguioFlowerFestival",
+            "#Baguio",
+            "#Benguet",
+            "#Cordillera",
+            "#FebruaryInBaguio",
+            "#SessionRoadInBloom"
+        ],
+        "tip": "Book your Baguio room before December, and not for the Saturday and Sunday of the grand parades. Book Friday and Monday instead. You watch the Saturday street dance, sleep, catch the Sunday float parade in the morning, then check out by lunch before the day-tripper traffic builds up on Marcos Highway and Kennon. Bring a light jacket. Mornings on Session can hit 15 degrees.",
+        "what_unique": "What sets Panagbenga apart from other Philippine fiestas is that it is not patronal. There is no saint at the center of it, no novena, no fluvial procession. The roots are civic and Cordilleran. The choreography of the street dance is patterned after the Bendian, an Ibaloi circle dance of celebration, and the costumes lean on bahag for the men and floral wraps for the women, with gongs and drums instead of brass bands carrying the beat.\\n\\nThe other signature is the float. Unlike float parades elsewhere that use crepe paper or foam, Panagbenga floats are required to be covered in real flowers, mostly sourced from the cutflower farms in La Trinidad and the rest of Benguet. That is why the parade is held in February and early March, when the highland blooms are in peak season. The whole festival doubles as a showcase for the local flower industry, which is why florists, landscapers, and farmer cooperatives are as visible as the dancers.\\n\\nIt is also one of the few major Philippine festivals that openly traces its founding to a disaster recovery story, the 1990 Luzon earthquake, rather than to a Spanish-era religious feast.",
+        "why_go": "Go for the parades. The Grand Street Dance Parade on the last Saturday of February turns Session, Harrison, and Upper Session into one long performance route. School contingents, barangay groups, and cultural troupes dance in Cordillera-inspired costumes to gongs and native drums, and the route is walkable end to end if you start early. The next morning is the Grand Floral Float Parade, where floats wrapped almost entirely in fresh flowers from Benguet farms roll past the same crowds. For 2026, the top prize for the Large Float category was raised to one million pesos, so the build quality is noticeably higher than in past years.\\n\\nGo also for Session Road in Bloom, the week-long market that runs March 2 to 8. Session Road is fully closed to cars, and more than 400 stalls take over the pavement, selling strawberry produce from La Trinidad, ube and peanut brittle, weaves from Easter Weaving, plants, and street food. It is the easiest way to eat your way through Baguio in one afternoon.\\n\\nAnd go for the weather. February in Baguio sits around 15 to 22 degrees, jacket weather in the morning, t-shirt weather by lunch, and a clean break from lowland summer heat."
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "Feb 10",
+                "detail": "Feast day of Saint William the Hermit. The wider festival now runs the whole month of February, with main events in the first week."
+            },
+            {
+                "icon": "location",
+                "color": "blue",
+                "label": "Where",
+                "big": "Laoag City",
+                "detail": "Capital of Ilocos Norte in northern Luzon. Street events center around Aurora Park and the city plaza, with the fluvial parade on Padsan River."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Patron Saint",
+                "big": "San Guillermo",
+                "detail": "Saint William the Hermit, designated patron of Laoag by Augustinian friars in 1580 when the parish was formally established."
+            },
+            {
+                "icon": "info",
+                "color": "emerald",
+                "label": "Festival Name",
+                "big": "Folk Song",
+                "detail": "Named in 1996 after the old Ilocano courtship song Pamulinawen, about a suitor pleading to a beloved with an alabaster, hardened heart."
+            }
+        ],
+        "history": {
+            "heading": "From Spanish parish feast to a month-long city fiesta",
+            "body": "The roots of Pamulinawen Festival trace back to the Spanish colonial period in the Ilocos region. Augustinian missionaries reached the area with Juan de Salcedo in 1572, and by 1580 they had formally established the Roman Catholic parish in Laoag, designating Saint William the Hermit (San Guillermo el Ermitaño) as its patron. The annual February 10 feast day for the patron saint dates from this foundation.\n\nFor centuries the celebration was simply the parish fiesta. In 1967, under Mayor Eulalio Siazon, the local government passed Ordinance No. 3 officially fixing February 10 as the city festival date. The fiesta was renamed Pamulinawen Festival in 1996, taking the title from the old Ilocano courtship folk song about a woman with an alabaster, unyielding heart. In 2008, under then Mayor Michael Fariñas, the calendar was widened to cover the entire month of February, giving the festival its current form as a long civic and cultural showcase that still revolves around the February 10 feast.",
+            "founded": "1580",
+            "citation_label": "Pamulinawen Festival, Wikipedia",
+            "citation_url": "https:\/\/en.wikipedia.org\/wiki\/Pamulinawen_Festival"
+        },
+        "key_events": [
+            {
+                "name": "Baro a Laoag Street Dance Competition",
+                "blurb": "The main street dance contest at Aurora Park. Barangay and school contingents perform routines drawn from Ilocano history, Christian faith stories, and the William the Hermit legend."
+            },
+            {
+                "name": "Grand Float Parade",
+                "blurb": "Typically held on February 9, the day before the feast. Barangays, schools, NGOs, and private firms roll out themed floats along the city streets."
+            },
+            {
+                "name": "Fluvial Parade at Padsan River",
+                "blurb": "River procession honoring Saint William the Hermit. Often staged as the culminating religious tribute of the festival week."
+            },
+            {
+                "name": "Kalesa Parade",
+                "blurb": "Decorated horse-drawn kalesa rolling through the city, a nod to old Ilocos transport and a favorite photo moment for visitors."
+            },
+            {
+                "name": "Pamulinawen Agro-Industrial Trade Fair",
+                "blurb": "Held at Laoag Central Elementary School, running until about February 15. Local furniture, home decor, plants, fresh produce, and processed food are on display."
+            },
+            {
+                "name": "Feast Day Mass for San Guillermo",
+                "blurb": "February 10 mass at the St. William Cathedral honoring the patron, the religious heart that the cultural events are built around."
+            }
+        ],
+        "place_intro": "Pamulinawen Festival is the yearly fiesta of Laoag City, the capital of Ilocos Norte up in the north of Luzon. The core date is February 10, the feast day of San Guillermo el Ermitaño (Saint William the Hermit), the city's patron since the Augustinian friars set up the parish here in 1580. These days the city stretches the celebration across the whole of February, with the busiest stretch falling in the first week and the days right before the 10th.\\n\\nThe action centers around the old downtown grid near St. William Cathedral, Aurora Park, and the city plaza. You get a mix of religious and civic events: street dance competitions, a grand float parade, a kalesa parade, an agro-industrial trade fair, and a fluvial procession on the Padsan River for the patron saint. Barangays, schools, and local associations all field contingents, so much of what you see on the road is made by Laoagueños themselves.\\n\\nThe name was officially adopted in 1996, taken from Pamulinawen, an old Ilocano courtship song about a suitor pleading to a woman whose heart is described as alabaster and unmoved.\"",
+        "why_go": "Go for the lineup of events packed into a single week. The Baro a Laoag Street Dance Competition at Aurora Park is the main draw, with barangay and school contingents performing routines built around Ilocano history, the William the Hermit story, and local legend. The Grand Float Parade, usually staged the day before the feast, fills the main roads with themed floats made by barangays, schools, NGOs, and private companies.\\n\\nThe Kalesa Parade is a small but charming event, a row of decorated horse-drawn carriages clopping through the downtown grid. The Padsan River fluvial procession is the religious culmination, a quieter moment after days of street noise where the image of San Guillermo is honored on the water. The Pamulinawen Agro-Industrial Trade Fair at Laoag Central Elementary School runs alongside everything else and is a practical stop for Ilocos furniture, plants, fresh produce, and processed food.\\n\\nLaoag also makes a good base for the rest of Ilocos Norte during festival week. Paoay Church, the Marcos Museum in Batac, the sand dunes, and Pagudpud are all reachable by road trip.\"",
+        "what_unique": "What sets Pamulinawen apart from other Philippine fiestas is the literary hook. Most town festivals are named after a saint, a crop, or a craft. This one is named after a folk song. Pamulinawen, believed to predate Spanish contact in its earliest form, is a courtship piece in which a suitor pleads to a beloved whose heart is described as alabaster, hardened, and unmoved. By taking the song's name in 1996, the city tied its parish feast to a piece of Ilocano oral tradition that schoolchildren in the region still learn.\\n\\nThe religious backbone is also distinct. San Guillermo el Ermitaño, the medieval hermit saint, is not a common patron in the Philippines, and the February 10 feast was put in place by Augustinian friars in 1580 when they organized the Laoag parish. Street dance routines often weave in the William the Hermit legend alongside Ilocano history and Christianity, so the choreography is rooted in a specific local hagiography rather than a generic fiesta theme.\\n\\nThe fluvial procession on the Padsan River, the kalesa parade, and the agro-industrial trade fair all give the festival an Ilocano character: river, road, and produce, tied back to a saint and a song.\"",
+        "tip": "Plan your trip around the calendar, not just February 10. The float parade often lands on February 9 and the street dance finals usually run on the feast day itself, so a two-night stay covering the 9th and 10th gets you both. Book a room near the city plaza or St. William Cathedral early, because Laoag accommodations fill up fast during fiesta week.",
+        "tags": [
+            "#PamulinawenFestival",
+            "#LaoagCity",
+            "#IlocosNorte",
+            "#NorthLuzonFiesta",
+            "#SanGuillermo",
+            "#IlocanoCulture",
+            "#FebruaryFiesta"
+        ],
+        "slug": "pamulinawen"
+    },
+    {
+        "slug": "vigan-longganisa-festival",
+        "place_intro": "Vigan is a small city in Ilocos Sur up in northern Luzon, best known for its cobblestone Calle Crisologo and rows of two-storey brick-and-wood ancestral houses. UNESCO put the historic core on the World Heritage List in 1999 as the best preserved planned Spanish colonial town in Asia. Plaza Salcedo, Plaza Burgos, and the Metropolitan Cathedral sit next to each other and become the festival's main stage.\\n\\nThe Vigan City Fiesta and Longganisa Festival is the city's biggest week of the year. The religious feast falls on January 25, the Conversion of St. Paul the Apostle, who is the city's patron. The Longganisa Festival runs alongside it, with the Longganisa Street Dance set every January 22 and cooking contests, parades, and concerts in between. Vigan's cityhood anniversary on January 27 closes out the run.\\n\\nThe point is to honor both the patron saint and the city's most famous product, the small, garlicky Vigan longganisa. Expect calesa traffic redirected, food stalls along the heritage streets, students rehearsing in matching shirts, and the smell of sukang Iloko and grilled sausage in the air from early morning.",
+        "why_go": "If you only have one window to see Vigan in full festival mode, this is it. The January 22 Longganisa Street Dance turns the heritage streets into an open-air stage as teams from across the Ilocos Region act out the longganisa-making process in choreography. Recent editions added live bands marching with the dancers, which changes the energy from the usual recorded soundtrack.\\n\\nThe food side alone is worth the trip up north. The culinary showcase has student cooks and chefs riffing on Vigan longganisa in dishes like longganisa wonton soup, grilled salmon longganisa, cheesy stuffed eggplant longganisa, and longganisa pudding. Add the longest-longganisa-making challenge, the eating contests, and the trade fair stalls, and you can plan a whole day around tasting.\\n\\nThe Rambak opening concert at Plaza Burgos is free and usually pulls in big OPM names, with past editions featuring Jed Madela, Ice Seguerra, and Dawn. After the concert you can walk to Calle Crisologo for late-night photos with the heritage houses lit up.",
+        "what_unique": "Most Philippine town fiestas center on a santo and a procession. Vigan layers a food identity right on top of that, and the food is a specific sausage. Vigan longganisa is short, plump, and heavy on fresh garlic, with sukang Iloko sugarcane vinegar giving it the tangy edge that separates it from sweet Pampanga or Lucban versions. It is registered as the city's One Town, One Product, so the festival doubles as a trade event for backyard producers.\\n\\nThe religious anchor is also unusual. Instead of a Marian title or a saint's death anniversary, Vigan celebrates the Conversion of St. Paul on January 25, the moment Saul became Paul on the road to Damascus. The Metropolitan Cathedral of the Conversion of St. Paul, seat of the Archdiocese of Nueva Segovia, is dedicated to that exact mystery, so the fiesta tone leans on transformation and pilgrimage.\\n\\nThe setting locks in the rest. The street dance, the longest-longganisa attempt, and the cooking demos all happen inside a UNESCO World Heritage core of 233 surviving Spanish colonial houses.",
+        "history": {
+            "heading": "From parish feast to OTOP street party",
+            "body": "Vigan has marked the feast of the Conversion of St. Paul the Apostle every January 25 since the Spanish colonial era, anchored at the Metropolitan Cathedral of the Conversion of St. Paul, seat of the Archdiocese of Nueva Segovia. The longganisa component is much younger. The longganisa was folded into the annual city fiesta in 2002 with a longest-longganisa-making challenge under then mayor Ferdinand Medina. The Longganisa Street Dance competition followed in 2003 and has been held every January 22 since, timed to promote the local sausage-making industry. Vigan longganisa itself traces back to the Spanish period and is often described as a local adaptation of chorizo, reworked with native garlic and Ilocano sukang Iloko vinegar. The sausage is registered as the city's One Town, One Product. Vigan as a town was inscribed on the UNESCO World Heritage List in 1999 as the best preserved planned Spanish colonial town in Asia, and the fiesta plays out across that heritage core.",
+            "citation_label": "Vigan.ph and UNESCO World Heritage Centre",
+            "citation_url": "https:\/\/whc.unesco.org\/en\/list\/502\/",
+            "founded": "2002"
+        },
+        "key_events": [
+            {
+                "name": "Longganisa Street Dance Competition",
+                "blurb": "January 22 parade where high school and college teams from Ilocos Region dramatize the longganisa-making process in choreography and costume."
+            },
+            {
+                "name": "Longest Longganisa Making Challenge",
+                "blurb": "Teams race to produce the longest continuous Vigan longganisa, a contest that has been part of the fiesta since 2002."
+            },
+            {
+                "name": "Longganisa Culinary Showcase",
+                "blurb": "Student cooks and local chefs reinvent longganisa into dishes like longganisa wonton soup, grilled salmon longganisa, and longganisa pudding."
+            },
+            {
+                "name": "Feast of the Conversion of St. Paul",
+                "blurb": "January 25 Mass at the Metropolitan Cathedral of the Conversion of St. Paul, the religious heart of the whole fiesta week."
+            },
+            {
+                "name": "Rambak Opening Concert at Plaza Burgos",
+                "blurb": "Free outdoor concert that kicks off the fiesta period, with OPM acts and local performers drawing big crowds to the plaza."
+            },
+            {
+                "name": "Cityhood Anniversary",
+                "blurb": "January 27 commemoration of Vigan's cityhood, usually tacked onto the tail end of the fiesta week with civic programs."
+            }
+        ],
+        "tip": "Book a hotel inside the heritage zone weeks ahead, because Calle Crisologo gets blocked off for the parade and rooms fill up fast. Wear shoes for cobblestones, bring small bills for food stalls, and order longganisa with sukang Iloko and garlic rice for breakfast, that is how locals actually eat it.",
+        "tags": [
+            "VisitVigan",
+            "LongganisaFestival",
+            "ViganCityFiesta",
+            "IlocosSur",
+            "NorthLuzon",
+            "ViganHeritage",
+            "PhilippineFiestas"
+        ],
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "Jan 22 to 25",
+                "detail": "Street dance starts January 22. City fiesta peaks on January 25, feast of the Conversion of St. Paul the Apostle. Activities often run from January 17 onwards."
+            },
+            {
+                "icon": "location",
+                "color": "blue",
+                "label": "Where",
+                "big": "Vigan City",
+                "detail": "Ilocos Sur, northern Luzon. Main events happen along Plaza Burgos, Plaza Salcedo, and the cobblestone Calle Crisologo."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Patron",
+                "big": "St. Paul the Apostle",
+                "detail": "The fiesta is tied to the feast of the Conversion of St. Paul. The Metropolitan Cathedral is the seat of the Archdiocese of Nueva Segovia."
+            },
+            {
+                "icon": "food",
+                "color": "rose",
+                "label": "Star Dish",
+                "big": "Vigan Longganisa",
+                "detail": "Garlicky, slightly tangy pork sausage made with sukang Iloko vinegar. Registered as Vigan City's One Town, One Product (OTOP)."
+            }
+        ]
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "amber",
+                "label": "When",
+                "big": "Last week of April",
+                "detail": "Held annually in late April since 2016. From 1979 until 2015 it ran every three years."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "Banaue, Ifugao",
+                "detail": "Highland town in the Cordillera mountains of northern Luzon, around 350 kilometers north of Manila."
+            },
+            {
+                "icon": "star",
+                "color": "violet",
+                "label": "Rooted in",
+                "big": "Kadangyan ritual",
+                "detail": "Based on the old Ifugao ceremony marking a family's rise to the kadangyan (noble) class through abundant rice wine."
+            },
+            {
+                "icon": "info",
+                "color": "blue",
+                "label": "Signature event",
+                "big": "Wooden scooter race",
+                "detail": "A 7-kilometer downhill race on handmade taltallak scooters carved from mananor and butbuta wood."
+            }
+        ],
+        "history": {
+            "heading": "From a kadangyan ritual to a town-wide festival",
+            "body": "Imbayah comes from bayah, the Ifugao word for rice wine. In old practice, a family that wanted to be recognized as kadangyan, the local noble class, had to host a long ceremony where rice wine was poured so generously that the jar was said to overflow. That image of abundance gave the rite its name and its meaning.\n\nThe public festival version was first organized in December 1979 under then Banaue Mayor Adriano Apilis Jr. The goal was practical. Tourism around the rice terraces was growing fast and elders were worried that young Ifugaos were losing the old chants, weaving patterns, and woodcarving skills. For decades after, Imbayah was held every three years.\n\nIn 2016, under Mayor Jerry U. Dalipog, the local government turned it into a yearly event so the cultural practices would be performed more often and so visitors had a reliable date to plan around. Sources: Rappler feature on Imbayah, Inquirer culture desk, and SunStar Baguio coverage of the shift to a yearly schedule.",
+            "founded": "1979",
+            "citation_label": "Rappler, Inquirer, SunStar",
+            "citation_url": "https:\/\/www.rappler.com\/life-and-style\/arts-culture\/57048-imbayah-festival-renewal-tradition\/"
+        },
+        "key_events": [
+            {
+                "name": "Cultural Parade of the Barangays",
+                "blurb": "The 12 barangays of Banaue march in five clustered groups, each in full native attire with gongs and chants."
+            },
+            {
+                "name": "Wooden Scooter Race",
+                "blurb": "Around 7 kilometers of downhill mountain road on handmade taltallak scooters carved from mananor and butbuta wood."
+            },
+            {
+                "name": "Munpaot Woodcarving Competition",
+                "blurb": "Carvers work live in front of the crowd, shaping bululs and other traditional pieces from a single block."
+            },
+            {
+                "name": "Rice Pounding and Bayah Sharing",
+                "blurb": "Communal rice pounding followed by tasting of bayah, the fermented rice wine that gives the festival its name."
+            },
+            {
+                "name": "Boar Sacrifice Ritual",
+                "blurb": "A public ritual rooted in the original kadangyan ceremony, performed by elders before the main program."
+            },
+            {
+                "name": "Mr. and Ms. Imbayah Pageant",
+                "blurb": "Younger Ifugaos compete in traditional dress, with rounds on weaving, dance, and oral history."
+            }
+        ],
+        "place_intro": "Imbayah is the cultural festival of Banaue, the Ifugao highland town best known for its mountain-carved rice terraces. It is held in the last week of April, when the harvest season is winding down and the weather up in the Cordillera is dry enough for outdoor competitions and street parades. The main program runs around the town proper.\\n\\nBanaue sits about 350 kilometers north of Manila, deep in the Cordillera mountains of Ifugao Province. It is a small town built around terraces that rise roughly 1,500 meters above sea level. Most travelers come in by overnight bus from Manila, then jeepney into the centro. During Imbayah week, the plaza, the municipal hall grounds, and the main road become the festival venue. Ifugao families from the surrounding barangays come down in full traditional dress, with gongs and chants moving from one street to the next.\\n\\nThe festival mixes ritual and competition. Some parts are sacred, like the boar sacrifice performed by elders. Other parts are loud and playful, like the wooden scooter race, the rice pounding contest, and the men's volleyball game played in traditional loincloths.",
+        "why_go": "Imbayah is one of the few large festivals in the Philippines where the entire program is built around a single indigenous group's living culture rather than a Catholic patron saint. If you have been to Sinulog or Ati-Atihan and you want to see something on the other end of the spectrum, this is it. The dances, the gongs, the chants, and the costumes all come straight from Ifugao practice, not from a choreographed contingent.\\n\\nThe wooden scooter race is the event most travelers plan around. Riders go down roughly 7 kilometers of mountain road on handmade taltallak scooters, carved from mananor and butbuta wood by the riders themselves or their families. It is fast, loud, and very local. Spectators line the road and the finish area gets packed, so come early if you want a clear view.\\n\\nThe other reason to go is the timing. Late April is dry season in the Cordillera, the terraces are still green from the standing rice, and the bus and jeepney routes from Manila and Baguio are running on normal schedules. You can pair the festival with a Batad day hike or a side trip to Sagada without rearranging the rest of your itinerary.",
+        "slug": "imbayah",
+        "tags": [
+            "#ImbayahFestival",
+            "#Banaue",
+            "#Ifugao",
+            "#CordilleraTravel",
+            "#NorthLuzon",
+            "#PhilippineFestivals",
+            "#RiceTerraces"
+        ],
+        "tip": "Book your Banaue homestay or inn at least two months out. The town is small, rooms near the centro fill up first, and during Imbayah week the late April crowd includes both domestic tourists and Ifugao families coming home from Manila and Baguio. If everything in the centro is full, ask about rooms in Batad or along the road to Bangaan and ride a jeepney in.",
+        "what_unique": "What sets Imbayah apart is that it is not built on a Catholic feast day. There is no patron saint, no fluvial procession, no novena leading up to it. The festival grew out of the kadangyan rite, the old Ifugao ceremony where a family announced its rise to noble status by hosting a long feast and pouring so much rice wine that the jar overflowed. That image of abundance is still the symbol of the festival.\\n\\nThe costumes and tools are also specific to Ifugao, not generic tribal wear. You will see the wanno and tapis weaves, brass earrings, and rattan backpacks called pasiking. The dances are accompanied by gangsa gongs played in the seated Ifugao style, which is different from the standing Kalinga style some travelers may already know.\\n\\nThe wooden scooter race is the part that has become the festival's signature image. The taltallak has no engine and no metal parts in the running gear. Riders carve them from local hardwood and tune the wheels for grip on the mountain road. It is a piece of Ifugao practical engineering that exists in Banaue and the nearby towns and almost nowhere else."
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "blue",
+                "label": "When",
+                "big": "April 17 to 30",
+                "detail": "Bangus Festival runs the back half of April. Biggest crowd-pulling events land on April 26, 28, and 30."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "Dagupan City",
+                "detail": "Held across Dagupan City in Pangasinan, north Luzon. Major events stretch along De Venecia Highway and the Plaza."
+            },
+            {
+                "icon": "star",
+                "color": "amber",
+                "label": "Famous for",
+                "big": "World's longest BBQ",
+                "detail": "Dagupan set the Guinness record on May 3, 2003 with a 1,007.56 meter grill cooking 10,000 bangus. The Bangusan street party recreates it yearly."
+            },
+            {
+                "icon": "food",
+                "color": "rose",
+                "label": "Eat",
+                "big": "Bangus, ten ways",
+                "detail": "Bangusine cooking contest puts boneless bangus, sisig na bangus, daing, and relleno on every block. Pair with pigar-pigar at Galvan Street."
+            }
+        ],
+        "history": {
+            "heading": "From a quiet balikbayan harvest to a Guinness-record street party",
+            "body": "Bangus Festival started small. In the early 1990s, then-mayor Al Fernandez put together a simple bangus harvest called Gilon, a welcome activity for balikbayans coming home for the summer. Gilon is the local Pangasinense word for harvesting milkfish from the ponds, and that quiet community ritual is the seed of everything you see today.\n\nThe festival was formally launched as the Dagupan City Bangus Festival in 2002 by then-mayor Benjamin Lim, timed with the city charter anniversary on April 30. A year later, on May 3, 2003, Dagupan grabbed the Guinness record for the world's longest barbecue at 1,007.56 meters, beating Peru's previous mark. That single afternoon cemented bangus as the city's identity, and the Bangusan street party has been the festival's signature event ever since.\n\nThe religious anchor is the city fiesta of San Juan Bautista, Dagupan's patron, whose feast falls in late June. The April celebration grew out of civic and economic pride in the milkfish industry rather than a saint's day, which is why it leans more food-and-culture than processional.",
+            "citation_label": "Dagupan City Government, Manila Bulletin, Philippine Star",
+            "citation_url": "https:\/\/www.dagupan.gov.ph\/category\/bangus-festival\/"
+        },
+        "key_events": [
+            {
+                "name": "Gilon-Gilon ed Baley",
+                "blurb": "Street dance competition joined by all 31 barangays of Dagupan. Choreography mimics how fishermen scoop bangus from the ponds. Held around April 26."
+            },
+            {
+                "name": "Bangus Rodeo",
+                "blurb": "Contests for fastest bangus sorter, heaviest bangus, and best deboner. Loud, messy, very local. Usually April 28."
+            },
+            {
+                "name": "Bangusine Cook-Off",
+                "blurb": "Restaurants and home cooks present original bangus dishes, from sisig na bangus to bangus sushi. Free tasting if you come early."
+            },
+            {
+                "name": "Kalutan ed Dalan \/ Bangusan Street Party",
+                "blurb": "The big one on April 30. A grill that stretches more than a kilometer along De Venecia Highway, with thousands of bangus cooking at once."
+            },
+            {
+                "name": "Fun Run for Disaster Awareness",
+                "blurb": "Opens the festival weeks. Loops through downtown Dagupan and doubles as a fundraiser for the city's calamity preparedness program."
+            },
+            {
+                "name": "Charter Day Parade",
+                "blurb": "April 30 civic parade marking the founding of Dagupan as a chartered city, with floats from schools, barangays, and the bangus industry."
+            }
+        ],
+        "place_intro": "Bangus Festival is Dagupan City's love letter to the milkfish. The city sits on the Lingayen Gulf in Pangasinan, about four to five hours by bus from Manila, and it has built its identity around bangus farming in the brackish ponds that ring the Pantal River. Every April, the city blocks off its main roads, lights up the plaza, and turns the back half of the month into a long food and culture run.\\n\\nThe festival officially stretches from around April 9 to May 1, but the events most travelers come for are packed into April 17 to 30. You get a fun run, a Bangus Rodeo with sorting and deboning contests, the Gilon-Gilon ed Baley street dance, the Bangusine cooking competition, and on April 30, the Kalutan ed Dalan grill-up along De Venecia Highway. April 30 is also Dagupan's charter anniversary as a city, which is why the closing date never moves.\\n\\nDagupan itself is bigger than first-time visitors expect. It is the commercial center of western Pangasinan, with CSI malls, the Cathedral of St. John the Evangelist, Tondaligan Blue Beach, and a working river port.",
+        "why_go": "Go for the Bangusan Street Party on April 30. The visual is hard to describe until you see it: more than a thousand one-meter charcoal grills lined up along De Venecia Highway, cooking around 20,000 bangus at the same time. The smoke, the smell of grilled fish over coals, the sound of tongs clanging. This is what put Dagupan in the Guinness Book in 2003 and the city has been recreating it every year since. You can buy a slot on a grill or just walk the line and eat as you go.\\n\\nThe Gilon-Gilon ed Baley street dance a few days earlier is the cultural heart. All 31 barangays send a contingent, and the choreography is built around the motion of scooping bangus from ponds, weighing baskets, and hauling them to market. Costumes lean blue, silver, and aqua to mimic milkfish scales, and the audience picks favorites loudly.\\n\\nFor food travelers, the Bangusine cooking contest is the actual reason to come. You will see bangus done in ways you have never thought of: bangus sisig, daing na bangus with green mango, smoked bangus belly, bangus relleno stuffed with longganisa, even bangus sushi.",
+        "slug": "bangus-festival",
+        "tags": [
+            "bangus",
+            "dagupan",
+            "pangasinan",
+            "milkfish",
+            "north luzon",
+            "food festival",
+            "april fiesta"
+        ],
+        "tip": "Skip cooking your own grill on April 30. Walk the De Venecia Highway stretch around 5 pm, before the crowd thickens, and buy grilled bangus straight from a barangay slot. Bring water and wet wipes, the smoke gets thick. Park at the city plaza side and walk in, tricycles cannot pass the main road that night.",
+        "what_unique": "What sets Bangus Festival apart from the bigger Philippine fiestas is that it is not built around a saint or a religious procession. There is no Sinulog-style image, no Ati-Atihan body paint, no fluvial parade for a patron. It is a civic and food festival born from the city's identity as the country's bangus capital, and that gives it a different rhythm. The center of gravity is a kilometer of grills, not an altar.\\n\\nThe Gilon-Gilon ed Baley dance is also distinct because it is choreographed around fishery labor instead of a battle or a courtship. The movements come from actual bangus harvesting, the scooping motion, the sorting, the weighing, even the haggling at market. Costume designers in each barangay study scale patterns and pond colors, so the parade looks more like a moving aquarium than a typical fiesta line-up.\\n\\nThe other unique piece is the timing with the city charter on April 30. Most Philippine fiestas lock onto a saint's feast day, but Dagupan deliberately fused its civic anniversary with the festival climax. That is why the Bangusan Street Party feels less like a religious closing and more like a citywide birthday cookout."
+    },
+    {
+        "facts": [
+            {
+                "icon": "calendar",
+                "color": "blue",
+                "label": "When",
+                "big": "May 1",
+                "detail": "Main festival day coincides with Labor Day. Activities run through April with the provincial government lining up events almost daily until May 1."
+            },
+            {
+                "icon": "location",
+                "color": "emerald",
+                "label": "Where",
+                "big": "Lingayen, Pangasinan",
+                "detail": "Centered on Lingayen Beach and the provincial capitol grounds along Lingayen Gulf. The Banca Parada fluvial parade runs along the Agno River."
+            },
+            {
+                "icon": "info",
+                "color": "violet",
+                "label": "Meaning",
+                "big": "Sea Festival",
+                "detail": "Pista is from Spanish fiesta. Dayat means sea in Pangasinense. The festival is a community thanksgiving for the bounty of Lingayen Gulf."
+            },
+            {
+                "icon": "star",
+                "color": "amber",
+                "label": "Highlight",
+                "big": "Banca Parada",
+                "detail": "Hundreds of decorated fishing boats line the Agno River in a grand fluvial parade, with crews dressing up their boats to depict local legends and folklore."
+            }
+        ],
+        "history": {
+            "heading": "Roots in postwar fishing villages of Lingayen Gulf",
+            "body": "Pista'y Dayat traces its formal beginnings to 1970, though elders in Pangasinan say the practice had already been alive through the 1960s. In the small fishing towns along Lingayen Gulf, especially Lingayen and Alaminos, fisherfolk would gather every first of May to give thanks for the sea's bounty. They would wade into the seawater on that one day, holding onto the belief that the sea could heal ailments of all kinds if you dipped in it on the first of May. As Lingayen and Alaminos started trading more actively with each other, the small village celebrations grew bigger and eventually got picked up by the provincial government. Today the festival keeps that fishing-community core: local fisherfolk still open each Pista'y Dayat with bamboo raft offerings, a quiet ritual that honors the sea's role in sustaining the more than 62,000 fishing families across Pangasinan.",
+            "founded": "1970",
+            "citation_label": "Inquirer News, Festivalscape",
+            "citation_url": "https:\/\/newsinfo.inquirer.net\/1765849\/pangasinan-folk-thank-the-sea-thru-pistay-dayat"
+        },
+        "key_events": [
+            {
+                "name": "Banca Parada Fluvial Parade",
+                "blurb": "Hundreds of fishing boats decorated by their crews float down the Agno River in a grand parade, with some boats acting out local legends like Limahong's 1574 invasion."
+            },
+            {
+                "name": "Beach Mass and Bamboo Raft Offering",
+                "blurb": "Local fisherfolk open the festival with a mass on Lingayen Beach and a bamboo raft offering to the sea, the most solemn part of the week."
+            },
+            {
+                "name": "Limgas na Pangasinan",
+                "blurb": "The province's signature beauty pageant where candidates from different towns compete, one of the most attended nights of the festival."
+            },
+            {
+                "name": "Sand Sculpting and Bangus Art Exhibit",
+                "blurb": "Teams build sand sculptures on Lingayen Beach while a separate exhibit features artwork themed around bangus, the province's prized milkfish."
+            },
+            {
+                "name": "Trade, Tourism, Food, and Garden Fair",
+                "blurb": "Booths set up at the capitol grounds showcase Pangasinan products, bangus dishes, sweets, and crafts from the province's coastal towns."
+            },
+            {
+                "name": "Lingayen Gulf Coastal Clean-up",
+                "blurb": "Usually held on the last day, volunteers and government workers clean the shoreline along the capitol, closing the festival on a stewardship note."
+            }
+        ],
+        "place_intro": "Pista'y Dayat, the Sea Festival, is Pangasinan's biggest thanksgiving celebration to Lingayen Gulf, the body of water that has fed the province for generations. The main day falls on May 1, which lines up with Labor Day, but the provincial government in Lingayen lines up activities almost daily from early April until then. The festival is centered on the capital town of Lingayen, with most of the action on Lingayen Beach and at the provincial capitol grounds across the road.\\n\\nLingayen itself is the capital of Pangasinan and sits right on the shore of Lingayen Gulf. History buffs know it as the site where General Douglas MacArthur and the Allied forces landed on January 9, 1945 to begin the liberation of Luzon. The town was founded in 1614, and its name comes from the Pangasinan word lingawen, meaning to look back.\\n\\nOn the ground, the week feels like a fishing-village fiesta that grew into a provincial event. Expect a fluvial parade on the Agno River, a beach mass, food fairs, beauty pageants, sand sculpting, and a coastal clean-up before everyone goes home.",
+        "why_go": "Go for the Banca Parada. This is the moment locals come out for: hundreds of fishing boats, each decorated by its own crew, gliding down the Agno River. Some boats take it seriously and act out historical episodes like Limahong's 1574 invasion of Pangasinan. You can watch from the riverbanks for free, and the closer you are to the take-off point, the better the photos.\\n\\nGo for the food. Pangasinan is bangus country, and during Pista'y Dayat the Trade, Tourism, Food, and Garden Fair at the capitol turns into a parade of milkfish in every form, plus tupig, puto Calasiao, and bagoong from the coastal towns. The fair runs for most of the festival, so even if you only catch one day you will still eat well. The beach mass and bamboo raft offering on the opening morning are also worth waking up early for if you want to see the quieter, more solemn side of the festival.\\n\\nGo because it is easy to combine with a beach trip. Lingayen Beach itself is right there, and Hundred Islands in Alaminos is about an hour and a half away by van. You can plan the trip so you catch the May 1 main day, then move on to the islands the day after, which is what most Manila-based families do.",
+        "what_unique": "What sets Pista'y Dayat apart from most Philippine fiestas is that it is not a saint's day. It is a thanksgiving to the sea itself. There is no patron whose image is paraded through town. The center of devotion is Lingayen Gulf, and the symbolic act is the bamboo raft offering that local fisherfolk float out at the opening. The dipping tradition is also distinct: elders believed that on the first of May, the seawater of Lingayen Gulf could heal ailments of all sorts, only on that one day of the year. You will still see families wading in for that reason.\\n\\nThe festival is also unusual in scale because it is run by the provincial government, not a single barangay or parish. That means the program is bigger than a typical town fiesta, with Limgas na Pangasinan, an orchestra showdown, dancesports, and a solo vocal contest all at the capitol. At the same time, the village rituals are still intact, so you get two layers in one week.\\n\\nThe third distinct piece is the Banca Parada. Most Philippine fluvial processions carry a religious image down a river. Here, the river is the stage and the fishermen are the ones being honored, with boats freely decorated in local themes.",
+        "slug": "pistay-dayat",
+        "tags": [
+            "pistay-dayat",
+            "lingayen",
+            "pangasinan",
+            "sea-festival",
+            "fluvial-parade",
+            "north-luzon",
+            "may-fiesta"
+        ],
+        "tip": "Stay in Dagupan instead of Lingayen if you book late. Dagupan has more hotels and is only about 20 to 30 minutes away by tricycle or jeep, and you will still make the early-morning beach mass on Lingayen Beach. Book your ride back the same night because public transport thins out fast after the May 1 program closes."
+    }
+]

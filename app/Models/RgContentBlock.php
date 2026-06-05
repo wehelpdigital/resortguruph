@@ -61,6 +61,10 @@ class RgContentBlock extends Model
         // facts, not invented prose — used for SEO E-E-A-T signal and
         // to give visitors real context on what the place is.
         'place_history',
+        // "Foods to try" grid for destinations — lists the actual
+        // dishes (papaitan, pigar-pigar, pinakbet) not restaurants.
+        // Each item carries a name, where-to-find it, blurb, image.
+        'foods_to_try',
     ];
 
     public function getPayloadAttribute(): array

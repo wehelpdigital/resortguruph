@@ -68,6 +68,7 @@ class BlockRenderer
             'related_blogs' => $this->relatedBlogs($p),
             'facts_list' => $this->factsList($p),
             'place_history' => $this->placeHistory($p),
+            'foods_to_try' => $this->foodsToTry($p),
             default => '',
         };
     }
@@ -2319,5 +2320,60 @@ class BlockRenderer
             . $citationHtml
             . '</div>'
             . '</section>';
+    }
+
+    /**
+     * "Foods to try in <Place>" card grid. Each item lists an actual
+     * dish — not a restaurant — so the per-destination food culture
+     * surfaces as a researched gallery instead of being buried inside
+     * prose blocks. Items: { name, where, blurb, image }.
+     */
+    private function foodsToTry(array $p): string
+    {
+        $items = $p['items'] ?? [];
+        if (!$items) return '';
+        $heading = $this->e($p['heading'] ?? 'Foods to try');
+        $intro = $this->e($p['intro'] ?? '');
+
+        $out = '<section class="not-prose my-10">';
+        $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
+        if ($intro !== '') {
+            $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $intro . '</p>';
+        }
+
+        $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">';
+        foreach ($items as $item) {
+            $name = trim((string) ($item['name'] ?? ''));
+            if ($name === '') continue;
+            $where = $this->e($item['where'] ?? '');
+            $blurb = $this->e($item['blurb'] ?? '');
+            $img = trim((string) ($item['image'] ?? ''));
+
+            $hero = $img !== ''
+                ? '<div class="aspect-[16/10] overflow-hidden bg-slate-100">'
+                    . '<img src="' . $this->e($this->normalizeMediaUrl($img)) . '" alt="' . $this->e($name)
+                    . '" class="w-full h-full object-cover" loading="lazy">'
+                    . '</div>'
+                : '<div class="aspect-[16/10] flex items-center justify-center bg-gradient-to-br from-amber-50 to-rose-50">'
+                    . '<svg class="w-10 h-10 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
+                    . '<path d="M3 11h18M6 11V8a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v3M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/>'
+                    . '</svg>'
+                    . '</div>';
+
+            $out .= '<div class="rounded-xl border border-slate-200 bg-white overflow-hidden flex flex-col">'
+                . $hero
+                . '<div class="p-4 flex-1 flex flex-col">'
+                . '<h3 class="font-bold text-slate-900 text-lg leading-tight mb-1">' . $this->e($name) . '</h3>'
+                . ($where !== ''
+                    ? '<div class="text-[11px] uppercase tracking-wider font-bold text-amber-700 mb-2">'
+                        . 'Where: ' . $where . '</div>'
+                    : '')
+                . ($blurb !== ''
+                    ? '<p class="text-sm text-slate-600 leading-relaxed m-0">' . $blurb . '</p>'
+                    : '')
+                . '</div></div>';
+        }
+        $out .= '</div></section>';
+        return $out;
     }
 }

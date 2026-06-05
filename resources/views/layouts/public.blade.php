@@ -544,6 +544,21 @@
             <a href="{{ route('home') }}" class="hover:text-brand-600">Home</a>
             <a href="{{ url('/destinations') }}" class="hover:text-brand-600">Destinations</a>
             <a href="{{ url('/food-trip') }}" class="hover:text-brand-600">Food Trip</a>
+            {{-- Activities dropdown — currently houses Fiestas; future
+                 sub-items (Adventures, Tours, etc.) slot under here. --}}
+            <div class="relative" data-rg-dropdown>
+                <button type="button" class="flex items-center gap-1 hover:text-brand-600"
+                    onclick="event.preventDefault();this.nextElementSibling.classList.toggle('hidden')">
+                    Activities
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div class="hidden absolute right-0 mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-lg z-50 py-2">
+                    <a href="{{ route('fiestas.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                        <div class="font-semibold">Fiestas</div>
+                        <div class="text-xs text-slate-500 mt-0.5">Year-round festival calendar by region</div>
+                    </a>
+                </div>
+            </div>
             <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
             <a href="{{ route('about') }}" class="hover:text-brand-600">About</a>
             <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
@@ -563,6 +578,10 @@
             <a href="{{ route('home') }}" class="block">Home</a>
             <a href="{{ url('/destinations') }}" class="block">Destinations</a>
             <a href="{{ url('/food-trip') }}" class="block">Food Trip</a>
+            <div class="block">
+                <div class="text-xs uppercase tracking-wider text-slate-500 mt-2 mb-1">Activities</div>
+                <a href="{{ route('fiestas.index') }}" class="block pl-3 text-slate-700">Fiestas</a>
+            </div>
             <a href="{{ route('blog.index') }}" class="block">Blog</a>
             <a href="{{ route('about') }}" class="block">About</a>
             <a href="{{ route('contact') }}" class="block">Contact</a>
