@@ -711,5 +711,1515 @@
                 "blurb": "Ring-shaped fried pastry made from flour, egg yolks, and pork fat, dunked in sugar syrup so the outside hardens into a glossy crackle. It looks like a blistered thin donut. Eat it in the afternoon while the syrup is still tacky."
             }
         ]
+    },
+    {
+        "token": "dagupan-pangasinan",
+        "heading": "Dagupan Eats: The Bangus Capital Plus a Greasy Galvan Crawl",
+        "intro": "Dagupan is the kind of place where you can have grilled milkfish for breakfast, beef-and-liver hash on a plastic stool by midnight, and steamed rice cakes for the road. Bring an empty stomach and zero shame about eating with your hands.",
+        "items": [
+            {
+                "name": "Inihaw na Boneless Bangus",
+                "where": "Mr. Dagupeno on Arellano St; Magsaysay wet market stalls",
+                "blurb": "The Bonuan-bred milkfish from Lingayen Gulf brackish pens tastes saltier and less muddy than inland kinds. Locals just throw it over coals with calamansi and tomatoes. Order ala pobre or plain and rip in with your hands."
+            },
+            {
+                "name": "Pigar-Pigar",
+                "where": "Galvan Street strip after dark, Uson's and MPC Pigar Pigar",
+                "blurb": "Paper-thin beef or carabeef and liver flash-fried in a screaming wok with onions and cabbage, slid onto a sizzling plate within two minutes. Galvan flips from morning market into rows of plastic stools by 6pm. Ask for extra cauliflower."
+            },
+            {
+                "name": "Kaleskes",
+                "where": "Herrero-Perez kaleskesan stalls; Galvan spillover joints",
+                "blurb": "Working-man soup of carabao or cow intestine, pancreas, blood bits, and tendon simmered until the chew gives way. Herrero-Perez is where it started and where old-timers still queue. Squeeze in calamansi, dump chili, eat with rice."
+            },
+            {
+                "name": "Pakbet Pangasinan-style",
+                "where": "Carinderias on Magsaysay St; Dagupan public market food court",
+                "blurb": "Locals just call it pakbet and this version leans on bagoong isda instead of the saltier monamon up north. Expect ampalaya, talong, sitaw, kalabasa, and okra stewed soft with pork or shrimp. Your veggie buffer between Galvan sins."
+            },
+            {
+                "name": "Dinengdeng",
+                "where": "Turo-turo spots in Bonuan Boquig and along Perez Boulevard",
+                "blurb": "Lighter and souper than pakbet, basically whatever vegetables the cook picked that morning bobbing in thin bagoong broth, often crowned with grilled bangus or tilapia. Saluyot and bamboo shoots show up often. Order it when your gut needs mercy."
+            },
+            {
+                "name": "Puto Calasiao",
+                "where": "Calasiao town, 15 min away, stalls near San Pedro Church plaza",
+                "blurb": "Thumb-sized steamed rice cakes from fermented galapong, sticky-sweet with a faint tang from the overnight rest. You will eat five before you notice. Locals dip them in tablea hot chocolate or pair with sharp kesong puti."
+            },
+            {
+                "name": "Tupig",
+                "where": "Roadside grills on MacArthur Hwy; Urdaneta jeepney terminal",
+                "blurb": "Glutinous rice flour, coconut strips, sesame, and molasses wrapped in banana leaves then grilled over live coals. The leaves char while the inside stays gooey and smoky. Buy bundles of ten hot so you have something to gnaw on the ride."
+            },
+            {
+                "name": "Bagoong Isda",
+                "where": "Magsaysay market fish-paste row; Dagupan terminal vendors",
+                "blurb": "The fermented fish paste powering every savory dish here, made from anay or other small fish aged in clay jars until funky and amber. Sellers will let you taste before scooping. Grab a kilo for the kitchen and a small jar for instant pakbet wins."
+            },
+            {
+                "name": "Bocayo",
+                "where": "Lasip Grande pasalubong stops; Lingayen-bound terminal vendors",
+                "blurb": "One of the Four Bs of Pangasinan alongside bangus, bagoong, and beaches. Young coconut strips caramelized in molasses or muscovado until they snap. Sold in little plastic packs and the easiest sweet to stuff in a backpack."
+            }
+        ]
+    },
+    {
+        "token": "one-ayala",
+        "heading": "What to Actually Eat in Makati Without Wasting a Meal",
+        "intro": "Makati flips between aircon mall food courts and pavement plastic-stool eating, and the good stuff hides on both sides. Here is what locals will tell you to chase, with the exact corner or stall to point your jeep at.",
+        "items": [
+            {
+                "name": "House Crispy Sisig",
+                "where": "Manam, Level 2 Glorietta 4 (Palm Drive)",
+                "blurb": "Pampanga pork-jowl classic done with a raw egg cracked on the sizzling plate so it half-cooks into the chopped bits. Manam tops it the way a Kapampangan tito would, all crackle and citrus, and the Glorietta branch sits a five-minute walk from Ayala MRT."
+            },
+            {
+                "name": "Lechon Wrap",
+                "where": "Salcedo Saturday Market, Jaime C. Velasquez Park (Tordesillas Street)",
+                "blurb": "Whole-roast pig hacked to order then tucked into a soft wrapper with cucumber strips and a smear of hoisin. Get there before 9am Saturday because the crispy skin pieces vanish first, and the market shuts by 2pm sharp."
+            },
+            {
+                "name": "Calderetang Kambing",
+                "where": "Legazpi Sunday Market, V.A. Rufino Street (Legazpi Village)",
+                "blurb": "Slow-braised goat in tomato gravy with liver paste, the kind of weekend stew titas line up for. The vendor here serves it ladled over rice in a styro bowl, and you eat it standing under the trees with a watermelon shake from the next stall."
+            },
+            {
+                "name": "Chicken Inasal",
+                "where": "Inasal stall row, Legazpi Sunday Market (Sunday only, 7am-2pm)",
+                "blurb": "Bacolod-style grilled chicken marinated in calamansi, annatto oil and tanglad, charred over coconut husk. Ask for pecho if you want the breast slab; the vendor squeezes more annatto-oil on the rice for you before handing it over."
+            },
+            {
+                "name": "Beef Birria Tacos",
+                "where": "Cochi Loco stall, Salcedo Saturday Market",
+                "blurb": "Stewed beef stuffed into hand-pressed corn tortillas with a cup of consomme for dunking, runaway favorite of the Salcedo crowd since they started doing it weekend-only. The line forms by 8am and they cut off orders once the pot runs dry."
+            },
+            {
+                "name": "Kare-Kare",
+                "where": "Mesa Filipino Moderne, Greenbelt 5 (Legaspi Street side)",
+                "blurb": "Oxtail and tripe in thick peanut gravy, eaten with bagoong on the side because that salty fermented shrimp is the whole point. Mesa plates it tidy enough for the Greenbelt aircon crowd but keeps the gravy thick the way a Bulacan lola would."
+            },
+            {
+                "name": "Isaw and Betamax",
+                "where": "Makati Cinema Square corner, Chino Roces Avenue (evenings)",
+                "blurb": "Skewered chicken intestines and cubes of set chicken blood grilled over hot coals, dunked in vinegar with chopped siling labuyo. Pavement eating with tricycle exhaust in the air, and the vendors stay out until the bars close on Pasong Tamo."
+            },
+            {
+                "name": "Tapsilog",
+                "where": "Do Re Mi, Don Pedro Street, Poblacion",
+                "blurb": "Sweet-salty cured beef strips with garlic rice and a fried egg, served all day in a fluorescent-lit canteen that runs nonstop for the call-center shift change. Hot sauce is on the table, vinegar is in the squeeze bottle, and the order comes out before you finish picking a seat."
+            },
+            {
+                "name": "Kare-Kare Skewers",
+                "where": "Alamat Filipino Pub, Felipe Street, Poblacion",
+                "blurb": "Pulutan-format twist where the peanut gravy and oxtail get reworked onto sticks for drinking nights. Pair it with their bacon bagnet and a San Mig Pale, and stay for the live OPM sets that start around 9pm on weekends."
+            }
+        ]
+    },
+    {
+        "token": "opus-mall",
+        "heading": "Pasig City Eats: The Stuff You Order Without Looking at the Menu",
+        "intro": "Pasig is two food cities stitched together: the old Poblacion around Plaza Rizal where lolas still steam kakanin in banana leaves, and Kapitolyo where you can graze from grilled stick food to lechon sisig in one block. Come hungry, bring small bills, wear flip-flops.",
+        "items": [
+            {
+                "name": "Bibingkang Mabantot (Pateros-Pasig style)",
+                "where": "Plaza Rizal area, San Jose \/ Kapasigan delicacy stalls",
+                "blurb": "A rice cake baked with fermented duck egg yolk that gives off a strong sulfuric whiff before you even unwrap the banana leaf. Locals load it with cracked black pepper and eat it warm. If the smell scares you, ask the tindera for a half piece."
+            },
+            {
+                "name": "Pichi-Pichi with Niyog",
+                "where": "Amber, 16 West Capitol Drive, Kapitolyo",
+                "blurb": "Sticky cassava cubes rolled in freshly grated coconut, sometimes swapped for sharp cheddar if you want salty against sweet. Order the niyog version first, the kasera will pack it in a small bilao so it does not sweat."
+            },
+            {
+                "name": "Pancit Malabon",
+                "where": "Amber Kapitolyo and Pasig Mega Market noodle row, Caruncho Avenue",
+                "blurb": "Thick rice noodles drowned in orange crab-fat sauce, then piled with smoked tinapa flakes, chicharon, and boiled egg. The palengke version comes in a styro and you eat standing up. Squeeze the calamansi hard, it cuts the richness."
+            },
+            {
+                "name": "Goto with Tokwa't Baboy",
+                "where": "Goto Believe, East Capitol Drive, Kapitolyo",
+                "blurb": "A giant bowl of glutinous rice porridge topped with crispy garlic and chicharon bits, paired with a saucer of pork ear and fried tofu in vinegar. The portion is honestly enough for two adults but locals still order extra atay."
+            },
+            {
+                "name": "Lechon Oyster Sisig",
+                "where": "Locavore, Brixton Street, Kapitolyo",
+                "blurb": "Roast pork chopped over a sizzling plate, finished with a raw oyster cracked on top so the brine melts into the fat. You mix it yourself, then scoop with rice or wrap it in a small lettuce leaf they bring on the side. Go before 6 PM or expect a long queue."
+            },
+            {
+                "name": "Isaw and Pork BBQ on a Stick",
+                "where": "Three Sisters, Brixton Street corner, Kapitolyo",
+                "blurb": "Grilled pork intestines coiled tight on bamboo, plus marinated pork belly skewers basted with banana ketchup glaze. The dipping vinegar has crushed siling labuyo and you can ask for extra. Eat it standing by the grill so the smoke does not ruin your shirt."
+            },
+            {
+                "name": "Pan de Sulyaw and Pandesal",
+                "where": "Dimas-Alang Bakery, A. Luna Street near Plaza Rizal",
+                "blurb": "An old-school panaderia running since 1919 that still pulls pandesal from a wood-fired oven at 5 AM and 3 PM. Pan de sulyaw is the harder, crustier cousin that locals dunk in barako coffee. Bring a fabric bag, brown paper rips when bread is hot."
+            },
+            {
+                "name": "Charing's Halo-Halo",
+                "where": "Charing's, Caruncho Complex, Pasig Mega Market, San Nicolas",
+                "blurb": "Shaved ice loaded with red mongo, kaong, macapuno, leche flan, ube halaya, and a scoop of homemade ice cream on top. The biggest size comes in a glass bowl bigger than your face. Sit on the plastic stool out front so it does not melt fast."
+            },
+            {
+                "name": "Kanto Boy Silog",
+                "where": "Kanto Freestyle Breakfast, East Capitol Drive, Kapitolyo",
+                "blurb": "Garlic rice and a runny sunny-side egg topped with your pick of tapa, longganisa, or tocino, served on a tin plate with achara on the side. They serve it past midnight which is why tricycle drivers and call-center kids both eat here."
+            }
+        ]
+    },
+    {
+        "token": "mandaluyong",
+        "heading": "Mandaluyong Eats: What to Order Before You Hop the MRT",
+        "intro": "Mandaluyong is more than just the Megamall pitstop between Ortigas meetings and EDSA traffic. Plot your meals around Boni Avenue and Maysilo Circle and you can eat through three generations of Pinoy cooking before rush hour starts.",
+        "items": [
+            {
+                "name": "Pancit Palabok",
+                "where": "Aling Tonang's Palabok, 470 Boni Avenue corner Ballesteros St.",
+                "blurb": "Lola Agatona started in the 1950s and her granddaughter still runs the Boni branch that opened in 1971. The orange shrimp sauce is thicker than QC versions, layered with chicharon, tinapa flakes, and duck egg you mash in yourself."
+            },
+            {
+                "name": "Bulalo",
+                "where": "R&J Bulalohan, 600 Boni Avenue corner Maysilo Circle, Plainview",
+                "blurb": "Open 24\/7, this carinderia saves you the Tagaytay trip when the 2am craving hits. Order the shank with extra marrow, ask for patis with calamansi and siling labuyo on the side, and come early before the office crowd takes every stool."
+            },
+            {
+                "name": "Crispy Tawilis",
+                "where": "R&J Bulalohan, 600 Boni Avenue corner Maysilo Circle",
+                "blurb": "Same Plainview eatery, different reason to come back. Tawilis is the freshwater sardine endemic to Taal Lake, here fried until the bones disappear into the crunch, served with sukang Iloko and sliced kamatis para sa sawsawan."
+            },
+            {
+                "name": "Beef Wanton Mami",
+                "where": "Charlie Wanton Special, 265 Haig Street near the San Juan border",
+                "blurb": "The bungalow has been ladling this since 1958 in Sta. Cruz, then moved to Haig in 1996 and never advertised. Get the special bowl: thin egg noodles that stay chewy, clear beef broth, plump wantons stuffed with pork and singkamas."
+            },
+            {
+                "name": "Fried Porkchop",
+                "where": "Tuding's Original Porkchop Haus, 346 Maysilo Circle, Boni Avenue",
+                "blurb": "Same 1985 recipe brought up from Los Banos Laguna to the Maysilo rotunda, with the kitchen running 10am to 10:30pm daily. The chop is bone-in, double-fried until the edges curl, paired with garlic rice and toyomansi with onions."
+            },
+            {
+                "name": "Chapati and Beef Biryani",
+                "where": "Tanveer Halal Kitchenette, Boni Avenue, Brgy. Plainview",
+                "blurb": "Mandaluyong has a small Pakistani community working the Ortigas BPOs and Tanveer is where they eat. Chapati comes hot off the tawa folded in newspaper, and the biryani hides whole green chilies and potatoes in the basmati so dig deep."
+            },
+            {
+                "name": "Doble Pares",
+                "where": "Doble Pares stalls along Boni Avenue between Pinatubo and Aglipay Streets",
+                "blurb": "Pares is asado beef stew with garlic rice and clear soup, and the Boni jeepney drivers order it doble: two scoops of beef over the rice instead of one. Eat it standing sa kanto past midnight when the EDSA traffic finally clears."
+            },
+            {
+                "name": "Chicharon Bulaklak",
+                "where": "Sabroso Street Food Market, Mayflower Street, Greenfield District",
+                "blurb": "Deep-fried ruffled pork mesentery comes by the brown paper bag here, still hissing oil. Dip in spiced vinegar with crushed garlic, chase with a sweating bottle of San Mig Light, and grab the outdoor benches when the trucks fire up by 4pm."
+            },
+            {
+                "name": "Kare-Kare",
+                "where": "My Lola Nor's, Greenfield District dining strip, Mayflower Street",
+                "blurb": "The oxtail and tripe sit in a peanut-annatto sauce thick enough to hold the bagoong on the spoon. Order it with blanched pechay and sitaw on the side, and ask for extra bagoong since the kitchen plates it light for the office crowd."
+            }
+        ]
+    },
+    {
+        "token": "subic",
+        "heading": "What to eat in Subic, Zambales: a hungry guide for DIY trippers",
+        "intro": "Subic eats live at the seam where Zambaleno home cooking, Olongapo street culture, and Freeport bay catch all bump into each other. Come hungry, bring tissue, and pace yourself.",
+        "items": [
+            {
+                "name": "Zambalyete",
+                "where": "Beachfront kitchens around Subic Bay and the Zambales coast",
+                "blurb": "Cubed yellowfin tuna sauteed with bagoong, then crowned with green mango strips and a swipe of tartar. It is the dish locals point to when you ask what makes Zambales eating different from any other province."
+            },
+            {
+                "name": "Suman sa ibos with latik",
+                "where": "Olongapo City Public Market on Rizal Avenue East, Bajac-Bajac",
+                "blurb": "Sticky rice wrapped in woven young palm leaves, boiled until the husk smells smoky. Castillejos even holds a Suman Ibos Festival during Farmers Week, so the vendors here take this seriously."
+            },
+            {
+                "name": "Pinipig suman with buko",
+                "where": "Walking vendors along Magsaysay Drive and the public market kakanin tables",
+                "blurb": "Pounded young rice cooked into a chewy log, sliced open and stuffed with shredded coconut. The pinipig grains stay slightly toasty, which is why ladies carry trays of it on their heads in the mornings."
+            },
+            {
+                "name": "Bibingka with leche flan topping",
+                "where": "Kakanin stalls inside Olongapo City Public Market, Rizal Avenue East",
+                "blurb": "A clay-baked rice cake with a wobbling slab of leche flan melted over the top. Order it merienda hot, eat it standing up, and ask the lola to brush extra butter while it is still steaming."
+            },
+            {
+                "name": "Mashed cassava twists with margarine",
+                "where": "Head-tray vendors roaming Magsaysay Drive in Olongapo",
+                "blurb": "Cassava mashed soft, twisted into a rope and handed over with a smear of margarine right on the wrapper. It is one of those merienda finds you only get because someone walked up to you with a basket."
+            },
+            {
+                "name": "Steamed lapu-lapu with taosi",
+                "where": "Seafood by the Bay and Chinese-style houses inside Subic Bay Freeport",
+                "blurb": "Live grouper from the bay pens, steamed whole with fermented black beans, ginger, and scallion oil. The Freeport kitchens lean on Hong Kong technique because so many of the cooks trained when the base reopened."
+            },
+            {
+                "name": "Crispy pata",
+                "where": "Gerry's Grill and Meat Plus Cafe inside the Freeport zone",
+                "blurb": "Whole pork hock simmered, air-dried, then deep-fried until the skin shatters when you tap it. Locals dunk theirs in a soy-vinegar bath spiked with siling labuyo from the Iba market run."
+            },
+            {
+                "name": "Adobong pusit sa olive oil",
+                "where": "Pier One Bar and Grill on Waterfront Road inside the Freeport",
+                "blurb": "Squid braised in its own ink with vinegar, garlic, and a generous pour of olive oil that comes courtesy of the Freeport duty-free shops. The black sauce stains the rice and that is the whole point."
+            },
+            {
+                "name": "Sweet mango halo-halo",
+                "where": "Rosa Cafe in the Freeport and mango carts at Harbor Point Ayala Mall",
+                "blurb": "Zambales carabao mango shaved over crushed ice with leche flan, sago, and a scoop of mango sorbetes from the carts outside. The fruit comes from orchards in San Marcelino and San Felipe, so it actually tastes like the province."
+            }
+        ]
+    },
+    {
+        "token": "pasig",
+        "heading": "Pasig City Eats: What a DIY Traveler Should Actually Order",
+        "intro": "Pasig is not just Ortigas towers and BGC overflow, it is a real food city with Tagalog river roots, Kapitolyo crawl streets, and old Pasigueno panciterias that have outlived your lolo. Bring tissue, ride a jeep, and eat like locals on payday.",
+        "items": [
+            {
+                "name": "Pancit with Chicharon at Ado's",
+                "where": "Ado's Panciteria, 126 A. Luna Street, Malinao, Pasig (since 1952)",
+                "blurb": "Bihon, miki, or canton crowned with crackling homemade chicharon that Mang Ado started selling beside his old barber shop. Squeeze the calamansi and eat standing if the wooden stools are full."
+            },
+            {
+                "name": "Sinigang na Kanduli sa Miso",
+                "where": "Three Sisters Restaurant, West Capitol Drive, Kapitolyo",
+                "blurb": "Kanduli is the river catfish Pasigueno families cooked when the river was still alive, simmered cloudy in miso. The Tres Hermanas serving feeds five, so bring a barkada or pakidoggy-bag the sabaw."
+            },
+            {
+                "name": "Pork Barbecue on Stick",
+                "where": "Three Sisters Pasig and ihaw stalls along Brixton Street, Kapitolyo",
+                "blurb": "Sweet-soy marinated kasim threaded on bamboo, charred over coconut shell charcoal until the edges caramelize. Pair with puso and sawsawan of suka, toyo, and chopped siling labuyo."
+            },
+            {
+                "name": "Sisig Tacos at Silantro",
+                "where": "Silantro Fil-Mex, 75 East Capitol Drive, Kapitolyo",
+                "blurb": "Pasig's fusion contribution is sizzling pork face sisig folded into soft flour tortillas with salsa verde and lime. It is the 11pm order when you want pulutan and dinner combined in one plate."
+            },
+            {
+                "name": "Sizzling Sinigang",
+                "where": "Locavore, Brixton Street, Kapitolyo",
+                "blurb": "Pork belly fork-tender from sinigang broth, then plated dry on cast iron with reduced sour sauce and patis-soaked rice. Order medium share for two and add their lechon oyster sisig for the full Locavore set."
+            },
+            {
+                "name": "Pasalubong Suman sa Lihiya",
+                "where": "Tita Lynn's stall, Delicacies Village, Tiendesitas Pasig",
+                "blurb": "Glutinous rice steamed in banana leaves with a faint alkaline bite, eaten warm with muscovado syrup or fresh latik. Tita Lynn stocks ube, langka, and chocolate variants, so grab a mixed bilao for the bus ride home."
+            },
+            {
+                "name": "Puto Bumbong and Bibingka",
+                "where": "Merienda stalls, Tiendesitas Food Village, Ortigas East",
+                "blurb": "Purple pirurutong rice steamed in bamboo tubes, brushed with margarine, dusted with grated coconut and panutsa. The bibingka beside it bakes on clay pots topped with itlog na maalat and queso de bola."
+            },
+            {
+                "name": "Beef Kaldereta",
+                "where": "Three Sisters Restaurant, West Capitol Drive, Kapitolyo",
+                "blurb": "Slow-stewed brisket in tomato sauce thickened with liver spread, studded with green olives, bell pepper, and potato. Three Sisters keeps Lola Rosa's 1941 version, so it tastes like a Pasigueno Sunday lunch."
+            },
+            {
+                "name": "Pancit Habhab Plate Carinderia Style",
+                "where": "Carinderia row, Plaza Rizal and Pasig Public Market, San Jose",
+                "blurb": "Quick miki bihon tossed with cabbage, sayote strips, and a splash of patis, dished onto a folded banana leaf with no fork. You slurp straight from the leaf the way Pasigueno tindera lolas have served it for generations."
+            }
+        ]
+    },
+    {
+        "token": "sm-clark",
+        "heading": "What to Actually Eat When You Land in Clark, Pampanga",
+        "intro": "Clark sits inside the self-declared culinary capital of the Philippines, so skipping the food trip is basically a crime. Pampanga invented half of what your titas serve at fiestas, and the originals taste sharper here than in any Manila branch.",
+        "items": [
+            {
+                "name": "Sizzling Pork Sisig",
+                "where": "Aling Lucing Sisig, Glaciano Valdez St., Angeles City",
+                "blurb": "This is ground zero for sisig. Lucia Cunanan's family stall has been grilling boiled pig ears and cheeks over open flame since 1974, then dousing them in calamansi and chili on a screaming hot plate. Eat it on the curbside benches with rice and a cold San Mig."
+            },
+            {
+                "name": "Betute Tugak (Stuffed Frog)",
+                "where": "Everybody's Cafe, MacArthur Highway, San Fernando",
+                "blurb": "Rice paddy frogs deboned, stuffed with ground pork, then deep-fried whole. Everybody's Cafe has been serving it since the 1950s and the texture lands somewhere between fried chicken wing and chicharon. Order one to share if it's your first rodeo."
+            },
+            {
+                "name": "Adobong Kamaru (Mole Crickets)",
+                "where": "Apag Marangle, Jose Abad Santos Ave., Sta. Barbara, Bacolor",
+                "blurb": "Crickets sauteed in vinegar, soy, and garlic until they go nutty and crisp. Apag Marangle plates them with kamias and tomatoes so the sourness cuts through. Season is short, so ask before you make the trip out to Bacolor."
+            },
+            {
+                "name": "Bringhe",
+                "where": "Matam-ih Authentic Kapampangan Cuisine, Clark Freeport Zone",
+                "blurb": "Pampanga's answer to paella, except it uses glutinous rice, coconut milk, and turmeric for that yellow stain. Matam-ih plates the family-size bilao with chorizo de bilbao, chicken, and boiled egg on top. Best ordered for a group of four since one bilao goes a long way."
+            },
+            {
+                "name": "Tibok-Tibok",
+                "where": "Susie's Cuisine, 36 Hilda Street, Angeles City",
+                "blurb": "Carabao milk pudding finished with toasted latik and dayap zest. The name comes from the bubbling heartbeat sound it makes while setting. Susie's slices it thick and cold from the chiller, and you can grab a takeout tray as pasalubong on the way back to Clark airport."
+            },
+            {
+                "name": "Original Halo-Halo (Three Ingredients Only)",
+                "where": "Teresita Razon's, Kirakira Complex, Fil-Am Hwy, Angeles",
+                "blurb": "The Razon sisters started this in 1972 Guagua with just macapuno strips, sliced saba banana, and leche flan over shaved ice with evaporated milk. No ube, no beans, no jelly chaos. Open daily 8am to 8pm and the line moves fast."
+            },
+            {
+                "name": "Pindang Babi with Sinangag",
+                "where": "Pampanga's Best stores along MacArthur Hwy, Angeles",
+                "blurb": "The sour cousin of tocino, cured with salt and a touch of rice ferment before the sugar goes in. Pan-fry it crispy at the edges and eat with garlic rice and a runny egg. Pampanga's Best sells vacuum packs you can bring back to your Airbnb kitchen."
+            },
+            {
+                "name": "Sapin-Sapin",
+                "where": "Susie's Cuisine kakanin counter, Hilda St., Angeles City",
+                "blurb": "Three layers of glutinous rice tinted purple ube, yellow jackfruit, and white coconut, then crowned with latik shavings. Susie's slices it from a banana-leaf-lined tray and it travels well in the box. Pair it with sago't gulaman from the same counter."
+            },
+            {
+                "name": "Adobong Puti",
+                "where": "Apag Marangle, Sta. Barbara, Bacolor",
+                "blurb": "Pampanga's original adobo before soy sauce became standard. It's pork or chicken stewed in vinegar, garlic, peppercorns, and bay leaf so the meat stays pale and the sauce sharp. Apag plates it in a clay palayok and the kick is way brighter than the brown Manila version."
+            }
+        ]
+    },
+    {
+        "token": "panglao",
+        "heading": "Panglao Eats: A Boholano Plate-by-Plate for the Honest Traveler",
+        "intro": "Panglao is more than white sand and dive boats. The food here leans coconutty, sweet, and proudly Boholano, with a couple of beachside grill habits picked up from the daily fish haul. Eat your way around it.",
+        "items": [
+            {
+                "name": "Kinilaw na tuna",
+                "where": "Alona Beach grill stalls and Balicasag Island fishermen huts",
+                "blurb": "Cubes of raw yellowfin or tanigue swimming in suka, calamansi, ginger, red onion, and siling labuyo. Order it after island hopping at Balicasag, when the catch literally walked off the banca twenty minutes ago."
+            },
+            {
+                "name": "Kalamay Hati Jagna-style",
+                "where": "Aproniana Gift Shop in Baclayon, Bohol Quality Mall pasalubong row in Tagbilaran",
+                "blurb": "Sticky glutinous rice cooked down with coconut milk and muscovado until it sets like dense fudge, then packed in halved coconut shells sealed with red paper. The Jagna batch is darker and richer than the Manila knockoff, so look for that label."
+            },
+            {
+                "name": "Peanut Kisses",
+                "where": "Alturas factory outlet in Tagbilaran, Cogon Market pasalubong aisle",
+                "blurb": "Tiny mountain-shaped cookies of ground roasted peanuts and sugar, ridged like the Chocolate Hills. Buy the factory-second bags at Alturas for crumblier pieces that taste exactly the same."
+            },
+            {
+                "name": "Ubi Kinampay",
+                "where": "Dauis town side of Panglao Island, especially the Dauis Church pasalubong row",
+                "blurb": "The deep purple yam native to Panglao and Guindulman, marbled and perfumed like nothing else. Boholanos eat it boiled with sugar, whipped into halaya, or layered inside kalamay, and Dauis is the source-zone for the real kinampay variety."
+            },
+            {
+                "name": "Sikwate with puto maya",
+                "where": "Dao Public Market eateries and Bohol Bee Farm breakfast service",
+                "blurb": "Thick stoneground tablea melted into a tin cup of hot chocolate, sipped against sticky rice steamed in coconut milk and topped with ripe mango. Boholano lola breakfast, best caught before 9 AM at Dao Market."
+            },
+            {
+                "name": "Inun-unan",
+                "where": "Carinderias along Tawala Road and Songculan side of Dauis",
+                "blurb": "Fresh fish poached in vinegar, ginger, and a knot of lemongrass until the bones soften. Boholanos call it the lazy cousin of paksiw, and it pairs hard with hot rice straight from the claypot."
+            },
+            {
+                "name": "Broas",
+                "where": "Garden Cafe Tagbilaran bakery counter and Island City Mall pasalubong stalls",
+                "blurb": "Light ladyfinger biscuits of flour, sugar, and egg, baked dry so they dunk well in sikwate without falling apart. The Tagbilaran bakeries still bake daily batches, so grab a pack early before the ferry crowd cleans them out."
+            },
+            {
+                "name": "Grilled pusit stuffed with tomato and onion",
+                "where": "Alona Beach front grill rows after sunset, Hayahay-style beach stalls",
+                "blurb": "Whole squid scored, stuffed with chopped tomato and red onion, then thrown over coconut-husk coals till the ink caramelizes. Eaten by the shoreline with a side of toyo-mansi and a sweating bottle of Red Horse."
+            },
+            {
+                "name": "Torta Boholana",
+                "where": "Aproniana Gift Shop in Baclayon and old Tagbilaran bakeries",
+                "blurb": "A pillowy yellow sponge cake leavened with tuba (coconut palm wine), denser than mamon and edged with a sugary crust. Locals slice it for merienda alongside sikwate, and it stays good in the bag for the flight home."
+            }
+        ]
+    },
+    {
+        "token": "cabanatuan",
+        "heading": "Cabanatuan Food Crawl: 7 Dishes Worth the Detour Off Maharlika",
+        "intro": "Cabanatuan is a stopover city most travelers blast through on the way to Banaue, but locals will tell you that's a rookie move. Park the car, ask a tricycle driver for the public market, and eat your way down Burgos Avenue and the Maharlika roadside.",
+        "items": [
+            {
+                "name": "Batutay (sweet beef longganisa)",
+                "where": "Aling Otya's stall, Cabanatuan Public Market on Sanciangco Street",
+                "blurb": "Mrs. Dorothea Lajares started rolling these fat beef sausages here in 1952, and her family still sells the original hamonado recipe. Order it skinless for tapsilog, or by the bilao for pasalubong."
+            },
+            {
+                "name": "Garlicky pork Cabanatuan longganisa",
+                "where": "Market stalls along Sanciangco Street, public market",
+                "blurb": "Different beast from the batutay, this one is pork-based, de recado style, with so much bawang the oil turns yellow on the pan. Locals fry it until the casing splits and eat it with garlic rice and sukang Iloko."
+            },
+            {
+                "name": "Buko lumpia",
+                "where": "Caffe La Tea, CHS-CLSU campus, Science City of Muñoz",
+                "blurb": "Young coconut strips tossed with veggies, ham, and cheese, then bundled in a lumpia wrapper and deep-fried until blistered. Dip it in sukang Paombong and you've got a merienda you can't get anywhere else in Central Luzon."
+            },
+            {
+                "name": "Tilapia ice cream",
+                "where": "CLSU College of Home Science and Industry, Muñoz",
+                "blurb": "Sounds like a dare but it's a legit research output from CLSU, blending carabao milk, cheese, walnuts, and steamed tilapia flakes. Ask for the sansrival version or the ice cream sandwich if you want the gateway flavor first."
+            },
+            {
+                "name": "Cheese cashew macapuno ice cream",
+                "where": "Puno's Ice Cream, 915 Zulueta Street, Cabanatuan City",
+                "blurb": "Puno's has been scooping for around six decades and this is the bestseller every Novo Ecijano grew up on. Grab a pint for the road and pair it with their buko sherbet folded with lychees."
+            },
+            {
+                "name": "Pastillas de leche",
+                "where": "Talavera dairy stalls along the highway, north of Cabanatuan",
+                "blurb": "Pure carabao milk boiled down with sugar, rolled in papel de japon, and twisted at both ends like a candy wrapper. Talavera supplies most of the province's gatas kalabaw, so what you grab here is fresher than mall stock."
+            },
+            {
+                "name": "Tupig",
+                "where": "Maharlika Highway roadside vendors toward Muñoz and Talavera",
+                "blurb": "Glutinous rice with coconut and muscovado wrapped in banana leaf and toasted over coconut husk embers until the leaf chars. The Pangasinan border is close, so you'll smell the grills before you see them in the late afternoon."
+            }
+        ]
+    },
+    {
+        "token": "marikina",
+        "heading": "What to Eat in Marikina: A Marikeno Plate-by-Plate Guide",
+        "intro": "Marikina is shoe country, sure, but it is also the kitchen that quietly gave Manila tapsilog, waknatoy, and a pandesal that old folks still argue about. Pack an empty stomach and bring tissue, because the good stuff lives on side streets, not malls.",
+        "items": [
+            {
+                "name": "Waknatoy",
+                "where": "Pan de Amerikana, 74 Gen. Ordonez St., Concepcion Dos",
+                "blurb": "Marikeno cousin of menudo: tomato pork stew with Vienna sausage, red bell pepper, and chorizo, finished with sweet pickle relish that pulls the sauce tangy. The name supposedly came from old Chinese settlers saying wak na toy when tired of menudo."
+            },
+            {
+                "name": "Everlasting",
+                "where": "Pan de Amerikana garden restaurant, Concepcion Dos",
+                "blurb": "A baked Marikina meatloaf shaped in a llanera, packed with ground pork, hard-boiled egg slices, red bell pepper, raisins, and chorizo de Bilbao. Lola logic says it earned the name because it always shows up on the fiesta table."
+            },
+            {
+                "name": "Tapsilog",
+                "where": "Tapsi ni Vivian at Bulaluhan, 32 Gil Fernando Ave., Sta. Elena",
+                "blurb": "Vivian del Rosario is the lola credited with coining tapsilog in the 1980s, and her Marikina branch still slings sweet-salty beef tapa, garlic sinangag, and a sunny-side itlog with vinegar. Add a side bowl of bulalo if you skipped breakfast."
+            },
+            {
+                "name": "Sinigang sa Mais",
+                "where": "Pan de Amerikana and home-style turo-turo around Sto. Nino",
+                "blurb": "Marikina swaps sampaloc for grated white corn, so the broth comes out milky and faintly sweet instead of puckery. Usually swimming with pork ribs or sugpo plus sitaw, labanos, and pechay, this one is hard to find anywhere outside the city."
+            },
+            {
+                "name": "Puto and Kutsinta",
+                "where": "Rocha's Puto at Puto, 12 East Mendoza St., Sto. Nino",
+                "blurb": "Family-run since 1952, Rocha's sells stubby steamed puto blanketed in real kesong puti plus jiggly orange kutsinta dusted with fresh grated coconut. You point at the trays in the garage-front shop and walk out with a bilao."
+            },
+            {
+                "name": "Pan Amerikano Pandesal",
+                "where": "Pan de Amerikana bakery counter, Gen. Ordonez St.",
+                "blurb": "The wheat pandesal that lola used to sell to American GIs in the 1950s is still baked here, denser and nuttier than the fluffy white version from chain bakeries. Split it open and stuff it with kesong puti or chocolate champorado."
+            },
+            {
+                "name": "Lilac Street Isaw and Barbecue",
+                "where": "Roadside grills along Lilac St., SSS Village",
+                "blurb": "Once the sun drops, Lilac turns into a smoky lane of chicken intestine skewers, pork barbecue, and Adidas (chicken feet) charred over coconut shell coal. Dip in spiced vinegar, wash down with sago't gulaman from the kuya beside the grill."
+            },
+            {
+                "name": "Chicharon Bulaklak",
+                "where": "Marikina Riverbanks stalls near Ecom Building, Brgy. Barangka",
+                "blurb": "The ruffled pork mesentery here gets deep-fried until it shatters like glass, served by the brown paper bag with a small cup of sukang Iloko and siling labuyo. Locals grab it after jogging the riverbanks loop."
+            },
+            {
+                "name": "Arce Dairy Sorbetes",
+                "where": "Arce Dairy outlet, Golden Valley Commercial Center, Malanday",
+                "blurb": "Arce churns its carabao-milk ice cream right in Malanday, so flavors like queso, ube macapuno, and atis delight arrive at the freezer counter the same day. Ask for a scoop on a pandesal bun for the proper Marikeno merienda combo."
+            }
+        ]
+    },
+    {
+        "token": "naga-camarines-sur",
+        "heading": "What to Eat in Naga: A Bicolano Food Crawl Worth the Bus Ride",
+        "intro": "Naga eats hot, creamy, and unapologetically maanghang. Pack a bottle of water, leave room in your tummy for two breakfasts, and follow this list straight off the Naga Centrum bus terminal.",
+        "items": [
+            {
+                "name": "Kinalas",
+                "where": "Mang Kok's at #2 Solid St., Dayangdang; Tsa Kamot nearby",
+                "blurb": "This is Naga's hometown noodle bowl: scraped pork or beef head meat, thick brown sauce thickened with brain, and noodles swimming in a dark broth. Dayangdang Street is basically a kinalasan strip, so taste-test two bowls in one afternoon and pick your bias."
+            },
+            {
+                "name": "Bicol Express",
+                "where": "Chef Doy's on Magsaysay Avenue; Naga Garden Restaurant",
+                "blurb": "Pork belly stewed in gata with siling labuyo and bagoong alamang, served until the coconut oil floats on top. Order extra rice before the first bite hits because the chili creeps up halfway through the plate."
+            },
+            {
+                "name": "Laing",
+                "where": "Geewan along Magsaysay Avenue; Naga Garden Restaurant",
+                "blurb": "Dried gabi leaves slow-cooked in coconut milk with ginger, garlic, and shrimp paste until they turn glossy and dark. Naga versions skew creamier than the Albay style, and the leaves should melt on your tongue, not feel papery."
+            },
+            {
+                "name": "Kandingga",
+                "where": "Geewan on Magsaysay; carinderias around People's Mall",
+                "blurb": "Chopped pork heart and liver sauteed with garlic, onions, and chili, then doused in vinegar so it sharpens up by the second spoonful. Bicolanos eat it as pulutan with cold beer, but it works just as well over hot rice for merienda."
+            },
+            {
+                "name": "Tilmok (Tinuktok)",
+                "where": "Red Platter on Penafrancia Avenue; Naga People's Mall",
+                "blurb": "Minced freshwater shrimp and young coconut, wrapped in taro leaves, then simmered in gata until smoky and fragrant. Locals call it tinuktok because of the chopping sound during prep, and you eat it leaf-and-all once it softens."
+            },
+            {
+                "name": "Toasted Siopao",
+                "where": "Naga Garden on Elias Angeles St.; 3N Bakery in Centro",
+                "blurb": "A regular asado siopao with boiled egg, but cut open and pressed on a hot griddle until the bun crisps up like ensaymada crust. Grab one on the way to Penafrancia Basilica for a walking breakfast that holds up in your bag."
+            },
+            {
+                "name": "Pancit Bato",
+                "where": "Declaro's at Crossing, Divina Pastora, Bato; Bigg's Diner",
+                "blurb": "Thick egg noodles sun-dried over firewood in the town of Bato, giving them a faint smoky tang you can taste even after stir-frying. Buy a kilo of dry noodles at the source for pasalubong, then eat the guisado version back in the city."
+            },
+            {
+                "name": "Pili Tart and Sili Ice Cream",
+                "where": "J. Emmanuel Pastries, Elias Angeles; 1st Colonial, SM Naga",
+                "blurb": "Buttery yema-based tart crowned with whole pili kernels harvested around Camarines Sur. Chase it with a scoop of siling labuyo ice cream from 1st Colonial: sweet coconut hits first, then a slow chili burn on the back of the throat."
+            }
+        ]
+    },
+    {
+        "token": "albay-legazpi",
+        "heading": "What to eat in Legazpi, Albay without burning your tongue (much)",
+        "intro": "Bicolano cooking runs on coconut milk, taro leaves, and a stubborn love affair with siling labuyo. Pace yourself, order rice, and treat the spice levels like Mayon: respect the slope.",
+        "items": [
+            {
+                "name": "Pinangat",
+                "where": "Let's Pinangat, National Road Poblacion, Camalig town",
+                "blurb": "Folded packets of taro leaves stuffed with minced pork, alamang, coconut cream, and chili, then steamed until the leaves go silky. The Camalig version is the original benchmark, vendors line the National Road and sell frozen packs you can bring back to your hotel kitchenette."
+            },
+            {
+                "name": "Bicol Express",
+                "where": "Small Talk Cafe on Doña Aurora St, or Balay Cena Una",
+                "blurb": "Pork belly slow-cooked in gata with bagoong and a fistful of siling labuyo. Order it with plain rice and a soft drink because the heat builds slow, then sits on your chest like Mayon clouds."
+            },
+            {
+                "name": "Laing",
+                "where": "1st Colonial Grill on Quezon Ave, branches in SM and Ayala Legazpi",
+                "blurb": "Dried gabi leaves simmered down in coconut milk until the sauce turns thick and oily on top. Done right it tastes nutty and smoky, not slimy, and the malls keep the spice tamer than rural carinderias if you want a softer landing."
+            },
+            {
+                "name": "Kinunot",
+                "where": "Layag Restaurant near Embarcadero, or Waway's at Peñaranda Street",
+                "blurb": "Flaked stingray or pating cooked in coconut milk with malunggay leaves, ginger, and chili. The texture is shreddy like tinapa, and Waway's old-school version still gets passed around as the cleanest take in the city."
+            },
+            {
+                "name": "Pancit Bato",
+                "where": "Carinderias at Legazpi Public Market, Quezon Ave",
+                "blurb": "Sun-dried egg noodles from the town of Bato, thicker and chewier than canton with a faint toasted aroma. Locals eat it guisado-style with shrimp and bok choy, paired with pandesal for breakfast or merienda."
+            },
+            {
+                "name": "Tinapa Rice",
+                "where": "1st Colonial Grill Express, Pacific Mall Legazpi, Landco",
+                "blurb": "Fried rice tossed with smoked fish flakes, salted egg, tomato cubes, and slivers of green mango. It is the dish that put this restaurant on the tourist radar, and it pairs well with their pinangat and crispy pata combo plate."
+            },
+            {
+                "name": "Sili Ice Cream",
+                "where": "1st Colonial Grill on Quezon Ave (the originator)",
+                "blurb": "Vanilla-based scoop laced with ground siling labuyo, served in escalating heat tiers from level 1 up to Volcano. The first lick is sweet, the back of your throat finds out three seconds later, bring tissues for your forehead."
+            },
+            {
+                "name": "Pili Nut and Mazapan de Pili",
+                "where": "Satellite Market on Tahao Rd, plus Cagsawa Ruins stalls in Daraga",
+                "blurb": "The Bicol pili shells out a buttery kernel sold roasted, glazed in caramel, or pressed into chewy mazapan bars. Tahao Road stalls let you taste before you commit, and the Cagsawa stretch is where you grab last-minute pasalubong before catching your Manila bus."
+            },
+            {
+                "name": "Tinutungang Manok",
+                "where": "Socorro's Lakeside Grill at Sumlang Lake, Camalig",
+                "blurb": "Chicken stewed in coconut milk that has been burned first over open flame, which gives the broth a smoky, almost roasted-cacao depth. Sumlang Lake serves it with a Mayon view that makes the lunch feel earned even when you skipped the trek."
+            }
+        ]
+    },
+    {
+        "token": "sorsogon",
+        "heading": "Sorsogon Eats Worth the Six-Hour Bus Ride from Manila",
+        "intro": "Sorsogon cooking leans heavy on coconut milk, fresh chili, and whatever the boats hauled in that morning. Skip the SM food court and chase these into the public market, the Gubat side streets, and Matnog port stalls before you queue for the Samar ferry.",
+        "items": [
+            {
+                "name": "Kinunot na Pagi",
+                "where": "Donsol bayside turo-turos; carinderias near Sorsogon City Public Market",
+                "blurb": "Stingray meat boiled, hand-shredded into flakes, then simmered with gata, ginger, siling labuyo, and a fistful of malunggay. Donsol cooks now also swap in smoked tapas fish since shark catch is banned, so ask what is in the pot."
+            },
+            {
+                "name": "Kinagang (Kinigang)",
+                "where": "Bulusan town proper kitchens; Salvan house near Gubat municipal hall",
+                "blurb": "A Bulusan heirloom packet of lukadon (young coconut just before maturity), ulang freshwater shrimp, and hand-torn herba buena steamed inside a hagikhik leaf. You eat it with a squeeze of calamansi, and it only exists when somebody in town feels like making it."
+            },
+            {
+                "name": "Pinangat",
+                "where": "Bigajo Kitchenette and House of Pinangat, Sorsogon City; public market stalls",
+                "blurb": "Whole gabi leaves wrapped around minced fish or shrimp with chili and coconut cream, tied with abaca string, then slow-cooked until the leaves fall apart on your fork. Sorsoganons make it less soupy so the bundle holds shape when you slice it."
+            },
+            {
+                "name": "Baluko sa Gata",
+                "where": "Pilar coastline carinderias; Pilar Seafoods Express by Chef Ranulfo Luzon",
+                "blurb": "Pen shell prised off rocks in shallow tidal flats, then either fried, adobo, or drowned in coconut milk with chili. Texture sits between mussel and clam, and Pilar is the spot for it."
+            },
+            {
+                "name": "Cupapa",
+                "where": "Matnog port-side eateries near the Samar ferry terminal",
+                "blurb": "Slipper lobster harvested by hand from the rocky Matnog coast, usually grilled simple or dropped in gata so the sweet white tail meat shows off. Order it while you wait for the RoRo, since cupapa rarely travels past the port stalls."
+            },
+            {
+                "name": "Ginataang Santol",
+                "where": "Magsaysay Street canteens, Sorsogon City; Gubat lunch turo-turos",
+                "blurb": "Shredded sour santol fruit cooked down in thick coconut milk with bagoong, ginger, and labuyo until it turns creamy with a tart bite. Sorsoganons serve it as ulam over hot rice, not a side, so portion accordingly when you point at the bilao."
+            },
+            {
+                "name": "Alimusan Ginataan",
+                "where": "Casiguran roadside eateries around the town center",
+                "blurb": "Marine catfish abundant in Casiguran waters, cooked in coconut milk with ginger and chili so the firm white flesh stays intact. Each barangay does it slightly different, and you will also see the same fish grilled, kusido style, or even parmesan-crusted at newer spots."
+            },
+            {
+                "name": "Timitim",
+                "where": "Salvan family house, walking distance from Gubat municipal hall",
+                "blurb": "Grated cassava steamed with coconut milk, sugar, vanilla, and chopped pili nuts into something denser than bibingka and chewier than cassava cake. One family in Gubat still makes it every morning, so go early or accept that it sells out by midday."
+            },
+            {
+                "name": "Pili Tart and Mazapan",
+                "where": "Pasalubong stalls, Sorsogon City Public Market; Bulusan pili processors",
+                "blurb": "Buttery shortcrust shells filled with candied pili nut, plus chewy mazapan logs and crunchy pili brittle sold beside them. Bulusan supplies most of the raw nut for the whole region, so the freshness gap versus Manila pasalubong shops is real."
+            }
+        ]
+    },
+    {
+        "token": "cebu-city",
+        "heading": "What to Eat in Cebu City Without Wasting a Single Meal",
+        "intro": "Cebu eats loud, salty, and on its feet. Pack tissues for the lechon grease, small bills for the BBQ stalls, and an empty stomach big enough to handle six rounds of puso rice in one sitting.",
+        "items": [
+            {
+                "name": "Cebu Lechon",
+                "where": "Rico's Lechon Mabolo, or CnT Lechon Lahug branch",
+                "blurb": "The roasted pig that made Cebu famous nationwide, stuffed with lemongrass and tanglad so the skin shatters without needing sawsawan. Order it chopped sa balat-balat, ask for spicy if you want the bird's-eye chili rub, and grab puso on the side to mop up the drippings."
+            },
+            {
+                "name": "Pork BBQ with Puso",
+                "where": "Larsian sa Fuente, Don Jose Avila Street",
+                "blurb": "Open-air grill alley where you walk stall to stall pointing at raw skewers (pork, isaw, chorizo, tuna panga) and they fan the coals right in front of you. Eat barehanded, dunk in suka with siling labuyo, and unwrap as many hanging rice puso as your belly can carry."
+            },
+            {
+                "name": "Ngohiong",
+                "where": "Doming's Original Ngohiong on V. Rama Avenue",
+                "blurb": "Cebu's Chinese-Filipino spring roll wrapped in lumpia paper, stuffed with ubod, singkamas, and ground pork seasoned heavy on five-spice. The vendors fry it to order so it stays loud and crackly, then hand it over with a small cup of garlicky vinegar dip."
+            },
+            {
+                "name": "Tuslob Buwa",
+                "where": "Azul Tuslob Buwa Mabolo, or Pasil Fish Port alley stalls",
+                "blurb": "Communal pot bubbling with sauteed pig brain and liver simmered in garlic, soy, and shrimp paste until it froths over. You squat on plastic stools, dunk puso straight into the buwa (foam), and pass the dipping stick around with strangers."
+            },
+            {
+                "name": "Sutukil Seafood",
+                "where": "STK ta Bay! on Orchid Street, Capitol Site",
+                "blurb": "You pick live grouper, prawns, or squid from the ice trays and choose three ways at once: sugba (grilled over coals), tola (clear ginger broth), and kilaw (raw, soaked in vinegar with ginger and red onion). It is the fastest way to taste Mactan's catch without going to a resort."
+            },
+            {
+                "name": "Humba",
+                "where": "Carbon Market carinderias on M.C. Briones Street",
+                "blurb": "Slow-braised pork belly stew darkened with soy, vinegar, brown sugar, and fermented tausi black beans, often loaded with dried banana blossoms. Locals order it on a Sunday lunch over hot rice, and the fat just slides off the bone."
+            },
+            {
+                "name": "Chorizo de Cebu",
+                "where": "Taboan Public Market dry goods section",
+                "blurb": "Short, plump cured sausage tied in pairs with abaca twine, sharper and garlickier than the sweet Pampanga style. Vendors will fry a sample for you, but most travelers buy a kilo vacuum-packed to take home for silog breakfasts."
+            },
+            {
+                "name": "Dried Mango",
+                "where": "7D factory outlet in Tipolo Mandaue",
+                "blurb": "Carabao mangoes sliced thin and slow-dried until they go chewy and sticky, with that sour-sweet snap that no other province quite copies. Taboan stalls sell them by the kilo loose so you can taste before you commit, which is cheaper than the airport shelves."
+            },
+            {
+                "name": "Mandaue Bibingka",
+                "where": "Tres Marias Bibingkahan, near Mandaue City Hall",
+                "blurb": "Fermented rice cake baked inurno style with charcoal piled both under and over a clay pot, giving it a smoky brown crust and a soft pull-apart center. Locals eat it warm with sikwate (thick native chocolate) for breakfast, and the morning batch usually sells out before 8am."
+            }
+        ]
+    },
+    {
+        "token": "iloilo-city",
+        "heading": "Iloilo City Food Trip: 8 Dishes You Better Not Skip, Ilonggo Style",
+        "intro": "Iloilo isn't just UNESCO's first PH City of Gastronomy for the title, it actually backs it up bowl by bowl. Come hungry, wear pants with give, and pace yourself across La Paz, Molo, Jaro, and Arevalo.",
+        "items": [
+            {
+                "name": "La Paz Batchoy",
+                "where": "Deco's, Ted's Oldtimer, Netong's inside La Paz Public Market",
+                "blurb": "The OG noodle soup of Iloilo, traced to 1930s La Paz Market butcher Federico 'Deco' Guillergan Sr. Miki, pork liver and kidney, beef loin, raw egg dropped in hot broth, heavy shower of chicharon. Eat it at the OG market stalls."
+            },
+            {
+                "name": "Pancit Molo",
+                "where": "Kap Ising's in South San Jose, Molo and Panaderia de Molo near Molo Church",
+                "blurb": "Born in the old Chinese district of Molo, this is the Ilonggo answer to wonton soup: pork-shrimp dumplings in clear chicken broth with pulled chicken, fried garlic, and spring onions. Kap Ising's is the locals' pick across town from the coral-stone church."
+            },
+            {
+                "name": "KBL (Kadyos, Baboy, Langka)",
+                "where": "Tatoy's Manokan in Arevalo and Stella in Greenfield Complex along Diversion Road",
+                "blurb": "Sour pork stew built on three Panay staples: kadyos (purple pigeon peas only grown around here), baboy pata, and unripe langka. The souring agent is batwan, a tamarind cousin endemic to Panay forests, so the tang hits different from sinigang sa sampaloc."
+            },
+            {
+                "name": "Kansi",
+                "where": "Pat-Pat's Kansi on Diversion Road, branch open since 1999",
+                "blurb": "Imagine bulalo and sinigang had a baby in Western Visayas, then add batwan. Beef shank with fat marrow simmers with unripe jackfruit and lemongrass until the bone slides clean, served shimmering orange from atsuete. Pat-Pat's is where Ilonggos send first-timers."
+            },
+            {
+                "name": "Tinuom na Manok",
+                "where": "Iloilo Central Market food stalls and homestyle carinderias around Jaro plaza",
+                "blurb": "Native darag chicken bundled in banana leaves with tanglad, onions, and tomatoes, then steamed in its own juices until the broth runs herbal and clean. Quieter than inasal, but Ilonggos treat it as the truer test of a kitchen since there's nowhere to hide."
+            },
+            {
+                "name": "Native Lechon Manok (Darag)",
+                "where": "Tatoy's Manokan & Seafoods, Sto. Nino Sur, Arevalo (Villa Beach strip)",
+                "blurb": "Bisaya nga manok rubbed with vinegar and calamansi, stuffed with tamarind leaves and tanglad, then turned slowly over charcoal until the skin shatters. Darag is a Western Visayas native strain with darker, gamier meat that eats nothing like the Jollibee bird."
+            },
+            {
+                "name": "Talaba at Diwal sa Villa Beach",
+                "where": "Breakthrough Restaurant, Brgy. Sto. Nino Norte, Arevalo, Villa Beach",
+                "blurb": "Arevalo's coastline is talaba country, and Breakthrough plates the creamy oysters fresh from the bay with seasonal diwal (angel wing clams) grilled in butter and garlic. Sit on the seaside extension, order baked talaba and managat, and ask for extra suka."
+            },
+            {
+                "name": "Queen Siopao at Biscocho",
+                "where": "Roberto's on JM Basa, Calle Real; Biscocho Haus, Lopez Jaena, Jaro",
+                "blurb": "Roberto's seven-inch Queen is stuffed with Chinese sausage, adobo, bacon, and salted egg, sold only in Calle Real's old downtown. Then run to Biscocho Haus in Jaro for twice-baked biscocho, barquillos, and that chewy butterscotch your titas will ask for."
+            }
+        ]
+    },
+    {
+        "token": "bacolod",
+        "heading": "What to Eat in Bacolod Before the Plane Even Lands",
+        "intro": "City of Smiles, but really City of Smoke since every other corner is grilling chicken over coconut husk coals. Come hungry, bring tissue for the chicken oil, and pace yourself because pasalubong shopping at the airport counts as a final boss meal.",
+        "items": [
+            {
+                "name": "Chicken Inasal (Pecho or Paa)",
+                "where": "Manokan Country beside SM City Bacolod, Aida's or Nena's Rose",
+                "blurb": "Order the paa cut, dunk it in the chicken oil and sinamak vinegar with siling labuyo, then pour everything over rice. The marinade is calamansi, coconut vinegar, tanglad, and atsuete which is why the skin glows orange and tastes a little smoky from the husk fire."
+            },
+            {
+                "name": "Kansi",
+                "where": "Sharyn's Cansi House at Capitol Shopping Center, or Eron's on Narra Avenue",
+                "blurb": "Beef shank simmered until the bone marrow slides out, soured with batuan fruit instead of sampalok. Sharyn's also serves a Fried Kansi that made it onto the World Street Food Congress shortlist, so try both wet and crispy versions if you can stomach it."
+            },
+            {
+                "name": "KBL (Kadyos, Baboy, Langka)",
+                "where": "Sandok at Robinsons Place Bacolod, or Imay's in the city proper",
+                "blurb": "Black pigeon peas, pata cuts, and unripe nangka stewed with batuan for that signature sour kick. The broth turns a muddy purple from the kadyos and tastes like Negrense home cooking that you cannot really get outside the Visayas."
+            },
+            {
+                "name": "Pancit Molo",
+                "where": "Bulldog Inn in Mandalagan, or Kyle's Eatery for a smaller bowl",
+                "blurb": "Wonton-style pork dumplings floating in a clear chicken broth, topped with toasted garlic and spring onion. Bulldog Inn has been doing it the old way for decades and the wrappers stay silky instead of turning to mush."
+            },
+            {
+                "name": "Batchoy with Lechon (Batchon)",
+                "where": "Pendy's Snack Bar along Lacson Street",
+                "blurb": "Pendy's claims this is the original La Paz batchoy formula from the Maravilla family, topped with crackly lechon kawali instead of just chicharon bits. Pair it with their Half Moon pastry for merienda since both are house signatures."
+            },
+            {
+                "name": "Piaya",
+                "where": "BongBong's main store on Alijis Road, or any Bacolod-Silay Airport stall",
+                "blurb": "Flat unleavened bread stuffed with muscovado from the Negros sugar mills, toasted till the filling oozes. Get the ube and mango variants from BongBong's, and grab barquillos in the same run since they sit on the same shelf."
+            },
+            {
+                "name": "Napoleones",
+                "where": "Merzci Pasalubong on Lacson Street, or Bon's near the Capitol",
+                "blurb": "Layered puff pastry stuffed with custard cream and capped with a crackly white glaze. Merzci is the volume player but the Bon version has a softer pastry that locals argue about endlessly. Eat them the same day since the glaze sweats in the heat."
+            },
+            {
+                "name": "Inasal Innards (Isol, Atay, Baticolon)",
+                "where": "Manokan Country stalls, ask for the skewer tray at Aida's",
+                "blurb": "Skip the pecho once and try the chicken butt (isol), liver (atay), and gizzard (baticolon) skewers basted with the same atsuete oil. The isol is rendered crispy on the outside and stays jiggly inside, which is the whole point if you grew up eating street tusok-tusok."
+            },
+            {
+                "name": "Butterscotch Bars",
+                "where": "BongBong's Pasalubong Center, or Merzci near Lopue's East",
+                "blurb": "Chewy muscovado-and-cashew squares wrapped individually in waxed paper, made dense enough to survive a tricycle ride home. Buy a box for the office and one for the plane, you will finish the plane box before takeoff."
+            }
+        ]
+    },
+    {
+        "token": "dumaguete",
+        "heading": "Dumaguete Eats: The Sweet, Smoky, Sea-Salty Plates of Negros Oriental",
+        "intro": "Dumaguete is the kind of place where breakfast comes wrapped in banana leaves and dessert is older than your lola. Here is what to chew through between Rizal Boulevard sunsets and tricycle rides to Apo Island.",
+        "items": [
+            {
+                "name": "Silvanas",
+                "where": "Sans Rival Cakes and Pastries, San Jose Street near Rizal Boulevard",
+                "blurb": "Two cashew-meringue wafers hugging a buttercream filling, rolled in cookie crumbs. Trining Sagarbarria flattened the original mound shape into the disc Dumagueteños now ship home by the dozen. Grab a frozen pasalubong box for the bus ride."
+            },
+            {
+                "name": "Sans Rival",
+                "where": "Sans Rival main branch, San Jose Street",
+                "blurb": "Layered cashew dacquoise stacked with French buttercream, sliced cold from the chiller. The Sagarbarria family has been baking it since 1977, and locals will argue this is the gold standard for the country. Order by the slice."
+            },
+            {
+                "name": "Budbud Kabog",
+                "where": "Painitan stalls, Building 3, Dumaguete Public Market, Perdices Street",
+                "blurb": "Suman made from millet seed instead of glutinous rice, hauled in from Tanjay where lolas wake at 3am to wrap it. Steamed in banana leaves with coconut, eaten with sugar-dusted ripe mango on the side. Hit the Bishop Surban Street side."
+            },
+            {
+                "name": "Puto Maya with Sikwate",
+                "where": "Painitan, Dumaguete Public Market Building 3, before 8am",
+                "blurb": "Sticky rice steamed in coconut milk and ginger, served with a clay mug of tablea hot chocolate. Ask for the 10-5-5-5 combo and you get puto, sikwate, peanut butter, and condensed milk. The cacao is grainy in the best way."
+            },
+            {
+                "name": "Chicken Inato",
+                "where": "Jo's Chicken Inato, Silliman Avenue original branch",
+                "blurb": "Charcoal-grilled chicken brushed with a sweeter, less salty marinade than your usual Bacolod inasal. Jesse and Josephine Ng started it in 1985 and the name comes from atin ito, meaning ours. Pair the petso with garlic rice and atchara."
+            },
+            {
+                "name": "Boulevard Tempura and Squid Balls",
+                "where": "Tempurahan stalls, Rizal Boulevard seawall, from 5pm",
+                "blurb": "Skewered fish paste sticks and squid balls fried in bubbling oil under the acacia trees, dunked in sweet or spicy sauce. The strip lights up after sundown when joggers, students, and tambay families take over the benches. Bring coins, vendors hate big bills."
+            },
+            {
+                "name": "Kinilaw na Tanigue",
+                "where": "Lab-as Seafood Restaurant, Flores Avenue",
+                "blurb": "Cubes of raw spanish mackerel cured in coconut vinegar, calamansi, ginger, siling labuyo, and red onion. The fish is bought that morning straight off Visayan Sea bancas, so the flesh stays firm. Order sutukil-style at the palengke too."
+            },
+            {
+                "name": "Budbud Pilit with Tsokolate",
+                "where": "Painitan stalls, Dumaguete Public Market",
+                "blurb": "The glutinous-rice cousin to budbud kabog, wrapped tight in banana leaves and steamed until each grain glues to the next. Locals dip it into the same sikwate cup, sometimes with a slab of salty kesong puti from Bais on the side."
+            }
+        ]
+    },
+    {
+        "token": "boracay",
+        "heading": "What to Eat in Boracay, Aklan: The Pinoy DIY Food Run",
+        "intro": "Boracay is not just sunset cocktails on White Beach. The Aklan side of the menu hides banana-stalk stews, bamboo-cooked native chicken, and a sausage Kalibo will fight you over. Bring small bills and a real appetite.",
+        "items": [
+            {
+                "name": "Inubarang Manok",
+                "where": "Aklanon eateries in Kalibo and Malay; ask resort cooks to prep it",
+                "blurb": "Native chicken simmered in coconut milk with shredded ubad, the soft pith of the banana trunk, plus lemongrass and libas leaves for a gentle sour kick. Tastes like an Aklanon lola made it. Order it whenever you see it chalked up."
+            },
+            {
+                "name": "Binakoe (Bamboo Chicken)",
+                "where": "Festival stalls in Kalibo and Ati-Atihan food tents; some Boracay native restos",
+                "blurb": "Native chicken stuffed inside a fresh bamboo node with onions, lemongrass, and aeabihig leaves, then roasted over fire so the bamboo sap perfumes the broth. Drinks like sinigang but smokier. Slurp it straight from the bamboo."
+            },
+            {
+                "name": "Chorizo de Kalibo",
+                "where": "Kalibo public market stalls; pasalubong shops along Roxas Avenue, Kalibo",
+                "blurb": "Kalibo's own longganisa is a tight little sausage of ground pork, garlic, and house spice mix that lands sweet, salty, and porky all at once. Locals fry it for almusal with sinangag and a runny egg. Buy a frozen kilo to take home."
+            },
+            {
+                "name": "Paluto Seafood",
+                "where": "D'Talipapa wet market, Station 2, just behind D'Mall",
+                "blurb": "Walk the stalls, haggle for live prawns, lapu-lapu, scallops, or curacha, then hand the bag to a paluto kitchen across the aisle. Pay per kilo for grilled, steamed, or buttered-garlic prep. Cheapest seafood on the island if you bargain."
+            },
+            {
+                "name": "Taeaba (Aklan Oysters)",
+                "where": "D'Talipapa paluto counters; brought in fresh from New Washington, Aklan",
+                "blurb": "Mangrove oysters from New Washington come briny with a clean sweet finish, nothing like the muddy ones up north. Order them raw with sukang Iloko, siling labuyo, and a calamansi squeeze. A small bilao goes fast between two."
+            },
+            {
+                "name": "Tamilok Kinilaw",
+                "where": "Bakhawan Eco-Park area, Kalibo; pop-up stalls during fiestas",
+                "blurb": "Tamilok is mangrove shipworm pulled straight from rotting bakawan logs, long and slimy and oddly oyster-like. Served kinilaw style with vinegar, ginger, onion, and chili so the texture stops freaking you out. Dare your barkada, then chew."
+            },
+            {
+                "name": "Chori Burger",
+                "where": "BBQ kiosks on White Beach Station 1, near the Willy's Rock side",
+                "blurb": "Two fat slices of chorizo griddled hard and slapped between a soft pandesal-style bun with ketchup and a sliver of cucumber. The merienda that fuels Station 1 walkers before sunset. Grab one with a Coke sa bote, sand still on your feet."
+            },
+            {
+                "name": "Calamansi Muffin",
+                "where": "Real Coffee and Tea Cafe, Station 2 (original branch since 1996)",
+                "blurb": "Real Coffee bakes a buttery muffin shot through with calamansi zest and juice, tangy on the tongue then mellow on the swallow. Pair it with their iced cafe latte for the standard Boracay breakfast loop. Locals haul boxes of six home as pasalubong."
+            },
+            {
+                "name": "Banana-Mango Shake",
+                "where": "Jonah's Fruit Shake and Snack Bar, near Station 1, beachfront",
+                "blurb": "Jonah's has been blending since 1983 and the banana-mango with milk is still the bestseller. Ripe mangoes plus lakatan bananas drink like a smoothie but taste like a fruit salad. The edible straw is fun, the cold hit after a swim is the real win."
+            }
+        ]
+    },
+    {
+        "token": "davao-city",
+        "heading": "Davao City eats: tuna, durian, and smoke off the grill",
+        "intro": "Davao runs on charcoal smoke, vinegar, and that famously polarizing fruit. Pack tissues for the spicy sukang Pinakurat, and napkins for the durian.",
+        "items": [
+            {
+                "name": "Grilled Tuna Panga",
+                "where": "Roxas Night Market grill row along Roxas Avenue; Yellow Fin in Damosa",
+                "blurb": "The jaw cut from General Santos tuna, brushed with toyo and calamansi then thrown over hot coals until the collar meat slides off the bone. Order it with toyomansi and a side of garlic rice, and tell the manong na panga talaga, hindi belly."
+            },
+            {
+                "name": "Kinilaw na Tuna",
+                "where": "Roxas Night Market kinilaw stalls; Bankerohan Public Market eateries",
+                "blurb": "Cubes of raw yellowfin cured in coconut vinegar with ginger, sili labuyo, calamansi, and red onion until the flesh turns opaque at the edges. Some Davao versions add tabon-tabon to cut the fishiness, so taste before you load up on extra siling labuyo."
+            },
+            {
+                "name": "Sinuglaw",
+                "where": "Roxas Night Market stalls; carinderias near Matina Town Square",
+                "blurb": "Sinugba liempo chopped into the tuna kinilaw bowl so the warm pork fat melts into the cold sour broth. The smoky-sour combo is a Mindanao invention, and Davao serves it with puso or steamed rice for the full mess-around-the-table experience."
+            },
+            {
+                "name": "Durian",
+                "where": "Magsaysay Park fruit stands on R. Magsaysay Ave; Bankerohan bagsakan",
+                "blurb": "Peak season runs August to October during Kadayawan, when Puyat and Arancillo varieties pile up at the Magsaysay stalls. Bankerohan prices are noticeably lower, but bring exact change and ask the vendor to crack open a pod so you can sniff-test before paying."
+            },
+            {
+                "name": "Durian Candy and Yema",
+                "where": "Lola Abon's factory on Ecoland Drive; Apo ni Lola pasalubong center",
+                "blurb": "Soft chewy squares that Lola Abon's has been hand-rolling since the 1950s, plus durian yema with butter from Apo ni Lola for the creamier lane. Buy boxes for the office, but eat one in the tricycle on the way back so you know what you brought home."
+            },
+            {
+                "name": "Mangosteen",
+                "where": "Bankerohan Market fruit section; roadside stalls in Calinan and Toril",
+                "blurb": "The purple queen of fruits hits Davao stalls from June through October, especially after Calinan and Toril farms harvest. Press the rind: if it gives, the segments inside are juicy white pillows, and you eat them with bare hands while the juice stains your shirt."
+            },
+            {
+                "name": "Imbao Soup",
+                "where": "Times Beach paluto stalls; Bankerohan wet section for raw imbao",
+                "blurb": "Mangrove clams from the Davao Gulf simmered in a ginger and sili broth, sometimes tinola-style with malunggay leaves, sometimes sour with batuan. The shells open up with a sweet briny liquor, so sip the soup straight from the bowl before you tackle the meat."
+            },
+            {
+                "name": "Suman sa Lihiya with Latik",
+                "where": "Magsaysay Park morning vendors; Bankerohan Market kakanin row",
+                "blurb": "Glutinous rice cooked with lye water until it turns chewy and amber, wrapped in banana leaf and topped with toasted coconut curds and muscovado syrup. Davao vendors sell it warm by the bundle in the morning, perfect with kapeng barako before you head to the market."
+            },
+            {
+                "name": "Pomelo",
+                "where": "Magsaysay Park fruit stands; Bankerohan Market bagsakan",
+                "blurb": "The Davao pink variety has a thick green rind hiding ruby segments that are sweeter and less bitter than the ones sold up north. Vendors will hack the rind off in seconds with a bolo, hand you a bag of segments, and throw in rock salt so you can dip the wedges as you walk."
+            }
+        ]
+    },
+    {
+        "token": "gensan",
+        "heading": "Eating Your Way Through Gensan: The Bariles Capital Plate by Plate",
+        "intro": "Welcome to the Tuna Capital, kabayan. Locals call yellowfin \"bariles\" and they will feed you parts of it you didn't know existed, plus a few Maguindanao and B'laan classics to round out your day.",
+        "items": [
+            {
+                "name": "Grilled Tuna Panga (Sinugba)",
+                "where": "Tiongson Arcade ihaw-ihaw strip, Tiongson Street, Barangay Lagao",
+                "blurb": "The jaw of a yellowfin slabbed onto a smoky grate over coals until the skin crackles. Point at the chiller, the manong cooks it on the spot, and you eat it with toyo-mansi and a mound of rice."
+            },
+            {
+                "name": "Tuna Kinilaw",
+                "where": "Ranchero Nuevo Kinilaw Trio at SM City General Santos, Lagao",
+                "blurb": "Fresh bariles cubes drowned in suka, calamansi, red onion, ginger, and siling labuyo. Ranchero serves a trio platter so you can taste classic, coconut milk, and spicy versions side by side. Order it before any cooked dish."
+            },
+            {
+                "name": "Crispy Tuna Buntot",
+                "where": "Ranchero Nuevo, SM City General Santos, Barangay Lagao",
+                "blurb": "Tuna tail deep-fried hard until the cartilage cracks like chicharon. You attack it with your hands, dipping every crispy edge in spiced vinegar. Few cities outside Gensan even put this part of the fish on a menu."
+            },
+            {
+                "name": "Sinuglaw",
+                "where": "Roadside ihaw-ihaw on Pioneer Avenue; Tiongson Arcade, Lagao",
+                "blurb": "Grilled pork belly chopped fine, then folded into raw tuna kinilaw so the hot fat melts into the vinegar. Salty smoke meets sour brightness in the same spoonful. Order it with extra rice, you will need it."
+            },
+            {
+                "name": "Adobong Bagaybay at Bihod",
+                "where": "Tiongson Arcade stalls, Tiongson Street, Barangay Lagao",
+                "blurb": "Bagaybay is tuna sperm sac, bihod is the roe, and Gensan cooks both adobo-style or on a sizzling plate with onions and chili. The texture is creamy like taba ng talangka, not fishy at all if it is fresh."
+            },
+            {
+                "name": "Pastil",
+                "where": "Pastilan halal eatery across the public market, Dadiangas",
+                "blurb": "Steamed rice topped with dry shredded chicken or beef, then wrapped tight in banana leaf. This Maguindanao baon is the cheapest, fastest breakfast in town, perfect to grab before catching a van to Sarangani."
+            },
+            {
+                "name": "Tinagtag",
+                "where": "Muslim vendor stalls inside KCC Mall snack section; Bula public market",
+                "blurb": "A Maguindanao snack of ground rice and sugar fried into a lacy folded crisp that looks like a thin taco. It is crunchy, lightly sweet, and travels well in your backpack. Locals pair it with hot tablea or sweet sikwate."
+            },
+            {
+                "name": "Sinina Kambing",
+                "where": "Halal carinderias around Barangay Bula and Tambilawan on Laurel Avenue",
+                "blurb": "Goat slow-stewed in coconut milk with ginger, turmeric, and chili until the meat falls off the bone. This is the Mindanao Muslim answer to rendang, served on fiesta days. Eat it scooped over kanon manuk, the turmeric-stained rice."
+            },
+            {
+                "name": "Buko Halo-Halo",
+                "where": "Tambilawan Kamayan Restaurant, Laurel Avenue, Dadiangas",
+                "blurb": "Their signature dessert served inside a young coconut shell, with the soft buko meat scraped into shaved ice. Mongo, ube, leche flan, and sweet beans go on top, halal-style. The cool-down you want after grilled tuna and goat."
+            }
+        ]
+    },
+    {
+        "token": "cdo",
+        "heading": "What to Eat in Cagayan de Oro: A Kagay-anon Food Crawl",
+        "intro": "CDO eats like the river it sits on, equal parts coconut milk, fresh catch, and corn from the Bukidnon highlands. Skip the mall food courts and let your suking tindera at Cogon and Divisoria do the driving.",
+        "items": [
+            {
+                "name": "Sinuglaw",
+                "where": "Cucina Higala (Rosario Crescent) and carenderias near Divisoria",
+                "blurb": "The Kagay-anon flex: grilled pork belly (sinugba) cubed with raw tuna kinilaw, then doused in suka, ginger, and tabon-tabon, that wild Mindanao fruit that tames the fishy bite. Order it as pulutan with cold San Mig, or over hot rice if you skipped lunch."
+            },
+            {
+                "name": "Puto Maya at Sikwate",
+                "where": "Nanol's Cafe inside Cogon Public Market, dawn until rice runs out",
+                "blurb": "The traditional Kagay-anon breakfast pair: sticky rice steamed with ginger and coconut milk, dunked in thick native chocolate brewed from tablea. Bukidnon grows the rice, the manangs slice ripe mangga on the side, and you eat it standing up at the wet market."
+            },
+            {
+                "name": "Binaki",
+                "where": "Street vendors along Divisoria and stalls fronting Cogon Market",
+                "blurb": "Steamed sweet corn tamale wrapped in its own husk, made from young white corn grated by hand, then bound with coconut milk and a touch of sugar. Buy by the dozen still warm, peel back the husk, and eat one while you walk the night market."
+            },
+            {
+                "name": "Humba ni Aling Violy",
+                "where": "Humbaan ni Aling Violy, open-air stall inside Cogon Market",
+                "blurb": "Slow-braised pork belly in soy, vinegar, black beans, and brown sugar until the fat goes jelly soft. Locals queue with their own rice and get a ladle straight from the kawa, no plating, no fuss, just sauce-soaked bao that wrecks your diet."
+            },
+            {
+                "name": "Pastel de Camiguin",
+                "where": "Vjandep Bakeshop, Velez and Corrales branches",
+                "blurb": "Pillowy soft buns stuffed with runny yema custard, the OG pasalubong from neighboring Camiguin sold mostly out of CDO. Get the classic yema box for titas back home, then sneak the ube or durian flavor for the bus ride."
+            },
+            {
+                "name": "Surol",
+                "where": "Cucina Higala and heritage carenderias near Macasandig",
+                "blurb": "Camiguin-rooted chicken ginataan brightened with kalabo, the local Mexican oregano that tastes like mint crashed into basil. Different from tinola because the broth is creamy coconut, not water, and the labuyo gives a slow burn that lingers."
+            },
+            {
+                "name": "Turones de Mani",
+                "where": "La Salud and Merlas pasalubong stalls along Capistrano Street",
+                "blurb": "Honey-glazed crushed peanuts rolled inside a thin pinipig wafer, an heirloom recipe from the 1920s that survived because every Kagay-anon lola bought a bundle for visitors. Crunchy, brittle, and a guaranteed pasalubong from a CDO trip."
+            },
+            {
+                "name": "Grilled Tuna Panga",
+                "where": "Night Cafe stalls along Plaza Divisoria, Friday and Saturday nights",
+                "blurb": "Fat tuna jaws marinated in soy, calamansi, and chili, then slapped on charcoal until the skin blisters and the cheek meat goes buttery. Pull up a monoblock, order a side of atchara and grilled isaw, and listen to the live band murder a Bisrock song."
+            },
+            {
+                "name": "Sylvanas",
+                "where": "Slers and Lipton bakeshops around Hayes Street and Limketkai",
+                "blurb": "Frozen meringue wafers sandwiching cashew buttercream, rolled in crushed cookie crumbs, kept in the chiller so it cracks on first bite. CDO and Dumaguete fight over bragging rights but the Slers version is what most Kagay-anons grew up unwrapping at merienda."
+            }
+        ]
+    },
+    {
+        "token": "siquijor",
+        "heading": "Lutong Siquijodnon: 7 Bites to Hunt Around Isla del Fuego",
+        "intro": "Siquijor isn't all sorcery and white sand. The food scene leans humble: market stalls, kiosks beside schools, Lola-run bakeries fired by driftwood. Bring small bills, ride slow, and follow the smell of woodsmoke.",
+        "items": [
+            {
+                "name": "Torta de Siquijor",
+                "where": "Kiosk across Siquijor Integrated School, Larena market Sundays",
+                "blurb": "An egg-heavy chiffon-style pastry leavened with tuba and scented faintly with anise. Locals say it actually tastes better a day or two old, so wrap a few in your bag for the ferry ride back to Dumaguete."
+            },
+            {
+                "name": "Pan Bisaya (Tinalay)",
+                "where": "Lilibeth's Pan Bisaya, Enrique Villanueva town proper",
+                "blurb": "Soft native bread baked in an outdoor mud oven fed with coconut husks and driftwood, no electric oven in sight. Ask for the version stuffed with sweet coconut, and time your visit before noon since batches sell out fast."
+            },
+            {
+                "name": "Budbud Kabog",
+                "where": "Siquijor Public Market karinderias, Sunday stalls in Larena",
+                "blurb": "Steamed millet logs wrapped in wilted banana leaves, dense and nubby instead of the usual sticky-rice softness. Eat it the proper way by dunking pieces straight into a tin cup of sikwate while it's still warm from the steamer."
+            },
+            {
+                "name": "Binatirol (Sikwate)",
+                "where": "Small karinderias inside Siquijor Public Market, capital side",
+                "blurb": "Frothy native hot chocolate whipped with a wooden batirol from tablea grown on the island itself. Order a mug at sunrise when the lola behind the counter is still hand-grating the cacao, and you'll see why Siquijodnons drink it daily."
+            },
+            {
+                "name": "Binas-oy",
+                "where": "Fiesta tables in Lazi and San Juan, Larena market Sundays",
+                "blurb": "A pork innards stew that reads like a leaner cousin of dinuguan, simmered with liver, intestines, and a splash of vinegar instead of being thickened with blood. Mostly a fiesta dish, so ask around for when the next barangay celebration is happening."
+            },
+            {
+                "name": "Kinilaw na Lapu-Lapu",
+                "where": "Public Market wet section, Paliton and Maite grill huts in San Juan",
+                "blurb": "Cubes of grouper bathed in coconut vinegar with ginger, sili labuyo, red onion, and a pinch of salt from local salt-makers. Buy the fish straight off the morning catch at the market and have any sutukil-style hut nearby kilaw it for you on the spot."
+            },
+            {
+                "name": "Saang sa Alat",
+                "where": "Reef-edge stalls at Siquijor Public Market, Lazi and Maria coasts",
+                "blurb": "Spider conch boiled in seawater until the meat slides out with a toothpick, served with a small saucer of suka and crushed siling labuyo. Some old-timers eat it raw, but first-timers should stick to the boiled version and slurp the briny juice from the shell."
+            }
+        ]
+    },
+    {
+        "token": "el-nido",
+        "heading": "What to Eat in El Nido: Eight Plates Worth Skipping a Boat Tour For",
+        "intro": "Forget the resort buffet for a second. El Nido eats hardest after the bangkas come in, when grills fire up along Corong-Corong and the market stalls start chopping. Here is the short list before your flip-flops give up.",
+        "items": [
+            {
+                "name": "Grilled Lapu-Lapu (Inihaw na Isda)",
+                "where": "Corong-Corong beachfront grill row, from 5pm onward",
+                "blurb": "Vendors line charcoal drums along the Corong-Corong sand strip and grill whatever the bangkeros pulled out that morning. Pick your fish from the bilao, wait for the char, dunk in soy-calamansi-siling labuyo."
+            },
+            {
+                "name": "Tamilok Kinilaw",
+                "where": "Sibaltan side trips and stalls near El Nido Public Market",
+                "blurb": "Locals pry these mangrove woodworms straight from bakawan logs around Sibaltan on the east coast, then soak them in coconut vinegar, ginger, and sili. Texture is slippery like a raw oyster, flavor is briny mangrove. Down it in one slurp."
+            },
+            {
+                "name": "Crocodile Sisig",
+                "where": "Boodle Fight Resto and Bar on El Nido-Pancol Road",
+                "blurb": "Palawan farms the saltwater croc, so kitchens here chop the white meat, sizzle it on a cast-iron plate with onion, calamansi, and chopped sili. Tastes closer to lean chicken thigh than anything reptilian. Order one plate for the table."
+            },
+            {
+                "name": "Chao Long",
+                "where": "Stalls near El Nido Public Market terminal and Hama Street",
+                "blurb": "Vietnamese boat people who passed through Palawan in the late 70s left this beef noodle soup behind, and El Nido picked it up. Broth runs darker and sweeter than Hanoi pho, with toasted French bread on the side for dunking."
+            },
+            {
+                "name": "Tuna Kinilaw sa Gata",
+                "where": "Maa's Grill on Calle Hama and night stalls on Caalan Beach Road",
+                "blurb": "Yellowfin tuna gets cubed raw and cured fast in coconut vinegar, calamansi, ginger, red onion, and a splash of fresh coconut cream to mellow the bite. Sili labuyo on top if you want it hot. Eat within ten minutes of plating."
+            },
+            {
+                "name": "Island Hopping Boodle Fight",
+                "where": "Tour A, B, C, D banca lunches on 7 Commando or Helicopter Island",
+                "blurb": "Your bangkero unrolls a banana leaf on the sand and dumps grilled pusit, pork barbecue, kalamansi-marinated chicken, eggplant, sliced mango, and rice across the middle. Everyone eats bare-handed while the boat anchors offshore."
+            },
+            {
+                "name": "Dangsilog (Danggit, Sinangag, Itlog)",
+                "where": "Karenderyas inside El Nido Public Market and Rizal Street huts",
+                "blurb": "Rabbitfish split, salted, sun-dried on bilaos, then fried until the edges curl. Comes with garlic fried rice, runny egg, and a sawsawan of suka with crushed garlic. The fish-rice-vinegar combo fuels every 6am island-hopping briefing."
+            },
+            {
+                "name": "Lato Salad",
+                "where": "Wet stall side of El Nido Public Market on Real Street",
+                "blurb": "Green caviar seaweed harvested from shallows around Cuyo and Linapacan, served raw with diced tomato, red onion, and a splash of bagoong or coconut vinegar. The little beads pop between your teeth and taste like clean ocean."
+            }
+        ]
+    },
+    {
+        "token": "puerto-princesa",
+        "heading": "What to Eat in Puerto Princesa: A DIY Foodie Run",
+        "intro": "Puerto Princesa is where Vietnamese refugee cooking met Palawan mangroves and somehow nobody complained. Bring an empty stomach, a willingness to chew slimy things, and walking shoes for Rizal Avenue.",
+        "items": [
+            {
+                "name": "Tamilok",
+                "where": "Kinabuchs Grill and Bar on Rizal Avenue",
+                "blurb": "Mangrove woodworm pulled fresh from rotting bakauan logs, served kinilaw-style swimming in vinegar, sliced onion, and siling labuyo. Slurp it whole instead of chewing, chase with a cold San Mig, and you have bragging rights every Palaweno expects."
+            },
+            {
+                "name": "Crocodile Sisig",
+                "where": "Kinabuchs Grill and Bar, Rizal Avenue",
+                "blurb": "Farmed meat from the rescue center near Irawan gets chopped fine and thrown on a sizzling plate with calamansi and chili. Texture lands somewhere between dalag and chicken thigh, with none of the gaminess you might brace for."
+            },
+            {
+                "name": "Chao Long",
+                "where": "Bona's Chaolong Haus on Manalo Street",
+                "blurb": "Vietnamese beef noodle soup brought over by Boat People in the late 70s and adopted as the city's morning ritual. Dexter Bona bought the recipe from Ms Lanh in 2004 and still mixes the spice blend himself, same as the old refugee kitchen."
+            },
+            {
+                "name": "Danggit Lamayo",
+                "where": "Breakfast stalls at San Jose New Market",
+                "blurb": "Palawan rabbitfish split butterfly-style, soaked in vinegar with crushed bawang and paminta, then sun-dried only halfway before frying. The Puerto Princesa version comes out fatter and softer than the Cebu kind, shreds easily over sinangag."
+            },
+            {
+                "name": "Lato Salad",
+                "where": "Wet section, San Jose New Market and Kalui on Rizal Avenue",
+                "blurb": "Sea grapes harvested from Honda Bay that pop like tiny bubble wrap between your teeth. Locals dress them simply with sukang Iloko, raw red onion, and a pinch of asin, no cooking involved. Pair with grilled lapu-lapu."
+            },
+            {
+                "name": "Kinilaw na Tanigue",
+                "where": "Kalui Restaurant on Rizal Avenue (reservations only)",
+                "blurb": "Spanish mackerel cured in coconut vinegar with ginger, sili, and a splash of gata to round off the acid. Kalui plates it on bamboo with green mango ribbons and toasted coconut shavings. Show up barefoot, that is house rules."
+            },
+            {
+                "name": "Baker's Hill Hopia",
+                "where": "Baker's Hill, Santa Monica Road off the National Highway",
+                "blurb": "Flaky stacked pastry baked fresh on-site, with ube halaya, monggo, and pandan-cheese fillings as the bestsellers. Grab a box hot from the oven, eat one in the garden among the dwarf statues, then pack the rest as pasalubong."
+            },
+            {
+                "name": "Chicken Inasal",
+                "where": "Ka Inato on Rizal Avenue Extension",
+                "blurb": "Bacolod-style grilled chicken that made its way west and stuck, basted in annatto oil, calamansi, and tanglad over coconut husk coals. Ka Inato lets you spoon the chicken oil onto your rice. Ask for atchara and a toyomansi sawsawan."
+            }
+        ]
+    },
+    {
+        "token": "guimaras",
+        "heading": "What to Eat in Guimaras: 8 Bites Worth the Pumpboat Ride",
+        "intro": "Guimaras is small enough to circle on a tricycle in one day, but its food list runs longer than the sweetest mango season. Come with napkins and an appetite for everything that involves a carabao mango and a cashew nut.",
+        "items": [
+            {
+                "name": "Mango Pizza",
+                "where": "The Pitstop Restaurant, Brgy. San Miguel, Jordan",
+                "blurb": "A thin crust loaded with melted cheese, ripe Guimaras mango cubes, chopped cashew, and bell pepper slivers. Pitstop claims to be the only place serving it, and the sweet-salty bite makes sense the moment the first slice cools on your plate."
+            },
+            {
+                "name": "Mango Bulalo",
+                "where": "The Pitstop Restaurant, San Miguel, Jordan",
+                "blurb": "Beef shank simmered until the marrow slides out, finished with chunks of ripe carabao mango that turn the broth gently sweet. Order it for lunch after the Trappist Monastery loop so the bone marrow lands on your rice while it is still steaming."
+            },
+            {
+                "name": "Talaba sa Suka",
+                "where": "Roadside oyster stalls along the Jordan-Buenavista coastal road",
+                "blurb": "Oysters pulled straight from the Guimaras Strait, served steamed in their shells with a small bowl of spiced vinegar, siling labuyo, and crushed ginger. Locals pile them on a banana leaf and slurp them down with cold soda while waiting for the next pumpboat."
+            },
+            {
+                "name": "Mango Piaya",
+                "where": "Trappist Monastic Products Gift Shop, San Miguel, Jordan",
+                "blurb": "A flat, flaky pastry stuffed with muscovado sugar and Guimaras mango puree, baked by the Trappist monks who have been at it since the seventies. Buy a stack on the way out of the monastery because they vanish before the ferry back to Iloilo."
+            },
+            {
+                "name": "Mango Bars",
+                "where": "Trappist Monastery shop, Jordan",
+                "blurb": "A butterscotch-style square packed with dried mango chips and toasted cashew on top, cut thick enough to share but rarely shared. The monastery version is the original recipe and the box barely survives the trip home."
+            },
+            {
+                "name": "Kansi",
+                "where": "Carinderias near Jordan Wharf, San Miguel poblacion",
+                "blurb": "Beef shank boiled long with batuan fruit until the broth turns cloudy and tart, then ladled over rice with siling labuyo on the side. The local version leans heavier on souring fruit than the Iloilo one."
+            },
+            {
+                "name": "Ibos with Ripe Mango",
+                "where": "Morning vendors at Jordan Wharf and Buenavista public market",
+                "blurb": "Sticky rice cooked in coconut milk, wrapped in young coconut leaves shaped like little pyramids, and sold by the bundle before sunrise. Peel one open, dip it into a sliced ripe mango, and you have the Guimaras breakfast that fueled generations of farmers."
+            },
+            {
+                "name": "Mango Sorbetes",
+                "where": "Dirty ice cream carts at Alubihod Beach and Jordan Wharf",
+                "blurb": "Carabao mango churned into bright orange ice cream and scooped into a pandesal or a small cone right at the cart. Get yours after a swim at Alubihod so the salt on your skin and the cold sweet scoop balance out under the coconut trees."
+            }
+        ]
+    },
+    {
+        "token": "lucban",
+        "heading": "What to Eat in Lucban, Quezon: A DIY Food Crawl",
+        "intro": "Lucban sits at the foot of Mount Banahaw and eats like a town that knows what it likes: garlicky sausages, slurpable noodles on banana leaf, and rice wafers bright enough to hang on a wall. Pack tissue, bring an appetite, and skip the cutlery for at least one meal.",
+        "items": [
+            {
+                "name": "Pancit Habhab",
+                "where": "Buddy's on Quezon Ave, stalls fronting Lucban Public Market",
+                "blurb": "Miki noodles tossed in pork-bone broth with cabbage, kalabasa, and bits of pork, then slapped onto a strip of banana leaf. You eat it utensil-free by tipping the leaf to your mouth and chasing each bite with sukang Quezon. The name literally describes the eating style."
+            },
+            {
+                "name": "Lucban Longganisa",
+                "where": "G.B. Daza near the market, Dealo Koffee Klatch on Quezon Ave",
+                "blurb": "Stubby red sausage colored by paminton, packed with raw garlic and oregano instead of bay leaf, with a noticeable salt-vinegar tang. Locals fry it crisp and serve with sinangag and a small dish of native vinegar. Vacuum-packed strings make solid pasalubong."
+            },
+            {
+                "name": "Hardinera",
+                "where": "Buddy's Lucban and home cooks at the market during Pahiyas",
+                "blurb": "A meatloaf in a llanera, layered with hard-boiled egg slices, bell pepper rings, and raisins over ground pork in tomato sauce. It is steamed rather than baked, so the top stays jewel-like instead of browning. Cold leftovers slice cleanly for the next day's baon."
+            },
+            {
+                "name": "Kiping",
+                "where": "Krispy Kiping stall and house vendors along Calle Ibanez every May 15",
+                "blurb": "Leaf-shaped wafer of glutinous rice paste steamed on talisay or cacao leaves, dyed fuchsia, lime, and yellow. Vendors grill it over coals until it puffs and blisters, then dust it with sugar or hand you vinegar on the side."
+            },
+            {
+                "name": "Broas",
+                "where": "Pavino's Bakery and Campville's Food Industries in poblacion Lucban",
+                "blurb": "Long, airy ladyfingers piped from egg-heavy batter and twice-baked until they shatter on contact. Pavino's keeps the old wood-oven recipe and sells them in long cellophane sleeves stamped with the family name. Dunk them in barako coffee for breakfast."
+            },
+            {
+                "name": "Espasol",
+                "where": "Pavino's Bakery and pasalubong stalls fronting Lucban Church plaza",
+                "blurb": "Soft, chalky logs of toasted rice flour cooked in coconut milk, rolled in more powdered rice so they squeak when you bite. Lucban's version skews drier than Laguna's, with a clean coconut finish rather than syrupy sweetness. Sold by the half-dozen wrapped in waxed paper."
+            },
+            {
+                "name": "Pilipit",
+                "where": "Pasalubong rows at Lucban market and vendors heading to Tayabas",
+                "blurb": "Twisted sticky rice dough cooked with kalabasa, then fried and glazed in caramelized brown sugar like banana cue. Far chewier than the brittle Manila pilipit, it stays pliant for hours and snaps in two satisfying coils. Buy them warm if you can."
+            },
+            {
+                "name": "Sinukmani",
+                "where": "Banana-leaf trays at Lucban Public Market and Hometown Goodies",
+                "blurb": "Local name for biko, made with malagkit cooked low in coconut milk and muscovado, then crowned with thick latik curds toasted to a deep brown. Lucban kitchens cut it into diamonds in clay bilao instead of llanera. Best eaten warm with very hot kapeng barako."
+            },
+            {
+                "name": "Pako Salad",
+                "where": "Kamayan sa Palaisdaan on the Tayabas-Lucban road",
+                "blurb": "Fiddlehead ferns from streambanks around Banahaw, blanched and tossed with itlog na maalat, kamatis, and red onion. A sweet-tart dressing ties it together, with a whole sardine on top for the bold. Eat with your hands inside a floating bamboo hut."
+            }
+        ]
+    },
+    {
+        "token": "lucena",
+        "heading": "What to Eat in Lucena City, Quezon: A Local-Style Food Crawl",
+        "intro": "Lucena is the Queen City of the South, and her royal court runs on noodles, garlicky sausage, and yema-glazed cake. Skip the chain joints near the bus terminal and follow the lolas and jeepney drivers to where the real Quezonin grub lives.",
+        "items": [
+            {
+                "name": "Pancit Chami",
+                "where": "Hacienda Inn on Quezon Ave Ext; Plaza Food House fronting Cathedral",
+                "blurb": "Lucena's home-grown noodle plate of fat miki tossed in sweet-savory sauce with squid balls, pork chunks, and kikiam. Hacienda has been frying it on the same griddle since the 80s, while Plaza sits across the San Ferdinand church."
+            },
+            {
+                "name": "Pancit Habhab",
+                "where": "Buddy's on Quezon Ave; carinderias along Merchan Street",
+                "blurb": "A Lucban native that migrated down the road, served on banana leaf so you can shovel it in without forks. The miki are dried then stir-fried with kabute, pechay, and pork, then drowned in spiced sukang Quezon."
+            },
+            {
+                "name": "Lucban Longganisa",
+                "where": "Lucena Public Market dry-goods row; Pasalubong Center Diversion Rd",
+                "blurb": "Garlicky, oregano-heavy, stained orange from paprika, this sausage is shorter and chunkier than the sweet Pampanga kind. Locals fry it crisp, eat it with sinangag and atchara, and dunk every bite in vinegar with siling labuyo."
+            },
+            {
+                "name": "Hardinera",
+                "where": "Buddy's Lucena; fiesta eateries near San Fernando Cathedral",
+                "blurb": "Lucban-born meatloaf baked inside a leche flan llanera, packed with ground pork, hotdog rounds, raisins, pineapple, boiled egg, and liver spread. Comes out like an upside-down terrine tasting of menudo and embutido."
+            },
+            {
+                "name": "Crispy Pata",
+                "where": "Bubbles Crispy Pata & Restaurant on Quezon Ave",
+                "blurb": "Bubbles has been the worst-kept secret in town for deep-fried pork knuckle with skin that shatters and meat that pulls off the bone. Order the soy-vinegar-siling-haba dip and ask for extra rice because one pata feeds three backpackers."
+            },
+            {
+                "name": "Yema Cake",
+                "where": "Rodillas Yema Cake near Chowking on Diversion Road",
+                "blurb": "Tayabas-style chiffon smothered in thick yema custard made from condensed milk and egg yolks, no buttercream involved. Rodillas is the originator and packs it in pink boxes that survive the 4-hour bus ride back to Cubao."
+            },
+            {
+                "name": "Broas",
+                "where": "Dealo Koffee Klatch on Quezon Ave; Grand Terminal stalls",
+                "blurb": "Crumbly egg-and-vanilla ladyfingers from neighboring Sariaya that taste like a sturdier, browner mamon. Dealo bakes them daily and sells the broken bits cheaper, perfect for dunking in kapeng barako while waiting for your jeep to fill."
+            },
+            {
+                "name": "Puto Bao",
+                "where": "Lucena Public Market kakanin row; sidewalk vendors at Grand Terminal",
+                "blurb": "An Agdangan and Unisan specialty with a violet ube-tinted rice cake shell and a sticky filling of latik and caramelized coconut. Eat it warm off the bilao before the coconut hardens, paired with native tsokolate."
+            },
+            {
+                "name": "Taipao",
+                "where": "Hacienda Inn on Quezon Ave Ext; SM Lucena food court",
+                "blurb": "Lucena's oversized siopao stuffed with asado pork, Chinese sausage, salted egg, and a whole boiled egg, big enough that one fills a backpacker for a full bus ride. Hacienda steams them to order so the dough stays pillowy."
+            }
+        ]
+    },
+    {
+        "token": "antipolo",
+        "heading": "Antipolo Eats: Suman, Kasoy, and Snacks From the Pilgrim Trail",
+        "intro": "Antipolo runs on sticky rice, roasted nuts, and the post-Mass munchies of pilgrims coming down from the Cathedral. Here is what to actually put in your mouth between the Hinulugang Taktak hike and the jeepney ride home.",
+        "items": [
+            {
+                "name": "Suman sa Ibos",
+                "where": "Pasalubong Center stalls beside Antipolo Cathedral, P. Burgos Street",
+                "blurb": "Unsweetened malagkit rice cooked in gata and bundled inside young coconut palm leaves called kampil. Peel the wrap and dunk the warm log into latik or white sugar. Aling Carmen and Aling Mareng are the names devotees keep returning to."
+            },
+            {
+                "name": "Kasoy (Roasted Cashew)",
+                "where": "Cashew vendors around the Cathedral and Sumulong Highway",
+                "blurb": "Antipolo sits on cashew tree country, so the kasoy here is bigger and sweeter than supermarket packs. Buy it plain salted for the road, or grab the garlic version that Sumulong vendors scoop straight from the tin."
+            },
+            {
+                "name": "Kalamay sa Latik",
+                "where": "Aling Carmen and kakanin stalls inside Pasalubong Center",
+                "blurb": "Ground glutinous rice simmered with coconut milk and brown sugar until it turns into a glossy, chewy slab. Finished with a dark coconut glaze and toasted latik curds on top. Comes in banana leaf, perfect for slicing at a Taktak picnic."
+            },
+            {
+                "name": "Suman sa Ibos with Langka",
+                "where": "Aling Mareng stall, Pasalubong Center beside Antipolo Cathedral",
+                "blurb": "A langka-laced spin on classic ibos, with ripe jackfruit strips folded into the malagkit before steaming. The fruit perfume seeps into the coconut leaf wrap so you smell it before you bite. Pair with hot kapeng barako."
+            },
+            {
+                "name": "Mangga and Bagoong",
+                "where": "Fruit tables in front of the Cathedral and along Taktak Road",
+                "blurb": "The third leg of the SuMaKaH trio, served unripe and crunchy with a small sachet of fermented shrimp paste. Vendors slice it Hassel style on request so you can walk and dip while you queue for the Virgen ng Antipolo."
+            },
+            {
+                "name": "Puto Bumbong",
+                "where": "Bamboo tube stalls outside Antipolo Cathedral during Simbang Gabi",
+                "blurb": "Purple pirurutong rice steamed inside bamboo tubes, then rolled in margarine, muscovado, and grated coconut. The Cathedral grounds turn into a puto bumbong row from December 16 onward, with vendors fanning the steamer coals all night."
+            },
+            {
+                "name": "Bibingka",
+                "where": "Clay pot stalls along Circumferential Road and the Cathedral plaza",
+                "blurb": "Rice cake baked in a clay palayok lined with banana leaf, fired top and bottom with live coconut husk charcoal. The Antipolo version comes thick, with itlog na maalat and a slab of kesong puti melting into the crust."
+            },
+            {
+                "name": "Adobong Kasoy",
+                "where": "Pidiong’s and kasoy specialty stalls inside Pasalubong Center",
+                "blurb": "Toasted Antipolo cashews tossed in soy, vinegar, and a heavy hand of garlic until every nut wears a sticky brown coat. The snack version of adobo, sold by the 250 gram pack so you can ration it on the trike home."
+            },
+            {
+                "name": "Coco Jam (Latik na Matamis)",
+                "where": "Aling Carmen and small batch jam sellers, Pasalubong Center",
+                "blurb": "Slow cooked coconut milk and muscovado reduced into a dark brown spread sold in recycled glass jars. Families ladle it over hot suman or smear it on pandesal at merienda. Ask when the batch was cooked, fresher jars taste smokier."
+            }
+        ]
+    },
+    {
+        "token": "bohol",
+        "heading": "Eat Your Way Through Bohol: Tagbilaran and Loboc Field Notes",
+        "intro": "Bohol is more than Chocolate Hills and tarsiers, pare. The province has its own pantry of sticky sweets, river catch, and Hokkien-rooted braises that you will only really understand if you eat where the lolas are lining up.",
+        "items": [
+            {
+                "name": "Puto Maya at Sikwate",
+                "where": "Cogon Public Market stalls, Tagbilaran (5 to 7 AM)",
+                "blurb": "Coconut-cooked sticky rice steamed in banana leaf, dunked into thick sikwate from local tablea, with a side of ripe carabao mango. The stalls around Cogon have been doing this since the 1970s, and the trick is to eat all three together, not separately."
+            },
+            {
+                "name": "Peanut Kisses",
+                "where": "Bohol Quality (BQ) Mall outlet, CPG Avenue, Tagbilaran",
+                "blurb": "Peaked little meringues studded with crushed Garcia-Hernandez peanuts, shaped to mimic the Chocolate Hills. Buy them straight from the BQ outlet on Carlos P. Garcia Avenue so you get the soft-centered fresh batch, not the dry mall-shelf version."
+            },
+            {
+                "name": "Calamay sa Jagna",
+                "where": "Jagna town stalls and Cogon Market pasalubong row, Tagbilaran",
+                "blurb": "Glutinous rice slow-cooked with coconut milk and muscovado for four hours until it stretches like taffy, then sealed inside a polished coconut shell with red crepe paper. The JACAMCO cooperative still gatekeeps the proper Jagna version, so check the seal before you buy."
+            },
+            {
+                "name": "Broas (Baclayon Ladyfingers)",
+                "where": "Osang's and pastry row behind Baclayon Church, 8 km from Tagbilaran",
+                "blurb": "Crisp piped sponge fingers made from just egg, sugar, and flour, hand-piped onto tin sheets the way Rosa Clarin started doing in the 1800s. Baclayon is literally called the Broas Capital, and Osang's bakery at the back of the old stone church is the original."
+            },
+            {
+                "name": "Ubi Kinampay",
+                "where": "Dauis Public Market and Aproniana Gift Shop, Tagbilaran",
+                "blurb": "The deep-violet, vanilla-perfumed yam variety locals call the queen of Philippine ubi, namechecked in the Boholano hymn itself. Eat it as halaya jam, in pastillas, or folded into ice cream, but make sure the label says kinampay specifically, not generic ube."
+            },
+            {
+                "name": "Humba Bisaya",
+                "where": "Payag Restaurant and Gerarda's Family Restaurant, Tagbilaran",
+                "blurb": "Pork belly slow-braised with soy, vinegar, brown sugar, tausi, star anise, and dried banana blossoms, a Hokkien hong-bah that Boholanos made sweeter than its Luzon adobo cousin. Order it with plain rice, never garlic rice, so you taste the syrupy gravy properly."
+            },
+            {
+                "name": "Loboc River Crayfish (Kasag sa Suba)",
+                "where": "Riverside stalls and Venia's Kitchen, Loboc town proper",
+                "blurb": "Freshwater crayfish hand-caught from the Loboc River, usually sauteed in garlic butter or stewed in coconut milk with malunggay. They are seasonal and small-batch, so ask the floating restaurant captain in the morning if any came in that day."
+            },
+            {
+                "name": "Humbang Langka",
+                "where": "Amore Cruises Village Floating Restaurant, Loboc River",
+                "blurb": "Young jackfruit stewed humba-style in soy, garlic, and lemongrass until it shreds like pork, the signature plate of the Loboc floating buffet circuit. It is the one dish on the bamboo-raft cruise that you will not get on the Tagbilaran side."
+            },
+            {
+                "name": "Kinilaw na Malasugue",
+                "where": "Tagbilaran wet market stalls and Garden Cafe, Loboc",
+                "blurb": "Raw blue marlin or tanigue cured in tuba vinegar and calamansi, sharpened with ginger, red onion, siling labuyo, and a splash of coconut milk to round the bite. The Boholano version leans heavier on the gata than the Cebuano kinilaw, which is how you tell them apart."
+            }
+        ]
+    },
+    {
+        "token": "la-union-southern",
+        "heading": "What to Eat in San Juan, La Union Between Surf Sessions",
+        "intro": "Elyu food hits different after a morning paddle. You are sitting in Ilocandia, so expect a lot of pork, a lot of vinegar, and a lot of macapuno sneaking into your dessert spoon.",
+        "items": [
+            {
+                "name": "Bagnet",
+                "where": "Dalikan Bagnet Atbp, MacArthur Highway strip, Urbiztondo",
+                "blurb": "Deep-fried pork belly twice-cooked until the rind shatters when you press it with a spoon. Eat it the Ilocano way with sukang Iloko, sliced tomato, and bagoong on the side so the acid cuts the fat."
+            },
+            {
+                "name": "Pinakbet",
+                "where": "Makan at Eliseos, 379 Saint Jude Subdivision, San Juan",
+                "blurb": "The original Ilocano version, not the Tagalog one swimming in liquid. Squash, ampalaya, talong, sitaw, and winged beans get tossed in a kawali with fish bagoong and crowned with crumbled bagnet."
+            },
+            {
+                "name": "Poqui-poqui",
+                "where": "Makan at Eliseos and carinderia row near San Juan public market",
+                "blurb": "Charred eggplant mashed with sauteed tomato, onion, garlic, and scrambled egg until it turns into a smoky savory spread. Pinoy travelers love it for breakfast with longganisa because the smokiness wakes you up."
+            },
+            {
+                "name": "Dinakdakan",
+                "where": "Makan at Eliseos and roadside ihawan past Sebay Surf Central",
+                "blurb": "Boiled then grilled pig ear and cheek, chopped fine and bound with pig brain or mayo, then brightened with calamansi, ginger, and siling labuyo. The crunchy cartilage plus creamy sauce combo is the whole point."
+            },
+            {
+                "name": "Vigan-style empanada",
+                "where": "Gem's Empanada at Robinsons Place La Union",
+                "blurb": "Orange achuete dough stuffed with grated green papaya, togue, a whole egg, and a coil of garlicky Vigan longganisa, deep-fried to order. You bite a hole, drizzle sukang Iloko inside, and slurp before the yolk runs."
+            },
+            {
+                "name": "Ilocano miki",
+                "where": "Carinderia stalls along Quezon Avenue and the Poblacion public market",
+                "blurb": "Thick yellow egg noodles in pork broth tinted orange from achuete, topped with sliced boiled egg and crumbled bagnet. Splash in sukang Iloko at the table and you will taste why this dish travelled down from Vigan."
+            },
+            {
+                "name": "Tuna panga",
+                "where": "Kabsat in Urbiztondo and Bay-Bay Seafood and Grill, Ciabel Hotel",
+                "blurb": "Grilled tuna jaw the size of your forearm, the meat between the bones is the buttery part everyone fights over. Squeeze calamansi, dip in toyomansi with siling labuyo, and pick it apart with your fingers."
+            },
+            {
+                "name": "Halo-Halo de Iloko",
+                "where": "Halo-Halo de Iloko Balay, nearby San Fernando",
+                "blurb": "Each ingredient comes from a different La Union town, so you get Agoo latik, Bacnotan ube, Balaoan sticky rice, and San Juan macapuno in one bowl. They crumble polvoron on top instead of pinipig, which surprisingly works."
+            },
+            {
+                "name": "Basi",
+                "where": "Sari-sari stores in Naguilian and Bacnotan, San Juan pasalubong stalls",
+                "blurb": "Fermented sugarcane wine aged in burnay jars with samak bark for a tannic edge, around 14 percent alcohol on a good batch. Locals will tell you the Casa Blanca label from Bacnotan is the safe bet for a souvenir bottle."
+            }
+        ]
     }
 ]
