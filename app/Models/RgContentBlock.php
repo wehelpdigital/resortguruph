@@ -55,6 +55,12 @@ class RgContentBlock extends Model
         // best season, local rules) read better as a scannable list
         // than a card row.
         'facts_list',
+        // Researched origin / history card for a venue or district.
+        // Renders as a parchment-style framed section with eyebrow +
+        // headline + multi-paragraph body. Authored from web-sourced
+        // facts, not invented prose — used for SEO E-E-A-T signal and
+        // to give visitors real context on what the place is.
+        'place_history',
     ];
 
     public function getPayloadAttribute(): array
