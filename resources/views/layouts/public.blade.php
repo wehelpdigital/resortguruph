@@ -591,7 +591,7 @@
          visible on mobile with a horizontal scroll if needed. --}}
     <div class="border-t border-slate-100 bg-slate-50/80">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
-            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Explore</span>
+            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Explore Philippines</span>
 
             <a href="{{ url('/destinations') }}"
                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
