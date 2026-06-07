@@ -19,7 +19,7 @@
 
 @section('content')
 <section class="bg-gradient-to-br from-amber-50 via-white to-rose-50">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <nav class="text-sm text-slate-500 mb-4">
             <a href="{{ url('/') }}" class="hover:text-brand-600">Home</a>
             <span class="mx-2">/</span>
@@ -137,7 +137,7 @@
 @endif
 
 <section class="py-10">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-xl font-bold text-slate-900 mb-4">Browse by region</h2>
 
         @foreach($groups as $g)

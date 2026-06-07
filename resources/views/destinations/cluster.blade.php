@@ -39,7 +39,7 @@
 
 @section('content')
 <section class="bg-gradient-to-br from-brand-50 via-white to-emerald-50">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <nav class="text-sm text-slate-500 mb-4">
             <a href="{{ url('/') }}" class="hover:text-brand-600">Home</a>
             <span class="mx-2">/</span>
@@ -52,7 +52,7 @@
     </div>
 </section>
 
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <article class="prose prose-slate max-w-none mb-10">
         {!! $meta['intro_html'] !!}
     </article>
