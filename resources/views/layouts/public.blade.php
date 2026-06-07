@@ -456,8 +456,12 @@
            where H1 hits text-5xl (~48px) this gives a 1.25 ratio which
            reads as airy-not-cramped; on mobile where H1 is ~30px it
            reads as generous spacing, which the user prefers over the
-           default tight leading. */
-        h1 { line-height: 60px; }
+           default tight leading. The !important is necessary because
+           Tailwind's `leading-[*]` utility (specificity 0,1,0) on most
+           page H1s beats a plain element selector (0,0,1). The user
+           explicitly asked for this to apply to ALL H1 titles, so the
+           heavy-handed override is the right call. */
+        h1 { line-height: 60px !important; }
 
         /* H2 spacing,tightened globally. Previous values pushed H2s way
            down because Tailwind prose defaults compound with section gaps and
