@@ -190,6 +190,15 @@
      ramp; the layers cross-fade on a 12-second loop so the page has
      constant gentle motion without ever pulsing distractingly. --}}
 <style>
+    /* The layout's rg-accordion CSS defaults to max-height: 1500px when
+       open, which clips the longer category grids (Water Adventures
+       alone is 31 cards in a 3-col grid, well over 3000px tall). Lift
+       the cap here so the JS opens the section and the final state lets
+       the content size naturally. */
+    details.rg-accordion[open] .rg-accordion-body {
+        max-height: none;
+    }
+
     .activity-card {
         box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
         transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease-out;
