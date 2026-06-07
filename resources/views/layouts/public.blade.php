@@ -545,7 +545,22 @@
 
 <div id="rgTopBar"></div>
 
+@php
+    // Active-state matching for the secondary pill bar. Each "pillar"
+    // section spans more than just its hub URL — Where to Go also covers
+    // /destinations/{cluster} and individual keyword resort pages; What
+    // to Do also covers fiestas. We match by request path prefix.
+    $activeWhereToGo = request()->is('destinations*')
+        || (request()->path() !== '/' && \App\Models\RgKeyword::where('slug', request()->path())->where('category', 'resort')->exists());
+    $activeWhereToEat = request()->is('food-trip*')
+        || (request()->path() !== '/' && \App\Models\RgKeyword::where('slug', request()->path())->where('category', 'food')->exists());
+    $activeWhatToDo = request()->is('philippine-tourist-activities-adventures-what-to-do')
+        || request()->is('philippine-fiestas-festivals-guide')
+        || request()->is('fiestas/*');
+@endphp
+
 <header class="border-b border-slate-200 bg-white sticky top-0 z-30 backdrop-blur bg-white/85">
+    {{-- Level 1: brand + utility nav --}}
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-lg">
             <span class="text-2xl">🏖️</span>
@@ -553,9 +568,6 @@
         </a>
         <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
             <a href="{{ route('home') }}" class="hover:text-brand-600">Home</a>
-            <a href="{{ url('/destinations') }}" class="hover:text-brand-600">Destinations</a>
-            <a href="{{ url('/food-trip') }}" class="hover:text-brand-600">Food Trip</a>
-            <a href="{{ route('activities.index') }}" class="hover:text-brand-600">Activities</a>
             <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
             <a href="{{ route('about') }}" class="hover:text-brand-600">About</a>
             <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
@@ -570,12 +582,45 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
     </div>
+
+    {{-- Level 2: tagged pill bar for the three pillar sections. Each
+         pill has its own color identity (emerald for places, amber for
+         food, indigo for activities) so the user reads them as distinct
+         tracks rather than three same-looking links. Active state
+         darkens the pill so it reads as the current section. Stays
+         visible on mobile with a horizontal scroll if needed. --}}
+    <div class="border-t border-slate-100 bg-slate-50/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
+            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Explore</span>
+
+            <a href="{{ url('/destinations') }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
+                      {{ $activeWhereToGo ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' }}">
+                <span aria-hidden="true">🗺️</span>
+                Where to Go
+            </a>
+
+            <a href="{{ url('/food-trip') }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
+                      {{ $activeWhereToEat ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100 hover:border-amber-300' }}">
+                <span aria-hidden="true">🍽️</span>
+                Where to Eat
+            </a>
+
+            <a href="{{ route('activities.index') }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
+                      {{ $activeWhatToDo ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' }}">
+                <span aria-hidden="true">🎪</span>
+                What to Do
+            </a>
+        </div>
+    </div>
+
+    {{-- Mobile menu (level-1 utility links only — the pillar pills
+         above stay visible at all viewport widths). --}}
     <div id="mobileNav" class="hidden md:hidden border-t border-slate-200 bg-white">
         <div class="px-4 py-3 space-y-2 text-sm font-medium">
             <a href="{{ route('home') }}" class="block">Home</a>
-            <a href="{{ url('/destinations') }}" class="block">Destinations</a>
-            <a href="{{ url('/food-trip') }}" class="block">Food Trip</a>
-            <a href="{{ route('activities.index') }}" class="block">Activities</a>
             <a href="{{ route('blog.index') }}" class="block">Blog</a>
             <a href="{{ route('about') }}" class="block">About</a>
             <a href="{{ route('contact') }}" class="block">Contact</a>
