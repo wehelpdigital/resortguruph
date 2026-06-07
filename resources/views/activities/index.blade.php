@@ -7,21 +7,24 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
 
-    {{-- Hero --}}
-    <header class="mb-10 max-w-4xl">
+    {{-- Hero — title is capped at a comfortable reading width, but the
+         intro prose runs the full container width in a 2-column grid on
+         desktop so the page reads side-to-side instead of being pinched
+         into the center. --}}
+    <header class="mb-10">
         <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-3">
             Philippines Activity Guide
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-5">
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-6 max-w-4xl">
             Tourist Activities, Adventures &amp; What To Do
             <span class="text-emerald-700">in the Philippines</span>
         </h1>
-        <div class="prose prose-slate max-w-none text-base sm:text-lg leading-relaxed text-slate-700">
+        <div class="grid lg:grid-cols-2 gap-x-10 gap-y-5 text-base sm:text-lg leading-relaxed text-slate-700">
             <p>
-                Asking what to do in the Philippines is a bit like asking what to do in a country with 7,641 islands, two oceans worth of dive sites, three active volcanoes you can hike, and a fiesta calendar that fills every weekend of the year. The honest answer is, it depends on what you came for. This guide breaks down every major tourist activity in the country into six clean categories so you can plan a trip around what actually moves you.
+                For most DIY travelers heading to the Philippines, the real question is not what to do, but where to start. This is a country of 7,641 islands, three active volcanoes you can climb in a single weekend, a coastline longer than the continental United States, and a fiesta calendar so full that every barangay has its own patron-saint feast somewhere on it. Pick a province on a map, and there are already five worthwhile things to do this Saturday. So this page is your starting point. Six categories of Philippine tourist activities and adventures, each one a kind of neighborhood, with the cards as doorways. Tara, sa Coron for the scuba diving, sa Siargao for the surf breaks, sa Pampanga for the dawn balloon flights, sa Ilocos for the sand dunes, sa Marinduque for the Moriones, sa Lucban for the Pahiyas.
             </p>
             <p>
-                Whether you came for the scuba diving in Coron, surfing in Siargao, hot air ballooning in Pampanga, sandboarding in Ilocos, a Bambike ride through Intramuros, or a front-row seat at Sinulog, you will find it below. Each category is its own neighborhood of things to do, and the cards are the doorways. Tap into the one that matches your mood, then read on for context on where each activity is best, what season works, and how to get there. Use this page as your home base for planning a Philippines itinerary that is shaped by interest rather than geography.
+                Each card opens into a kwento of where the activity sits in the country, what season works for it, and how to ride in by jeepney, tricycle, or shuttle van once you land in town. The country rewards specificity. A weekend planned around scuba diving puts you on completely different islands than a weekend planned around heritage walking. A trip shaped by fiesta tourism moves you to a different province every month. Knowing what you actually came for lets you plan around it instead of fighting the geography. Use this page that way. Sort first by what moves you, then cross-read the destination guides and food trip pages to ground the trip in where it lives best, then check the fiestas calendar so your dates line up with something worth catching while you are there.
             </p>
         </div>
     </header>
