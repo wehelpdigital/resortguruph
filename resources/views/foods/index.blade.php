@@ -95,6 +95,19 @@
                                     @endif
 
                                     <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/45 to-transparent pointer-events-none"></div>
+
+                                    {{-- Decorative rating badge. The
+                                         number is hand-set by feel
+                                         per dish in FoodsController::
+                                         ratings() — it's not from a
+                                         review platform, this is a
+                                         directory page. --}}
+                                    @if(!empty($item['rating']))
+                                        <div class="absolute top-2.5 right-2.5 z-10 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/95 shadow-sm text-[11px] font-bold text-slate-800">
+                                            <svg class="w-3 h-3 text-amber-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                            {{ number_format($item['rating'], 1) }}
+                                        </div>
+                                    @endif
                                 </div>
 
                                 {{-- Body: white area below the image. Dish
