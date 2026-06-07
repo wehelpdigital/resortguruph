@@ -452,6 +452,13 @@
             transform: scale(1.3);
         }
 
+        /* H1 line-height set globally to 60px (user request). On desktop
+           where H1 hits text-5xl (~48px) this gives a 1.25 ratio which
+           reads as airy-not-cramped; on mobile where H1 is ~30px it
+           reads as generous spacing, which the user prefers over the
+           default tight leading. */
+        h1 { line-height: 60px; }
+
         /* H2 spacing,tightened globally. Previous values pushed H2s way
            down because Tailwind prose defaults compound with section gaps and
            the page-scoped CSS. We now override prose + page-scope with a near-

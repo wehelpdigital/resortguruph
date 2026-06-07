@@ -58,54 +58,67 @@ class ActivitiesController extends Controller
 
     /**
      * The six tourist-activity categories shown on the hub. `theme`
-     * controls the 3-layer fading gradient backdrop and the accent
-     * color used on each card. `items` is the flat activity list per
-     * category, with optional `note` for clarification text and
-     * optional `href` to link out (festival_tourism is the only one
-     * wired to a real URL right now — the rest are inert until we add
-     * per-activity destination pages).
+     * controls the per-card accent. Each item carries a stable `slug`
+     * so disk-based image files line up by name; `description` is a
+     * one-line Filipino-blogger blurb shown under the activity name on
+     * the card. Description text is filled in by the
+     * activities_research.json data file and applied via
+     * ApplyActivityResearchSeeder so we can iterate copy without
+     * touching this controller.
+     *
+     * Intros and descriptions follow the Resort Guru content rules:
+     * no em-dashes, no banned AI vocab, no peso prices, RJ Dexplorer
+     * DIY-traveler voice.
      */
     private function categories(): array
     {
-        return [
+        // Optional override data from the research seeder. If
+        // descriptions have been researched and applied to the JSON
+        // file, they win over the static defaults in $items below.
+        $researchPath = database_path('data/activities_research.json');
+        $research = is_file($researchPath)
+            ? json_decode(file_get_contents($researchPath), true) ?: []
+            : [];
+
+        $cats = [
             [
                 'key' => 'water',
                 'label' => 'Water Adventures',
                 'icon' => '🌊',
                 'theme' => 'water',
-                'intro' => 'Reefs, wrecks, rivers, hot springs, and waterfalls — the Philippines has more shoreline than most countries have land, and just about every kind of water activity is on the menu.',
+                'intro' => 'Reefs, wrecks, rivers, hot springs, waterfalls. The Philippines has more shoreline than most countries have land, and just about every kind of water activity is on the menu somewhere along it.',
                 'items' => [
-                    ['name' => 'Scuba Diving', 'note' => 'Reef, wreck, muck, and blackwater diving'],
-                    ['name' => 'Freediving'],
-                    ['name' => 'Snorkeling & Island Hopping'],
-                    ['name' => 'Canyoneering / Canyoning'],
-                    ['name' => 'Surfing'],
-                    ['name' => 'Whitewater Rafting'],
-                    ['name' => 'Wakeboarding & Kneeboarding'],
-                    ['name' => 'Kiteboarding / Kitesurfing'],
-                    ['name' => 'Sea Kayaking'],
-                    ['name' => 'Stand-Up Paddleboarding (SUP)'],
-                    ['name' => 'Jet Skiing & Banana Boating'],
-                    ['name' => 'Flyboarding'],
-                    ['name' => 'Parasailing'],
-                    ['name' => 'River Trekking / Wading'],
-                    ['name' => 'Skimboarding'],
-                    ['name' => 'Sailing / Paraw Sailing'],
-                    ['name' => 'Whale Shark Snorkeling / Watching'],
-                    ['name' => 'Sardine Run Diving / Snorkeling'],
-                    ['name' => 'Dolphin & Whale Watching'],
-                    ['name' => 'Hot Spring & Mud Pool Bathing'],
-                    ['name' => 'Waterfall Jumping'],
-                    ['name' => 'Bioluminescent Plankton Tours'],
-                    ['name' => 'Subwing'],
-                    ['name' => 'Bamboo Rafting'],
-                    ['name' => 'River Tubing / Water Tubing'],
-                    ['name' => 'Deep Sea Fishing / Game Fishing'],
-                    ['name' => 'Helmet Diving / Sea Walking'],
-                    ['name' => 'E-foiling / Hydrofoiling'],
-                    ['name' => 'Underwater Scooter (Scuba-doo)'],
-                    ['name' => 'Mermaid Swimming Lessons'],
-                    ['name' => 'Firefly River Cruising'],
+                    ['slug' => 'scuba-diving', 'name' => 'Scuba Diving', 'note' => 'Reef, wreck, muck, and blackwater diving'],
+                    ['slug' => 'freediving', 'name' => 'Freediving'],
+                    ['slug' => 'snorkeling-island-hopping', 'name' => 'Snorkeling & Island Hopping'],
+                    ['slug' => 'canyoneering', 'name' => 'Canyoneering / Canyoning'],
+                    ['slug' => 'surfing', 'name' => 'Surfing'],
+                    ['slug' => 'whitewater-rafting', 'name' => 'Whitewater Rafting'],
+                    ['slug' => 'wakeboarding', 'name' => 'Wakeboarding & Kneeboarding'],
+                    ['slug' => 'kiteboarding', 'name' => 'Kiteboarding / Kitesurfing'],
+                    ['slug' => 'sea-kayaking', 'name' => 'Sea Kayaking'],
+                    ['slug' => 'sup-paddleboarding', 'name' => 'Stand-Up Paddleboarding (SUP)'],
+                    ['slug' => 'jet-skiing', 'name' => 'Jet Skiing & Banana Boating'],
+                    ['slug' => 'flyboarding', 'name' => 'Flyboarding'],
+                    ['slug' => 'parasailing', 'name' => 'Parasailing'],
+                    ['slug' => 'river-trekking', 'name' => 'River Trekking / Wading'],
+                    ['slug' => 'skimboarding', 'name' => 'Skimboarding'],
+                    ['slug' => 'paraw-sailing', 'name' => 'Sailing / Paraw Sailing'],
+                    ['slug' => 'whale-shark-watching', 'name' => 'Whale Shark Snorkeling / Watching'],
+                    ['slug' => 'sardine-run', 'name' => 'Sardine Run Diving / Snorkeling'],
+                    ['slug' => 'dolphin-whale-watching', 'name' => 'Dolphin & Whale Watching'],
+                    ['slug' => 'hot-spring-bathing', 'name' => 'Hot Spring & Mud Pool Bathing'],
+                    ['slug' => 'waterfall-jumping', 'name' => 'Waterfall Jumping'],
+                    ['slug' => 'bioluminescent-plankton', 'name' => 'Bioluminescent Plankton Tours'],
+                    ['slug' => 'subwing', 'name' => 'Subwing'],
+                    ['slug' => 'bamboo-rafting', 'name' => 'Bamboo Rafting'],
+                    ['slug' => 'river-tubing', 'name' => 'River Tubing / Water Tubing'],
+                    ['slug' => 'deep-sea-fishing', 'name' => 'Deep Sea Fishing / Game Fishing'],
+                    ['slug' => 'helmet-diving', 'name' => 'Helmet Diving / Sea Walking'],
+                    ['slug' => 'e-foiling', 'name' => 'E-foiling / Hydrofoiling'],
+                    ['slug' => 'underwater-scooter', 'name' => 'Underwater Scooter (Scuba-doo)'],
+                    ['slug' => 'mermaid-swimming', 'name' => 'Mermaid Swimming Lessons'],
+                    ['slug' => 'firefly-cruising', 'name' => 'Firefly River Cruising'],
                 ],
             ],
             [
@@ -113,28 +126,28 @@ class ActivitiesController extends Controller
                 'label' => 'Land Adventures',
                 'icon' => '⛰️',
                 'theme' => 'land',
-                'intro' => 'Volcanoes you can climb, caves you can crawl through, sand dunes you can ride down, and trails that go for days. Land adventures are how the Philippines builds memory.',
+                'intro' => 'Volcanoes you can climb in a weekend, caves you can crawl through, sand dunes you can ride down, and trails that go for days. Land adventures are how the Philippines builds memory.',
                 'items' => [
-                    ['name' => 'Hiking & Mountaineering'],
-                    ['name' => 'Volcano Trekking'],
-                    ['name' => 'ATV & 4x4 Off-Roading'],
-                    ['name' => 'Spelunking (Cave Exploration)'],
-                    ['name' => 'Sandboarding'],
-                    ['name' => 'Rock Climbing & Bouldering'],
-                    ['name' => 'Mountain Biking'],
-                    ['name' => 'Ziplining'],
-                    ['name' => 'Camping & Glamping'],
-                    ['name' => 'Survival Training / Bushcraft Camps'],
-                    ['name' => 'Dirt Biking / Motocross'],
-                    ['name' => 'Horseback Riding'],
-                    ['name' => 'Canopy Walk / Tree Top Adventures'],
-                    ['name' => 'Zorb Ball / Zorbing'],
-                    ['name' => 'Bungee Jumping / Canyon Swing'],
-                    ['name' => 'Rappelling / Abseiling'],
-                    ['name' => 'Wildlife Safari Tours'],
-                    ['name' => 'Downhill Longboarding / Ligiron Racing'],
-                    ['name' => 'Bird Watching'],
-                    ['name' => 'Trail Running / Eco-Trail Racing'],
+                    ['slug' => 'hiking-mountaineering', 'name' => 'Hiking & Mountaineering'],
+                    ['slug' => 'volcano-trekking', 'name' => 'Volcano Trekking'],
+                    ['slug' => 'atv-offroading', 'name' => 'ATV & 4x4 Off-Roading'],
+                    ['slug' => 'spelunking', 'name' => 'Spelunking (Cave Exploration)'],
+                    ['slug' => 'sandboarding', 'name' => 'Sandboarding'],
+                    ['slug' => 'rock-climbing', 'name' => 'Rock Climbing & Bouldering'],
+                    ['slug' => 'mountain-biking', 'name' => 'Mountain Biking'],
+                    ['slug' => 'ziplining', 'name' => 'Ziplining'],
+                    ['slug' => 'camping-glamping', 'name' => 'Camping & Glamping'],
+                    ['slug' => 'survival-bushcraft', 'name' => 'Survival Training / Bushcraft Camps'],
+                    ['slug' => 'dirt-biking', 'name' => 'Dirt Biking / Motocross'],
+                    ['slug' => 'horseback-riding', 'name' => 'Horseback Riding'],
+                    ['slug' => 'canopy-walk', 'name' => 'Canopy Walk / Tree Top Adventures'],
+                    ['slug' => 'zorbing', 'name' => 'Zorb Ball / Zorbing'],
+                    ['slug' => 'bungee-jumping', 'name' => 'Bungee Jumping / Canyon Swing'],
+                    ['slug' => 'rappelling', 'name' => 'Rappelling / Abseiling'],
+                    ['slug' => 'wildlife-safari', 'name' => 'Wildlife Safari Tours'],
+                    ['slug' => 'longboarding', 'name' => 'Downhill Longboarding / Ligiron Racing'],
+                    ['slug' => 'bird-watching', 'name' => 'Bird Watching'],
+                    ['slug' => 'trail-running', 'name' => 'Trail Running / Eco-Trail Racing'],
                 ],
             ],
             [
@@ -142,16 +155,16 @@ class ActivitiesController extends Controller
                 'label' => 'Air Adventures',
                 'icon' => '🪂',
                 'theme' => 'air',
-                'intro' => 'Birds-eye Philippines, from the slow drift of a paramotor to a tandem skydive over a coral reef. The viewpoints from above re-frame how big this country really is.',
+                'intro' => 'A birds-eye view of the Philippines, from the slow drift of a paramotor to a tandem skydive over a coral reef. The angles from above re-frame how big this country really is.',
                 'items' => [
-                    ['name' => 'Paragliding'],
-                    ['name' => 'Skydiving'],
-                    ['name' => 'Ultralight Flying'],
-                    ['name' => 'Hot Air Ballooning'],
-                    ['name' => 'Helicopter Aerial Tours'],
-                    ['name' => 'Paramotoring'],
-                    ['name' => 'Gyrocopter Flying'],
-                    ['name' => 'Sky Walk / Edge Coaster'],
+                    ['slug' => 'paragliding', 'name' => 'Paragliding'],
+                    ['slug' => 'skydiving', 'name' => 'Skydiving'],
+                    ['slug' => 'ultralight-flying', 'name' => 'Ultralight Flying'],
+                    ['slug' => 'hot-air-ballooning', 'name' => 'Hot Air Ballooning'],
+                    ['slug' => 'helicopter-tours', 'name' => 'Helicopter Aerial Tours'],
+                    ['slug' => 'paramotoring', 'name' => 'Paramotoring'],
+                    ['slug' => 'gyrocopter-flying', 'name' => 'Gyrocopter Flying'],
+                    ['slug' => 'sky-walk', 'name' => 'Sky Walk / Edge Coaster'],
                 ],
             ],
             [
@@ -159,20 +172,20 @@ class ActivitiesController extends Controller
                 'label' => 'Entertainment, Casinos & Theme Parks',
                 'icon' => '🎪',
                 'theme' => 'entertainment',
-                'intro' => 'When you want the day to be loud, lit, and fully planned. Theme parks, integrated resorts, KTV rooms, and after-dark spots that keep the city humming.',
+                'intro' => 'When you want the day to be loud, lit, and fully planned. Theme parks, integrated resorts, KTV rooms, and after-dark spots that keep the city humming until sunrise.',
                 'items' => [
-                    ['name' => 'Casino Gaming & Integrated Resorts'],
-                    ['name' => 'Theme Parks & Amusement Rides'],
-                    ['name' => 'Water Parks'],
-                    ['name' => 'Escape Rooms'],
-                    ['name' => 'Interactive Museums & Optical Illusion Art'],
-                    ['name' => 'Go-Karting'],
-                    ['name' => 'Paintball & Airsoft'],
-                    ['name' => 'Target Shooting / Firing Ranges'],
-                    ['name' => 'Bowling & Billiards / Pool Halls'],
-                    ['name' => 'Karaoke / KTV Rooms'],
-                    ['name' => 'Nightclubbing & Bar Hopping'],
-                    ['name' => 'Live Music Gigs & Concerts'],
+                    ['slug' => 'casino-gaming', 'name' => 'Casino Gaming & Integrated Resorts'],
+                    ['slug' => 'theme-parks', 'name' => 'Theme Parks & Amusement Rides'],
+                    ['slug' => 'water-parks', 'name' => 'Water Parks'],
+                    ['slug' => 'escape-rooms', 'name' => 'Escape Rooms'],
+                    ['slug' => 'interactive-museums', 'name' => 'Interactive Museums & Optical Illusion Art'],
+                    ['slug' => 'go-karting', 'name' => 'Go-Karting'],
+                    ['slug' => 'paintball-airsoft', 'name' => 'Paintball & Airsoft'],
+                    ['slug' => 'target-shooting', 'name' => 'Target Shooting / Firing Ranges'],
+                    ['slug' => 'bowling-billiards', 'name' => 'Bowling & Billiards / Pool Halls'],
+                    ['slug' => 'karaoke-ktv', 'name' => 'Karaoke / KTV Rooms'],
+                    ['slug' => 'nightclubbing', 'name' => 'Nightclubbing & Bar Hopping'],
+                    ['slug' => 'live-music', 'name' => 'Live Music Gigs & Concerts'],
                 ],
             ],
             [
@@ -182,17 +195,17 @@ class ActivitiesController extends Controller
                 'theme' => 'cultural',
                 'intro' => 'The Philippines is a country of layered histories, indigenous craft, and lived religion. Heritage walks, weaving workshops, tattoo pilgrimages, and 7,000 fiestas a year keep all of it visible.',
                 'items' => [
-                    ['name' => 'Historical & Heritage Walking Tours'],
-                    ['name' => 'Bamboo Bike Tours (Bambike)'],
-                    ['name' => 'Cultural Shows & Traditional Dance Presentations'],
-                    ['name' => 'Theater, Musicals & Stage Plays'],
-                    ['name' => 'Museum & Art Gallery Tours'],
-                    ['name' => 'Traditional Weaving & Pottery Workshops'],
-                    ['name' => 'Traditional Tattoo Tourism (Mambabatok)'],
-                    ['name' => 'Indigenous Games (Wooden Scooters, Bamboo Stilts)'],
-                    ['name' => 'Religious Pilgrimages / Visita Iglesia'],
-                    ['name' => 'Cockfight Watching (Sabong)'],
-                    ['name' => 'Festival Tourism', 'note' => 'Year-round fiestas, by region', 'is_festival_card' => true],
+                    ['slug' => 'heritage-walking-tours', 'name' => 'Historical & Heritage Walking Tours'],
+                    ['slug' => 'bambike-tours', 'name' => 'Bamboo Bike Tours (Bambike)'],
+                    ['slug' => 'cultural-shows', 'name' => 'Cultural Shows & Traditional Dance Presentations'],
+                    ['slug' => 'theater-musicals', 'name' => 'Theater, Musicals & Stage Plays'],
+                    ['slug' => 'museum-art-tours', 'name' => 'Museum & Art Gallery Tours'],
+                    ['slug' => 'weaving-pottery', 'name' => 'Traditional Weaving & Pottery Workshops'],
+                    ['slug' => 'mambabatok-tattoos', 'name' => 'Traditional Tattoo Tourism (Mambabatok)'],
+                    ['slug' => 'indigenous-games', 'name' => 'Indigenous Games (Wooden Scooters, Bamboo Stilts)'],
+                    ['slug' => 'visita-iglesia', 'name' => 'Religious Pilgrimages / Visita Iglesia'],
+                    ['slug' => 'sabong', 'name' => 'Cockfight Watching (Sabong)'],
+                    ['slug' => 'festival-tourism', 'name' => 'Festival Tourism', 'note' => 'Year-round fiestas, by region', 'is_festival_card' => true],
                 ],
             ],
             [
@@ -202,18 +215,45 @@ class ActivitiesController extends Controller
                 'theme' => 'leisure',
                 'intro' => 'For the slower days. Long lunches, hot baths, sunset cruises, mall runs, and the kind of staycation that you book with no plan beyond room service.',
                 'items' => [
-                    ['name' => 'Kawa Hot Bath & Fish Spa Therapy'],
-                    ['name' => 'Spa & Wellness Retreats'],
-                    ['name' => 'Mega-Mall Shopping & Retail Therapy'],
-                    ['name' => 'Food Tours / Culinary Crawls / Street Food Tasting'],
-                    ['name' => 'Craft Beer Brewery & Distillery Tours'],
-                    ['name' => 'Agritourism, Farm Tours & Pick-and-Pay'],
-                    ['name' => 'Staycations & Luxury Resort Lounging'],
-                    ['name' => 'Sunset Dinner Cruises'],
-                    ['name' => 'Golfing'],
-                    ['name' => 'Oceanariums & Marine Parks'],
+                    ['slug' => 'kawa-bath', 'name' => 'Kawa Hot Bath & Fish Spa Therapy'],
+                    ['slug' => 'spa-wellness', 'name' => 'Spa & Wellness Retreats'],
+                    ['slug' => 'mega-mall-shopping', 'name' => 'Mega-Mall Shopping & Retail Therapy'],
+                    ['slug' => 'food-tours', 'name' => 'Food Tours / Culinary Crawls / Street Food Tasting'],
+                    ['slug' => 'brewery-tours', 'name' => 'Craft Beer Brewery & Distillery Tours'],
+                    ['slug' => 'agritourism', 'name' => 'Agritourism, Farm Tours & Pick-and-Pay'],
+                    ['slug' => 'staycations', 'name' => 'Staycations & Luxury Resort Lounging'],
+                    ['slug' => 'sunset-cruises', 'name' => 'Sunset Dinner Cruises'],
+                    ['slug' => 'golfing', 'name' => 'Golfing'],
+                    ['slug' => 'oceanariums', 'name' => 'Oceanariums & Marine Parks'],
                 ],
             ],
         ];
+
+        // Merge in researched descriptions + on-disk image counts. The
+        // view uses `images` to decide whether to render real photos
+        // or fall back to the gradient backdrop.
+        $imageDir = public_path('storage/rg-media/activities');
+        foreach ($cats as &$cat) {
+            foreach ($cat['items'] as &$item) {
+                $slug = $item['slug'];
+                if (isset($research[$slug]['description'])) {
+                    $item['description'] = $research[$slug]['description'];
+                }
+                $images = [];
+                if (is_dir($imageDir)) {
+                    foreach ([1, 2, 3] as $n) {
+                        $candidate = $imageDir . DIRECTORY_SEPARATOR . $slug . '-' . $n . '.jpg';
+                        if (is_file($candidate)) {
+                            $images[] = asset('storage/rg-media/activities/' . $slug . '-' . $n . '.jpg');
+                        }
+                    }
+                }
+                $item['images'] = $images;
+            }
+            unset($item);
+        }
+        unset($cat);
+
+        return $cats;
     }
 }
