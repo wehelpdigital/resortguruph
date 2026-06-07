@@ -1,0 +1,216 @@
+@extends('layouts.public')
+
+@section('title', 'Philippine Tourist Activities, Adventures & What To Do · Resort Guru PH')
+@section('meta_description', 'The complete guide to tourist activities and adventures in the Philippines. Water sports, land treks, air rides, casinos, heritage tours, wellness retreats, and year-round fiestas — all in one place.')
+@section('canonical', url('/philippine-tourist-activities-adventures-what-to-do'))
+
+@section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
+
+    {{-- Hero --}}
+    <header class="mb-10 max-w-4xl">
+        <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-3">
+            Philippines Activity Guide
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-5">
+            Tourist Activities, Adventures &amp; What To Do
+            <span class="text-emerald-700">in the Philippines</span>
+        </h1>
+        <div class="prose prose-slate max-w-none text-base sm:text-lg leading-relaxed text-slate-700">
+            <p>
+                Asking what to do in the Philippines is a bit like asking what to do in a country with 7,641 islands, two oceans worth of dive sites, three active volcanoes you can hike, and a fiesta calendar that fills every weekend of the year. The honest answer is, it depends on what you came for. This guide breaks down every major tourist activity in the country into six clean categories so you can plan a trip around what actually moves you.
+            </p>
+            <p>
+                Whether you came for the scuba diving in Coron, surfing in Siargao, hot air ballooning in Pampanga, sandboarding in Ilocos, a Bambike ride through Intramuros, or a front-row seat at Sinulog, you will find it below. Each category is its own neighborhood of things to do, and the cards are the doorways. Tap into the one that matches your mood, then read on for context on where each activity is best, what season works, and how to get there. Use this page as your home base for planning a Philippines itinerary that is shaped by interest rather than geography.
+            </p>
+        </div>
+    </header>
+
+    {{-- Category jump nav (sticky) --}}
+    <nav class="sticky top-16 z-10 bg-white/90 backdrop-blur border-y border-slate-200 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-10">
+        <div class="flex flex-wrap items-center gap-2 text-sm">
+            <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mr-1">Jump to</span>
+            @foreach($categories as $cat)
+                <a href="#cat-{{ $cat['key'] }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 font-semibold text-slate-700 transition">
+                    <span aria-hidden="true">{{ $cat['icon'] }}</span>
+                    <span>{{ $cat['label'] }}</span>
+                </a>
+            @endforeach
+        </div>
+    </nav>
+
+    {{-- Category sections --}}
+    @foreach($categories as $cat)
+        <section id="cat-{{ $cat['key'] }}" class="mb-16 scroll-mt-32">
+            <header class="mb-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-3xl sm:text-4xl" aria-hidden="true">{{ $cat['icon'] }}</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">{{ $cat['label'] }}</h2>
+                </div>
+                <p class="text-slate-600 leading-relaxed max-w-3xl text-[15px] sm:text-base">{{ $cat['intro'] }}</p>
+            </header>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                @foreach($cat['items'] as $item)
+                    @php
+                        $isFestival = !empty($item['is_festival_card']) && !empty($fiestaCovers);
+                        $href = $isFestival ? $fiestasUrl : ($item['href'] ?? '#');
+                        $external = $isFestival ? false : (!empty($item['href']) && str_starts_with($item['href'], 'http'));
+                    @endphp
+                    <a href="{{ $href }}"
+                       @if($external) target="_blank" rel="noopener" @endif
+                       class="activity-card activity-theme-{{ $cat['theme'] }} group relative block rounded-2xl overflow-hidden aspect-[5/6] sm:aspect-[4/5] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+
+                        {{-- 3 fading background layers. Festival card swaps in real fiesta covers. --}}
+                        @if($isFestival)
+                            @foreach($fiestaCovers as $i => $cover)
+                                <div class="activity-bg-layer activity-bg-layer-{{ $i + 1 }}"
+                                     style="background-image: url('{{ $cover }}'); background-size: cover; background-position: center;"></div>
+                            @endforeach
+                        @else
+                            <div class="activity-bg-layer activity-bg-layer-1"></div>
+                            <div class="activity-bg-layer activity-bg-layer-2"></div>
+                            <div class="activity-bg-layer activity-bg-layer-3"></div>
+                        @endif
+
+                        {{-- Dark scrim for legibility --}}
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black/80 pointer-events-none"></div>
+
+                        {{-- Festival badge --}}
+                        @if($isFestival)
+                            <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/95 text-[10px] uppercase tracking-wider font-bold text-amber-700 shadow-sm z-10">
+                                {{ \App\Models\RgFiesta::where('is_published', true)->count() }} fiestas
+                            </div>
+                        @endif
+
+                        {{-- Card content --}}
+                        <div class="absolute inset-0 flex flex-col justify-end p-3 sm:p-4 text-white z-10">
+                            <h3 class="font-bold text-[15px] sm:text-base leading-tight mb-0.5 drop-shadow">
+                                {{ $item['name'] }}
+                            </h3>
+                            @if(!empty($item['note']))
+                                <p class="text-[11px] sm:text-xs text-white/90 leading-snug drop-shadow">
+                                    {{ $item['note'] }}
+                                </p>
+                            @endif
+                            @if($isFestival)
+                                <div class="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-amber-200">
+                                    View the fiesta guide
+                                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                                </div>
+                            @endif
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </section>
+    @endforeach
+
+    {{-- Footer note + internal-link rail --}}
+    <div class="mt-12 pt-10 border-t border-slate-200">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-3">Planning the trip around an activity?</h2>
+        <p class="text-slate-700 leading-relaxed max-w-3xl mb-5">
+            Most Philippine adventures cluster in specific provinces. Once you have picked the activity, sort the trip around where it lives best. Browse our destination and food guides for the area, lock in the listing for your stay, and time the visit so a regional fiesta lands on your dates.
+        </p>
+        <div class="flex flex-wrap gap-2 text-sm">
+            <a href="{{ url('/destinations') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
+                Destinations by region
+            </a>
+            <a href="{{ url('/food-trip') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
+                Food Trip
+            </a>
+            <a href="{{ $fiestasUrl }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold">
+                Fiestas calendar
+            </a>
+            <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
+                Travel blog
+            </a>
+        </div>
+    </div>
+</div>
+
+{{-- Card animation styles. Each theme has its own 3-color gradient
+     ramp; the layers cross-fade on a 12-second loop so the page has
+     constant gentle motion without ever pulsing distractingly. --}}
+<style>
+    .activity-card {
+        box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease-out;
+        will-change: transform;
+    }
+    .activity-card:hover {
+        transform: translateY(-4px) scale(1.012);
+        box-shadow: 0 14px 32px -8px rgba(15, 23, 42, 0.28);
+    }
+    .activity-bg-layer {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        animation: activityFade 12s infinite ease-in-out;
+    }
+    .activity-bg-layer-1 { animation-delay: 0s; opacity: 1; }
+    .activity-bg-layer-2 { animation-delay: 4s; }
+    .activity-bg-layer-3 { animation-delay: 8s; }
+    @keyframes activityFade {
+        0%, 28%  { opacity: 1; }
+        33%, 95% { opacity: 0; }
+        100%     { opacity: 1; }
+    }
+
+    /* Theme gradients. Layer 1/2/3 cycle through three hues that
+       belong to the same family, so the card never reads as a different
+       color — it reads as the same scene shifting light. */
+    .activity-theme-water .activity-bg-layer-1 { background: linear-gradient(135deg, #0ea5e9 0%, #0c4a6e 100%); }
+    .activity-theme-water .activity-bg-layer-2 { background: linear-gradient(135deg, #06b6d4 0%, #134e4a 100%); }
+    .activity-theme-water .activity-bg-layer-3 { background: linear-gradient(135deg, #38bdf8 0%, #1e3a8a 100%); }
+
+    .activity-theme-land .activity-bg-layer-1 { background: linear-gradient(135deg, #65a30d 0%, #14532d 100%); }
+    .activity-theme-land .activity-bg-layer-2 { background: linear-gradient(135deg, #a16207 0%, #422006 100%); }
+    .activity-theme-land .activity-bg-layer-3 { background: linear-gradient(135deg, #16a34a 0%, #1e3a2c 100%); }
+
+    .activity-theme-air .activity-bg-layer-1 { background: linear-gradient(135deg, #fb7185 0%, #be123c 100%); }
+    .activity-theme-air .activity-bg-layer-2 { background: linear-gradient(135deg, #fbbf24 0%, #c2410c 100%); }
+    .activity-theme-air .activity-bg-layer-3 { background: linear-gradient(135deg, #f472b6 0%, #831843 100%); }
+
+    .activity-theme-entertainment .activity-bg-layer-1 { background: linear-gradient(135deg, #a855f7 0%, #581c87 100%); }
+    .activity-theme-entertainment .activity-bg-layer-2 { background: linear-gradient(135deg, #ec4899 0%, #831843 100%); }
+    .activity-theme-entertainment .activity-bg-layer-3 { background: linear-gradient(135deg, #6366f1 0%, #312e81 100%); }
+
+    .activity-theme-cultural .activity-bg-layer-1 { background: linear-gradient(135deg, #c2410c 0%, #7c2d12 100%); }
+    .activity-theme-cultural .activity-bg-layer-2 { background: linear-gradient(135deg, #b45309 0%, #78350f 100%); }
+    .activity-theme-cultural .activity-bg-layer-3 { background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%); }
+
+    .activity-theme-leisure .activity-bg-layer-1 { background: linear-gradient(135deg, #14b8a6 0%, #134e4a 100%); }
+    .activity-theme-leisure .activity-bg-layer-2 { background: linear-gradient(135deg, #f59e0b 0%, #78350f 100%); }
+    .activity-theme-leisure .activity-bg-layer-3 { background: linear-gradient(135deg, #10b981 0%, #064e3b 100%); }
+
+    @media (prefers-reduced-motion: reduce) {
+        .activity-bg-layer { animation: none; }
+        .activity-bg-layer-1 { opacity: 1; }
+        .activity-bg-layer-2, .activity-bg-layer-3 { opacity: 0; }
+    }
+</style>
+
+{{-- JSON-LD ItemList — each category is an item; the search engine sees
+     the page as a structured directory of Philippine tourist activities. --}}
+@php
+    $ld = [
+        '@context' => 'https://schema.org',
+        '@type' => 'ItemList',
+        'name' => 'Philippine Tourist Activities, Adventures & What To Do',
+        'description' => 'The complete guide to tourist activities and adventures in the Philippines: water sports, land treks, air rides, casinos, heritage tours, wellness retreats, and year-round fiestas.',
+        'url' => url('/philippine-tourist-activities-adventures-what-to-do'),
+        'itemListElement' => [],
+    ];
+    foreach ($categories as $i => $cat) {
+        $ld['itemListElement'][] = [
+            '@type' => 'ListItem',
+            'position' => $i + 1,
+            'name' => $cat['label'],
+            'description' => $cat['intro'],
+        ];
+    }
+@endphp
+<script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+@endsection

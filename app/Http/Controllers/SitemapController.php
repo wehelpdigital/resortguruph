@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RgBlogPost;
+use App\Models\RgFiesta;
 use App\Models\RgKeyword;
 use App\Models\RgResort;
 use App\Models\RgSeoPage;
@@ -12,16 +13,27 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $xml = Cache::remember('rg.sitemap', 3600, function () {
+        $xml = Cache::remember('rg.sitemap.v2', 3600, function () {
             $urls = [
                 ['loc' => route('home'), 'lastmod' => now()->toAtomString(), 'priority' => '1.0'],
                 ['loc' => url('/destinations'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
+                ['loc' => route('activities.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
+                ['loc' => route('fiestas.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.85'],
                 ['loc' => route('blog.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.6'],
                 ['loc' => route('about'), 'lastmod' => now()->toAtomString(), 'priority' => '0.4'],
                 ['loc' => route('contact'), 'lastmod' => now()->toAtomString(), 'priority' => '0.4'],
                 ['loc' => route('terms'), 'lastmod' => now()->toAtomString(), 'priority' => '0.2'],
                 ['loc' => route('privacy'), 'lastmod' => now()->toAtomString(), 'priority' => '0.2'],
             ];
+
+            // Individual fiesta pages
+            RgFiesta::where('is_published', true)->orderBy('id')->each(function ($f) use (&$urls) {
+                $urls[] = [
+                    'loc' => route('fiestas.show', $f->slug),
+                    'lastmod' => optional($f->updated_at)->toAtomString() ?? now()->toAtomString(),
+                    'priority' => '0.65',
+                ];
+            });
 
             // Cluster hub pages
             $clusterMeta = \App\Http\Controllers\DestinationsController::clusterMetadata();

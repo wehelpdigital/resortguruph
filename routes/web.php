@@ -113,12 +113,25 @@ Route::get('/_preview/block/{block}', [\App\Http\Controllers\BuilderPreviewContr
     ->where('block', '[0-9]+')
     ->name('builder.preview.block');
 
+// ============ ACTIVITIES HUB ============
+// Top-level hub linking out to fiestas + every other tourist-activity
+// category. Slug is intentionally long-tail / keyword-rich for SEO.
+// Must sit BEFORE the keyword-page catch-all.
+Route::get('/philippine-tourist-activities-adventures-what-to-do',
+    [\App\Http\Controllers\ActivitiesController::class, 'index'])
+    ->name('activities.index');
+
 // ============ FIESTAS (activities vertical) ============
-// Must sit BEFORE the keyword-page catch-all so "/fiestas" doesn't get
-// claimed as a keyword slug. Detail pages bind by slug.
-Route::get('/fiestas', [\App\Http\Controllers\FiestaController::class, 'index'])
+// List slug renamed from /fiestas to a keyword-rich slug for SEO.
+// Detail pages keep the short /fiestas/{slug} form so individual
+// festival URLs stay clean and shareable. Old /fiestas list URL is
+// 301-redirected so any inbound links keep working.
+Route::get('/philippine-fiestas-festivals-guide',
+    [\App\Http\Controllers\FiestaController::class, 'index'])
     ->name('fiestas.index');
-Route::get('/fiestas/{fiesta:slug}', [\App\Http\Controllers\FiestaController::class, 'show'])
+Route::get('/fiestas', fn() => redirect()->route('fiestas.index', [], 301));
+Route::get('/fiestas/{fiesta:slug}',
+    [\App\Http\Controllers\FiestaController::class, 'show'])
     ->name('fiestas.show');
 
 // ============ KEYWORD PAGE CATCH-ALL (must be LAST) ============
