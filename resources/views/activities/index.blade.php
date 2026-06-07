@@ -8,9 +8,9 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
 
     {{-- Hero — title is capped at a comfortable reading width, but the
-         intro prose runs the full container width in a 2-column grid on
-         desktop so the page reads side-to-side instead of being pinched
-         into the center. --}}
+         intro prose runs the full container width as a single column so
+         the page reads side-to-side instead of being pinched into the
+         center. --}}
     <header class="mb-10">
         <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-3">
             Philippines Activity Guide
@@ -19,7 +19,7 @@
             Tourist Activities, Adventures &amp; What To Do
             <span class="text-emerald-700">in the Philippines</span>
         </h1>
-        <div class="grid lg:grid-cols-2 gap-x-10 gap-y-5 text-base sm:text-lg leading-relaxed text-slate-700">
+        <div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700">
             <p>
                 For most DIY travelers heading to the Philippines, the real question is not what to do, but where to start. This is a country of 7,641 islands, three active volcanoes you can climb in a single weekend, a coastline longer than the continental United States, and a fiesta calendar so full that every barangay has its own patron-saint feast somewhere on it. Pick a province on a map, and there are already five worthwhile things to do this Saturday. So this page is your starting point. Six categories of Philippine tourist activities and adventures, each one a kind of neighborhood, with the cards as doorways. Tara, sa Coron for the scuba diving, sa Siargao for the surf breaks, sa Pampanga for the dawn balloon flights, sa Ilocos for the sand dunes, sa Marinduque for the Moriones, sa Lucban for the Pahiyas.
             </p>
