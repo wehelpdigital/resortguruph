@@ -7,10 +7,11 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
 
-    {{-- Hero — title is capped at a comfortable reading width, but the
-         intro prose runs the full container width as a single column so
-         the page reads side-to-side instead of being pinched into the
-         center. --}}
+    {{-- Hero — title is capped at a comfortable reading width. The
+         intro splits into a 400px image column on the left and the
+         prose on the right at lg+; on smaller screens the image stacks
+         on top and crops to a landscape ratio so it doesn't dominate
+         the phone viewport. --}}
     <header class="mb-10">
         <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-3">
             Philippines Activity Guide
@@ -19,13 +20,24 @@
             Tourist Activities, Adventures &amp; What To Do
             <span class="text-emerald-700">in the Philippines</span>
         </h1>
-        <div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700">
-            <p>
-                For most DIY travelers heading to the Philippines, the real question is not what to do, but where to start. This is a country of 7,641 islands, three active volcanoes you can climb in a single weekend, a coastline longer than the continental United States, and a fiesta calendar so full that every barangay has its own patron-saint feast somewhere on it. Pick a province on a map, and there are already five worthwhile things to do this Saturday. So this page is your starting point. Six categories of Philippine tourist activities and adventures, each one a kind of neighborhood, with the cards as doorways. Tara, sa Coron for the scuba diving, sa Siargao for the surf breaks, sa Pampanga for the dawn balloon flights, sa Ilocos for the sand dunes, sa Marinduque for the Moriones, sa Lucban for the Pahiyas.
-            </p>
-            <p>
-                Each card opens into a kwento of where the activity sits in the country, what season works for it, and how to ride in by jeepney, tricycle, or shuttle van once you land in town. The country rewards specificity. A weekend planned around scuba diving puts you on completely different islands than a weekend planned around heritage walking. A trip shaped by fiesta tourism moves you to a different province every month. Knowing what you actually came for lets you plan around it instead of fighting the geography. Use this page that way. Sort first by what moves you, then cross-read the destination guides and food trip pages to ground the trip in where it lives best, then check the fiestas calendar so your dates line up with something worth catching while you are there.
-            </p>
+        <div class="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 items-start">
+            <figure class="m-0">
+                <img src="{{ asset('storage/rg-media/activities/hero.jpg') }}"
+                     alt="Tourist with a surfboard on the beach in Siargao, Philippines"
+                     class="w-full aspect-[4/3] lg:aspect-[3/4] object-cover rounded-2xl shadow-md"
+                     loading="lazy">
+                <figcaption class="text-xs text-slate-400 mt-2">
+                    Photo by Clyd Villar on Pexels &middot; Siargao, Surigao del Norte
+                </figcaption>
+            </figure>
+            <div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700">
+                <p>
+                    For most DIY travelers heading to the Philippines, the real question is not what to do, but where to start. This is a country of 7,641 islands, three active volcanoes you can climb in a single weekend, a coastline longer than the continental United States, and a fiesta calendar so full that every barangay has its own patron-saint feast somewhere on it. Pick a province on a map, and there are already five worthwhile things to do this Saturday. So this page is your starting point. Six categories of Philippine tourist activities and adventures, each one a kind of neighborhood, with the cards as doorways. Tara, sa Coron for the scuba diving, sa Siargao for the surf breaks, sa Pampanga for the dawn balloon flights, sa Ilocos for the sand dunes, sa Marinduque for the Moriones, sa Lucban for the Pahiyas.
+                </p>
+                <p>
+                    Each card opens into a kwento of where the activity sits in the country, what season works for it, and how to ride in by jeepney, tricycle, or shuttle van once you land in town. The country rewards specificity. A weekend planned around scuba diving puts you on completely different islands than a weekend planned around heritage walking. A trip shaped by fiesta tourism moves you to a different province every month. Knowing what you actually came for lets you plan around it instead of fighting the geography. Use this page that way. Sort first by what moves you, then cross-read the destination guides and food trip pages to ground the trip in where it lives best, then check the fiestas calendar so your dates line up with something worth catching while you are there.
+                </p>
+            </div>
         </div>
     </header>
 
