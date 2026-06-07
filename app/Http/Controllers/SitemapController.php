@@ -13,9 +13,10 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $xml = Cache::remember('rg.sitemap.v3', 3600, function () {
+        $xml = Cache::remember('rg.sitemap.v4', 3600, function () {
             $urls = [
                 ['loc' => route('home'), 'lastmod' => now()->toAtomString(), 'priority' => '1.0'],
+                ['loc' => route('tourist-map.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => url('/destinations'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => route('activities.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => route('foods.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],

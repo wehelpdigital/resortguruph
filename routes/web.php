@@ -113,6 +113,15 @@ Route::get('/_preview/block/{block}', [\App\Http\Controllers\BuilderPreviewContr
     ->where('block', '[0-9]+')
     ->name('builder.preview.block');
 
+// ============ TOURIST MAP ============
+// Interactive Leaflet map of the Philippines. Draw a circle on the
+// map to see every destination, restaurant, activity, food, and
+// fiesta inside it. Pure client-side haversine math against the
+// JSON dump the controller emits — no AJAX after page load.
+Route::get('/philippine-tourist-map',
+    [\App\Http\Controllers\TouristMapController::class, 'index'])
+    ->name('tourist-map.index');
+
 // ============ ACTIVITIES HUB ============
 // Top-level hub linking out to fiestas + every other tourist-activity
 // category. Slug is intentionally long-tail / keyword-rich for SEO.
