@@ -141,7 +141,6 @@ class ActivitiesController extends Controller
                     ['slug' => 'dirt-biking', 'name' => 'Dirt Biking / Motocross'],
                     ['slug' => 'horseback-riding', 'name' => 'Horseback Riding'],
                     ['slug' => 'canopy-walk', 'name' => 'Canopy Walk / Tree Top Adventures'],
-                    ['slug' => 'zorbing', 'name' => 'Zorb Ball / Zorbing'],
                     ['slug' => 'bungee-jumping', 'name' => 'Bungee Jumping / Canyon Swing'],
                     ['slug' => 'rappelling', 'name' => 'Rappelling / Abseiling'],
                     ['slug' => 'wildlife-safari', 'name' => 'Wildlife Safari Tours'],
@@ -215,7 +214,6 @@ class ActivitiesController extends Controller
                 'theme' => 'leisure',
                 'intro' => 'For the slower days. Long lunches, hot baths, sunset cruises, mall runs, and the kind of staycation that you book with no plan beyond room service.',
                 'items' => [
-                    ['slug' => 'kawa-bath', 'name' => 'Kawa Hot Bath & Fish Spa Therapy'],
                     ['slug' => 'spa-wellness', 'name' => 'Spa & Wellness Retreats'],
                     ['slug' => 'mega-mall-shopping', 'name' => 'Mega-Mall Shopping & Retail Therapy'],
                     ['slug' => 'food-tours', 'name' => 'Food Tours / Culinary Crawls / Street Food Tasting'],
