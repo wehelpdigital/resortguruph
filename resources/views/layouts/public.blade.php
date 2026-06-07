@@ -561,7 +561,7 @@
 
 <header class="border-b border-slate-200 bg-white sticky top-0 z-30 backdrop-blur bg-white/85">
     {{-- Level 1: brand + utility nav --}}
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-lg">
             <span class="text-2xl">🏖️</span>
             <span>{{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }}</span>
@@ -590,7 +590,7 @@
          darkens the pill so it reads as the current section. Stays
          visible on mobile with a horizontal scroll if needed. --}}
     <div class="border-t border-slate-100 bg-slate-50/80">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
             <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Explore Philippines</span>
 
             <a href="{{ url('/destinations') }}"
