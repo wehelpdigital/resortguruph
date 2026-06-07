@@ -121,6 +121,15 @@ Route::get('/philippine-tourist-activities-adventures-what-to-do',
     [\App\Http\Controllers\ActivitiesController::class, 'index'])
     ->name('activities.index');
 
+// ============ FOODS HUB ============
+// Companion to the activities hub — lists every Filipino dish by
+// category (popular staples, street food, exotics, regional
+// specialties, sweets). The /food-trip route is the restaurant
+// directory; this one is the dish directory.
+Route::get('/filipino-food-dishes-what-to-eat',
+    [\App\Http\Controllers\FoodsController::class, 'index'])
+    ->name('foods.index');
+
 // ============ FIESTAS (activities vertical) ============
 // List slug renamed from /fiestas to a keyword-rich slug for SEO.
 // Detail pages keep the short /fiestas/{slug} form so individual

@@ -13,11 +13,12 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $xml = Cache::remember('rg.sitemap.v2', 3600, function () {
+        $xml = Cache::remember('rg.sitemap.v3', 3600, function () {
             $urls = [
                 ['loc' => route('home'), 'lastmod' => now()->toAtomString(), 'priority' => '1.0'],
                 ['loc' => url('/destinations'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => route('activities.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
+                ['loc' => route('foods.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => route('fiestas.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.85'],
                 ['loc' => route('blog.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.6'],
                 ['loc' => route('about'), 'lastmod' => now()->toAtomString(), 'priority' => '0.4'],

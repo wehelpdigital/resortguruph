@@ -557,6 +557,7 @@
     $activeWhatToDo = request()->is('philippine-tourist-activities-adventures-what-to-do')
         || request()->is('philippine-fiestas-festivals-guide')
         || request()->is('fiestas/*');
+    $activeWhatToEat = request()->is('filipino-food-dishes-what-to-eat');
 @endphp
 
 <header class="border-b border-slate-200 bg-white sticky top-0 z-30 backdrop-blur bg-white/85">
@@ -605,6 +606,13 @@
                       {{ $activeWhereToEat ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100 hover:border-amber-300' }}">
                 <span aria-hidden="true">🍽️</span>
                 Where to Eat
+            </a>
+
+            <a href="{{ route('foods.index') }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
+                      {{ $activeWhatToEat ? 'bg-rose-600 text-white border-rose-600 shadow-sm' : 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 hover:border-rose-300' }}">
+                <span aria-hidden="true">🥘</span>
+                What to Eat
             </a>
 
             <a href="{{ route('activities.index') }}"
