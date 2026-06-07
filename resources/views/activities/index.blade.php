@@ -100,10 +100,21 @@
 
                         {{-- Media strip: top half of the card. Three image
                              layers crossfade if photos exist; otherwise the
-                             gradient backdrop fades for visual interest. --}}
+                             gradient backdrop fades for visual interest.
+                             We always render exactly 3 layers — when fewer
+                             than 3 photos are on disk we recycle them so
+                             the 12s keyframe cycle never exposes a gap of
+                             grey backdrop between layers. --}}
                         <div class="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
                             @if($hasImages)
-                                @foreach($images as $i => $img)
+                                @php
+                                    $imgCount = count($images);
+                                    $layerImages = [];
+                                    for ($n = 0; $n < 3; $n++) {
+                                        $layerImages[] = $images[$n % $imgCount];
+                                    }
+                                @endphp
+                                @foreach($layerImages as $i => $img)
                                     <div class="activity-bg-layer activity-bg-layer-{{ $i + 1 }}"
                                          style="background-image: url('{{ $img }}'); background-size: cover; background-position: center;"></div>
                                 @endforeach
