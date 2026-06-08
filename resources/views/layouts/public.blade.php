@@ -558,7 +558,7 @@
         || request()->is('philippine-fiestas-festivals-guide')
         || request()->is('fiestas/*');
     $activeWhatToEat = request()->is('filipino-food-dishes-what-to-eat');
-    $activeTouristMap = request()->is('philippine-tourist-map');
+    $activeWhatToBuy = request()->is('philippine-souvenirs-pasalubong-what-to-buy');
 @endphp
 
 <header class="border-b border-slate-200 bg-white sticky top-0 z-30 backdrop-blur bg-white/85">
@@ -595,13 +595,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
             <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Explore Philippines</span>
 
-            <a href="{{ route('tourist-map.index') }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
-                      {{ $activeTouristMap ? 'bg-sky-600 text-white border-sky-600 shadow-sm' : 'bg-sky-50 text-sky-800 border-sky-200 hover:bg-sky-100 hover:border-sky-300' }}">
-                <span aria-hidden="true">🧭</span>
-                Tourist Map
-            </a>
-
             <a href="{{ url('/destinations') }}"
                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
                       {{ $activeWhereToGo ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' }}">
@@ -628,6 +621,13 @@
                       {{ $activeWhatToDo ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' }}">
                 <span aria-hidden="true">🎪</span>
                 What to Do
+            </a>
+
+            <a href="{{ route('buys.index') }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
+                      {{ $activeWhatToBuy ? 'bg-violet-600 text-white border-violet-600 shadow-sm' : 'bg-violet-50 text-violet-800 border-violet-200 hover:bg-violet-100 hover:border-violet-300' }}">
+                <span aria-hidden="true">🛍️</span>
+                What to Buy
             </a>
         </div>
     </div>

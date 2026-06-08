@@ -113,15 +113,6 @@ Route::get('/_preview/block/{block}', [\App\Http\Controllers\BuilderPreviewContr
     ->where('block', '[0-9]+')
     ->name('builder.preview.block');
 
-// ============ TOURIST MAP ============
-// Interactive Leaflet map of the Philippines. Draw a circle on the
-// map to see every destination, restaurant, activity, food, and
-// fiesta inside it. Pure client-side haversine math against the
-// JSON dump the controller emits — no AJAX after page load.
-Route::get('/philippine-tourist-map',
-    [\App\Http\Controllers\TouristMapController::class, 'index'])
-    ->name('tourist-map.index');
-
 // ============ ACTIVITIES HUB ============
 // Top-level hub linking out to fiestas + every other tourist-activity
 // category. Slug is intentionally long-tail / keyword-rich for SEO.
@@ -138,6 +129,14 @@ Route::get('/philippine-tourist-activities-adventures-what-to-do',
 Route::get('/filipino-food-dishes-what-to-eat',
     [\App\Http\Controllers\FoodsController::class, 'index'])
     ->name('foods.index');
+
+// ============ BUYS / PASALUBONG HUB ============
+// Companion to foods + activities — the unique-finds-to-bring-home
+// guide. Heritage salts, regional textiles, artisanal crafts, and
+// packaged sweets sourced to the province of origin.
+Route::get('/philippine-souvenirs-pasalubong-what-to-buy',
+    [\App\Http\Controllers\BuysController::class, 'index'])
+    ->name('buys.index');
 
 // ============ FIESTAS (activities vertical) ============
 // List slug renamed from /fiestas to a keyword-rich slug for SEO.
