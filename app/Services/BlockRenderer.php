@@ -28,6 +28,26 @@ class BlockRenderer
     public function renderBlock(RgContentBlock $block, array $context = []): string
     {
         $p = $block->payload ?? [];
+        $html = $this->renderBlockHtml($block, $p, $context);
+        // Live-edit mode (driven by the mother super-admin's Live
+        // Editor): wrap each block's rendered HTML in a container
+        // that carries the block id, type, and sort order. The
+        // iframe-side rg-live-edit.js uses these attributes to
+        // attach hover toolbars and SortableJS drag-drop handles.
+        if (!empty($context['live_edit'])) {
+            $html = sprintf(
+                '<div class="rg-live-block" data-rg-block-id="%d" data-rg-block-type="%s" data-rg-block-sort="%d">%s</div>',
+                (int) $block->id,
+                htmlspecialchars((string) $block->block_type, ENT_QUOTES),
+                (int) ($block->sort_order ?? 0),
+                $html
+            );
+        }
+        return $html;
+    }
+
+    private function renderBlockHtml(RgContentBlock $block, array $p, array $context): string
+    {
         return match ($block->block_type) {
             'heading' => $this->heading($p),
             'rich_text' => $this->richText($p),

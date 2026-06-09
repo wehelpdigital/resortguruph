@@ -14,6 +14,7 @@ use App\Models\RgSeoPage;
 use App\Models\RgSetting;
 use App\Services\BlockRenderer;
 use App\Services\SchemaGenerator;
+use App\Support\LiveEditToken;
 use Illuminate\Http\Request;
 
 /**
@@ -44,12 +45,23 @@ class KeywordPageController extends Controller
             ->paginate($listingsPerPage)
             ->withQueryString();
 
+        // Live-edit mode: an HMAC-signed token from the mother
+        // super-admin enables admin chrome on the rendered page.
+        // The token is slug-scoped and short-lived. When valid we
+        // pass `live_edit=true` into the BlockRenderer so each
+        // block's output gets wrapped in a `data-rg-block` element
+        // the iframe-side JS can find.
+        $liveEdit = LiveEditToken::valid($page->slug, $request->query('_lt'));
+
         $blocks = RgContentBlock::forOwner('seo_page', $page->id);
         $hasListingSlot = $blocks->contains(fn($b) => $b->block_type === 'listing_slot');
         // First render with minimal context (listing_slot etc. only need
         // keyword_id). Re-rendered later if any block needs the food /
         // adventure listings collections — see comment near $restaurantListings.
-        $renderedBlocks = $renderer->renderBlocks($blocks, ['keyword_id' => $keyword->id]);
+        $renderedBlocks = $renderer->renderBlocks($blocks, [
+            'keyword_id' => $keyword->id,
+            'live_edit' => $liveEdit,
+        ]);
         $needsListingBlockCtx = $blocks->contains(fn($b) => $b->block_type === 'listing_block');
 
         $faqs = $renderer->extractFaqs('seo_page', $page->id);
@@ -181,6 +193,7 @@ class KeywordPageController extends Controller
                 'listings' => collect($listings->items()),
                 'restaurantListings' => $restaurantListings,
                 'listingGalleries' => $listingGalleries ?? [],
+                'live_edit' => $liveEdit,
             ]);
         }
 
@@ -206,7 +219,7 @@ class KeywordPageController extends Controller
             'keyword', 'page', 'listings', 'listingGalleries', 'listingRatings', 'listingReviews',
             'faqs', 'cluster', 'related',
             'renderedBlocks', 'hasListingSlot', 'siblingPages', 'jsonld', 'author', 'reviews',
-            'restaurantListings', 'adventureListings'
+            'restaurantListings', 'adventureListings', 'liveEdit'
         ));
     }
 

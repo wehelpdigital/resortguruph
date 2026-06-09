@@ -5,6 +5,27 @@
 @section('meta_keywords') {{ $page->meta_keywords }} @endsection
 @section('canonical') {{ $page->canonical_url ?: url($page->slug) }} @endsection
 @if($page->robots) <meta name="robots" content="{{ $page->robots }}"> @endif
+
+{{-- Live Editor chrome (only when a valid HMAC-signed _lt token was
+     presented by the mother super-admin's Live Editor view). Loads
+     SortableJS + the rg-live-edit assets and exposes a small
+     window.__rgLiveEdit config object that the iframe-side script
+     uses to identify the page + emit postMessage events to the
+     parent admin shell. --}}
+@if(!empty($liveEdit))
+    @push('head')
+        <link rel="stylesheet" href="{{ asset('css/rg-live-edit.css') }}?v=1">
+        <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+        <script>
+            window.__rgLiveEdit = {
+                pageId: {{ (int) $page->id }},
+                slug: {!! json_encode($page->slug) !!},
+                ownerType: 'seo_page'
+            };
+        </script>
+        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=1"></script>
+    @endpush
+@endif
 @if($page->og_image_path)
     @php $ogUrl = preg_match('#^https?://#i', $page->og_image_path) ? $page->og_image_path : asset('storage/' . ltrim($page->og_image_path, '/')); @endphp
     @section('og_image'){{ $ogUrl }}@endsection

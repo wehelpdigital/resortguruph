@@ -1,0 +1,134 @@
+/**
+ * Iframe-side overlay for the mother super-admin Live Editor.
+ *
+ * Loaded by the frontend KeywordPageController when a valid
+ * HMAC-signed _lt token is present. The chrome (hover toolbar,
+ * drag indicator, add-block buttons, mode banner) only appears
+ * inside the mother-app iframe; the same page served without a
+ * token shows none of these styles.
+ *
+ * Toolbar positions itself absolutely inside the block, which works
+ * for every block type because BlockRenderer wraps each block in a
+ * .rg-live-block container that is naturally position:relative
+ * after the rule below.
+ */
+
+.rg-live-block {
+    position: relative;
+    outline: 2px dashed transparent;
+    outline-offset: 4px;
+    transition: outline-color 0.15s ease, background-color 0.15s ease;
+    border-radius: 4px;
+}
+.rg-live-block:hover {
+    outline-color: #6366f1;
+    background-color: rgba(99, 102, 241, 0.04);
+}
+.rg-live-block.rg-live-active {
+    outline-color: #4338ca;
+    outline-style: solid;
+}
+
+.rg-live-toolbar {
+    position: absolute;
+    top: -36px;
+    right: 0;
+    display: none;
+    align-items: center;
+    gap: 4px;
+    background: #1e293b;
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.45);
+    z-index: 9000;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    line-height: 1;
+    white-space: nowrap;
+}
+.rg-live-block:hover > .rg-live-toolbar,
+.rg-live-block.rg-live-active > .rg-live-toolbar { display: inline-flex; }
+
+.rg-live-toolbar .rg-live-type-badge {
+    background: #6366f1;
+    padding: 3px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-right: 4px;
+    cursor: grab;
+}
+.rg-live-toolbar .rg-live-type-badge:active { cursor: grabbing; }
+
+.rg-live-toolbar button {
+    background: transparent;
+    color: #fff;
+    border: 0;
+    padding: 4px 7px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1;
+}
+.rg-live-toolbar button:hover { background: rgba(255, 255, 255, 0.18); }
+.rg-live-toolbar button[data-action="delete"]:hover { background: #dc2626; }
+
+.rg-live-add-btn {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: 2px dashed #c7d2fe;
+    color: #4338ca;
+    padding: 8px;
+    margin: 12px 0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+.rg-live-add-btn:hover {
+    border-color: #4f46e5;
+    color: #312e81;
+    background: #eef2ff;
+}
+
+/* SortableJS visual states */
+.rg-live-block.sortable-ghost {
+    opacity: 0.35;
+    background: #eef2ff;
+}
+.rg-live-block.sortable-chosen { cursor: grabbing; }
+.rg-live-block.sortable-drag {
+    box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.4);
+}
+
+/* Fixed banner top-left identifying the mode */
+.rg-live-banner {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 9999;
+    background: #4338ca;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.3);
+    pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+/* Disable links and forms while editing so the admin doesn't
+   accidentally navigate the iframe away from the page being edited. */
+.rg-live-edit-on a:not(.rg-live-allow),
+.rg-live-edit-on button:not(.rg-live-allow):not(.rg-live-add-btn):not(.rg-live-toolbar button) {
+    pointer-events: none;
+}
+.rg-live-edit-on form { pointer-events: none; }

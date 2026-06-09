@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // Shared secret used by the mother super-admin's Live Editor to
+    // HMAC-sign a token that proves "this iframe request originated
+    // from an authenticated admin session". Set the same LIVE_EDIT_SECRET
+    // value in both apps' .env. See app/Support/LiveEditToken.php.
+    'live_edit' => [
+        'secret' => env('LIVE_EDIT_SECRET'),
+    ],
+
 ];
