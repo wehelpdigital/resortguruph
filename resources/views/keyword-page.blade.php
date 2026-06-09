@@ -71,17 +71,25 @@
     {{-- Eyebrow + H1 read as one flowing sentence: eyebrow is the lede
          ("Looking for a hotel in Cebu?"), H1 completes the thought
          ("Here Are the Honest Picks We Would Make"). normal-case keeps the
-         grammar intact instead of the prior all-caps treatment. --}}
-    <div class="text-base sm:text-lg text-slate-600 mb-2 font-medium">{{ $eyebrowText }}</div>
-    <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3 leading-tight">{{ $h1Display }}</h1>
+         grammar intact instead of the prior all-caps treatment.
+
+         When the mother's Live Editor is active (`$liveEdit`), tag the
+         eyebrow + H1 with data-rg-page-meta so rg-live-edit.js can attach
+         an Edit toolbar that opens the page-metadata editor in the parent
+         admin shell — the H1/eyebrow live in rg_seo_pages columns, not in
+         rg_content_blocks, so they need their own edit hook. --}}
+    <div class="text-base sm:text-lg text-slate-600 mb-2 font-medium" @if(!empty($liveEdit)) data-rg-page-meta="h1_eyebrow" data-rg-meta-label="Eyebrow (above H1)" @endif>{{ $eyebrowText }}</div>
+    <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3 leading-tight" @if(!empty($liveEdit)) data-rg-page-meta="h1" data-rg-meta-label="H1 Heading" @endif>{{ $h1Display }}</h1>
 
     {{-- Italic intro: 1-2 sentences positioning the page below the H1. Pulls
          from rg_seo_pages.subtitle when admin-edited; otherwise the seeder
          populates a default from the destination's voice_intro.
          `white-space: normal; overflow: visible` defends against parent CSS
          that clipped the line on mobile widths (user reported cut-off). --}}
-    @if(!empty($page->subtitle ?? null))
-        <p class="italic text-base text-slate-600 mb-6 leading-relaxed" style="overflow: visible; white-space: normal; text-overflow: clip; max-width: 100%;">{{ $page->subtitle }}</p>
+    @if(!empty($page->subtitle ?? null) || !empty($liveEdit))
+        <p class="italic text-base text-slate-600 mb-6 leading-relaxed"
+           style="overflow: visible; white-space: normal; text-overflow: clip; max-width: 100%;"
+           @if(!empty($liveEdit)) data-rg-page-meta="subtitle" data-rg-meta-label="Subtitle (under H1)" @endif>{{ $page->subtitle ?? '—' }}</p>
     @endif
 
     {{-- Social share row, top of page --}}
@@ -148,8 +156,17 @@
          editable in the admin builder. --}}
 
     {{-- TL;DR + WWWW summary cards moved here (below the listings + below the
-         section H2). Editable in the mother system; render only when populated. --}}
-    @include('partials.summary-blocks', ['tldr' => $page->tldr ?? null, 'wwww' => $page->wwww_json ?? null])
+         section H2). Editable in the mother system; render only when populated.
+         When live-edit is active, wrap with data-rg-page-meta so the Live
+         Editor surfaces an Edit toolbar that opens the page-metadata editor
+         scoped to these fields. --}}
+    @if(!empty($liveEdit))
+        <div data-rg-page-meta="tldr_wwww" data-rg-meta-label="TL;DR + WWWW summary cards">
+            @include('partials.summary-blocks', ['tldr' => $page->tldr ?? '— TL;DR will show here when set —', 'wwww' => $page->wwww_json ?? null])
+        </div>
+    @else
+        @include('partials.summary-blocks', ['tldr' => $page->tldr ?? null, 'wwww' => $page->wwww_json ?? null])
+    @endif
 
     @php $hasBlocks = strlen(trim($renderedBlocks ?? '')) > 0; @endphp
 

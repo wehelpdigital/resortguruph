@@ -81,12 +81,39 @@
         });
     }
 
+    // Page-meta elements: H1 + eyebrow + subtitle + WWWW summary live in
+    // rg_seo_pages columns, not in rg_content_blocks. The Live Editor
+    // can still surface an Edit toolbar on them — clicking opens the
+    // page-metadata edit panel in the parent admin instead of the
+    // block editor.
+    function metaToolbarFor(field, label) {
+        var t = document.createElement('div');
+        t.className = 'rg-live-toolbar rg-live-toolbar--meta';
+        t.contentEditable = 'false';
+        t.innerHTML =
+            '<span class="rg-live-type-badge">'
+            + escapeHtml(label || field)
+            + '</span>'
+            + '<button data-action="edit-page-meta" title="Edit this page metadata">Edit</button>';
+        t.addEventListener('click', function (e) {
+            var btn = e.target.closest('button');
+            if (!btn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            emit(btn.dataset.action, {field: field, fieldLabel: label || field});
+        });
+        return t;
+    }
+
     function setup() {
         var blocks = Array.prototype.slice.call(
             document.querySelectorAll('.rg-live-block')
         );
-        if (!blocks.length) {
-            emit('ready', {blockCount: 0, warning: 'no_blocks_found'});
+        var metaEls = Array.prototype.slice.call(
+            document.querySelectorAll('[data-rg-page-meta]')
+        );
+        if (!blocks.length && !metaEls.length) {
+            emit('ready', {blockCount: 0, metaCount: 0, warning: 'nothing_to_attach'});
             return;
         }
 
@@ -94,6 +121,21 @@
             var id = parseInt(block.dataset.rgBlockId, 10);
             var type = block.dataset.rgBlockType || 'block';
             block.prepend(toolbarFor(id, type));
+        });
+
+        // Wrap meta elements (H1, eyebrow, subtitle, WWWW) with toolbars.
+        // We add a wrapper class so :hover styling fires when the cursor
+        // is over the element itself (not just the toolbar overlay).
+        metaEls.forEach(function (el) {
+            el.classList.add('rg-live-meta');
+            // position: relative is required for the absolutely-positioned
+            // toolbar to anchor correctly inside the element.
+            if (getComputedStyle(el).position === 'static') {
+                el.style.position = 'relative';
+            }
+            var field = el.dataset.rgPageMeta;
+            var label = el.dataset.rgMetaLabel || field;
+            el.prepend(metaToolbarFor(field, label));
         });
 
         // Find the common parent and attach SortableJS. All blocks
@@ -131,7 +173,7 @@
             });
         }
 
-        emit('ready', {blockCount: blocks.length});
+        emit('ready', {blockCount: blocks.length, metaCount: metaEls.length});
     }
 
     // SortableJS loads from CDN with `defer` so it may finish after

@@ -112,6 +112,34 @@
     background: #eef2ff;
 }
 
+/* ============================================================
+   Page-meta elements (H1, eyebrow, subtitle, WWWW summary).
+   These render from rg_seo_pages columns, not content blocks,
+   so we mark them with a distinct teal accent so the operator
+   can tell them apart from real block toolbars at a glance.
+   ============================================================ */
+.rg-live-meta {
+    outline: 2px dashed transparent;
+    outline-offset: 4px;
+    transition: outline-color 0.15s ease, background-color 0.15s ease;
+    border-radius: 4px;
+}
+.rg-live-meta:hover { outline-color: #14b8a6; background-color: rgba(20, 184, 166, 0.05); }
+.rg-live-toolbar--meta { background: #0f766e !important; }
+.rg-live-toolbar--meta .rg-live-type-badge {
+    background: #14b8a6 !important;
+    cursor: default !important;
+}
+.rg-live-toolbar--meta button[data-action="edit-page-meta"] {
+    background: #14b8a6;
+}
+.rg-live-toolbar--meta button[data-action="edit-page-meta"]:hover { background: #0d9488; }
+.rg-live-meta:hover > .rg-live-toolbar--meta,
+.rg-live-meta:has(.rg-live-toolbar--meta:hover) > .rg-live-toolbar--meta {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* SortableJS visual states */
 .rg-live-block.sortable-ghost {
     opacity: 0.35;
