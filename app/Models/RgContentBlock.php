@@ -78,6 +78,12 @@ class RgContentBlock extends Model
         // we_recommend_band = the "We Recommend" listings band
         // header + listings partial (branches on keyword.category).
         'social_share', 'we_recommend_band',
+        // Page-tail hardcoded sections converted to blocks. Each
+        // only renders when its data is non-empty + the keyword
+        // category matches (restaurant_recs + adventures only fire
+        // on non-food keyword pages with active listings; reviews
+        // only fires when at least one review is published).
+        'restaurant_recs_band', 'adventures_band', 'reviews_band',
     ];
 
     public function getPayloadAttribute(): array

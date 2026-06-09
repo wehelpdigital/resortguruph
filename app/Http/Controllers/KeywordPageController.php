@@ -64,10 +64,13 @@ class KeywordPageController extends Controller
             'page' => $page,
             'live_edit' => $liveEdit,
         ]);
-        // we_recommend_band + listing_block both need the listings
-        // collections that we don't pull until further down. Track
-        // both so the second render pass kicks in.
-        $needsListingBlockCtx = $blocks->contains(fn($b) => in_array($b->block_type, ['listing_block', 'we_recommend_band'], true));
+        // Listings band, restaurant recs band, adventures band, and
+        // reviews band all need data that we don't pull until further
+        // down. Track them so the second render pass kicks in.
+        $needsListingBlockCtx = $blocks->contains(fn($b) => in_array($b->block_type, [
+            'listing_block', 'we_recommend_band',
+            'restaurant_recs_band', 'adventures_band', 'reviews_band',
+        ], true));
 
         $faqs = $renderer->extractFaqs('seo_page', $page->id);
         if (empty($faqs) && $page->faq_json) {
@@ -187,6 +190,26 @@ class KeywordPageController extends Controller
             ->filter(fn($l) => $l->restaurant)
             ->values();
 
+        // Adventure listings + restaurant listings need to be computed
+        // BEFORE the second renderBlocks pass so the new block-based
+        // sections (restaurant_recs_band, adventures_band) can read
+        // them from context. Reviews are already in $reviews above.
+        $adventureListings = $keyword->category === 'food'
+            ? collect()
+            : RgAdventureListing::query()
+                ->where('keyword_id', $keyword->id)
+                ->where('status', 'active')
+                ->where(function ($q) {
+                    $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
+                })
+                ->with(['adventure' => fn($q) => $q->where('status', 'published')])
+                ->orderByDesc('bid_gp')
+                ->orderBy('last_bid_at')
+                ->limit(6)
+                ->get()
+                ->filter(fn($l) => $l->adventure)
+                ->values();
+
         // If a listing_block exists in the page's content blocks, re-render
         // now that we have the listings + galleries to feed it. The earlier
         // pass output only handled non-context-aware blocks; this pass
@@ -217,29 +240,13 @@ class KeywordPageController extends Controller
                 'page' => $page,
                 'listings' => collect($listings->items()),
                 'restaurantListings' => $restaurantListings,
+                'adventureListings' => $adventureListings,
+                'reviews' => $reviews,
                 'listingGalleries' => $listingGalleries ?? [],
                 'areaForCta' => $areaForCta,
                 'live_edit' => $liveEdit,
             ]);
         }
-
-        // Adventure listings: only relevant on resort keyword pages
-        // ("Memorable Adventures" section under the resorts).
-        $adventureListings = $keyword->category === 'food'
-            ? collect()
-            : RgAdventureListing::query()
-                ->where('keyword_id', $keyword->id)
-                ->where('status', 'active')
-                ->where(function ($q) {
-                    $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
-                })
-                ->with(['adventure' => fn($q) => $q->where('status', 'published')])
-                ->orderByDesc('bid_gp')
-                ->orderBy('last_bid_at')
-                ->limit(6)
-                ->get()
-                ->filter(fn($l) => $l->adventure)
-                ->values();
 
         return view('keyword-page', compact(
             'keyword', 'page', 'listings', 'listingGalleries', 'listingRatings', 'listingReviews',

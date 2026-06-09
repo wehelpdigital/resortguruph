@@ -180,34 +180,12 @@
         @endif
     @endif
 
-    {{-- Restaurant Recommendations + Memorable Adventures: lifted OUT of
-         the @if($hasBlocks) branch so they render on every resort page
-         regardless of whether the page uses block-builder content. --}}
-    @if($keyword->category !== 'food' && $restaurantListings->isNotEmpty())
-        <section class="my-14 pt-10 border-t border-slate-200">
-            <div class="flex items-end justify-between mb-6 flex-wrap gap-2">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.18em] text-brand-700 font-bold mb-1">Eat nearby</p>
-                    <h2 class="text-2xl font-bold text-slate-900">Restaurant Recommendations</h2>
-                    <p class="text-sm text-slate-500 mt-1">Paid placements where your guests will likely want to eat.</p>
-                </div>
-            </div>
-            @include('partials.restaurant-listings', ['listings' => $restaurantListings])
-        </section>
-    @endif
-
-    @if($keyword->category !== 'food' && $adventureListings->isNotEmpty())
-        <section class="my-14 pt-10 border-t border-slate-200">
-            <div class="flex items-end justify-between mb-6 flex-wrap gap-2">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.18em] text-amber-700 font-bold mb-1">Things to do</p>
-                    <h2 class="text-2xl font-bold text-slate-900">Memorable Adventures &amp; Activities</h2>
-                    <p class="text-sm text-slate-500 mt-1">Surf schools, ATV trails, island hops, and paintball arenas open in the area.</p>
-                </div>
-            </div>
-            @include('partials.adventure-listings', ['listings' => $adventureListings])
-        </section>
-    @endif
+    {{-- Restaurant Recommendations + Memorable Adventures are now
+         content blocks (restaurant_recs_band + adventures_band).
+         Both render through $cleanedBlocks above. They only fire on
+         non-food keyword pages with active listings — empty
+         otherwise so a food-page admin can leave the block in place
+         without polluting the public render. --}}
 
     @if(!empty($faqs) && !$hasBlocks)
         <section class="my-12">
@@ -226,48 +204,13 @@
         </section>
     @endif
 
+    {{-- "What travelers are saying" reviews display is now a
+         `reviews_band` content block that renders through
+         $cleanedBlocks above. It only fires when at least one
+         published review is scoped to this keyword. The member
+         review-submission form below is a separate feature and
+         stays here (it's an action, not display). --}}
     @isset($reviews)
-        @if($reviews->isNotEmpty())
-            @php
-                $avg = round($reviews->avg('rating'), 2);
-                $cnt = $reviews->count();
-            @endphp
-            <section class="my-14">
-                <div class="flex items-baseline justify-between flex-wrap gap-2 mb-5">
-                    <h2 class="text-2xl font-bold text-slate-900">What travelers are saying</h2>
-                    <div class="text-sm text-slate-600 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1">
-                            @for($i = 0; $i < floor($avg); $i++)<svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>@endfor
-                        </span>
-                        <strong>{{ $avg }}</strong> out of 5 · based on {{ $cnt }} {{ $cnt === 1 ? 'review' : 'reviews' }}
-                    </div>
-                </div>
-
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($reviews as $r)
-                        <article class="p-5 rounded-xl border border-slate-200 bg-white flex flex-col gap-3 hover:shadow-sm transition">
-                            <div class="flex items-start gap-3">
-                                <img src="{{ $r->avatarUrl() }}" alt="{{ $r->reviewer_name }}" class="w-10 h-10 rounded-full bg-slate-100 ring-1 ring-slate-200" loading="lazy">
-                                <div class="flex-1 min-w-0">
-                                    <div class="font-semibold text-slate-900 truncate">{{ $r->reviewer_name }}</div>
-                                    @if($r->reviewer_location)
-                                        <div class="text-xs text-slate-500 truncate">{{ $r->reviewer_location }}</div>
-                                    @endif
-                                </div>
-                                <div class="text-amber-400 text-sm">
-                                    @for($i = 0; $i < (int) $r->rating; $i++)★@endfor
-                                </div>
-                            </div>
-                            <p class="text-sm text-slate-700 leading-relaxed">{{ $r->review_text }}</p>
-                            @if($r->review_date)
-                                <div class="text-xs text-slate-400 mt-auto">{{ \Carbon\Carbon::parse($r->review_date)->format('M j, Y') }}</div>
-                            @endif
-                        </article>
-                    @endforeach
-                </div>
-            </section>
-        @endif
-
         {{-- Member-only review submission. Owners (members) can leave a rating
              + review; guests see a sign-in CTA. Submissions go in as
              status='draft' for admin moderation. --}}

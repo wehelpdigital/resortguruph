@@ -86,6 +86,9 @@ class BlockRenderer
             'wwww_card' => $this->wwwwCard($p),
             'social_share' => $this->socialShare($p, $context),
             'we_recommend_band' => $this->weRecommendBand($p, $context),
+            'restaurant_recs_band' => $this->restaurantRecsBand($p, $context),
+            'adventures_band' => $this->adventuresBand($p, $context),
+            'reviews_band' => $this->reviewsBand($p, $context),
             'tag_pills' => $this->tagPills($p),
             'external_guides' => $this->externalGuides($p),
             'author' => $this->author($p),
@@ -2100,6 +2103,131 @@ class BlockRenderer
         } catch (\Throwable $e) {
             return '';
         }
+    }
+
+    /**
+     * Restaurant Recommendations band block — replaces the hardcoded
+     * "@if($keyword->category !== 'food' && $restaurantListings->isNotEmpty())"
+     * <section> block that used to sit below the main content stream.
+     * Renders only on non-food keyword pages that have at least one
+     * active restaurant listing — otherwise returns empty so the
+     * section disappears.
+     */
+    private function restaurantRecsBand(array $p, array $context): string
+    {
+        $keyword = $context['keyword'] ?? null;
+        $rows = $context['restaurantListings'] ?? collect();
+        if (!$keyword || ($keyword->category ?? null) === 'food' || $rows->isEmpty()) return '';
+
+        $eyebrow = $this->e(trim($p['eyebrow'] ?? 'Eat nearby'));
+        $heading = $this->e(trim($p['heading'] ?? 'Restaurant Recommendations'));
+        $caption = $this->e(trim($p['caption'] ?? 'Paid placements where your guests will likely want to eat.'));
+
+        $out = '<section class="my-14 pt-10 border-t border-slate-200">';
+        $out .= '<div class="flex items-end justify-between mb-6 flex-wrap gap-2"><div>';
+        $out .= '<p class="text-xs uppercase tracking-[0.18em] text-brand-700 font-bold mb-1">' . $eyebrow . '</p>';
+        $out .= '<h2 class="text-2xl font-bold text-slate-900">' . $heading . '</h2>';
+        $out .= '<p class="text-sm text-slate-500 mt-1">' . $caption . '</p>';
+        $out .= '</div></div>';
+        try {
+            $out .= view('partials.restaurant-listings', ['listings' => $rows])->render();
+        } catch (\Throwable $e) {
+            return '';
+        }
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * Memorable Adventures & Activities band block — replaces the
+     * hardcoded "@if($keyword->category !== 'food' && $adventureListings
+     * ->isNotEmpty())" <section> block. Same conditional behavior:
+     * only renders on non-food keyword pages with at least one active
+     * adventure listing.
+     */
+    private function adventuresBand(array $p, array $context): string
+    {
+        $keyword = $context['keyword'] ?? null;
+        $rows = $context['adventureListings'] ?? collect();
+        if (!$keyword || ($keyword->category ?? null) === 'food' || $rows->isEmpty()) return '';
+
+        $eyebrow = $this->e(trim($p['eyebrow'] ?? 'Things to do'));
+        $heading = $this->e(trim($p['heading'] ?? 'Memorable Adventures & Activities'));
+        $caption = $this->e(trim($p['caption'] ?? 'Surf schools, ATV trails, island hops, and paintball arenas open in the area.'));
+
+        $out = '<section class="my-14 pt-10 border-t border-slate-200">';
+        $out .= '<div class="flex items-end justify-between mb-6 flex-wrap gap-2"><div>';
+        $out .= '<p class="text-xs uppercase tracking-[0.18em] text-amber-700 font-bold mb-1">' . $eyebrow . '</p>';
+        $out .= '<h2 class="text-2xl font-bold text-slate-900">' . $heading . '</h2>';
+        $out .= '<p class="text-sm text-slate-500 mt-1">' . $caption . '</p>';
+        $out .= '</div></div>';
+        try {
+            $out .= view('partials.adventure-listings', ['listings' => $rows])->render();
+        } catch (\Throwable $e) {
+            return '';
+        }
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * Reviews band block — "What travelers are saying" section.
+     * Renders the destination-review grid + the aggregate rating
+     * eyebrow. Only renders when at least one published review is
+     * scoped to this keyword.
+     */
+    private function reviewsBand(array $p, array $context): string
+    {
+        $reviews = $context['reviews'] ?? collect();
+        if ($reviews->isEmpty()) return '';
+
+        $heading = $this->e(trim($p['heading'] ?? 'What travelers are saying'));
+        $avg = round($reviews->avg('rating'), 2);
+        $cnt = $reviews->count();
+        $filled = (int) floor($avg);
+        $reviewWord = $cnt === 1 ? 'review' : 'reviews';
+
+        $out = '<section class="my-14">';
+        $out .= '<div class="flex items-baseline justify-between flex-wrap gap-2 mb-5">';
+        $out .= '<h2 class="text-2xl font-bold text-slate-900">' . $heading . '</h2>';
+        $out .= '<div class="text-sm text-slate-600 flex items-center gap-2">';
+        $out .= '<span class="inline-flex items-center gap-1">';
+        for ($i = 0; $i < $filled; $i++) {
+            $out .= '<svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>';
+        }
+        $out .= '</span>';
+        $out .= '<strong>' . $this->e((string) $avg) . '</strong> out of 5 · based on ' . $cnt . ' ' . $reviewWord;
+        $out .= '</div></div>';
+
+        $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">';
+        foreach ($reviews as $r) {
+            $name = $this->e((string) ($r->reviewer_name ?? ''));
+            $location = $this->e((string) ($r->reviewer_location ?? ''));
+            $text = $this->e((string) ($r->review_text ?? ''));
+            $rating = (int) ($r->rating ?? 0);
+            $stars = str_repeat('★', $rating);
+            $avatar = method_exists($r, 'avatarUrl') ? $r->avatarUrl() : ($r->avatar_url ?? '');
+            $date = '';
+            if (!empty($r->review_date)) {
+                try { $date = \Carbon\Carbon::parse($r->review_date)->format('M j, Y'); } catch (\Throwable $e) {}
+            }
+            $out .= '<article class="p-5 rounded-xl border border-slate-200 bg-white flex flex-col gap-3 hover:shadow-sm transition">';
+            $out .= '<div class="flex items-start gap-3">';
+            if ($avatar) {
+                $out .= '<img src="' . $this->e($avatar) . '" alt="' . $name . '" class="w-10 h-10 rounded-full bg-slate-100 ring-1 ring-slate-200" loading="lazy">';
+            }
+            $out .= '<div class="flex-1 min-w-0">';
+            $out .= '<div class="font-semibold text-slate-900 truncate">' . $name . '</div>';
+            if ($location !== '') $out .= '<div class="text-xs text-slate-500 truncate">' . $location . '</div>';
+            $out .= '</div>';
+            $out .= '<div class="text-amber-400 text-sm">' . $stars . '</div>';
+            $out .= '</div>';
+            $out .= '<p class="text-sm text-slate-700 leading-relaxed">' . $text . '</p>';
+            if ($date !== '') $out .= '<div class="text-xs text-slate-400 mt-auto">' . $this->e($date) . '</div>';
+            $out .= '</article>';
+        }
+        $out .= '</div></section>';
+        return $out;
     }
 
     /**
