@@ -559,6 +559,7 @@
         || request()->is('fiestas/*');
     $activeWhatToEat = request()->is('filipino-food-dishes-what-to-eat');
     $activeWhatToBuy = request()->is('philippine-souvenirs-pasalubong-what-to-buy');
+    $activeCultures = request()->is('philippine-tribes-ethnic-groups-cultures-to-meet');
 @endphp
 
 <header class="border-b border-slate-200 bg-white sticky top-0 z-30 backdrop-blur bg-white/85">
@@ -628,6 +629,13 @@
                       {{ $activeWhatToBuy ? 'bg-violet-600 text-white border-violet-600 shadow-sm' : 'bg-violet-50 text-violet-800 border-violet-200 hover:bg-violet-100 hover:border-violet-300' }}">
                 <span aria-hidden="true">🛍️</span>
                 What to Buy
+            </a>
+
+            <a href="{{ route('cultures.index') }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
+                      {{ $activeCultures ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-teal-50 text-teal-800 border-teal-200 hover:bg-teal-100 hover:border-teal-300' }}">
+                <span aria-hidden="true">🪶</span>
+                Cultures to Meet
             </a>
         </div>
     </div>

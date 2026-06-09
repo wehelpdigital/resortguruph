@@ -138,6 +138,14 @@ Route::get('/philippine-souvenirs-pasalubong-what-to-buy',
     [\App\Http\Controllers\BuysController::class, 'index'])
     ->name('buys.index');
 
+// ============ CULTURES TO MEET ============
+// The ethnographic guide. ~75 ethnolinguistic and indigenous groups
+// across seven categories (lowland, Cordillera, Caraballo / Sierra
+// Madre, MIMAROPA, Visayan IPs, Mindanao Lumad, Mindanao Moro).
+Route::get('/philippine-tribes-ethnic-groups-cultures-to-meet',
+    [\App\Http\Controllers\CulturesController::class, 'index'])
+    ->name('cultures.index');
+
 // ============ FIESTAS (activities vertical) ============
 // List slug renamed from /fiestas to a keyword-rich slug for SEO.
 // Detail pages keep the short /fiestas/{slug} form so individual
