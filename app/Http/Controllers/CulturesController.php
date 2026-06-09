@@ -182,10 +182,17 @@ class CulturesController extends Controller
                 }
                 $images = [];
                 if (is_dir($imageDir)) {
+                    // Historical / archive photography on some of these
+                    // groups only exists as PNG (Ilongot 1906/1910
+                    // plates, for example), so we scan a few extensions
+                    // rather than locking the disk format to .jpg.
                     foreach ([1, 2, 3] as $n) {
-                        $candidate = $imageDir . DIRECTORY_SEPARATOR . $slug . '-' . $n . '.jpg';
-                        if (is_file($candidate)) {
-                            $images[] = asset('storage/rg-media/cultures/' . $slug . '-' . $n . '.jpg');
+                        foreach (['jpg', 'png', 'jpeg', 'webp'] as $ext) {
+                            $candidate = $imageDir . DIRECTORY_SEPARATOR . $slug . '-' . $n . '.' . $ext;
+                            if (is_file($candidate)) {
+                                $images[] = asset('storage/rg-media/cultures/' . $slug . '-' . $n . '.' . $ext);
+                                break;
+                            }
                         }
                     }
                 }
