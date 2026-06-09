@@ -33,10 +33,11 @@
    block's top edge — eliminates the "hover tearoff" where the
    cursor crosses dead space between the toolbar and the block and
    loses the :hover state mid-traverse. The toolbar is always in
-   layout (opacity-driven, not display-driven) so :has(:hover)
-   below can grab it. A wide invisible ::before bridge extends the
-   hot area another 12px upward in case the user overshoots while
-   chasing the toolbar. */
+   layout (opacity-driven, not display-driven) so :has(:hover) below
+   can grab it and keep it visible while the cursor is on the
+   toolbar itself. We deliberately do NOT use an extra ::before
+   bridge here — an absolutely positioned ::before stacks above the
+   button children and silently swallows clicks. */
 .rg-live-toolbar {
     position: absolute;
     bottom: calc(100% - 6px);
@@ -57,12 +58,6 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.12s ease;
-}
-.rg-live-toolbar::before {
-    content: '';
-    position: absolute;
-    inset: -12px -12px 0 -12px;
-    /* invisible — just extends the interactive hit area */
 }
 .rg-live-block:hover > .rg-live-toolbar,
 .rg-live-block.rg-live-active > .rg-live-toolbar,
