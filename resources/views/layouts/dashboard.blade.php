@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') · {{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }}</title>
+    <title>@yield('title', 'Dashboard') · {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
     <script>
@@ -19,7 +19,7 @@
 <div class="min-h-screen flex">
     <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col fixed inset-y-0">
         <div class="p-5 border-b border-slate-800">
-            <a href="{{ route('home') }}" class="text-white font-bold flex items-center gap-2">🏖️ {{ \App\Models\RgSetting::get('site_name', 'Resort Guru') }}</a>
+            <a href="{{ route('home') }}" class="text-white font-bold flex items-center gap-2">🏖️ {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</a>
         </div>
         <nav class="flex-1 p-3 space-y-1 text-sm">
             @php

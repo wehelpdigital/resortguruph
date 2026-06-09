@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title') Sign in — {{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }} @endsection
+@section('title') Sign in — {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} @endsection
 
 @section('content')
 <div class="max-w-md mx-auto px-4 py-16">

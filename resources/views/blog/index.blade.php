@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title') Blog — {{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }} @endsection
+@section('title') Blog — {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} @endsection
 
 @section('content')
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

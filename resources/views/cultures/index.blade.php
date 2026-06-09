@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Philippine Tribes, Ethnic Groups & Cultures To Meet · Resort Guru PH')
+@section('title', 'Philippine Tribes, Ethnic Groups & Cultures To Meet · Tourist Guide Ph')
 @section('meta_description', 'The complete guide to the country\'s ethnolinguistic and indigenous groups. From the lowland Tagalog and Bisaya to the Cordillera highlands, MIMAROPA islands, Visayan IPs, Mindanao Lumad, and the Moro of Sulu.')
 @section('canonical', url('/philippine-tribes-ethnic-groups-cultures-to-meet'))
 

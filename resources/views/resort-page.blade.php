@@ -48,7 +48,7 @@
             @if($resort->capacity)<span class="px-3 py-1 rounded-full bg-slate-100">Capacity: {{ $resort->capacity }}</span>@endif
         </div>
 
-        @include('partials.social-share', ['url' => url()->current(), 'title' => $resort->name . ' — Resort Guru PH', 'align' => 'start'])
+        @include('partials.social-share', ['url' => url()->current(), 'title' => $resort->name . ' — Tourist Guide Ph', 'align' => 'start'])
     </div>
 </div>
 

@@ -9,7 +9,7 @@
 --}}
 @php
     $shareUrl = $url ?? url()->current();
-    $shareTitle = trim($title ?? \App\Models\RgSetting::get('site_name', 'Resort Guru PH'));
+    $shareTitle = trim($title ?? \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph'));
     $encUrl = rawurlencode($shareUrl);
     $encTitle = rawurlencode($shareTitle);
     $align = $align ?? 'between';

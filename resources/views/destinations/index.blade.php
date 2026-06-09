@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title') All Destinations Across the Philippines | {{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }} @endsection
+@section('title') All Destinations Across the Philippines | {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} @endsection
 @section('meta_description') Browse every resort, hotel, and beach destination we cover across the Philippines, organized by region. From Batangas weekend pools to Palawan island hops. @endsection
 @section('canonical') {{ url('/destinations') }} @endsection
 

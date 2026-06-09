@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Philippine Souvenirs, Pasalubong & What To Buy · Resort Guru PH')
+@section('title', 'Philippine Souvenirs, Pasalubong & What To Buy · Tourist Guide Ph')
 @section('meta_description', 'The complete pasalubong guide. Heritage salts, regional textiles, artisanal crafts, and packaged sweets from every province. 46 unique Filipino finds worth bringing home.')
 @section('canonical', url('/philippine-souvenirs-pasalubong-what-to-buy'))
 

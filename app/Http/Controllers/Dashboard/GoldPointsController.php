@@ -26,7 +26,7 @@ class GoldPointsController extends Controller
         $minTopup = (int) RgSetting::get('min_topup_php', 100);
         $rate = (int) RgSetting::get('gp_php_rate', 1);
         $payee = [
-            'name' => RgSetting::get('gcash_payee_name', 'Resort Guru PH'),
+            'name' => RgSetting::get('gcash_payee_name', 'Tourist Guide Ph'),
             'number' => RgSetting::get('gcash_payee_number', '09000000000'),
         ];
         return view('dashboard.gold-points.topup', compact('minTopup', 'rate', 'payee'));

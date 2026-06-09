@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', $fiesta->meta_title ?: ($fiesta->name . ' — ' . ($fiesta->city_or_town ?? '') . ' · Resort Guru PH'))
+@section('title', $fiesta->meta_title ?: ($fiesta->name . ' — ' . ($fiesta->city_or_town ?? '') . ' · Tourist Guide Ph'))
 @section('meta')
     <meta name="description" content="{{ $fiesta->meta_description ?: $fiesta->summary }}">
     <link rel="canonical" href="{{ route('fiestas.show', $fiesta->slug) }}">

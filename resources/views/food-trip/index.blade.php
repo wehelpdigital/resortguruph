@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title') Food Trip — Where to Eat Across the Philippines | Resort Guru PH @endsection
+@section('title') Food Trip — Where to Eat Across the Philippines | Tourist Guide Ph @endsection
 @section('meta_description') Honest restaurant guides for every mall, district, and city worth eating in across the Philippines. Skip the photo-only joints. @endsection
 @section('canonical') {{ url('/food-trip') }} @endsection
 

@@ -55,7 +55,7 @@ class StubController extends Controller
     {
         return view('dashboard.stub', [
             'title' => 'Tutorials',
-            'description' => 'Video and written guides on getting the most out of Resort Guru.',
+            'description' => 'Video and written guides on getting the most out of Tourist Guide Ph.',
             'phase' => 'Phase 5',
         ]);
     }

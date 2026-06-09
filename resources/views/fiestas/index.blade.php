@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Philippine Fiestas & Festivals Guide — Year-Round Calendar by Region · Resort Guru PH')
+@section('title', 'Philippine Fiestas & Festivals Guide — Year-Round Calendar by Region · Tourist Guide Ph')
 @section('meta')
     <meta name="description" content="The complete guide to Philippine fiestas and festivals. Sinulog, MassKara, Panagbenga, Kadayawan, Ati-Atihan, Pahiyas, and {{ $totalCount }} more, organized by region. When each one happens, why to go, and what makes it different.">
     <link rel="canonical" href="{{ route('fiestas.index') }}">

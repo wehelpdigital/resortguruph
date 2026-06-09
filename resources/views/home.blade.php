@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title') {{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }} — Find resorts, hotels, and beach getaways in the Philippines @endsection
+@section('title') {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} — Find resorts, hotels, and beach getaways in the Philippines @endsection
 @section('meta_description') Compare resorts, hotels, and Airbnb stays across the Philippines. Curated guides for every region, from Palawan beaches to Tagaytay mountain views. @endsection
 
 @section('jsonld') {!! $jsonld ?? '' !!} @endsection

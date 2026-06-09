@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Philippine Tourist Activities, Adventures & What To Do · Resort Guru PH')
+@section('title', 'Philippine Tourist Activities, Adventures & What To Do · Tourist Guide Ph')
 @section('meta_description', 'The complete guide to tourist activities and adventures in the Philippines. Water sports, land treks, air rides, casinos, heritage tours, wellness retreats, and year-round fiestas — all in one place.')
 @section('canonical', url('/philippine-tourist-activities-adventures-what-to-do'))
 

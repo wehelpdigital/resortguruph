@@ -28,6 +28,6 @@ class RegisterController extends Controller
         Auth::login($owner);
         RgAuditLog::record('owner_registered', ['target_type' => 'owner', 'target_id' => $owner->id]);
         return redirect()->route('dashboard.resorts.create')
-            ->with('flash', 'Welcome to Resort Guru. Add your first resort to get listed.');
+            ->with('flash', 'Welcome to Tourist Guide Ph. Add your first resort to get listed.');
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Filipino Food, Dishes & What To Eat in the Philippines · Resort Guru PH')
+@section('title', 'Filipino Food, Dishes & What To Eat in the Philippines · Tourist Guide Ph')
 @section('meta_description', 'The complete guide to Filipino food. Popular staples, street food, daredevil exotics, plus regional specialties from Luzon, Visayas, and Mindanao, and traditional sweets. Over 120 dishes by category.')
 @section('canonical', url('/filipino-food-dishes-what-to-eat'))
 

@@ -567,7 +567,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-lg">
             <span class="text-2xl">🏖️</span>
-            <span>{{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }}</span>
+            <span>{{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</span>
         </a>
         <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
             <a href="{{ route('home') }}" class="hover:text-brand-600">Home</a>
@@ -594,7 +594,7 @@
          visible on mobile with a horizontal scroll if needed. --}}
     <div class="border-t border-slate-100 bg-slate-50/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
-            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Explore Philippines</span>
+            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Discover Philippines</span>
 
             <a href="{{ url('/destinations') }}"
                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
@@ -750,7 +750,7 @@
     {{-- Standard footer --}}
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-4 gap-8 text-sm">
         <div>
-            <h4 class="text-white font-bold mb-3 flex items-center gap-2">🏖️ {{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }}</h4>
+            <h4 class="text-white font-bold mb-3 flex items-center gap-2">🏖️ {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</h4>
             <p>{{ \App\Models\RgSetting::get('site_tagline', '') }}</p>
         </div>
         <div>
@@ -788,7 +788,7 @@
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <details class="group">
                     <summary class="flex items-center justify-between cursor-pointer select-none mb-3">
-                        <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold">All destinations on Resort Guru PH</p>
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold">All destinations on Tourist Guide Ph</p>
                         <span class="text-xs text-slate-500 flex items-center gap-1">
                             <span class="group-open:hidden">Show all</span>
                             <span class="hidden group-open:inline">Hide</span>
@@ -831,7 +831,7 @@
 
     <div class="border-t border-slate-800">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-2">
-            <p>&copy; {{ date('Y') }} {{ \App\Models\RgSetting::get('site_name', 'Resort Guru PH') }}. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}. All rights reserved.</p>
             <p>Made with love in the Philippines.</p>
         </div>
     </div>
