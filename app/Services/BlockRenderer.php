@@ -84,6 +84,8 @@ class BlockRenderer
             'subtitle_intro' => $this->subtitleIntro($p),
             'tldr_card' => $this->tldrCard($p),
             'wwww_card' => $this->wwwwCard($p),
+            'social_share' => $this->socialShare($p, $context),
+            'we_recommend_band' => $this->weRecommendBand($p, $context),
             'tag_pills' => $this->tagPills($p),
             'external_guides' => $this->externalGuides($p),
             'author' => $this->author($p),
@@ -2031,6 +2033,73 @@ class BlockRenderer
         }
         $out .= '</div></div></details>';
         return $out;
+    }
+
+    /**
+     * Social share row block — replaces the hardcoded
+     * @include('partials.social-share', …) that used to sit just under
+     * the H1. Reuses the partial for rendering so brand-color buttons
+     * + copy-link behavior stay in one place. Reads the page URL +
+     * title from $context['page'] (set by KeywordPageController).
+     */
+    private function socialShare(array $p, array $context): string
+    {
+        $page = $context['page'] ?? null;
+        $url = $context['page_url'] ?? null;
+        if (!$url && $page) $url = url($page->slug);
+        if (!$url) $url = url()->current();
+        $title = $page->title ?? ($context['page_title'] ?? '');
+        $align = $p['align'] ?? 'between';
+        try {
+            return view('partials.social-share', [
+                'url' => $url,
+                'title' => $title,
+                'align' => in_array($align, ['start', 'end', 'between'], true) ? $align : 'between',
+            ])->render();
+        } catch (\Throwable $e) {
+            return '';
+        }
+    }
+
+    /**
+     * "We Recommend" listings band block — replaces the hardcoded
+     * @if($keyword->category === 'food') ... @else ... @endif
+     * @include('partials.listings-rows') that used to sit between the
+     * social share and the TLDR/WWWW cards. Reuses the partial so the
+     * card layout + empty-state "list your property" CTA + brand
+     * colors stay in one place.
+     *
+     * The partial branches its own heading text on $keyword->category
+     * (food → "Restaurants, Eateries & Food Destinations We Recommend",
+     *  non-food → "We Recommend"), so the block doesn't have to
+     * duplicate that logic — just pass the right `listings` collection
+     * + the keyword + the area.
+     *
+     * Context required: keyword, listings, restaurantListings,
+     * listingGalleries, areaForCta. KeywordPageController populates
+     * all of these whenever a block of this type is in the page.
+     */
+    private function weRecommendBand(array $p, array $context): string
+    {
+        $keyword = $context['keyword'] ?? null;
+        if (!$keyword) return '';
+
+        $isFood = ($keyword->category ?? null) === 'food';
+        $rows = $isFood
+            ? ($context['restaurantListings'] ?? collect())
+            : ($context['listings'] ?? collect());
+        $galleries = $isFood ? [] : ($context['listingGalleries'] ?? []);
+        $area = $context['areaForCta'] ?? null;
+
+        try {
+            return view('partials.listings-rows', [
+                'listings' => $rows,
+                'listingGalleries' => $galleries,
+                'area' => $area,
+            ])->render();
+        } catch (\Throwable $e) {
+            return '';
+        }
     }
 
     /**

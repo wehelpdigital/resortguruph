@@ -72,6 +72,12 @@ class RgContentBlock extends Model
         // the partials/summary-blocks accordion into two independent
         // collapsible blocks.
         'subtitle_intro', 'tldr_card', 'wwww_card',
+        // Page-top hardcoded includes converted to blocks so the
+        // admin can reorder / remove / add them like any other
+        // content. social_share = partials.social-share row;
+        // we_recommend_band = the "We Recommend" listings band
+        // header + listings partial (branches on keyword.category).
+        'social_share', 'we_recommend_band',
     ];
 
     public function getPayloadAttribute(): array

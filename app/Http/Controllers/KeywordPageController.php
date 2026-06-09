@@ -60,9 +60,14 @@ class KeywordPageController extends Controller
         // adventure listings collections — see comment near $restaurantListings.
         $renderedBlocks = $renderer->renderBlocks($blocks, [
             'keyword_id' => $keyword->id,
+            'keyword' => $keyword,
+            'page' => $page,
             'live_edit' => $liveEdit,
         ]);
-        $needsListingBlockCtx = $blocks->contains(fn($b) => $b->block_type === 'listing_block');
+        // we_recommend_band + listing_block both need the listings
+        // collections that we don't pull until further down. Track
+        // both so the second render pass kicks in.
+        $needsListingBlockCtx = $blocks->contains(fn($b) => in_array($b->block_type, ['listing_block', 'we_recommend_band'], true));
 
         $faqs = $renderer->extractFaqs('seo_page', $page->id);
         if (empty($faqs) && $page->faq_json) {
@@ -187,12 +192,33 @@ class KeywordPageController extends Controller
         // pass output only handled non-context-aware blocks; this pass
         // replaces the full string.
         if ($needsListingBlockCtx) {
+            // areaForCta — used to be computed inside keyword-page.blade.php
+            // for the food-page CTA. Mirrored here so the
+            // we_recommend_band block can pass it to the listings partial.
+            $areaForCta = null;
+            if (($keyword->category ?? null) === 'food') {
+                $stripped = preg_replace(
+                    '/^(affordable|best|top(?:\s+10)?|famous|fast\s+food|fine(?:\s+dining)?|floating|good\s+taste|hotel|michelin\s+star|new|overlooking|seafood|steak|sushi|filipino|japanese|korean|chinese|italian|mexican|spanish|mediterranean|24\s+hours?|buffet)\s+/i',
+                    '', $keyword->phrase
+                );
+                if (preg_match('/(?:restaurant|to\s+eat)\s+(?:in|at|near)\s+(.+)$/i', $stripped, $m)) {
+                    $areaForCta = trim(preg_replace('/\s+(philippines|with\s+view)$/i', '', $m[1]));
+                } elseif (preg_match('/^where\s+to\s+eat\s+(.+)$/i', $stripped, $m)) {
+                    $areaForCta = trim($m[1]);
+                }
+                if ($areaForCta) {
+                    $areaForCta = ucwords(strtolower($areaForCta));
+                }
+            }
+
             $renderedBlocks = $renderer->renderBlocks($blocks, [
                 'keyword_id' => $keyword->id,
                 'keyword' => $keyword,
+                'page' => $page,
                 'listings' => collect($listings->items()),
                 'restaurantListings' => $restaurantListings,
                 'listingGalleries' => $listingGalleries ?? [],
+                'areaForCta' => $areaForCta,
                 'live_edit' => $liveEdit,
             ]);
         }

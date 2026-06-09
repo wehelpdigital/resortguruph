@@ -89,8 +89,9 @@
          MigratePageMetaToBlocksSeeder for the one-time port. They
          render through $cleanedBlocks further down. --}}
 
-    {{-- Social share row, top of page --}}
-    @include('partials.social-share', ['url' => url()->current(), 'title' => $page->title])
+    {{-- Social share is now a `social_share` content block that
+         renders through $cleanedBlocks below — added to every page
+         by MigratePageTopToBlocksSeeder. --}}
 
     {{-- Pull the location name out of the phrase. For food pages this is
          the actual venue ("Mall of Asia", "BGC", "Tagaytay"); for resort
@@ -134,16 +135,11 @@
         $areaForHeader = $areaForCta ?? ($cluster['name'] ?? $properTitle(preg_replace('/^(resort|hotel|airbnb|beach resort) in /i', '', $keyword->phrase)));
     @endphp
 
-    {{-- Top "We Recommend" band — same partial for both categories. The
-         partial detects $keyword->category and switches its heading,
-         subhead, empty-state offer, and CTA wording (hotels/resorts vs
-         restaurants/eateries/food shops). On food pages it dispatches
-         to the restaurant-card grid for the filled state. --}}
-    @if($keyword->category === 'food')
-        @include('partials.listings-rows', ['listings' => $restaurantListings, 'listingGalleries' => [], 'area' => $areaForCta])
-    @else
-        @include('partials.listings-rows', ['listings' => $listings, 'listingGalleries' => $listingGalleries ?? []])
-    @endif
+    {{-- The "We Recommend" listings band is now a `we_recommend_band`
+         content block that renders through $cleanedBlocks below —
+         added to every page by MigratePageTopToBlocksSeeder. The
+         block-side renderer branches on $keyword->category the same
+         way the include used to. --}}
 
     {{-- The hero slider AND the "What's in [Area]?" section header were
          previously rendered here from the rg_seo_pages.hero_html column
