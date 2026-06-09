@@ -81,16 +81,13 @@
     <div class="text-base sm:text-lg text-slate-600 mb-2 font-medium" @if(!empty($liveEdit)) data-rg-page-meta="h1_eyebrow" data-rg-meta-label="Eyebrow (above H1)" @endif>{{ $eyebrowText }}</div>
     <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3 leading-tight" @if(!empty($liveEdit)) data-rg-page-meta="h1" data-rg-meta-label="H1 Heading" @endif>{{ $h1Display }}</h1>
 
-    {{-- Italic intro: 1-2 sentences positioning the page below the H1. Pulls
-         from rg_seo_pages.subtitle when admin-edited; otherwise the seeder
-         populates a default from the destination's voice_intro.
-         `white-space: normal; overflow: visible` defends against parent CSS
-         that clipped the line on mobile widths (user reported cut-off). --}}
-    @if(!empty($page->subtitle ?? null) || !empty($liveEdit))
-        <p class="italic text-base text-slate-600 mb-6 leading-relaxed"
-           style="overflow: visible; white-space: normal; text-overflow: clip; max-width: 100%;"
-           @if(!empty($liveEdit)) data-rg-page-meta="subtitle" data-rg-meta-label="Subtitle (under H1)" @endif>{{ $page->subtitle ?? '—' }}</p>
-    @endif
+    {{-- The italic intro under the H1, the TL;DR card, and the WWWW
+         card all moved into the content-blocks system (subtitle_intro,
+         tldr_card, wwww_card). Each one now lives as a real
+         rg_content_blocks row managed through the builder so admins
+         can reorder, remove, or add them like any other block. See
+         MigratePageMetaToBlocksSeeder for the one-time port. They
+         render through $cleanedBlocks further down. --}}
 
     {{-- Social share row, top of page --}}
     @include('partials.social-share', ['url' => url()->current(), 'title' => $page->title])
@@ -155,18 +152,8 @@
          render through $cleanedBlocks below — single source of truth,
          editable in the admin builder. --}}
 
-    {{-- TL;DR + WWWW summary cards moved here (below the listings + below the
-         section H2). Editable in the mother system; render only when populated.
-         When live-edit is active, wrap with data-rg-page-meta so the Live
-         Editor surfaces an Edit toolbar that opens the page-metadata editor
-         scoped to these fields. --}}
-    @if(!empty($liveEdit))
-        <div data-rg-page-meta="tldr_wwww" data-rg-meta-label="TL;DR + WWWW summary cards">
-            @include('partials.summary-blocks', ['tldr' => $page->tldr ?? '— TL;DR will show here when set —', 'wwww' => $page->wwww_json ?? null])
-        </div>
-    @else
-        @include('partials.summary-blocks', ['tldr' => $page->tldr ?? null, 'wwww' => $page->wwww_json ?? null])
-    @endif
+    {{-- TL;DR + WWWW are now content blocks (tldr_card + wwww_card).
+         They render through $cleanedBlocks below — no column read here. --}}
 
     @php $hasBlocks = strlen(trim($renderedBlocks ?? '')) > 0; @endphp
 

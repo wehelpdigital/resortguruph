@@ -65,6 +65,13 @@ class RgContentBlock extends Model
         // dishes (papaitan, pigar-pigar, pinakbet) not restaurants.
         // Each item carries a name, where-to-find it, blurb, image.
         'foods_to_try',
+        // Page-header content elements migrated out of rg_seo_pages
+        // columns into blocks so the admin can reorder / remove / add
+        // them like any other content. subtitle_intro replaces the
+        // hardcoded italic line under H1; tldr_card + wwww_card port
+        // the partials/summary-blocks accordion into two independent
+        // collapsible blocks.
+        'subtitle_intro', 'tldr_card', 'wwww_card',
     ];
 
     public function getPayloadAttribute(): array

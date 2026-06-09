@@ -81,6 +81,9 @@ class BlockRenderer
             'related_guides' => $this->relatedGuides($p),
             'data_table' => $this->dataTable($p),
             'section_header' => $this->sectionHeader($p),
+            'subtitle_intro' => $this->subtitleIntro($p),
+            'tldr_card' => $this->tldrCard($p),
+            'wwww_card' => $this->wwwwCard($p),
             'tag_pills' => $this->tagPills($p),
             'external_guides' => $this->externalGuides($p),
             'author' => $this->author($p),
@@ -1883,6 +1886,150 @@ class BlockRenderer
             $out .= '<p class="text-sm text-slate-500 mt-1">' . $subtitle . '</p>';
         }
         $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * Subtitle / italic intro block — replaces the hardcoded
+     * $page->subtitle <p> that used to render directly under the H1.
+     * Single text field, italic styling, slate-600 color, mb-6
+     * matching the legacy spacing so existing pages don't shift.
+     */
+    private function subtitleIntro(array $p): string
+    {
+        $text = trim((string) ($p['text'] ?? ''));
+        if ($text === '') return '';
+        return '<p class="italic text-base text-slate-600 mb-6 leading-relaxed" '
+            . 'style="overflow: visible; white-space: normal; text-overflow: clip; max-width: 100%;">'
+            . $this->e($text)
+            . '</p>';
+    }
+
+    /**
+     * TL;DR card — collapsible accordion that ports the first half of
+     * the legacy partials/summary-blocks partial into a real block.
+     * Accepts either a plain paragraph (string `body`) or bullet lines
+     * (one per line, prefixed `-` or `*` or unicode `•`). Renders as a
+     * native <details> so it works without Alpine/HTMX.
+     */
+    private function tldrCard(array $p): string
+    {
+        $body = trim((string) ($p['body'] ?? ''));
+        if ($body === '') return '';
+
+        $eyebrow = $this->e(trim($p['eyebrow'] ?? 'The short version'));
+        $caption = $this->e(trim($p['caption'] ?? 'Tap to read the key takeaways before you scroll'));
+
+        // Split into bullets if the body contains list-style lines, else
+        // render as a single paragraph. Mirrors summary-blocks.blade.php
+        // behavior for backwards compatibility with migrated data.
+        $lines = preg_split('/\r?\n/', $body);
+        $bullets = [];
+        foreach ($lines as $line) {
+            if (preg_match('/^\s*[-*\x{2022}]\s+(.+)$/u', $line, $m)) {
+                $bullets[] = trim($m[1]);
+            }
+        }
+
+        $out = '<details class="rg-accordion rg-accordion-tldr not-prose my-4 rounded-xl border border-slate-200 bg-white overflow-hidden">';
+        $out .= '<summary class="rg-accordion-head flex items-center gap-3 px-5 sm:px-6 py-4 cursor-pointer select-none">';
+        $out .= '<span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-brand-50 text-brand-600 shrink-0" aria-hidden="true">';
+        $out .= '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
+        $out .= '</span>';
+        $out .= '<span class="flex-1 min-w-0">';
+        $out .= '<span class="block text-[0.7rem] uppercase tracking-[0.18em] text-brand-700 font-bold">' . $eyebrow . '</span>';
+        $out .= '<span class="block text-sm text-slate-600">' . $caption . '</span>';
+        $out .= '</span>';
+        $out .= '<svg class="rg-accordion-chevron w-5 h-5 text-slate-400 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
+        $out .= '</summary>';
+        $out .= '<div class="rg-accordion-body"><div class="rg-accordion-body-inner px-5 sm:px-6 pb-5 pt-1 border-t border-slate-100">';
+        if (count($bullets) >= 2) {
+            $out .= '<ul class="text-slate-700 text-[0.95rem] leading-relaxed space-y-2 mt-4">';
+            foreach ($bullets as $b) {
+                $out .= '<li class="flex items-start gap-2.5">';
+                $out .= '<svg class="w-4 h-4 mt-1 text-brand-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75 10 18l9.75-12"/></svg>';
+                $out .= '<span>' . $this->e($b) . '</span>';
+                $out .= '</li>';
+            }
+            $out .= '</ul>';
+        } else {
+            $out .= '<p class="text-slate-700 leading-relaxed text-[0.95rem] mt-4">' . $this->e($body) . '</p>';
+        }
+        $out .= '</div></div></details>';
+        return $out;
+    }
+
+    /**
+     * WWWW card — collapsible accordion with Why / When / Where / Whom
+     * fields. Ports the second half of the legacy summary-blocks
+     * partial. Each row gets a tinted icon and a label/body pair. Any
+     * empty rows are skipped.
+     */
+    private function wwwwCard(array $p): string
+    {
+        $why = trim((string) ($p['why'] ?? ''));
+        $when = trim((string) ($p['when'] ?? ''));
+        $where = trim((string) ($p['where'] ?? ''));
+        $whom = trim((string) ($p['whom'] ?? ''));
+        if ($why === '' && $when === '' && $where === '' && $whom === '') return '';
+
+        $eyebrow = $this->e(trim($p['eyebrow'] ?? 'At a glance'));
+        $caption = $this->e(trim($p['caption'] ?? 'Why, when, where, and who this guide is for'));
+
+        // Matched 1:1 to summary-blocks.blade.php colors + icons so a
+        // migrated page renders identically to its pre-migration form.
+        $rows = [
+            'why' => [
+                'label' => 'Why go', 'body' => $why,
+                'tone_bg' => 'bg-orange-50', 'tone_fg' => 'text-orange-600',
+                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.32.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .32-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>',
+            ],
+            'when' => [
+                'label' => 'When to go', 'body' => $when,
+                'tone_bg' => 'bg-cyan-50', 'tone_fg' => 'text-cyan-700',
+                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>',
+            ],
+            'where' => [
+                'label' => 'Where to go', 'body' => $where,
+                'tone_bg' => 'bg-emerald-50', 'tone_fg' => 'text-emerald-700',
+                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>',
+            ],
+            'whom' => [
+                'label' => 'Whom to go with', 'body' => $whom,
+                'tone_bg' => 'bg-fuchsia-50', 'tone_fg' => 'text-fuchsia-700',
+                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 0 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>',
+            ],
+        ];
+        $active = array_filter($rows, fn ($r) => $r['body'] !== '');
+
+        $out = '<details class="rg-accordion rg-accordion-wwww not-prose my-4 rounded-xl border border-slate-200 bg-white overflow-hidden">';
+        $out .= '<summary class="rg-accordion-head flex items-center gap-3 px-5 sm:px-6 py-4 cursor-pointer select-none">';
+        $out .= '<span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden="true">';
+        $out .= '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>';
+        $out .= '</span>';
+        $out .= '<span class="flex-1 min-w-0">';
+        $out .= '<span class="block text-[0.7rem] uppercase tracking-[0.18em] text-emerald-700 font-bold">' . $eyebrow . '</span>';
+        $out .= '<span class="block text-sm text-slate-600">' . $caption . '</span>';
+        $out .= '</span>';
+        $out .= '<svg class="rg-accordion-chevron w-5 h-5 text-slate-400 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
+        $out .= '</summary>';
+        $out .= '<div class="rg-accordion-body"><div class="rg-accordion-body-inner border-t border-slate-100">';
+        $count = 0;
+        $total = count($active);
+        foreach ($active as $row) {
+            $count++;
+            $borderCls = $count < $total ? 'border-b border-slate-100' : '';
+            $out .= '<div class="flex items-start gap-4 px-5 sm:px-6 py-4 ' . $borderCls . '">';
+            $out .= '<span class="w-9 h-9 inline-flex items-center justify-center rounded-full ' . $row['tone_bg'] . ' ' . $row['tone_fg'] . ' shrink-0" aria-hidden="true">';
+            $out .= '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">' . $row['icon'] . '</svg>';
+            $out .= '</span>';
+            $out .= '<div class="flex-1 min-w-0">';
+            $out .= '<div class="text-[0.7rem] uppercase tracking-[0.18em] text-slate-500 font-bold mb-1">' . $this->e($row['label']) . '</div>';
+            $out .= '<p class="text-slate-700 text-[0.95rem] leading-relaxed">' . $this->e($row['body']) . '</p>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+        $out .= '</div></div></details>';
         return $out;
     }
 
