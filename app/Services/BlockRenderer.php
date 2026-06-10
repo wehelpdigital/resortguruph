@@ -588,13 +588,40 @@ class BlockRenderer
 
         // Dot pagination removed — the arrows already give navigation
         // and the dots were rendering outside the rounded clip, looking
-        // like the slider was getting cropped at the bottom. heightRatio
-        // also bumped from 0.55 to 0.5 so the section feels tighter at
-        // the bottom edge.
+        // like the slider was getting cropped at the bottom.
+        //
+        // `cover: true` was removed because it caused inconsistent
+        // sizing between slide 1 and subsequent slides. With cover,
+        // Splide finds the first <img> in each slide, sets it as the
+        // slide's background-image, and visually hides the <img>. But
+        // the slide markup ALSO has the <img> absolute-positioned with
+        // `inset-0 w-full h-full object-cover` — so two competing
+        // sizing systems were applied. On slide 1 Splide's pre-init
+        // measurements + my CSS aligned. On slide 2+, Splide's post-
+        // init height recomputation kicked in but the per-slide
+        // background images were sized off the BACKGROUND-COVER
+        // algorithm (which is NOT pixel-equivalent to object-fit
+        // cover at certain image aspects), leaving a clipped band at
+        // the bottom of every slide except the first.
+        //
+        // Drop cover: true. My custom markup already covers via
+        // object-fit:cover on the <img>. heightRatio:0.5 still drives
+        // the slide height deterministically. Plus an explicit
+        // aspect-ratio:2/1 fallback so each slide is the same height
+        // even if Splide hasn't finished its initial measurement when
+        // the user clicks ahead.
+        $css = '<style>'
+            . '.rg-hero-splide .splide__slide{aspect-ratio:2/1}'
+            . '@media(max-width:640px){.rg-hero-splide .splide__slide{aspect-ratio:16/10}}'
+            . '.rg-hero-splide .splide__list{align-items:stretch}'
+            . '.rg-hero-splide .splide__slide > div{height:100%}'
+            . '</style>';
+
         return '<section id="' . $sliderId . '" class="rg-hero-splide splide not-prose my-6 overflow-hidden rounded-xl" aria-label="Hero gallery"'
             . ' data-splide-config="{&quot;type&quot;:&quot;loop&quot;,&quot;autoplay&quot;:' . $autoplay
-            . ',&quot;interval&quot;:' . $interval . ',&quot;arrows&quot;:true,&quot;pagination&quot;:false,&quot;heightRatio&quot;:0.5,&quot;cover&quot;:true}">'
+            . ',&quot;interval&quot;:' . $interval . ',&quot;arrows&quot;:true,&quot;pagination&quot;:false,&quot;heightRatio&quot;:0.5}">'
             . '<div class="splide__track"><ul class="splide__list">' . $slides . '</ul></div>'
+            . $css
             . $this->splideAutoMount($sliderId)
             . '</section>';
     }
