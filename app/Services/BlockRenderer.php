@@ -651,7 +651,13 @@ class BlockRenderer
         if ($intro !== '') {
             $out .= '<p class="text-slate-600 mb-6 leading-relaxed">' . $this->e($intro) . '</p>';
         }
-        $out .= '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">';
+        // Horizontal swipeable slider. All cards stay in the DOM so
+        // Googlebot can crawl every spot — only their viewport
+        // position changes. Native CSS scroll-snap handles touch
+        // swipe + smooth scrolling; the JS at the bottom of this
+        // method adds autoplay, mouse-drag, and pause-on-hover.
+        $out .= '<div class="rg-attr-slider relative" data-rg-attr-slider>';
+        $out .= '<div class="rg-attr-track flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-3" data-rg-attr-track tabindex="0" aria-label="Tourist spots carousel" role="region">';
 
         $cycleStyles = []; // collected per-card CSS for the fade animation
         foreach ($items as $cardIndex => $item) {
@@ -728,7 +734,7 @@ class BlockRenderer
                     . 'class="text-sm font-semibold text-brand-600 hover:text-brand-700 mt-3 inline-flex items-center gap-1">'
                     . 'Learn more <span aria-hidden="true">→</span></a>'
                 : '';
-            $out .= '<div class="rounded-xl border border-slate-200 bg-white overflow-hidden flex flex-col">'
+            $out .= '<article class="rg-attr-card snap-start shrink-0 w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] rounded-xl border border-slate-200 bg-white overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow">'
                 . $hero
                 . '<div class="p-4 flex-1 flex flex-col">'
                 . '<div class="text-[10px] uppercase tracking-wide font-bold text-emerald-700 mb-1">'
@@ -736,9 +742,17 @@ class BlockRenderer
                 . '<h3 class="font-bold text-slate-900 mb-1">' . $name . '</h3>'
                 . '<p class="text-sm text-slate-600 leading-relaxed">' . $this->e($item['blurb'] ?? '') . '</p>'
                 . $link
-                . '</div></div>';
+                . '</div></article>';
         }
-        $out .= '</div>';
+        // Close the .rg-attr-track (cards row) and the .rg-attr-slider
+        // wrapper. The wrapper holds position:relative so the optional
+        // edge fade overlay below can absolutely-position over the
+        // track's right edge as a visual "more →" affordance.
+        $out .= '</div>'; // .rg-attr-track
+        // Soft edge fade on the right hinting there's more to scroll —
+        // pointer-events:none so it doesn't steal taps from the cards.
+        $out .= '<div class="pointer-events-none absolute top-0 right-0 bottom-3 w-12 bg-gradient-to-l from-white to-transparent rg-attr-fade-edge"></div>';
+        $out .= '</div>'; // .rg-attr-slider
 
         // CSS keyframes — single shared keyframe, per-card duration set
         // via class above. 12% / 28% pin opacity:1 (visible window),
@@ -761,6 +775,16 @@ class BlockRenderer
             . '.rg-attr-lightbox__nav--prev{left:-3.5rem}'
             . '.rg-attr-lightbox__nav--next{right:-3.5rem}'
             . '@media (max-width:640px){.rg-attr-lightbox__nav--prev{left:.5rem}.rg-attr-lightbox__nav--next{right:.5rem}}'
+            // Slider styles: hide native scrollbar (still scrollable),
+            // grab-cursor while drag-scrolling, fade-edge hidden when
+            // the track is scrolled all the way to the end, disable
+            // hover scaling on cards while user is dragging.
+            . '.rg-attr-track{scrollbar-width:none;-ms-overflow-style:none;cursor:grab}'
+            . '.rg-attr-track::-webkit-scrollbar{display:none}'
+            . '.rg-attr-track.is-dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}'
+            . '.rg-attr-track.is-dragging img{pointer-events:none}'
+            . '.rg-attr-slider[data-rg-end] .rg-attr-fade-edge{opacity:0;transition:opacity .25s ease}'
+            . '.rg-attr-fade-edge{transition:opacity .25s ease}'
             . '</style>';
 
         // Single global lightbox + JS. Idempotent — only the first
@@ -805,6 +829,82 @@ class BlockRenderer
               . 'overlay.addEventListener("click",function(e){if(e.target===overlay)close()});'
               . 'document.addEventListener("keydown",function(e){if(!overlay.classList.contains("is-open"))return;if(e.key==="Escape")close();else if(e.key==="ArrowLeft")step(-1);else if(e.key==="ArrowRight")step(1)});'
             . '}'
+            . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init)}else{init()}'
+            . '})();</script>';
+
+        // Slider behavior: autoplay every 4.5s, mouse-drag scroll on
+        // desktop, pause-on-hover, pause-on-touch, IntersectionObserver
+        // pause when the slider is off-screen, end-of-track edge fade
+        // hidden via data attribute. All sliders on the page share one
+        // IIFE that hands each one its own state object.
+        $out .= '<script>(function(){'
+            . 'if(window.__rgAttrSliderWired)return;window.__rgAttrSliderWired=true;'
+            . 'var AUTOPLAY_MS=4500;'
+            . 'function wire(slider){'
+              . 'var track=slider.querySelector("[data-rg-attr-track]");'
+              . 'if(!track||slider.dataset.rgAttrInit==="1")return;'
+              . 'slider.dataset.rgAttrInit="1";'
+              . 'var paused=false,hovered=false,touching=false,visible=true;'
+              . 'function cardWidth(){'
+                . 'var c=track.querySelector(".rg-attr-card");'
+                . 'if(!c)return 320;'
+                . 'var gap=parseFloat(getComputedStyle(track).gap||"16")||16;'
+                . 'return c.offsetWidth+gap;'
+              . '}'
+              . 'function updateEnd(){'
+                . 'var atEnd=Math.ceil(track.scrollLeft+track.clientWidth)>=track.scrollWidth-2;'
+                . 'if(atEnd){slider.setAttribute("data-rg-end","1")}else{slider.removeAttribute("data-rg-end")}'
+              . '}'
+              . 'function tick(){'
+                . 'if(paused||hovered||touching||!visible||document.hidden)return;'
+                . 'var w=cardWidth();'
+                . 'var atEnd=track.scrollLeft+track.clientWidth>=track.scrollWidth-4;'
+                . 'if(atEnd){track.scrollTo({left:0,behavior:"smooth"})}'
+                . 'else{track.scrollBy({left:w,behavior:"smooth"})}'
+              . '}'
+              . 'var timer=setInterval(tick,AUTOPLAY_MS);'
+              // Pause on hover (desktop)
+              . 'slider.addEventListener("mouseenter",function(){hovered=true});'
+              . 'slider.addEventListener("mouseleave",function(){hovered=false});'
+              // Pause on touch (mobile)
+              . 'track.addEventListener("touchstart",function(){touching=true},{passive:true});'
+              . 'track.addEventListener("touchend",function(){setTimeout(function(){touching=false},1500)},{passive:true});'
+              // Pause when scrolled out of viewport
+              . 'if("IntersectionObserver" in window){'
+                . 'var io=new IntersectionObserver(function(es){es.forEach(function(en){visible=en.isIntersecting})},{threshold:0.15});'
+                . 'io.observe(slider);'
+              . '}'
+              // Pause when tab is hidden — saves animation cycles
+              . 'document.addEventListener("visibilitychange",function(){});'
+              // Mouse-drag scroll (desktop swipe). Only kicks in on
+              // primary button + after a small movement threshold so
+              // single clicks on cards still propagate.
+              . 'var dragStart=null,dragScrollLeft=0,didDrag=false;'
+              . 'track.addEventListener("mousedown",function(e){'
+                . 'if(e.button!==0)return;'
+                . 'dragStart=e.pageX;dragScrollLeft=track.scrollLeft;didDrag=false;'
+              . '});'
+              . 'window.addEventListener("mousemove",function(e){'
+                . 'if(dragStart===null)return;'
+                . 'var dx=e.pageX-dragStart;'
+                . 'if(Math.abs(dx)>4){'
+                  . 'if(!didDrag){track.classList.add("is-dragging");didDrag=true}'
+                  . 'track.scrollLeft=dragScrollLeft-dx;'
+                . '}'
+              . '});'
+              . 'window.addEventListener("mouseup",function(){'
+                . 'if(dragStart!==null&&didDrag){track.classList.remove("is-dragging");}'
+                . 'dragStart=null;'
+              . '});'
+              // Suppress click bubbling immediately after a drag so the
+              // lightbox does NOT open when the user just released a
+              // drag gesture on top of an image.
+              . 'track.addEventListener("click",function(e){if(didDrag){e.preventDefault();e.stopPropagation();didDrag=false}},true);'
+              // Update edge-fade visibility as user scrolls
+              . 'track.addEventListener("scroll",updateEnd,{passive:true});'
+              . 'updateEnd();'
+            . '}'
+            . 'function init(){var sliders=document.querySelectorAll("[data-rg-attr-slider]");for(var i=0;i<sliders.length;i++)wire(sliders[i])}'
             . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init)}else{init()}'
             . '})();</script>';
 
