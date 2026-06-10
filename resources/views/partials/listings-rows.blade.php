@@ -57,7 +57,7 @@
         : 'List your property';
 @endphp
 
-<section class="rg-listings-band relative pt-6 pb-8 mb-10">
+<section class="rg-listings-band relative px-4 sm:px-6 lg:px-8 pt-6 pb-8 mb-10">
 
     {{-- Verified / scam-protect badge, upper-right of container (placeholder
          circle image). Absolutely positioned so it doesn't push the heading.

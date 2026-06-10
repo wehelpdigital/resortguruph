@@ -350,16 +350,15 @@ class BlockRenderer
                 // inner grid has no h-full. On stretch-tall slides the
                 // inner grid stays at its natural height which leaves a
                 // white band at the bottom — the "image cut off"
-                // bug for image-on-left cards (the image cell looks
-                // truncated because the article extends below the
+                // look for short cards (the article extends below the
                 // grid). Force the inner grid div + image link to
                 // 100% of the article so the image cell stretches
-                // with the slide. md+ only; mobile keeps the stacked
-                // layout intact.
-                . '@media(min-width:768px){'
-                  . '[data-rg-spots-slider].rg-spots-active > article > div{height:100%}'
-                  . '[data-rg-spots-slider].rg-spots-active > article > div > a{height:100%}'
-                . '}'
+                // with the slide. Applied at ALL breakpoints — earlier
+                // version was md+ only which left mobile short-content
+                // cards still showing the bottom gap.
+                . '[data-rg-spots-slider].rg-spots-active > article > div{height:100%;display:grid}'
+                . '[data-rg-spots-slider].rg-spots-active > article > div > a{height:100%;display:block}'
+                . '[data-rg-spots-slider].rg-spots-active > article > div > a > img{height:100%;width:100%;object-fit:cover;object-position:center}'
                 // Thin progress bar shown directly below the slider.
                 // The bar fills from left to right over AUTOPLAY_MS,
                 // restarts on every scroll-stop (autoplay or user
