@@ -331,9 +331,16 @@ class BlockRenderer
                 . '[data-rg-spots-slider]{position:relative}'
                 // padding-bottom:2rem reserves a 32px clear zone at
                 // the bottom of the slider so the progress-bar
-                // overlay (positioned below) has room to sit without
-                // covering the bottom of the cards.
-                . '[data-rg-spots-slider].rg-spots-active{display:flex;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;padding-bottom:2rem;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;}'
+                // overlay has room to sit without covering the cards.
+                // align-items:flex-start so cards take their natural
+                // height instead of stretching to the tallest. The
+                // earlier flex-stretch behavior centered the content
+                // div in over-sized cells (justify-center inside a
+                // taller container created above + below whitespace
+                // that read as "cut off on the bottom" on shorter
+                // cards). Each card now sits at its own natural
+                // height, no stretching, no whitespace artifacts.
+                . '[data-rg-spots-slider].rg-spots-active{display:flex;align-items:flex-start;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;padding-bottom:2rem;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;}'
                 . '[data-rg-spots-slider].rg-spots-active::-webkit-scrollbar{display:none}'
                 . '[data-rg-spots-slider].rg-spots-active.is-dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}'
                 . '[data-rg-spots-slider].rg-spots-active.is-dragging img{pointer-events:none}'
