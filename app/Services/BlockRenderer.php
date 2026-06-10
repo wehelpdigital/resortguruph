@@ -340,8 +340,6 @@ class BlockRenderer
                 // pins each slide to its own viewport without any
                 // peek of the next card.
                 . '[data-rg-spots-slider].rg-spots-active > article{flex:0 0 100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;margin-top:0;margin-bottom:0}'
-                . '.rg-spots-edge{position:absolute;top:0;right:0;bottom:.5rem;width:3rem;background:linear-gradient(to left,#fff,transparent);pointer-events:none;transition:opacity .25s ease}'
-                . '[data-rg-spots-slider].rg-spots-active[data-rg-end] + .rg-spots-edge{opacity:0}'
                 . '</style>'
                 . '<script>(function(){'
                     . 'if(window.__rgSpotsSliderWired)return;window.__rgSpotsSliderWired=true;'
@@ -349,12 +347,6 @@ class BlockRenderer
                     . 'function wire(slider){'
                       . 'if(slider.dataset.rgSpotsInited==="1")return;slider.dataset.rgSpotsInited="1";'
                       . 'slider.classList.add("rg-spots-active");'
-                      // append the right-edge fade overlay
-                      . 'var edge=document.createElement("div");edge.className="rg-spots-edge";'
-                      . 'if(slider.parentNode){slider.parentNode.insertBefore(edge,slider.nextSibling);'
-                        // ensure parent is position-relative so edge is anchored correctly
-                        . 'if(getComputedStyle(slider.parentNode).position==="static"){slider.parentNode.style.position="relative"}'
-                      . '}'
                       . 'var paused=false,hovered=false,touching=false,visible=true;'
                       . 'function slideWidth(){var c=slider.querySelector("article");if(!c)return 600;var gap=parseFloat(getComputedStyle(slider).gap||"16")||16;return c.offsetWidth+gap}'
                       . 'function updateEnd(){var atEnd=Math.ceil(slider.scrollLeft+slider.clientWidth)>=slider.scrollWidth-2;if(atEnd){slider.setAttribute("data-rg-end","1")}else{slider.removeAttribute("data-rg-end")}}'
