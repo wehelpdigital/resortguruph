@@ -333,9 +333,13 @@ class BlockRenderer
                 . '[data-rg-spots-slider].rg-spots-active::-webkit-scrollbar{display:none}'
                 . '[data-rg-spots-slider].rg-spots-active.is-dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}'
                 . '[data-rg-spots-slider].rg-spots-active.is-dragging img{pointer-events:none}'
-                . '[data-rg-spots-slider].rg-spots-active > article{flex:0 0 calc(100% - .5rem);scroll-snap-align:start;scroll-snap-stop:always;margin-top:0;margin-bottom:0}'
-                . '@media(min-width:768px){[data-rg-spots-slider].rg-spots-active > article{flex:0 0 calc(70% - .5rem)}}'
-                . '@media(min-width:1280px){[data-rg-spots-slider].rg-spots-active > article{flex:0 0 calc(50% - .5rem)}}'
+                // One slide = one full-width article. The article's
+                // own internal grid handles the 2-column image+text
+                // layout INSIDE the slide. flex-basis 100% (not
+                // calc-minus-gap) keeps the math clean: snap-mandatory
+                // pins each slide to its own viewport without any
+                // peek of the next card.
+                . '[data-rg-spots-slider].rg-spots-active > article{flex:0 0 100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;margin-top:0;margin-bottom:0}'
                 . '.rg-spots-edge{position:absolute;top:0;right:0;bottom:.5rem;width:3rem;background:linear-gradient(to left,#fff,transparent);pointer-events:none;transition:opacity .25s ease}'
                 . '[data-rg-spots-slider].rg-spots-active[data-rg-end] + .rg-spots-edge{opacity:0}'
                 . '</style>'
