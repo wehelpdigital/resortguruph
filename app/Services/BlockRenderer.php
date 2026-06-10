@@ -1378,7 +1378,96 @@ class BlockRenderer
             . '</article>'
             // Per-block hover effects (image zoom on card hover). Scoped
             // to .rg-itp so they don't bleed into other blocks.
-            . '<style>.rg-itp:hover .rg-itp-img{transform:scale(1.04)}.rg-itp{transition:box-shadow .3s ease, transform .3s ease}</style>';
+            // Per-block styles + the slider mode CSS. The slider-mode
+            // rules ONLY apply when the wrapping container .rg-itp-slider
+            // exists — the JS at the bottom adds that wrapper at
+            // runtime whenever it finds 2+ adjacent .rg-itp siblings.
+            // Single-block pages stay in their normal editorial-card
+            // layout, untouched.
+            . '<style>'
+                . '.rg-itp:hover .rg-itp-img{transform:scale(1.04)}'
+                . '.rg-itp{transition:box-shadow .3s ease, transform .3s ease}'
+                // ----- Slider mode -----
+                . '.rg-itp-slider{position:relative}'
+                . '.rg-itp-track{display:flex;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;padding-bottom:.5rem;scrollbar-width:none;-ms-overflow-style:none;cursor:grab}'
+                . '.rg-itp-track::-webkit-scrollbar{display:none}'
+                . '.rg-itp-track.is-dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}'
+                . '.rg-itp-track.is-dragging img{pointer-events:none}'
+                . '.rg-itp-track .rg-itp{flex:0 0 100%;width:100%;margin-top:0;margin-bottom:0;scroll-snap-align:start;scroll-snap-stop:always}'
+                . '@media(min-width:768px){.rg-itp-track .rg-itp{flex:0 0 calc(100% - 2rem)}}'
+                . '.rg-itp-fade-edge{position:absolute;top:0;right:0;bottom:.5rem;width:3rem;background:linear-gradient(to left,#fff,transparent);pointer-events:none;transition:opacity .25s ease}'
+                . '.rg-itp-slider[data-rg-end] .rg-itp-fade-edge{opacity:0}'
+            . '</style>'
+            // ----- Slider auto-wiring JS (idempotent) -----
+            // Runs once per page. Finds every .rg-itp element. Walks
+            // groups of consecutive siblings (i.e. same parent, no
+            // non-.rg-itp elements between them). For each group of 2
+            // or more, wraps them in a slider container, then wires
+            // autoplay (5s), mouse-drag scroll, touch pause, hover
+            // pause, IntersectionObserver pause, and end-of-track
+            // edge-fade toggle. The pattern matches the attractions
+            // slider so they feel like the same control to the user.
+            . '<script>(function(){'
+                . 'if(window.__rgItpSliderWired)return;window.__rgItpSliderWired=true;'
+                . 'var AUTOPLAY_MS=5000;'
+                . 'function groupAdjacent(){'
+                  . 'var nodes=document.querySelectorAll(".rg-itp");if(!nodes.length)return [];'
+                  . 'var groups=[],current=null;'
+                  . 'nodes.forEach(function(n){'
+                    . 'if(current&&current[current.length-1].nextElementSibling===n){current.push(n)}'
+                    . 'else{current=[n];groups.push(current)}'
+                  . '});'
+                  . 'return groups.filter(function(g){return g.length>=2})'
+                . '}'
+                . 'function wireOne(slider){'
+                  . 'var track=slider.querySelector(".rg-itp-track");if(!track)return;'
+                  . 'var paused=false,hovered=false,touching=false,visible=true,dragStart=null,dragScroll=0,didDrag=false;'
+                  . 'function slideWidth(){var c=track.querySelector(".rg-itp");if(!c)return 600;var gap=parseFloat(getComputedStyle(track).gap||"16")||16;return c.offsetWidth+gap}'
+                  . 'function updateEnd(){var atEnd=Math.ceil(track.scrollLeft+track.clientWidth)>=track.scrollWidth-2;if(atEnd){slider.setAttribute("data-rg-end","1")}else{slider.removeAttribute("data-rg-end")}}'
+                  . 'function tick(){'
+                    . 'if(paused||hovered||touching||!visible||document.hidden)return;'
+                    . 'var w=slideWidth();var atEnd=track.scrollLeft+track.clientWidth>=track.scrollWidth-4;'
+                    . 'if(atEnd){track.scrollTo({left:0,behavior:"smooth"})}else{track.scrollBy({left:w,behavior:"smooth"})}'
+                  . '}'
+                  . 'setInterval(tick,AUTOPLAY_MS);'
+                  . 'slider.addEventListener("mouseenter",function(){hovered=true});'
+                  . 'slider.addEventListener("mouseleave",function(){hovered=false});'
+                  . 'track.addEventListener("touchstart",function(){touching=true},{passive:true});'
+                  . 'track.addEventListener("touchend",function(){setTimeout(function(){touching=false},1500)},{passive:true});'
+                  . 'if("IntersectionObserver" in window){'
+                    . 'var io=new IntersectionObserver(function(es){es.forEach(function(en){visible=en.isIntersecting})},{threshold:0.15});'
+                    . 'io.observe(slider);'
+                  . '}'
+                  . 'track.addEventListener("mousedown",function(e){if(e.button!==0)return;dragStart=e.pageX;dragScroll=track.scrollLeft;didDrag=false});'
+                  . 'window.addEventListener("mousemove",function(e){if(dragStart===null)return;var dx=e.pageX-dragStart;if(Math.abs(dx)>4){if(!didDrag){track.classList.add("is-dragging");didDrag=true}track.scrollLeft=dragScroll-dx}});'
+                  . 'window.addEventListener("mouseup",function(){if(dragStart!==null&&didDrag){track.classList.remove("is-dragging")}dragStart=null});'
+                  . 'track.addEventListener("click",function(e){if(didDrag){e.preventDefault();e.stopPropagation();didDrag=false}},true);'
+                  . 'track.addEventListener("scroll",updateEnd,{passive:true});'
+                  . 'updateEnd();'
+                . '}'
+                . 'function init(){'
+                  . 'var groups=groupAdjacent();'
+                  . 'groups.forEach(function(g){'
+                    . 'var parent=g[0].parentElement;'
+                    . 'var slider=document.createElement("section");'
+                    . 'slider.className="rg-itp-slider not-prose my-10";'
+                    . 'slider.setAttribute("data-rg-itp-slider","");'
+                    . 'slider.setAttribute("aria-label","Tourist spots carousel");'
+                    . 'slider.setAttribute("role","region");'
+                    . 'var track=document.createElement("div");'
+                    . 'track.className="rg-itp-track";'
+                    . 'track.tabIndex=0;'
+                    . 'parent.insertBefore(slider,g[0]);'
+                    . 'slider.appendChild(track);'
+                    . 'g.forEach(function(n){track.appendChild(n)});'
+                    . 'var edge=document.createElement("div");'
+                    . 'edge.className="rg-itp-fade-edge";'
+                    . 'slider.appendChild(edge);'
+                    . 'wireOne(slider);'
+                  . '});'
+                . '}'
+                . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init)}else{init()}'
+            . '})();</script>';
     }
 
     /**
