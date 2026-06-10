@@ -296,7 +296,93 @@ class BlockRenderer
 
     private function customHtml(array $p): string
     {
-        return '<div class="my-6">' . ($p['html'] ?? '') . '</div>';
+        $html = (string) ($p['html'] ?? '');
+
+        // Pattern detection: the seeder ships a "Tourist spots in X"
+        // section as a custom_html block — a heading + an intro
+        // paragraph + a `<div class="space-y-8">` wrapper holding 10+
+        // <article> cards. We tag the wrapper with a CSS hook so the
+        // sibling slider auto-wiring script (emitted once per page,
+        // see bottom of this method) can convert the run of articles
+        // into a swipeable autoplay slider at runtime. No DB
+        // migration — purely a render-time injection.
+        $isSpotsSection = (
+            str_contains($html, 'Tourist spots in')
+            && preg_match('#<div class="space-y-8">\s*<article#', $html) === 1
+        );
+        if ($isSpotsSection) {
+            $html = preg_replace(
+                '#<div class="space-y-8">#',
+                '<div class="space-y-8" data-rg-spots-slider>',
+                $html,
+                1
+            );
+        }
+
+        $out = '<div class="my-6">' . $html . '</div>';
+
+        // Emit the slider CSS + auto-wiring JS exactly once per page.
+        // Idempotent — `window.__rgSpotsSliderWired` guards re-execution
+        // and the `data-rg-spots-inited` data attribute prevents
+        // double-wrapping if multiple custom_html blocks on the same
+        // page each match the pattern.
+        if ($isSpotsSection) {
+            $out .= '<style>'
+                . '[data-rg-spots-slider]{position:relative}'
+                . '[data-rg-spots-slider].rg-spots-active{display:flex;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;padding-bottom:.5rem;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;}'
+                . '[data-rg-spots-slider].rg-spots-active::-webkit-scrollbar{display:none}'
+                . '[data-rg-spots-slider].rg-spots-active.is-dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}'
+                . '[data-rg-spots-slider].rg-spots-active.is-dragging img{pointer-events:none}'
+                . '[data-rg-spots-slider].rg-spots-active > article{flex:0 0 calc(100% - .5rem);scroll-snap-align:start;scroll-snap-stop:always;margin-top:0;margin-bottom:0}'
+                . '@media(min-width:768px){[data-rg-spots-slider].rg-spots-active > article{flex:0 0 calc(70% - .5rem)}}'
+                . '@media(min-width:1280px){[data-rg-spots-slider].rg-spots-active > article{flex:0 0 calc(50% - .5rem)}}'
+                . '.rg-spots-edge{position:absolute;top:0;right:0;bottom:.5rem;width:3rem;background:linear-gradient(to left,#fff,transparent);pointer-events:none;transition:opacity .25s ease}'
+                . '[data-rg-spots-slider].rg-spots-active[data-rg-end] + .rg-spots-edge{opacity:0}'
+                . '</style>'
+                . '<script>(function(){'
+                    . 'if(window.__rgSpotsSliderWired)return;window.__rgSpotsSliderWired=true;'
+                    . 'var AUTOPLAY_MS=5500;'
+                    . 'function wire(slider){'
+                      . 'if(slider.dataset.rgSpotsInited==="1")return;slider.dataset.rgSpotsInited="1";'
+                      . 'slider.classList.add("rg-spots-active");'
+                      // append the right-edge fade overlay
+                      . 'var edge=document.createElement("div");edge.className="rg-spots-edge";'
+                      . 'if(slider.parentNode){slider.parentNode.insertBefore(edge,slider.nextSibling);'
+                        // ensure parent is position-relative so edge is anchored correctly
+                        . 'if(getComputedStyle(slider.parentNode).position==="static"){slider.parentNode.style.position="relative"}'
+                      . '}'
+                      . 'var paused=false,hovered=false,touching=false,visible=true;'
+                      . 'function slideWidth(){var c=slider.querySelector("article");if(!c)return 600;var gap=parseFloat(getComputedStyle(slider).gap||"16")||16;return c.offsetWidth+gap}'
+                      . 'function updateEnd(){var atEnd=Math.ceil(slider.scrollLeft+slider.clientWidth)>=slider.scrollWidth-2;if(atEnd){slider.setAttribute("data-rg-end","1")}else{slider.removeAttribute("data-rg-end")}}'
+                      . 'function tick(){'
+                        . 'if(paused||hovered||touching||!visible||document.hidden)return;'
+                        . 'var w=slideWidth();var atEnd=slider.scrollLeft+slider.clientWidth>=slider.scrollWidth-4;'
+                        . 'if(atEnd){slider.scrollTo({left:0,behavior:"smooth"})}else{slider.scrollBy({left:w,behavior:"smooth"})}'
+                      . '}'
+                      . 'setInterval(tick,AUTOPLAY_MS);'
+                      . 'slider.addEventListener("mouseenter",function(){hovered=true});'
+                      . 'slider.addEventListener("mouseleave",function(){hovered=false});'
+                      . 'slider.addEventListener("touchstart",function(){touching=true},{passive:true});'
+                      . 'slider.addEventListener("touchend",function(){setTimeout(function(){touching=false},1500)},{passive:true});'
+                      . 'if("IntersectionObserver" in window){'
+                        . 'var io=new IntersectionObserver(function(es){es.forEach(function(en){visible=en.isIntersecting})},{threshold:0.15});'
+                        . 'io.observe(slider);'
+                      . '}'
+                      // mouse-drag scroll
+                      . 'var dragStart=null,dragScroll=0,didDrag=false;'
+                      . 'slider.addEventListener("mousedown",function(e){if(e.button!==0)return;dragStart=e.pageX;dragScroll=slider.scrollLeft;didDrag=false});'
+                      . 'window.addEventListener("mousemove",function(e){if(dragStart===null)return;var dx=e.pageX-dragStart;if(Math.abs(dx)>4){if(!didDrag){slider.classList.add("is-dragging");didDrag=true}slider.scrollLeft=dragScroll-dx}});'
+                      . 'window.addEventListener("mouseup",function(){if(dragStart!==null&&didDrag){slider.classList.remove("is-dragging")}dragStart=null});'
+                      . 'slider.addEventListener("click",function(e){if(didDrag){e.preventDefault();e.stopPropagation();didDrag=false}},true);'
+                      . 'slider.addEventListener("scroll",updateEnd,{passive:true});'
+                      . 'updateEnd();'
+                    . '}'
+                    . 'function init(){var ss=document.querySelectorAll("[data-rg-spots-slider]");for(var i=0;i<ss.length;i++)wire(ss[i])}'
+                    . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init)}else{init()}'
+                . '})();</script>';
+        }
+
+        return $out;
     }
 
     // ============================================================
