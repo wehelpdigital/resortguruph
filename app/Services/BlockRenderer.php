@@ -387,12 +387,28 @@ class BlockRenderer
                       . 'function syncPause(){progressBar.style.animationPlayState=(paused||hovered||touching||!visible||document.hidden)?"paused":"running"}'
                       . 'function slideWidth(){var c=slider.querySelector("article");if(!c)return 600;var gap=parseFloat(getComputedStyle(slider).gap||"16")||16;return c.offsetWidth+gap}'
                       . 'function updateEnd(){var atEnd=Math.ceil(slider.scrollLeft+slider.clientWidth)>=slider.scrollWidth-2;if(atEnd){slider.setAttribute("data-rg-end","1")}else{slider.removeAttribute("data-rg-end")}}'
-                      . 'function tick(){'
-                        . 'if(paused||hovered||touching||!visible||document.hidden)return;'
+                      // Advance the slider one card to the right. Loops
+                      // back to slot 0 at end of track. NO pause-flag
+                      // check here — this is only called from the bar
+                      // animationend event, which only fires when the
+                      // bar's animation has been running and reached
+                      // its end. Pause state freezes the bar via
+                      // animation-play-state, so animationend cannot
+                      // fire during a pause.
+                      . 'function advance(){'
                         . 'var w=slideWidth();var atEnd=slider.scrollLeft+slider.clientWidth>=slider.scrollWidth-4;'
                         . 'if(atEnd){slider.scrollTo({left:0,behavior:"smooth"})}else{slider.scrollBy({left:w,behavior:"smooth"})}'
+                        . 'autoplayInProgress=true;'
                       . '}'
-                      . 'setInterval(tick,AUTOPLAY_MS);'
+                      // The bar IS the timer. When its animation
+                      // completes (animationend fires), advance the
+                      // slide and reset the bar. This keeps the bar
+                      // PERFECTLY in sync with the slide motion —
+                      // the slide moves exactly when the bar reaches
+                      // 100%, never before or after. No setInterval
+                      // drift.
+                      . 'var autoplayInProgress=false;'
+                      . 'progressBar.addEventListener("animationend",function(){advance();restartBar()});'
                       . 'slider.addEventListener("mouseenter",function(){hovered=true;syncPause()});'
                       . 'slider.addEventListener("mouseleave",function(){hovered=false;syncPause()});'
                       . 'slider.addEventListener("touchstart",function(){touching=true;syncPause()},{passive:true});'
@@ -401,9 +417,8 @@ class BlockRenderer
                         . 'var io=new IntersectionObserver(function(es){es.forEach(function(en){visible=en.isIntersecting;syncPause()})},{threshold:0.15});'
                         . 'io.observe(slider);'
                       . '}'
-                      // Tab-hidden state changes also need to flow
-                      // through to the bar so it stops counting down
-                      // while the user is on another tab.
+                      // Tab-hidden state changes flow through to the
+                      // bar so it stops counting down on another tab.
                       . 'document.addEventListener("visibilitychange",syncPause);'
                       // mouse-drag scroll
                       . 'var dragStart=null,dragScroll=0,didDrag=false;'
@@ -411,15 +426,23 @@ class BlockRenderer
                       . 'window.addEventListener("mousemove",function(e){if(dragStart===null)return;var dx=e.pageX-dragStart;if(Math.abs(dx)>4){if(!didDrag){slider.classList.add("is-dragging");didDrag=true}slider.scrollLeft=dragScroll-dx}});'
                       . 'window.addEventListener("mouseup",function(){if(dragStart!==null&&didDrag){slider.classList.remove("is-dragging")}dragStart=null});'
                       . 'slider.addEventListener("click",function(e){if(didDrag){e.preventDefault();e.stopPropagation();didDrag=false}},true);'
-                      // Scroll listener does two things: track
-                      // end-of-track for the (now-removed) edge fade
-                      // attribute, AND restart the progress bar a
-                      // moment after scrolling stops. Debounce 300ms
-                      // so the restart fires once after the smooth
-                      // scroll settles (whether triggered by autoplay
-                      // tick or by a user swipe).
+                      // Scroll listener: track end-of-track AND restart
+                      // the bar on USER-initiated scroll-stops. We
+                      // skip the restart when the scroll was kicked off
+                      // by the autoplay advance() above (which already
+                      // restarted the bar via animationend), tracked by
+                      // the autoplayInProgress flag. 300ms debounce so
+                      // the restart fires once after the smooth scroll
+                      // settles.
                       . 'var scrollDebounce=null;'
-                      . 'slider.addEventListener("scroll",function(){updateEnd();clearTimeout(scrollDebounce);scrollDebounce=setTimeout(restartBar,300)},{passive:true});'
+                      . 'slider.addEventListener("scroll",function(){'
+                        . 'updateEnd();'
+                        . 'clearTimeout(scrollDebounce);'
+                        . 'scrollDebounce=setTimeout(function(){'
+                          . 'if(autoplayInProgress){autoplayInProgress=false;return}'
+                          . 'restartBar();'
+                        . '},300);'
+                      . '},{passive:true});'
                       . 'updateEnd();syncPause();'
                     . '}'
                     . 'function init(){var ss=document.querySelectorAll("[data-rg-spots-slider]");for(var i=0;i<ss.length;i++)wire(ss[i])}'
