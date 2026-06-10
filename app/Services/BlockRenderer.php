@@ -1202,6 +1202,17 @@ class BlockRenderer
     /**
      * Left/right image + text pair (tourist spot rows). Toggleable image
      * position (left|right) so a series of these alternates cleanly.
+     *
+     * Redesign: editorial-card look replaces the bare 2-column grid.
+     * - Outer card with white bg, soft shadow, rounded-2xl border,
+     *   overflow-hidden so the image bleeds clean to the edge.
+     * - Image takes a full column with a slight zoom on hover.
+     * - Text column has a left-accent strip in emerald, a chip-style
+     *   eyebrow with badge background (instead of tiny uppercase
+     *   text), bigger serif title, and a real button CTA with arrow.
+     * - Whole card lifts on hover.
+     * - On mobile (<md): image stacks on top of text; card framing
+     *   stays.
      */
     private function imageTextPair(array $p): string
     {
@@ -1214,26 +1225,60 @@ class BlockRenderer
         $urlLabel = $this->e($p['url_label'] ?? 'Learn more');
 
         $img = !empty($p['image'])
-            ? '<div class="rounded-xl overflow-hidden aspect-[4/3] bg-slate-100">'
-                . '<img src="' . $this->e($p['image']) . '" alt="' . $title . '" class="w-full h-full object-cover" loading="lazy">'
+            ? '<div class="rg-itp-imgwrap relative bg-slate-100 overflow-hidden md:aspect-auto aspect-[16/10]">'
+                . '<img src="' . $this->e($p['image']) . '" alt="' . $title . '"'
+                . ' class="rg-itp-img absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out"'
+                . ' loading="lazy">'
+                // subtle gradient overlay so any caption on top stays readable
+                . '<div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-black/20 via-transparent to-transparent"></div>'
                 . '</div>'
-            : '';
+            : '<div class="bg-emerald-50/40 md:aspect-auto aspect-[16/10] flex items-center justify-center">'
+                . '<svg class="w-12 h-12 text-emerald-200" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>'
+                . '</div>';
 
         $cta = $url !== ''
-            ? '<a href="' . $this->e($url) . '" rel="noopener nofollow" target="_blank" '
-                . 'class="inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:text-emerald-800 mt-3">'
-                . $urlLabel . ' <span aria-hidden="true">→</span></a>'
+            ? '<a href="' . $this->e($url) . '" rel="noopener nofollow" target="_blank"'
+                . ' class="rg-itp-cta inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors">'
+                . $urlLabel
+                . '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>'
+                . '</a>'
             : '';
 
-        $text = '<div>'
-            . ($eyebrow !== '' ? '<div class="text-[10px] uppercase tracking-wide font-bold text-emerald-700 mb-1">' . $eyebrow . '</div>' : '')
-            . ($title !== '' ? '<h3 class="text-xl md:text-2xl font-bold text-slate-900 mb-2">' . $title . '</h3>' : '')
-            . ($body !== '' ? '<div class="text-slate-700 leading-relaxed">' . $body . '</div>' : '')
-            . $cta
+        // Text column: vertical accent strip on the left edge,
+        // chip-style eyebrow badge, serif-ish bold title, body
+        // copy in slate-700, real button CTA.
+        $eyebrowChip = $eyebrow !== ''
+            ? '<div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold uppercase tracking-[0.08em]">'
+                . '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>' . $eyebrow . '</div>'
+            : '';
+
+        $textInner = $eyebrowChip
+            . ($title !== '' ? '<h3 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight mb-3 tracking-tight">' . $title . '</h3>' : '')
+            . ($body !== '' ? '<div class="text-slate-600 leading-relaxed text-[0.95rem] md:text-base">' . $body . '</div>' : '')
+            . $cta;
+
+        // The text column carries its own padding; on the image-side
+        // of the accent strip we draw a thin emerald bar via
+        // `border-l-4 border-emerald-500` which becomes the editorial
+        // accent for the card.
+        $textCol = '<div class="rg-itp-text relative p-7 md:p-9 flex flex-col justify-center'
+            . ($position === 'left' ? ' md:border-l-4 border-emerald-500' : ' md:border-r-4 border-emerald-500')
+            . '">'
+            . $textInner
             . '</div>';
 
-        $cols = $position === 'right' ? $text . $img : $img . $text;
-        return '<div class="not-prose my-8 grid md:grid-cols-2 gap-6 items-start">' . $cols . '</div>';
+        // Image column wrapper makes sure the image fills its grid
+        // cell on md+ where the card uses a 2-col equal-height grid.
+        $imgCol = '<div class="rg-itp-imgcol relative overflow-hidden">' . $img . '</div>';
+
+        $cols = $position === 'right' ? $textCol . $imgCol : $imgCol . $textCol;
+
+        return '<article class="rg-itp not-prose my-10 grid md:grid-cols-2 rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-xl transition-shadow duration-300 hover:-translate-y-0.5 transform-gpu">'
+            . $cols
+            . '</article>'
+            // Per-block hover effects (image zoom on card hover). Scoped
+            // to .rg-itp so they don't bleed into other blocks.
+            . '<style>.rg-itp:hover .rg-itp-img{transform:scale(1.04)}.rg-itp{transition:box-shadow .3s ease, transform .3s ease}</style>';
     }
 
     /**
