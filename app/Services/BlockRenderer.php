@@ -329,7 +329,11 @@ class BlockRenderer
         if ($isSpotsSection) {
             $out .= '<style>'
                 . '[data-rg-spots-slider]{position:relative}'
-                . '[data-rg-spots-slider].rg-spots-active{display:flex;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;padding-bottom:.5rem;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;}'
+                // padding-bottom:2rem reserves a 32px clear zone at
+                // the bottom of the slider so the progress-bar
+                // overlay (positioned below) has room to sit without
+                // covering the bottom of the cards.
+                . '[data-rg-spots-slider].rg-spots-active{display:flex;gap:1rem;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;padding-bottom:2rem;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;}'
                 . '[data-rg-spots-slider].rg-spots-active::-webkit-scrollbar{display:none}'
                 . '[data-rg-spots-slider].rg-spots-active.is-dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}'
                 . '[data-rg-spots-slider].rg-spots-active.is-dragging img{pointer-events:none}'
@@ -356,17 +360,13 @@ class BlockRenderer
                   . '[data-rg-spots-slider].rg-spots-active > article > div{height:100%}'
                   . '[data-rg-spots-slider].rg-spots-active > article > div > a{height:100%}'
                 . '}'
-                // Thin progress bar pinned to the bottom edge of the
-                // slider area as an absolute-positioned overlay. Track
-                // is a faint white pill; the fill is the emerald
-                // gradient with a soft glow (two box-shadows stacked
-                // for a layered halo). The wiring JS sets the parent
-                // section to position:relative so this positioning
-                // anchors correctly.
-                . '.rg-spots-progress{position:absolute;left:1.5rem;right:1.5rem;bottom:.75rem;height:3px;background:rgba(255,255,255,.7);border-radius:999px;overflow:visible;pointer-events:none;z-index:5;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);box-shadow:0 1px 4px rgba(15,23,42,.18)}'
-                . '.rg-spots-progress-bar{position:absolute;inset:0;background:linear-gradient(to right,#10b981,#34d399);border-radius:999px;transform-origin:left;transform:scaleX(0);animation:rgSpotsProgress 5500ms linear forwards;'
-                  . 'box-shadow:0 0 6px 1px rgba(16,185,129,.65),0 0 14px 3px rgba(52,211,153,.4),0 0 22px 5px rgba(110,231,183,.25)'
-                . '}'
+                // Thin progress bar shown directly below the slider.
+                // The bar fills from left to right over AUTOPLAY_MS,
+                // restarts on every scroll-stop (autoplay or user
+                // swipe), and pauses via animation-play-state in sync
+                // with the existing pause flags.
+                . '.rg-spots-progress{position:relative;height:3px;background:#e2e8f0;border-radius:999px;margin-top:14px;overflow:hidden}'
+                . '.rg-spots-progress-bar{position:absolute;inset:0;background:linear-gradient(to right,#10b981,#34d399);border-radius:999px;transform-origin:left;transform:scaleX(0);animation:rgSpotsProgress 5500ms linear forwards}'
                 . '@keyframes rgSpotsProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}'
                 . '</style>'
                 . '<script>(function(){'
@@ -375,22 +375,14 @@ class BlockRenderer
                     . 'function wire(slider){'
                       . 'if(slider.dataset.rgSpotsInited==="1")return;slider.dataset.rgSpotsInited="1";'
                       . 'slider.classList.add("rg-spots-active");'
-                      // Build the progress bar + pin it to the bottom
-                      // edge of the slider area. The wrap is mounted
-                      // as the LAST child of the slider parent (the
-                      // seeded <section>) AND the parent is set to
-                      // position:relative so the bar's
-                      // position:absolute / bottom:0 anchors to the
-                      // parent — which ends exactly where the slider
-                      // ends, so the bar visually sits as an overlay
-                      // on the slider bottom.
+                      // Build the progress bar. Mounted as the next
+                      // sibling AFTER the slider so it sits directly
+                      // below the visible slide without affecting the
+                      // horizontal scroll geometry.
                       . 'var progressWrap=document.createElement("div");progressWrap.className="rg-spots-progress";'
                       . 'var progressBar=document.createElement("div");progressBar.className="rg-spots-progress-bar";'
                       . 'progressWrap.appendChild(progressBar);'
-                      . 'if(slider.parentNode){'
-                        . 'if(getComputedStyle(slider.parentNode).position==="static"){slider.parentNode.style.position="relative"}'
-                        . 'slider.parentNode.insertBefore(progressWrap,slider.nextSibling);'
-                      . '}'
+                      . 'if(slider.parentNode){slider.parentNode.insertBefore(progressWrap,slider.nextSibling)}'
                       . 'function restartBar(){progressBar.style.animation="none";void progressBar.offsetWidth;progressBar.style.animation=""}'
                       . 'var paused=false,hovered=false,touching=false,visible=true;'
                       // Sync the bar play-state with any change to a
