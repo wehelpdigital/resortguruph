@@ -356,6 +356,14 @@ class BlockRenderer
                   . '[data-rg-spots-slider].rg-spots-active > article > div{height:100%}'
                   . '[data-rg-spots-slider].rg-spots-active > article > div > a{height:100%}'
                 . '}'
+                // Thin progress bar shown directly below the slider.
+                // The bar fills from left to right over AUTOPLAY_MS,
+                // restarts on every scroll-stop (autoplay or user
+                // swipe), and pauses via animation-play-state in sync
+                // with the existing pause flags.
+                . '.rg-spots-progress{position:relative;height:3px;background:#e2e8f0;border-radius:999px;margin-top:14px;overflow:hidden}'
+                . '.rg-spots-progress-bar{position:absolute;inset:0;background:linear-gradient(to right,#10b981,#34d399);border-radius:999px;transform-origin:left;transform:scaleX(0);animation:rgSpotsProgress 5500ms linear forwards}'
+                . '@keyframes rgSpotsProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}'
                 . '</style>'
                 . '<script>(function(){'
                     . 'if(window.__rgSpotsSliderWired)return;window.__rgSpotsSliderWired=true;'
@@ -363,7 +371,20 @@ class BlockRenderer
                     . 'function wire(slider){'
                       . 'if(slider.dataset.rgSpotsInited==="1")return;slider.dataset.rgSpotsInited="1";'
                       . 'slider.classList.add("rg-spots-active");'
+                      // Build the progress bar. Mounted as the next
+                      // sibling AFTER the slider so it sits directly
+                      // below the visible slide without affecting the
+                      // horizontal scroll geometry.
+                      . 'var progressWrap=document.createElement("div");progressWrap.className="rg-spots-progress";'
+                      . 'var progressBar=document.createElement("div");progressBar.className="rg-spots-progress-bar";'
+                      . 'progressWrap.appendChild(progressBar);'
+                      . 'if(slider.parentNode){slider.parentNode.insertBefore(progressWrap,slider.nextSibling)}'
+                      . 'function restartBar(){progressBar.style.animation="none";void progressBar.offsetWidth;progressBar.style.animation=""}'
                       . 'var paused=false,hovered=false,touching=false,visible=true;'
+                      // Sync the bar play-state with any change to a
+                      // pause flag. Wrap-and-call pattern: every place
+                      // that mutates a flag below now calls syncPause().
+                      . 'function syncPause(){progressBar.style.animationPlayState=(paused||hovered||touching||!visible||document.hidden)?"paused":"running"}'
                       . 'function slideWidth(){var c=slider.querySelector("article");if(!c)return 600;var gap=parseFloat(getComputedStyle(slider).gap||"16")||16;return c.offsetWidth+gap}'
                       . 'function updateEnd(){var atEnd=Math.ceil(slider.scrollLeft+slider.clientWidth)>=slider.scrollWidth-2;if(atEnd){slider.setAttribute("data-rg-end","1")}else{slider.removeAttribute("data-rg-end")}}'
                       . 'function tick(){'
@@ -372,22 +393,34 @@ class BlockRenderer
                         . 'if(atEnd){slider.scrollTo({left:0,behavior:"smooth"})}else{slider.scrollBy({left:w,behavior:"smooth"})}'
                       . '}'
                       . 'setInterval(tick,AUTOPLAY_MS);'
-                      . 'slider.addEventListener("mouseenter",function(){hovered=true});'
-                      . 'slider.addEventListener("mouseleave",function(){hovered=false});'
-                      . 'slider.addEventListener("touchstart",function(){touching=true},{passive:true});'
-                      . 'slider.addEventListener("touchend",function(){setTimeout(function(){touching=false},1500)},{passive:true});'
+                      . 'slider.addEventListener("mouseenter",function(){hovered=true;syncPause()});'
+                      . 'slider.addEventListener("mouseleave",function(){hovered=false;syncPause()});'
+                      . 'slider.addEventListener("touchstart",function(){touching=true;syncPause()},{passive:true});'
+                      . 'slider.addEventListener("touchend",function(){setTimeout(function(){touching=false;syncPause()},1500)},{passive:true});'
                       . 'if("IntersectionObserver" in window){'
-                        . 'var io=new IntersectionObserver(function(es){es.forEach(function(en){visible=en.isIntersecting})},{threshold:0.15});'
+                        . 'var io=new IntersectionObserver(function(es){es.forEach(function(en){visible=en.isIntersecting;syncPause()})},{threshold:0.15});'
                         . 'io.observe(slider);'
                       . '}'
+                      // Tab-hidden state changes also need to flow
+                      // through to the bar so it stops counting down
+                      // while the user is on another tab.
+                      . 'document.addEventListener("visibilitychange",syncPause);'
                       // mouse-drag scroll
                       . 'var dragStart=null,dragScroll=0,didDrag=false;'
                       . 'slider.addEventListener("mousedown",function(e){if(e.button!==0)return;dragStart=e.pageX;dragScroll=slider.scrollLeft;didDrag=false});'
                       . 'window.addEventListener("mousemove",function(e){if(dragStart===null)return;var dx=e.pageX-dragStart;if(Math.abs(dx)>4){if(!didDrag){slider.classList.add("is-dragging");didDrag=true}slider.scrollLeft=dragScroll-dx}});'
                       . 'window.addEventListener("mouseup",function(){if(dragStart!==null&&didDrag){slider.classList.remove("is-dragging")}dragStart=null});'
                       . 'slider.addEventListener("click",function(e){if(didDrag){e.preventDefault();e.stopPropagation();didDrag=false}},true);'
-                      . 'slider.addEventListener("scroll",updateEnd,{passive:true});'
-                      . 'updateEnd();'
+                      // Scroll listener does two things: track
+                      // end-of-track for the (now-removed) edge fade
+                      // attribute, AND restart the progress bar a
+                      // moment after scrolling stops. Debounce 300ms
+                      // so the restart fires once after the smooth
+                      // scroll settles (whether triggered by autoplay
+                      // tick or by a user swipe).
+                      . 'var scrollDebounce=null;'
+                      . 'slider.addEventListener("scroll",function(){updateEnd();clearTimeout(scrollDebounce);scrollDebounce=setTimeout(restartBar,300)},{passive:true});'
+                      . 'updateEnd();syncPause();'
                     . '}'
                     . 'function init(){var ss=document.querySelectorAll("[data-rg-spots-slider]");for(var i=0;i<ss.length;i++)wire(ss[i])}'
                     . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init)}else{init()}'
