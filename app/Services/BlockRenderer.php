@@ -340,6 +340,22 @@ class BlockRenderer
                 // pins each slide to its own viewport without any
                 // peek of the next card.
                 . '[data-rg-spots-slider].rg-spots-active > article{flex:0 0 100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;margin-top:0;margin-bottom:0}'
+                // Flex stretches every slide to match the tallest one.
+                // The seeded card markup is <article> > <div class="grid
+                // md:grid-cols-2"> > {image-link} + {text-div}, and the
+                // inner grid has no h-full. On stretch-tall slides the
+                // inner grid stays at its natural height which leaves a
+                // white band at the bottom — the "image cut off"
+                // bug for image-on-left cards (the image cell looks
+                // truncated because the article extends below the
+                // grid). Force the inner grid div + image link to
+                // 100% of the article so the image cell stretches
+                // with the slide. md+ only; mobile keeps the stacked
+                // layout intact.
+                . '@media(min-width:768px){'
+                  . '[data-rg-spots-slider].rg-spots-active > article > div{height:100%}'
+                  . '[data-rg-spots-slider].rg-spots-active > article > div > a{height:100%}'
+                . '}'
                 . '</style>'
                 . '<script>(function(){'
                     . 'if(window.__rgSpotsSliderWired)return;window.__rgSpotsSliderWired=true;'
