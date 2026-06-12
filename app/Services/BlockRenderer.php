@@ -3685,28 +3685,29 @@ class BlockRenderer
                 $out .= '</div>';
             }
             $out .= '<div class="rg-dfs-img-inner-grad"></div>';
-            if ($rating !== null && $rating > 0) {
-                $out .= '<div class="rg-dfs-rating-badge" aria-label="Rated ' . number_format($rating, 1) . ' out of 5">'
-                    . '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
-                    . '<span>' . number_format($rating, 1) . '</span>'
-                    . '</div>';
-            }
             $out .= '</div>';
 
             // Caption strip — white card body. Region eyebrow + name
-            // + location with pin (+ review count suffix) + a thin
-            // divider + Explore link that nudges its arrow on hover.
+            // + location row + rating row + Explore link.
             $out .= '<div class="rg-dfs-body">';
             if ($region !== '') $out .= '<span class="rg-dfs-region">' . $region . '</span>';
             $out .= '<h3 class="rg-dfs-name">' . $name . '</h3>';
-            if ($location !== '' || $reviewCount > 0) {
+            if ($location !== '') {
                 $out .= '<div class="rg-dfs-location">'
                     . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>'
-                    . '<span>';
-                if ($location !== '') $out .= $location;
-                if ($location !== '' && $reviewCount > 0) $out .= ' &middot; ';
-                if ($reviewCount > 0) $out .= number_format($reviewCount) . ' review' . ($reviewCount === 1 ? '' : 's');
-                $out .= '</span></div>';
+                    . '<span>' . $location . '</span></div>';
+            }
+            // Rating row — sits directly under the location line.
+            // Star icon + bold rating number + middot + review count.
+            // Hidden gracefully when no review data exists.
+            if ($rating !== null && $rating > 0) {
+                $out .= '<div class="rg-dfs-rating" aria-label="Rated ' . number_format($rating, 1) . ' out of 5">'
+                    . '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+                    . '<strong>' . number_format($rating, 1) . '</strong>';
+                if ($reviewCount > 0) {
+                    $out .= '<span class="rg-dfs-rating-count">&middot; ' . number_format($reviewCount) . ' review' . ($reviewCount === 1 ? '' : 's') . '</span>';
+                }
+                $out .= '</div>';
             }
             $out .= '<div class="rg-dfs-explore">'
                 . '<span>Explore stays</span>'
@@ -3747,11 +3748,15 @@ class BlockRenderer
             . '.rg-dfs-img-inner-grad{position:absolute;inset:auto 0 0 0;height:35%;background:linear-gradient(180deg,transparent 0%,rgba(15,23,42,.08) 100%);pointer-events:none}'
             . '.rg-dfs-img--fallback{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#475569 0%,#334155 60%,#1e293b 100%);color:rgba(255,255,255,.4)}'
             . '.rg-dfs-img--fallback svg{width:3.5rem;height:3.5rem}'
-            // Rating badge — glass pill floating on the photo top-
-            // right corner. White-translucent backdrop with blur for
-            // legibility on any photo, amber star + slate numeric.
-            . '.rg-dfs-rating-badge{position:absolute;top:.75rem;right:.75rem;display:inline-flex;align-items:center;gap:.3rem;padding:.32rem .65rem;background:rgba(255,255,255,.95);color:#0f172a;border-radius:999px;font-size:.78rem;font-weight:800;letter-spacing:.01em;box-shadow:0 4px 12px -2px rgba(15,23,42,.25),0 1px 2px rgba(15,23,42,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);line-height:1}'
-            . '.rg-dfs-rating-badge svg{width:.85rem;height:.85rem;color:#f59e0b;flex:0 0 auto}'
+            // Rating row — sits in the white card body directly
+            // under the location line. Amber star + slate-900 bold
+            // numeric + slate-500 review count. No backdrop blur
+            // needed (it's on white), so the typography reads
+            // straight as part of the editorial caption.
+            . '.rg-dfs-rating{display:flex;align-items:center;gap:.35rem;font-size:.85rem;color:#0f172a;margin-bottom:.95rem;line-height:1.2}'
+            . '.rg-dfs-rating svg{width:.95rem;height:.95rem;color:#f59e0b;flex:0 0 auto}'
+            . '.rg-dfs-rating strong{font-weight:800;color:#0f172a;letter-spacing:.01em}'
+            . '.rg-dfs-rating-count{color:#64748b;font-weight:500;margin-left:.1rem}'
             // Caption strip — clean editorial type. Padding ramps up
             // a touch on tablet+ so the body breathes.
             . '.rg-dfs-body{display:flex;flex-direction:column;flex:1;padding:1.1rem 1.25rem 1.15rem;gap:0}'
