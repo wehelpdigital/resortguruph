@@ -3395,7 +3395,12 @@ class BlockRenderer
         // margin: 2.5rem auto 0 → centers the search bar within the
         // hero (matches the original /destinations layout). Without
         // auto margins the bar sits left-aligned under the H1.
-        $out = '<div class="rg-dest-ts ' . $accent . '" data-rg-search style="margin:2.5rem auto 0;max-width:920px;width:100%;position:relative;z-index:30;">';
+        //
+        // z-index sits at 10 (below the sticky site header which is
+        // z-50). The result panel below uses z-20 — still above page
+        // content but below the nav so the brand + utility links
+        // never get covered when the typeahead is open.
+        $out = '<div class="rg-dest-ts ' . $accent . '" data-rg-search style="margin:2.5rem auto 0;max-width:920px;width:100%;position:relative;z-index:10;">';
 
         // Filter tabs
         $out .= '<div class="rg-dest-ts__tabs" role="tablist">';
@@ -3464,7 +3469,7 @@ class BlockRenderer
             . '.rg-dest-ts__chips>span{font-weight:700;letter-spacing:.02em;margin-right:.25rem}'
             . '.rg-dest-ts__chip{background:rgba(255,255,255,.85);border:1.5px solid #e2e8f0;color:#334155;padding:.4rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s ease}'
             . '.rg-dest-ts__chip:hover{background:var(--rg-acc);border-color:var(--rg-acc);color:#fff;transform:translateY(-1px)}'
-            . '.rg-dest-ts__panel{position:absolute;top:calc(100% + .75rem);left:0;right:0;max-height:32rem;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 30px 70px -20px rgba(15,23,42,.3),0 10px 24px -8px rgba(15,23,42,.15);padding:.6rem;z-index:40;animation:rgDestTsFade .18s ease-out}'
+            . '.rg-dest-ts__panel{position:absolute;top:calc(100% + .75rem);left:0;right:0;max-height:32rem;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 30px 70px -20px rgba(15,23,42,.3),0 10px 24px -8px rgba(15,23,42,.15);padding:.6rem;z-index:20;animation:rgDestTsFade .18s ease-out}'
             . '@keyframes rgDestTsFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}'
             . '.rg-dest-ts__group-label{font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#94a3b8;padding:.75rem 1rem .4rem}'
             . '.rg-dest-ts__opt{display:flex;align-items:center;gap:1rem;padding:.8rem 1rem;border-radius:.85rem;cursor:pointer;text-decoration:none;color:inherit;transition:background .12s ease}'

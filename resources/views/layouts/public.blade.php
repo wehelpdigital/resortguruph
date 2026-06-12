@@ -562,7 +562,7 @@
     $activeCultures = request()->is('philippine-tribes-ethnic-groups-cultures-to-meet');
 @endphp
 
-<header class="border-b border-slate-200 bg-white sticky top-0 z-30 backdrop-blur bg-white/85">
+<header class="border-b border-slate-200 bg-white sticky top-0 z-50 backdrop-blur bg-white/85">
     {{-- Level 1: brand + utility nav --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-lg">
