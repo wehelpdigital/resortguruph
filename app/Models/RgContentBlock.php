@@ -65,6 +65,20 @@ class RgContentBlock extends Model
         // dishes (papaitan, pigar-pigar, pinakbet) not restaurants.
         // Each item carries a name, where-to-find it, blurb, image.
         'foods_to_try',
+        // /destinations page custom block types. Each one renders
+        // a distinct section of the legacy /destinations view as a
+        // builder element so admins can edit the section in
+        // /resort-guru-static-edit for the destinations row:
+        //   dest_hero_search     — gradient hero + breadcrumb +
+        //                          stats pills + powerful typeahead
+        //                          search (filter tabs + chips +
+        //                          grouped result panel).
+        //   dest_featured_slider — Splide carousel of featured
+        //                          tourist spots ("Tourist spots
+        //                          worth the trip").
+        //   dest_region_clusters — Sticky "Jump to region" pill nav
+        //                          + cluster grids of keyword cards.
+        'dest_hero_search', 'dest_featured_slider', 'dest_region_clusters',
         // Page-header content elements migrated out of rg_seo_pages
         // columns into blocks so the admin can reorder / remove / add
         // them like any other content. subtitle_intro replaces the

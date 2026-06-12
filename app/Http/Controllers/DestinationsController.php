@@ -42,6 +42,42 @@ class DestinationsController extends Controller
         $featuredSpots = $this->buildFeaturedSpots();
         $searchIndex   = $this->buildSearchIndex($orderedClusters);
 
+        // Block-driven render: if the `destinations` static_page row
+        // has blocks attached, render them via BlockRenderer with the
+        // controller data exposed via context. Otherwise fall back to
+        // the legacy hardcoded view. Live Editor support: when the
+        // request carries an HMAC _lt token signed against the
+        // static_page slug, render with the live_edit context flag
+        // and inject the rg-live-edit chrome assets in the view.
+        $page = \DB::table('rg_static_pages')
+            ->where('slug', 'destinations')
+            ->where('is_published', 1)
+            ->first();
+        if ($page) {
+            $blocks = \App\Models\RgContentBlock::forOwner('static_page', $page->id);
+            if ($blocks->isNotEmpty()) {
+                $liveEdit = false;
+                $request = request();
+                if ($request && $request->query('_lt')) {
+                    $liveEdit = \App\Support\LiveEditToken::valid('destinations', $request->query('_lt'));
+                }
+                $renderer = app(\App\Services\BlockRenderer::class);
+                $renderedBlocks = $renderer->renderBlocks($blocks, [
+                    'static_page_id' => $page->id,
+                    'orderedClusters' => $orderedClusters,
+                    'stats' => $stats,
+                    'featuredSpots' => $featuredSpots,
+                    'searchIndex' => $searchIndex,
+                    'live_edit' => $liveEdit,
+                ]);
+                return view('destinations.blocks', [
+                    'page' => $page,
+                    'renderedBlocks' => $renderedBlocks,
+                    'liveEdit' => $liveEdit,
+                ]);
+            }
+        }
+
         return view('destinations.index', compact('orderedClusters', 'stats', 'featuredSpots', 'searchIndex'));
     }
 

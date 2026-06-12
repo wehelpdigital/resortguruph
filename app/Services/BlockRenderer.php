@@ -97,6 +97,14 @@ class BlockRenderer
             'facts_list' => $this->factsList($p),
             'place_history' => $this->placeHistory($p),
             'foods_to_try' => $this->foodsToTry($p),
+            // /destinations page custom block types — combo hero+search,
+            // featured-spots slider, jump-to-region clusters. Each is
+            // self-contained (CSS+JS inline) and reads its live data
+            // from $context (orderedClusters / stats / featuredSpots /
+            // searchIndex passed by DestinationsController).
+            'dest_hero_search' => $this->destHeroSearch($p, $context),
+            'dest_featured_slider' => $this->destFeaturedSlider($p, $context),
+            'dest_region_clusters' => $this->destRegionClusters($p, $context),
             default => '',
         };
     }
@@ -3164,5 +3172,602 @@ class BlockRenderer
         }
         $out .= '</div></section>';
         return $out;
+    }
+
+    /* ============================================================
+     * /destinations page custom block types
+     * ============================================================
+     * The three blocks below reproduce the /destinations page's
+     * three distinct sections and make each one a builder element:
+     *
+     *   1. dest_hero_search    — top hero with breadcrumb, title,
+     *                            stats pills, and powerful typeahead
+     *                            search (filter tabs + popular chips
+     *                            + grouped result panel + fuzzy
+     *                            match + mark highlighting + keyboard
+     *                            nav).
+     *   2. dest_featured_slider — "Tourist spots worth the trip"
+     *                            Splide carousel of featured items.
+     *   3. dest_region_clusters — "Jump to region" sticky pill nav
+     *                            + cluster grid of keyword cards by
+     *                            region.
+     *
+     * Each block reads its live data from $context, which
+     * DestinationsController passes via the static-page block
+     * renderer.
+     * ============================================================ */
+
+    /**
+     * dest_hero_search — top hero with breadcrumb, title, stats
+     * pills, and TripAdvisor-style typeahead search. Self-contained
+     * (full CSS + JS inline).
+     *
+     * Payload:
+     *   eyebrow              → small uppercase chip above title
+     *   title                → H1 with {{accent}}…{{/accent}} markers
+     *                          around the colored portion
+     *   accent               → slate|amber|brand|emerald|rose|violet|teal
+     *   paragraphs           → array of intro paragraphs (or string
+     *                          with blank-line separators)
+     *   bg_gradient          → none|amber-rose|brand-emerald|
+     *                          rose-amber|violet-teal|teal-emerald
+     *   breadcrumbs          → [{label, url}] (last item unlinked)
+     *   stats_pills          → [{label, value, value_source}]
+     *                          value_source: literal | stats.{key} |
+     *                                        context.{key}.count
+     *   search_placeholder
+     *   search_tabs          → [{value, label}]
+     *   search_chips         → string[]
+     *   search_labels_json   → JSON string: {type:groupLabel}
+     *   search_empty_hint
+     *
+     * Context (set by DestinationsController):
+     *   stats              → ['total_destinations','total_regions','top_volume']
+     *   searchIndex        → flat JSON for the typeahead
+     */
+    private function destHeroSearch(array $p, array $context): string
+    {
+        // Normalize JSON-textarea fields. The mother builder stores
+        // breadcrumbs / stats_pills / search_tabs / search_chips as
+        // raw JSON strings (textarea values) — coerce back to arrays
+        // here so render code doesn't have to branch on type.
+        foreach (['breadcrumbs', 'stats_pills', 'search_tabs', 'search_chips', 'paragraphs'] as $jsonField) {
+            if (isset($p[$jsonField]) && is_string($p[$jsonField])) {
+                $trimmed = trim($p[$jsonField]);
+                if ($trimmed !== '' && ($trimmed[0] === '[' || $trimmed[0] === '{')) {
+                    $decoded = json_decode($trimmed, true);
+                    if (is_array($decoded)) $p[$jsonField] = $decoded;
+                }
+            }
+        }
+
+        $eyebrow = $this->e(trim($p['eyebrow'] ?? ''));
+        $title = trim($p['title'] ?? '');
+        $accent = in_array($p['accent'] ?? 'brand', ['slate', 'amber', 'brand', 'emerald', 'rose', 'violet', 'teal'], true)
+            ? $p['accent'] : 'brand';
+        $accentTextMap = [
+            'slate' => 'text-slate-700',
+            'amber' => 'text-amber-700',
+            'brand' => 'text-blue-700',
+            'emerald' => 'text-emerald-700',
+            'rose' => 'text-rose-700',
+            'violet' => 'text-violet-700',
+            'teal' => 'text-teal-700',
+        ];
+        $accentText = $accentTextMap[$accent];
+
+        $paragraphs = $p['paragraphs'] ?? [];
+        if (is_string($paragraphs)) $paragraphs = array_filter(preg_split('/\n\n+/', $paragraphs));
+
+        $bgGradient = $p['bg_gradient'] ?? 'brand-emerald';
+        $bgClass = [
+            'none' => '',
+            'amber-rose' => 'bg-gradient-to-br from-amber-50 via-white to-rose-50',
+            'brand-emerald' => 'bg-gradient-to-br from-blue-50 via-white to-emerald-50',
+            'rose-amber' => 'bg-gradient-to-br from-rose-50 via-white to-amber-50',
+            'violet-teal' => 'bg-gradient-to-br from-violet-50 via-white to-teal-50',
+            'teal-emerald' => 'bg-gradient-to-br from-teal-50 via-white to-emerald-50',
+        ][$bgGradient] ?? '';
+
+        // Title rendering with {{accent}}…{{/accent}} support
+        $titleHtml = '';
+        if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
+            $titleHtml = $this->e(trim($m[1]))
+                . ($m[1] !== '' ? ' ' : '')
+                . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
+                . ($m[3] !== '' ? ' ' : '')
+                . $this->e(trim($m[3]));
+        } else {
+            $titleHtml = $this->e($title);
+        }
+
+        // Breadcrumb
+        $breadcrumbHtml = '';
+        $breadcrumbs = $p['breadcrumbs'] ?? [];
+        if (is_array($breadcrumbs) && !empty($breadcrumbs)) {
+            $crumbs = [];
+            $n = count($breadcrumbs);
+            foreach ($breadcrumbs as $i => $b) {
+                $label = $this->e((string) ($b['label'] ?? ''));
+                $url = trim((string) ($b['url'] ?? ''));
+                if ($label === '') continue;
+                if ($i < $n - 1 && $url !== '') {
+                    $crumbs[] = '<a href="' . $this->e($url) . '" class="hover:text-slate-700">' . $label . '</a>';
+                } else {
+                    $crumbs[] = '<span class="text-slate-700">' . $label . '</span>';
+                }
+            }
+            $breadcrumbHtml = '<nav class="text-sm text-slate-500 mb-4">' . implode('<span class="mx-2">/</span>', $crumbs) . '</nav>';
+        }
+
+        // Stats pills
+        $statsHtml = '';
+        $pills = $p['stats_pills'] ?? [];
+        if (is_array($pills) && !empty($pills)) {
+            $statsHtml = '<div class="flex flex-wrap gap-3 mt-6">';
+            foreach ($pills as $pill) {
+                $label = $this->e((string) ($pill['label'] ?? ''));
+                $valueSource = (string) ($pill['value_source'] ?? 'literal');
+                $value = $this->resolveStatValueSimple($pill, $valueSource, $context);
+                if ($value === null) continue;
+                $statsHtml .= '<div class="px-4 py-2 rounded-full bg-white border border-slate-200 text-sm">'
+                    . '<span class="font-bold ' . $accentText . '">' . $this->e($value) . '</span> '
+                    . '<span class="text-slate-600">' . $label . '</span></div>';
+            }
+            $statsHtml .= '</div>';
+        }
+
+        // Typeahead search
+        $searchHtml = $this->renderTypeaheadInline($p, $context, $accent);
+
+        // Assemble
+        $out = '<section class="rg-dest-hero ' . $bgClass . ' -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-12 md:py-16 rounded-2xl mb-10">';
+        $out .= $breadcrumbHtml;
+        if ($eyebrow !== '') {
+            $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold ' . $accentText . ' mb-3">' . $eyebrow . '</div>';
+        }
+        if ($titleHtml !== '') {
+            $out .= '<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-4 max-w-4xl">' . $titleHtml . '</h1>';
+        }
+        if (!empty($paragraphs)) {
+            $out .= '<div class="text-lg text-slate-600 max-w-3xl space-y-3 [&_p]:m-0">';
+            foreach ($paragraphs as $para) {
+                $para = trim((string) $para);
+                if ($para === '') continue;
+                $out .= '<p>' . $this->e($para) . '</p>';
+            }
+            $out .= '</div>';
+        }
+        $out .= $statsHtml;
+        $out .= $searchHtml;
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * Internal helper: render the typeahead search shell + CSS + JS
+     * for use inside dest_hero_search. Inlined here instead of a
+     * separate block so the search sits visually inside the hero
+     * (the user spec'd them as one block).
+     */
+    private function renderTypeaheadInline(array $p, array $context, string $accent): string
+    {
+        $searchIndex = $context['searchIndex'] ?? [];
+        if (is_object($searchIndex) && method_exists($searchIndex, 'toArray')) {
+            $searchIndex = $searchIndex->toArray();
+        }
+
+        $placeholder = $this->e($p['search_placeholder'] ?? 'Search regions, destinations, or tourist spots…');
+        $boxId = 'rg-dest-ts-' . substr(md5(json_encode([$placeholder])), 0, 6);
+        $dataId = $boxId . '-data';
+        $panelId = $boxId . '-panel';
+
+        $tabs = $p['search_tabs'] ?? [
+            ['value' => 'all', 'label' => 'All'],
+            ['value' => 'region', 'label' => 'Regions'],
+            ['value' => 'destination', 'label' => 'Destinations'],
+            ['value' => 'spot', 'label' => 'Tourist spots'],
+        ];
+        if (!is_array($tabs)) $tabs = [];
+
+        $chips = $p['search_chips'] ?? ['Cebu', 'Palawan', 'Tagaytay', 'La Union', 'Boracay', 'Bicol'];
+        if (!is_array($chips)) $chips = [];
+
+        $labelsJson = $p['search_labels_json'] ?? '{"region":"Regions","destination":"Destinations","spot":"Tourist spots"}';
+        if (is_array($labelsJson)) $labelsJson = json_encode($labelsJson);
+
+        $emptyHint = $this->e($p['search_empty_hint'] ?? 'Try a region, a destination, or a spot name.');
+
+        // Accent color drives focus + submit + chip hover
+        $accentHex = [
+            'brand' => '#2563eb', 'amber' => '#d97706', 'emerald' => '#059669',
+            'rose' => '#e11d48', 'violet' => '#7c3aed', 'teal' => '#0d9488',
+            'slate' => '#475569',
+        ][$accent] ?? '#2563eb';
+
+        $out = '<div class="rg-dest-ts ' . $accent . '" data-rg-search style="margin-top:1.5rem;max-width:920px;width:100%;position:relative;z-index:30;">';
+
+        // Filter tabs
+        $out .= '<div class="rg-dest-ts__tabs" role="tablist">';
+        foreach ($tabs as $i => $tab) {
+            $val = $this->e((string) ($tab['value'] ?? 'all'));
+            $lab = $this->e((string) ($tab['label'] ?? ''));
+            $active = $i === 0 ? ' is-active' : '';
+            $sel = $i === 0 ? 'true' : 'false';
+            $out .= '<button type="button" class="rg-dest-ts__tab' . $active . '" role="tab" aria-selected="' . $sel . '" data-rg-filter="' . $val . '">' . $lab . '</button>';
+        }
+        $out .= '</div>';
+
+        // Core input + panel
+        $out .= '<div class="rg-dest-ts__core">';
+        $out .= '<div class="rg-dest-ts__shell">';
+        $out .= '<input id="' . $boxId . '" type="search" class="rg-dest-ts__input" placeholder="' . $placeholder . '" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' . $panelId . '">';
+        $out .= '<button type="button" class="rg-dest-ts__clear" aria-label="Clear" hidden>'
+            . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+            . '</button>';
+        $out .= '<button type="button" class="rg-dest-ts__submit" aria-label="Search">'
+            . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
+            . '</button>';
+        $out .= '</div>';
+        $out .= '<div class="rg-dest-ts__panel" id="' . $panelId . '" role="listbox" hidden></div>';
+        $out .= '</div>';
+
+        // Popular chips
+        if (!empty($chips)) {
+            $out .= '<div class="rg-dest-ts__chips" aria-hidden="true"><span>Popular:</span>';
+            foreach ($chips as $chip) {
+                $cval = $this->e((string) $chip);
+                $out .= '<button type="button" class="rg-dest-ts__chip" data-rg-quick="' . $cval . '">' . $cval . '</button>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div>';
+
+        // CSS — accent-color-aware via CSS custom property
+        $out .= '<style>'
+            . '.rg-dest-ts{--rg-acc:' . $accentHex . '}'
+            . '.rg-dest-ts__tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:1.25rem}'
+            . '.rg-dest-ts__tab{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.1rem;background:#fff;border:1.5px solid #e2e8f0;border-radius:999px;font-size:.875rem;font-weight:600;color:#475569;cursor:pointer;transition:all .15s ease}'
+            . '.rg-dest-ts__tab:hover{border-color:#94a3b8;color:#0f172a;transform:translateY(-1px)}'
+            . '.rg-dest-ts__tab.is-active{background:#0f172a;border-color:#0f172a;color:#fff;box-shadow:0 6px 14px -4px rgba(15,23,42,.35)}'
+            . '@media(min-width:768px){.rg-dest-ts__tab{padding:.7rem 1.35rem;font-size:.95rem}}'
+            . '.rg-dest-ts__core{position:relative}'
+            . '.rg-dest-ts__shell{position:relative;display:flex;align-items:center;background:#fff;border:2px solid #0f172a;border-radius:999px;padding:.45rem .45rem .45rem 1.6rem;transition:border-color .18s ease}'
+            . '@media(min-width:768px){.rg-dest-ts__shell{padding:.55rem .55rem .55rem 2.25rem}}'
+            . '.rg-dest-ts__shell:focus-within{border-color:var(--rg-acc)}'
+            . '.rg-dest-ts__input{flex:1 1 auto;min-width:0;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;font-size:1.05rem;line-height:1.25;color:#0f172a;padding:.95rem .5rem .95rem 0;font-weight:500}'
+            . '@media(min-width:768px){.rg-dest-ts__input{font-size:1.4rem;padding:1.15rem .5rem 1.15rem 0}}'
+            . '.rg-dest-ts__input::placeholder{color:#94a3b8;font-weight:400}'
+            . '.rg-dest-ts__input::-webkit-search-cancel-button{display:none!important;-webkit-appearance:none!important}'
+            . '.rg-dest-ts__clear{flex:0 0 auto;width:2.4rem;height:2.4rem;border-radius:999px;background:#f1f5f9;color:#475569;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:.55rem;transition:all .15s ease}'
+            . '.rg-dest-ts__clear svg{width:.95rem;height:.95rem}'
+            . '.rg-dest-ts__clear:hover{background:#e2e8f0;color:#0f172a}'
+            . '.rg-dest-ts__submit{flex:0 0 auto;width:3.4rem;height:3.4rem;border-radius:999px;background:#0f172a;color:#fff;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s ease}'
+            . '@media(min-width:768px){.rg-dest-ts__submit{width:4rem;height:4rem}}'
+            . '.rg-dest-ts__submit svg{width:1.45rem;height:1.45rem}'
+            . '@media(min-width:768px){.rg-dest-ts__submit svg{width:1.6rem;height:1.6rem}}'
+            . '.rg-dest-ts__submit:hover{background:var(--rg-acc);transform:scale(1.06)}'
+            . '.rg-dest-ts__chips{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.45rem;margin-top:1.1rem;font-size:.8rem;color:#64748b}'
+            . '.rg-dest-ts__chips>span{font-weight:700;letter-spacing:.02em;margin-right:.25rem}'
+            . '.rg-dest-ts__chip{background:rgba(255,255,255,.85);border:1.5px solid #e2e8f0;color:#334155;padding:.4rem .9rem;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s ease}'
+            . '.rg-dest-ts__chip:hover{background:var(--rg-acc);border-color:var(--rg-acc);color:#fff;transform:translateY(-1px)}'
+            . '.rg-dest-ts__panel{position:absolute;top:calc(100% + .75rem);left:0;right:0;max-height:32rem;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 30px 70px -20px rgba(15,23,42,.3),0 10px 24px -8px rgba(15,23,42,.15);padding:.6rem;z-index:40;animation:rgDestTsFade .18s ease-out}'
+            . '@keyframes rgDestTsFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}'
+            . '.rg-dest-ts__group-label{font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#94a3b8;padding:.75rem 1rem .4rem}'
+            . '.rg-dest-ts__opt{display:flex;align-items:center;gap:1rem;padding:.8rem 1rem;border-radius:.85rem;cursor:pointer;text-decoration:none;color:inherit;transition:background .12s ease}'
+            . '.rg-dest-ts__opt:hover,.rg-dest-ts__opt.is-active{background:color-mix(in srgb,var(--rg-acc) 8%,transparent)}'
+            . '.rg-dest-ts__opt-thumb{flex:0 0 auto;width:3rem;height:3rem;border-radius:.7rem;background:color-mix(in srgb,var(--rg-acc) 10%,transparent);color:var(--rg-acc);display:flex;align-items:center;justify-content:center;overflow:hidden}'
+            . '.rg-dest-ts__opt-thumb svg{width:1.35rem;height:1.35rem}'
+            . '.rg-dest-ts__opt-body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:.2rem}'
+            . '.rg-dest-ts__opt-label{display:block;font-size:1rem;font-weight:700;color:#0f172a;text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+            . '.rg-dest-ts__opt-label mark{background:rgba(252,211,77,.55);color:inherit;padding:0 .12em;border-radius:.25em}'
+            . '.rg-dest-ts__opt-sub{display:block;font-size:.78rem;color:#64748b}'
+            . '.rg-dest-ts__opt-chip{flex:0 0 auto;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:#64748b;background:#f1f5f9;padding:.2rem .55rem;border-radius:999px}'
+            . '.rg-dest-ts__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:1rem;height:1rem}'
+            . '.rg-dest-ts__empty{padding:2rem 1.5rem;text-align:center;color:#64748b;font-size:.95rem;line-height:1.45}'
+            . '</style>';
+
+        // JSON data + JS
+        $out .= '<script id="' . $dataId . '" type="application/json">' . json_encode($searchIndex, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '</script>';
+
+        $emptyHintJs = json_encode($emptyHint);
+        $labelsJsonJs = $labelsJson;
+        $boxIdJs = json_encode($boxId);
+        $dataIdJs = json_encode($dataId);
+
+        $out .= '<script>(function(){'
+            . 'var input=document.getElementById(' . $boxIdJs . ');'
+            . 'if(!input)return;'
+            . 'var root=input.closest("[data-rg-search]");'
+            . 'var panel=root.querySelector(".rg-dest-ts__panel");'
+            . 'var clearBtn=root.querySelector(".rg-dest-ts__clear");'
+            . 'var chips=root.querySelectorAll(".rg-dest-ts__chip");'
+            . 'var tabs=root.querySelectorAll(".rg-dest-ts__tab");'
+            . 'var submitBtn=root.querySelector(".rg-dest-ts__submit");'
+            . 'var dataEl=document.getElementById(' . $dataIdJs . ');'
+            . 'var index=[];try{index=JSON.parse(dataEl.textContent)}catch(e){index=[]}'
+            . 'var LABELS=' . $labelsJsonJs . ';'
+            . 'var EMPTY=' . $emptyHintJs . ';'
+            . 'var results=[],activeIdx=-1,debounceId=0,currentFilter="all";'
+            . 'function esc(s){return String(s).replace(/[&<>"\']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]})}'
+            . 'function escRe(s){return s.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&")}'
+            . 'function hl(t,toks){var o=esc(t);for(var i=0;i<toks.length;i++){if(!toks[i])continue;var r=new RegExp("("+escRe(toks[i])+")","gi");o=o.replace(r,"<mark>$1</mark>")}return o}'
+            . 'function scoreItem(it,q,toks){var h=(it.haystack||it.label||"").toLowerCase();if(h.indexOf(q)===0)return 1000;if(new RegExp("\\\\b"+escRe(q)).test(h))return 800;if(toks.every(function(t){return h.indexOf(t)!==-1}))return 500;if(h.indexOf(q)!==-1)return 300;return 0}'
+            . 'function doSearch(q){var ql=q.toLowerCase().trim();if(!ql)return[];var toks=ql.split(/\\s+/).filter(Boolean);var scored=[];for(var i=0;i<index.length;i++){var it=index[i];if(currentFilter!=="all"&&it.type!==currentFilter)continue;var s=scoreItem(it,ql,toks);if(s>0)scored.push({it:it,s:s})}scored.sort(function(a,b){return(b.s-a.s)||((b.it.volume||0)-(a.it.volume||0))});return scored.slice(0,12).map(function(r){return r.it})}'
+            . 'function iconFor(type){if(type==="region")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3z"/><path d="M9 4v13M15 7v13"/></svg>\';if(type==="restaurant")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v8m0 0v10M5 3v6a3 3 0 0 0 3 3"/><path d="M16 3v18M19 3v6a3 3 0 0 1-3 3"/></svg>\';if(type==="spot")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>\';return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/></svg>\'}'
+            . 'function render(q){if(!results.length){panel.innerHTML=\'<div class="rg-dest-ts__empty">No matches for <strong>"\'+esc(q)+\'"</strong>.<br>\'+esc(EMPTY)+\'</div>\';panel.hidden=false;input.setAttribute("aria-expanded","true");return}var toks=q.toLowerCase().trim().split(/\\s+/).filter(Boolean);var parts=[],lastType=null,optIdx=0;for(var i=0;i<results.length;i++){var it=results[i];if(it.type!==lastType){parts.push(\'<div class="rg-dest-ts__group-label">\'+esc(LABELS[it.type]||it.type)+\'</div>\');lastType=it.type}parts.push(\'<a class="rg-dest-ts__opt" role="option" data-type="\'+esc(it.type)+\'" data-idx="\'+optIdx+\'" href="\'+esc(it.url)+\'"><span class="rg-dest-ts__opt-thumb">\'+iconFor(it.type)+\'</span><span class="rg-dest-ts__opt-body"><span class="rg-dest-ts__opt-label">\'+hl(it.label||"",toks)+\'</span>\'+(it.sub?\'<span class="rg-dest-ts__opt-sub">\'+esc(it.sub)+\'</span>\':"")+\'</span><span class="rg-dest-ts__opt-chip">\'+esc(LABELS[it.type]||it.type)+\'</span><svg class="rg-dest-ts__opt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>\');optIdx++}panel.innerHTML=parts.join("");panel.hidden=false;input.setAttribute("aria-expanded","true");setActive(-1)}'
+            . 'function close(){panel.hidden=true;input.setAttribute("aria-expanded","false");activeIdx=-1}'
+            . 'function setActive(i){var opts=panel.querySelectorAll(".rg-dest-ts__opt");if(!opts.length)return;opts.forEach(function(o){o.classList.remove("is-active")});if(i<0||i>=opts.length){activeIdx=-1;return}activeIdx=i;opts[i].classList.add("is-active");opts[i].scrollIntoView({block:"nearest"})}'
+            . 'function runSearch(q){results=doSearch(q);render(q)}'
+            . 'input.addEventListener("input",function(e){var q=e.target.value;clearBtn.hidden=!q;clearTimeout(debounceId);if(!q.trim()){close();return}debounceId=setTimeout(function(){runSearch(q)},60)});'
+            . 'input.addEventListener("focus",function(){if(input.value.trim())runSearch(input.value)});'
+            . 'input.addEventListener("keydown",function(e){if(e.key==="ArrowDown"){if(panel.hidden&&input.value.trim())runSearch(input.value);e.preventDefault();var opts=panel.querySelectorAll(".rg-dest-ts__opt");setActive(Math.min(activeIdx+1,opts.length-1))}else if(e.key==="ArrowUp"){e.preventDefault();var opts=panel.querySelectorAll(".rg-dest-ts__opt");setActive(activeIdx<=0?opts.length-1:activeIdx-1)}else if(e.key==="Enter"){var opts=panel.querySelectorAll(".rg-dest-ts__opt");if(!opts.length)return;e.preventDefault();var target=activeIdx>=0?opts[activeIdx]:opts[0];if(target)window.location.href=target.getAttribute("href")}else if(e.key==="Escape"){if(input.value){input.value="";clearBtn.hidden=true}close()}});'
+            . 'panel.addEventListener("mousedown",function(e){var opt=e.target.closest(".rg-dest-ts__opt");if(!opt)return;e.preventDefault();window.location.href=opt.getAttribute("href")});'
+            . 'panel.addEventListener("mouseover",function(e){var opt=e.target.closest(".rg-dest-ts__opt");if(!opt)return;setActive(parseInt(opt.dataset.idx,10))});'
+            . 'clearBtn.addEventListener("click",function(){input.value="";clearBtn.hidden=true;close();input.focus()});'
+            . 'chips.forEach(function(c){c.addEventListener("click",function(){var q=c.dataset.rgQuick;input.value=q;clearBtn.hidden=false;input.focus();runSearch(q)})});'
+            . 'tabs.forEach(function(t){t.addEventListener("click",function(){tabs.forEach(function(x){x.classList.remove("is-active");x.setAttribute("aria-selected","false")});t.classList.add("is-active");t.setAttribute("aria-selected","true");currentFilter=t.dataset.rgFilter||"all";if(input.value.trim())runSearch(input.value);input.focus()})});'
+            . 'submitBtn.addEventListener("click",function(){var opts=panel.querySelectorAll(".rg-dest-ts__opt");if(opts.length){var target=activeIdx>=0?opts[activeIdx]:opts[0];window.location.href=target.getAttribute("href");return}if(input.value.trim())runSearch(input.value);input.focus()});'
+            . 'document.addEventListener("click",function(e){if(!root.contains(e.target))close()});'
+        . '})();</script>';
+
+        return $out;
+    }
+
+    /**
+     * Stats-value resolver shared by dest_hero_search. Reads from
+     * either literal payload value or $context['stats'][key] or
+     * a dotted context.{key}.count path.
+     */
+    private function resolveStatValueSimple(array $pill, string $source, array $context): ?string
+    {
+        if ($source === 'literal') {
+            return isset($pill['value']) && $pill['value'] !== '' ? (string) $pill['value'] : null;
+        }
+        if (preg_match('/^stats\.(\w+)$/', $source, $m)) {
+            $stats = $context['stats'] ?? [];
+            if (!is_array($stats) || !isset($stats[$m[1]])) return null;
+            $v = $stats[$m[1]];
+            return is_numeric($v) ? number_format((float) $v) : (string) $v;
+        }
+        if (preg_match('/^context\.(\w+)\.count$/', $source, $m)) {
+            $col = $context[$m[1]] ?? null;
+            if ($col === null) return null;
+            if (is_array($col)) return number_format(count($col));
+            if (is_object($col) && method_exists($col, 'count')) return number_format($col->count());
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * dest_featured_slider — Splide carousel of featured items.
+     * Reads $context[source]. Each card has gradient backdrop + image
+     * + name + cuisine/category + city + link.
+     *
+     * Payload:
+     *   eyebrow, heading, subhead
+     *   source           → context key (default "featuredSpots")
+     *   slides_per_view  → 1|2|3|4 (default 3 on lg, 2 on md, 1 on sm)
+     *   autoplay         → bool (default true)
+     *   interval         → ms (default 5000)
+     *   bg               → light|none
+     *   accent           → amber|brand|slate|rose|emerald
+     */
+    private function destFeaturedSlider(array $p, array $context): string
+    {
+        $source = (string) ($p['source'] ?? 'featuredSpots');
+        $items = $context[$source] ?? null;
+        $itemArr = is_array($items) ? $items : (is_object($items) && method_exists($items, 'all') ? $items->all() : []);
+        if (empty($itemArr)) return '';
+
+        $eyebrow = $this->e(trim($p['eyebrow'] ?? ''));
+        $heading = $this->e(trim($p['heading'] ?? ''));
+        $subhead = $this->e(trim($p['subhead'] ?? ''));
+        $accent = in_array($p['accent'] ?? 'brand', ['amber', 'brand', 'slate', 'rose', 'emerald'], true)
+            ? $p['accent'] : 'brand';
+        $bg = ($p['bg'] ?? 'light') === 'light' ? 'bg-slate-50' : '';
+        $autoplay = !empty($p['autoplay']) || !isset($p['autoplay']) ? 'true' : 'false';
+        $interval = (int) ($p['interval'] ?? 5000);
+        $perView = (int) ($p['slides_per_view'] ?? 3);
+        $perView = max(1, min(4, $perView));
+        $eyebrowClass = [
+            'amber' => 'text-amber-700',
+            'brand' => 'text-blue-700',
+            'slate' => 'text-slate-600',
+            'rose' => 'text-rose-700',
+            'emerald' => 'text-emerald-700',
+        ][$accent];
+
+        $sliderId = 'rg-dfs-' . substr(md5(json_encode([$source, count($itemArr)])), 0, 6);
+
+        $out = '<section class="rg-dest-fslider ' . $bg . ' -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-12 md:py-16 my-10 rounded-2xl">';
+        $out .= '<div class="mb-8 text-center">';
+        if ($eyebrow !== '') $out .= '<p class="text-xs sm:text-sm uppercase tracking-[0.18em] ' . $eyebrowClass . ' font-bold mb-2">' . $eyebrow . '</p>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600 max-w-3xl mx-auto">' . $subhead . '</p>';
+        $out .= '</div>';
+
+        // Splide slider markup
+        $config = [
+            'type' => 'loop',
+            'autoplay' => $autoplay === 'true',
+            'interval' => $interval,
+            'arrows' => true,
+            'pagination' => true,
+            'gap' => '1rem',
+            'perPage' => $perView,
+            'perMove' => 1,
+            'breakpoints' => [
+                640 => ['perPage' => 1],
+                1024 => ['perPage' => min(2, $perView)],
+            ],
+        ];
+        $configJson = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
+
+        $out .= '<section id="' . $sliderId . '" class="splide" aria-label="Featured" data-splide-config="' . $configJson . '">';
+        $out .= '<div class="splide__track"><ul class="splide__list">';
+        foreach ($itemArr as $r) {
+            $rArr = $this->toArrayShapeSimple($r);
+            $name = $this->e((string) ($rArr['name'] ?? ''));
+            $cuisine = $this->e((string) ($rArr['cuisine'] ?? $rArr['category'] ?? ''));
+            $city = $this->e((string) ($rArr['city'] ?? $rArr['region'] ?? $rArr['location'] ?? ''));
+            $heroPath = (string) ($rArr['hero_path'] ?? $rArr['image_path'] ?? '');
+            $c1 = $this->e((string) ($rArr['primary_color'] ?? '#0f172a'));
+            $c2 = $this->e((string) ($rArr['secondary_color'] ?? '#fbbf24'));
+            $url = (string) ($rArr['url'] ?? '#');
+            if ($name === '') continue;
+
+            $out .= '<li class="splide__slide">';
+            $out .= '<a href="' . $this->e($url) . '" class="block rounded-xl overflow-hidden bg-white border border-slate-200 hover:shadow-lg transition h-full">';
+            $out .= '<div class="aspect-[4/3] overflow-hidden" style="background: linear-gradient(135deg, ' . $c1 . ' 0%, ' . $c2 . ' 100%)">';
+            if ($heroPath !== '') {
+                $imgUrl = str_starts_with($heroPath, '/') || str_starts_with($heroPath, 'http')
+                    ? $heroPath : '/storage/' . ltrim($heroPath, '/');
+                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $name . '" loading="lazy" class="w-full h-full object-cover">';
+            } else {
+                $out .= '<div class="w-full h-full flex items-center justify-center text-5xl text-white/80">📍</div>';
+            }
+            $out .= '</div>';
+            $out .= '<div class="p-4"><h3 class="font-semibold text-slate-900">' . $name . '</h3>';
+            if ($cuisine !== '') $out .= '<p class="text-xs uppercase tracking-wide font-bold mt-1" style="color:' . $c1 . '">' . $cuisine . '</p>';
+            if ($city !== '') $out .= '<p class="text-sm text-slate-500 mt-1">' . $city . '</p>';
+            $out .= '</div></a></li>';
+        }
+        $out .= '</ul></div></section>';
+
+        $out .= $this->splideAutoMount($sliderId);
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * dest_region_clusters — Jump-to-region sticky pill nav + cluster
+     * grid of keyword cards. Reads $context[source] (default
+     * "orderedClusters" — Eloquent collection of arrays with name,
+     * cluster_tag, count, keywords).
+     *
+     * Payload:
+     *   heading        → H2 above the cluster sections
+     *   jump_label     → label for the jump-nav (default "Jump to")
+     *   source         → orderedClusters | groups
+     *   accent         → brand|amber|slate|teal|rose|violet
+     *   show_volume    → bool
+     *   sticky_nav     → bool (default true)
+     */
+    private function destRegionClusters(array $p, array $context): string
+    {
+        $source = (string) ($p['source'] ?? 'orderedClusters');
+        $clusters = $context[$source] ?? null;
+        if (!$clusters) return '';
+        $clusterArr = is_array($clusters) ? $clusters : (is_object($clusters) && method_exists($clusters, 'all') ? $clusters->all() : []);
+        if (empty($clusterArr)) return '';
+
+        $heading = $this->e(trim($p['heading'] ?? 'Browse by region'));
+        $jumpLabel = $this->e(trim($p['jump_label'] ?? 'Jump to'));
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'slate', 'teal', 'rose', 'violet'], true)
+            ? $p['accent'] : 'brand';
+        $showVolume = !isset($p['show_volume']) || (bool) $p['show_volume'];
+        $stickyNav = !isset($p['sticky_nav']) || (bool) $p['sticky_nav'];
+
+        $cardHoverMap = [
+            'amber' => 'hover:border-amber-300 hover:shadow-md hover:bg-amber-50/30',
+            'brand' => 'hover:border-blue-300 hover:shadow-md hover:bg-blue-50/30',
+            'slate' => 'hover:border-slate-400 hover:shadow-md hover:bg-slate-50',
+            'teal' => 'hover:border-teal-300 hover:shadow-md hover:bg-teal-50/30',
+            'rose' => 'hover:border-rose-300 hover:shadow-md hover:bg-rose-50/30',
+            'violet' => 'hover:border-violet-300 hover:shadow-md hover:bg-violet-50/30',
+        ][$accent];
+        $titleHoverMap = [
+            'amber' => 'group-hover:text-amber-700',
+            'brand' => 'group-hover:text-blue-700',
+            'slate' => 'group-hover:text-slate-700',
+            'teal' => 'group-hover:text-teal-700',
+            'rose' => 'group-hover:text-rose-700',
+            'violet' => 'group-hover:text-violet-700',
+        ][$accent];
+        $pillHoverMap = [
+            'amber' => 'hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700',
+            'brand' => 'hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700',
+            'slate' => 'hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700',
+            'teal' => 'hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700',
+            'rose' => 'hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700',
+            'violet' => 'hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700',
+        ][$accent];
+
+        $out = '<section class="rg-dest-clusters my-10">';
+
+        // Sticky pill nav (Jump to ...)
+        if ($stickyNav) {
+            $out .= '<nav class="rg-dest-clusters__nav sticky top-16 z-10 bg-white/90 backdrop-blur border-y border-slate-200 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 mb-8">';
+            $out .= '<div class="flex flex-wrap items-center gap-2 text-sm">';
+            $out .= '<span class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mr-1">' . $jumpLabel . '</span>';
+            foreach ($clusterArr as $g) {
+                $arr = $this->toArrayShapeSimple($g);
+                $name = $this->e((string) ($arr['name'] ?? ''));
+                $tag = (string) ($arr['cluster_tag'] ?? $arr['slug'] ?? $name);
+                if ($name === '') continue;
+                $slug = $this->e(\Illuminate\Support\Str::slug($tag));
+                $out .= '<a href="#cluster-' . $slug . '" '
+                    . 'class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white ' . $pillHoverMap . ' font-semibold text-slate-700 transition">' . $name . '</a>';
+            }
+            $out .= '</div></nav>';
+        }
+
+        // Section heading
+        if ($heading !== '') {
+            $out .= '<h2 class="text-xl font-bold text-slate-900 mb-4">' . $heading . '</h2>';
+        }
+
+        // Cluster sections
+        foreach ($clusterArr as $g) {
+            $arr = $this->toArrayShapeSimple($g);
+            $name = $this->e((string) ($arr['name'] ?? ''));
+            $tag = (string) ($arr['cluster_tag'] ?? $arr['slug'] ?? $name);
+            $clusterSlug = $this->e(\Illuminate\Support\Str::slug($tag));
+            $count = (int) ($arr['count'] ?? 0);
+            $keywords = $arr['keywords'] ?? [];
+
+            $out .= '<section id="cluster-' . $clusterSlug . '" class="mb-12 scroll-mt-32">';
+            $out .= '<div class="flex items-end justify-between mb-3 flex-wrap gap-2"><div>';
+            if ($name !== '') $out .= '<h3 class="text-2xl md:text-3xl font-bold text-slate-900">' . $name . '</h3>';
+            if ($count > 0) {
+                $countLabel = $source === 'groups' ? 'restaurant guide' : 'destination';
+                $out .= '<p class="text-sm text-slate-500 mt-1">' . number_format($count) . ' ' . $countLabel . ($count === 1 ? '' : 's') . '</p>';
+            }
+            $out .= '</div></div>';
+            $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">';
+            foreach ($keywords as $k) {
+                $kArr = $this->toArrayShapeSimple($k);
+                $phrase = $this->e((string) ($kArr['phrase'] ?? ''));
+                $slug = (string) ($kArr['slug'] ?? '');
+                $volume = (int) ($kArr['search_volume_monthly'] ?? 0);
+                if ($phrase === '' || $slug === '') continue;
+                $out .= '<a href="' . $this->e(url($slug)) . '" '
+                    . 'class="group block p-4 rounded-lg border border-slate-200 ' . $cardHoverMap . '">'
+                    . '<h4 class="font-semibold text-slate-900 ' . $titleHoverMap . ' capitalize">' . $phrase . '</h4>';
+                if ($showVolume && $volume > 0) {
+                    $out .= '<p class="text-xs text-slate-500 mt-1">' . number_format($volume) . ' people search this monthly</p>';
+                }
+                $out .= '</a>';
+            }
+            $out .= '</div></section>';
+        }
+
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * Shape-normalize: array | Model | object → array. Used by the
+     * /destinations blocks above so they can read fields uniformly
+     * regardless of whether the controller passes Eloquent models,
+     * Collections, or plain arrays.
+     */
+    private function toArrayShapeSimple($item): array
+    {
+        if (is_array($item)) return $item;
+        if (is_object($item) && method_exists($item, 'toArray')) return $item->toArray();
+        return (array) $item;
     }
 }
