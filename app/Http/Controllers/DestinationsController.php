@@ -152,22 +152,52 @@ class DestinationsController extends Controller
      */
     private function buildFeaturedSpots(): array
     {
-        return RgTouristSpot::query()
+        $spots = RgTouristSpot::query()
             ->where('status', 'published')
             ->whereNotNull('featured_order')
             ->whereNotNull('keyword_id')
             ->whereNotNull('media_id')
             ->with(['media', 'keyword'])
             ->orderBy('featured_order')
-            ->get()
-            ->map(function ($s) {
-                return [
+            ->get();
+
+        // Bulk aggregate published reviews per keyword in one trip
+        // so the featured-spots block can render star ratings + a
+        // review count on each card. Keyed by keyword_id for O(1)
+        // lookup during the map() below; spots whose keyword has no
+        // reviews simply omit the rating fields and the card hides
+        // the badge gracefully.
+        $keywordIds = $spots->pluck('keyword_id')->filter()->unique()->values()->all();
+        $ratings = [];
+        if (!empty($keywordIds)) {
+            $ratings = \DB::table('rg_destination_reviews')
+                ->whereIn('keyword_id', $keywordIds)
+                ->where('status', 'published')
+                ->selectRaw('keyword_id, AVG(rating) as avg_rating, COUNT(*) as cnt')
+                ->groupBy('keyword_id')
+                ->get()
+                ->keyBy('keyword_id')
+                ->map(fn($r) => [
+                    'rating' => round((float) $r->avg_rating, 1),
+                    'review_count' => (int) $r->cnt,
+                ])
+                ->all();
+        }
+
+        return $spots
+            ->map(function ($s) use ($ratings) {
+                $row = [
                     'name'     => $s->name,
                     'location' => $s->location ?? '',
                     'region'   => $s->region_label ?? '',
                     'image'    => $s->media->path,
                     'slug'     => $s->keyword->slug,
                 ];
+                if (isset($ratings[$s->keyword_id])) {
+                    $row['rating'] = $ratings[$s->keyword_id]['rating'];
+                    $row['review_count'] = $ratings[$s->keyword_id]['review_count'];
+                }
+                return $row;
             })
             ->filter(fn($row) => is_file(storage_path('app/public/' . $row['image']))
                 && filesize(storage_path('app/public/' . $row['image'])) > 5000)

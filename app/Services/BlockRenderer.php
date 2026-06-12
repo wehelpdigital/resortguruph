@@ -3654,6 +3654,12 @@ class BlockRenderer
             $rawImage = (string) ($rArr['image'] ?? $rArr['hero_path'] ?? $rArr['image_path'] ?? '');
             $slug = (string) ($rArr['slug'] ?? '');
             $url = (string) ($rArr['url'] ?? ($slug !== '' ? url('/' . $slug) : '#'));
+            // Rating + review count: optional. When present, render a
+            // glass-style badge on the photo top-right + a review-count
+            // suffix in the location row. Spots with no reviews omit
+            // both — the card gracefully degrades.
+            $rating = isset($rArr['rating']) && is_numeric($rArr['rating']) ? (float) $rArr['rating'] : null;
+            $reviewCount = isset($rArr['review_count']) && is_numeric($rArr['review_count']) ? (int) $rArr['review_count'] : 0;
             if ($name === '') continue;
 
             $imgUrl = '';
@@ -3666,34 +3672,41 @@ class BlockRenderer
             $out .= '<a href="' . $this->e($url) . '" class="rg-dfs-card">';
 
             // Photo block — landscape 4:3, no text overlay so the
-            // image gets to breathe. A faint inner gradient at the
-            // very bottom adds subtle depth without competing with
-            // anything in the photo.
+            // image gets to breathe. Optional rating badge floats on
+            // the top-right corner with backdrop-blur for legibility
+            // on any photo.
             $out .= '<div class="rg-dfs-img-wrap">';
             if ($imgUrl !== '') {
                 $alt = $name . ($location !== '' ? ' in ' . $location : '');
                 $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $this->e($alt) . '" loading="lazy" class="rg-dfs-img">';
             } else {
-                // No-image fallback: clean muted gradient with a small
-                // pin glyph centered. Stays visually consistent with
-                // photo cards in the same row.
                 $out .= '<div class="rg-dfs-img rg-dfs-img--fallback">';
                 $out .= '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>';
                 $out .= '</div>';
             }
             $out .= '<div class="rg-dfs-img-inner-grad"></div>';
+            if ($rating !== null && $rating > 0) {
+                $out .= '<div class="rg-dfs-rating-badge" aria-label="Rated ' . number_format($rating, 1) . ' out of 5">'
+                    . '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+                    . '<span>' . number_format($rating, 1) . '</span>'
+                    . '</div>';
+            }
             $out .= '</div>';
 
             // Caption strip — white card body. Region eyebrow + name
-            // + location with pin + a thin divider + Explore link
-            // that nudges its arrow on hover.
+            // + location with pin (+ review count suffix) + a thin
+            // divider + Explore link that nudges its arrow on hover.
             $out .= '<div class="rg-dfs-body">';
             if ($region !== '') $out .= '<span class="rg-dfs-region">' . $region . '</span>';
             $out .= '<h3 class="rg-dfs-name">' . $name . '</h3>';
-            if ($location !== '') {
+            if ($location !== '' || $reviewCount > 0) {
                 $out .= '<div class="rg-dfs-location">'
                     . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>'
-                    . '<span>' . $location . '</span></div>';
+                    . '<span>';
+                if ($location !== '') $out .= $location;
+                if ($location !== '' && $reviewCount > 0) $out .= ' &middot; ';
+                if ($reviewCount > 0) $out .= number_format($reviewCount) . ' review' . ($reviewCount === 1 ? '' : 's');
+                $out .= '</span></div>';
             }
             $out .= '<div class="rg-dfs-explore">'
                 . '<span>Explore stays</span>'
@@ -3734,6 +3747,11 @@ class BlockRenderer
             . '.rg-dfs-img-inner-grad{position:absolute;inset:auto 0 0 0;height:35%;background:linear-gradient(180deg,transparent 0%,rgba(15,23,42,.08) 100%);pointer-events:none}'
             . '.rg-dfs-img--fallback{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#475569 0%,#334155 60%,#1e293b 100%);color:rgba(255,255,255,.4)}'
             . '.rg-dfs-img--fallback svg{width:3.5rem;height:3.5rem}'
+            // Rating badge — glass pill floating on the photo top-
+            // right corner. White-translucent backdrop with blur for
+            // legibility on any photo, amber star + slate numeric.
+            . '.rg-dfs-rating-badge{position:absolute;top:.75rem;right:.75rem;display:inline-flex;align-items:center;gap:.3rem;padding:.32rem .65rem;background:rgba(255,255,255,.95);color:#0f172a;border-radius:999px;font-size:.78rem;font-weight:800;letter-spacing:.01em;box-shadow:0 4px 12px -2px rgba(15,23,42,.25),0 1px 2px rgba(15,23,42,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);line-height:1}'
+            . '.rg-dfs-rating-badge svg{width:.85rem;height:.85rem;color:#f59e0b;flex:0 0 auto}'
             // Caption strip — clean editorial type. Padding ramps up
             // a touch on tablet+ so the body breathes.
             . '.rg-dfs-body{display:flex;flex-direction:column;flex:1;padding:1.1rem 1.25rem 1.15rem;gap:0}'
