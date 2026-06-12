@@ -3320,8 +3320,15 @@ class BlockRenderer
         // Typeahead search
         $searchHtml = $this->renderTypeaheadInline($p, $context, $accent);
 
-        // Assemble
-        $out = '<section class="rg-dest-hero ' . $bgClass . ' -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-12 md:py-16 rounded-2xl mb-10">';
+        // Full-bleed hero: matches the original destinations layout
+        // where the gradient section spans the full viewport width
+        // and the content inside is constrained to max-w-7xl. The
+        // .rg-dest-hero--bleed class uses vw-based negative margins
+        // to break out of any parent container (the blocks view
+        // wraps blocks in max-w-7xl mx-auto, so this breaks out).
+        $out = '<section class="rg-dest-hero rg-dest-hero--bleed ' . $bgClass . ' mb-10">';
+        $out .= '<style>.rg-dest-hero--bleed{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw}</style>';
+        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">';
         $out .= $breadcrumbHtml;
         if ($eyebrow !== '') {
             $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold ' . $accentText . ' mb-3">' . $eyebrow . '</div>';
@@ -3340,7 +3347,7 @@ class BlockRenderer
         }
         $out .= $statsHtml;
         $out .= $searchHtml;
-        $out .= '</section>';
+        $out .= '</div></section>';
         return $out;
     }
 
@@ -3357,7 +3364,7 @@ class BlockRenderer
             $searchIndex = $searchIndex->toArray();
         }
 
-        $placeholder = $this->e($p['search_placeholder'] ?? 'Search regions, destinations, or tourist spots…');
+        $placeholder = $this->e($p['search_placeholder'] ?? 'Where to? Try Cebu, Palawan, or Mayon');
         $boxId = 'rg-dest-ts-' . substr(md5(json_encode([$placeholder])), 0, 6);
         $dataId = $boxId . '-data';
         $panelId = $boxId . '-panel';
@@ -3385,7 +3392,10 @@ class BlockRenderer
             'slate' => '#475569',
         ][$accent] ?? '#2563eb';
 
-        $out = '<div class="rg-dest-ts ' . $accent . '" data-rg-search style="margin-top:1.5rem;max-width:920px;width:100%;position:relative;z-index:30;">';
+        // margin: 2.5rem auto 0 → centers the search bar within the
+        // hero (matches the original /destinations layout). Without
+        // auto margins the bar sits left-aligned under the H1.
+        $out = '<div class="rg-dest-ts ' . $accent . '" data-rg-search style="margin:2.5rem auto 0;max-width:920px;width:100%;position:relative;z-index:30;">';
 
         // Filter tabs
         $out .= '<div class="rg-dest-ts__tabs" role="tablist">';
@@ -3440,6 +3450,9 @@ class BlockRenderer
             . '.rg-dest-ts__input::placeholder{color:#94a3b8;font-weight:400}'
             . '.rg-dest-ts__input::-webkit-search-cancel-button{display:none!important;-webkit-appearance:none!important}'
             . '.rg-dest-ts__clear{flex:0 0 auto;width:2.4rem;height:2.4rem;border-radius:999px;background:#f1f5f9;color:#475569;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:.55rem;transition:all .15s ease}'
+            // hidden attribute must beat the display:flex above —
+            // otherwise the X shows on load before any input.
+            . '.rg-dest-ts__clear[hidden]{display:none!important}'
             . '.rg-dest-ts__clear svg{width:.95rem;height:.95rem}'
             . '.rg-dest-ts__clear:hover{background:#e2e8f0;color:#0f172a}'
             . '.rg-dest-ts__submit{flex:0 0 auto;width:3.4rem;height:3.4rem;border-radius:999px;background:#0f172a;color:#fff;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s ease}'
@@ -3494,8 +3507,9 @@ class BlockRenderer
             . 'function hl(t,toks){var o=esc(t);for(var i=0;i<toks.length;i++){if(!toks[i])continue;var r=new RegExp("("+escRe(toks[i])+")","gi");o=o.replace(r,"<mark>$1</mark>")}return o}'
             . 'function scoreItem(it,q,toks){var h=(it.haystack||it.label||"").toLowerCase();if(h.indexOf(q)===0)return 1000;if(new RegExp("\\\\b"+escRe(q)).test(h))return 800;if(toks.every(function(t){return h.indexOf(t)!==-1}))return 500;if(h.indexOf(q)!==-1)return 300;return 0}'
             . 'function doSearch(q){var ql=q.toLowerCase().trim();if(!ql)return[];var toks=ql.split(/\\s+/).filter(Boolean);var scored=[];for(var i=0;i<index.length;i++){var it=index[i];if(currentFilter!=="all"&&it.type!==currentFilter)continue;var s=scoreItem(it,ql,toks);if(s>0)scored.push({it:it,s:s})}scored.sort(function(a,b){return(b.s-a.s)||((b.it.volume||0)-(a.it.volume||0))});return scored.slice(0,12).map(function(r){return r.it})}'
-            . 'function iconFor(type){if(type==="region")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3z"/><path d="M9 4v13M15 7v13"/></svg>\';if(type==="restaurant")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v8m0 0v10M5 3v6a3 3 0 0 0 3 3"/><path d="M16 3v18M19 3v6a3 3 0 0 1-3 3"/></svg>\';if(type==="spot")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>\';return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/></svg>\'}'
-            . 'function render(q){if(!results.length){panel.innerHTML=\'<div class="rg-dest-ts__empty">No matches for <strong>"\'+esc(q)+\'"</strong>.<br>\'+esc(EMPTY)+\'</div>\';panel.hidden=false;input.setAttribute("aria-expanded","true");return}var toks=q.toLowerCase().trim().split(/\\s+/).filter(Boolean);var parts=[],lastType=null,optIdx=0;for(var i=0;i<results.length;i++){var it=results[i];if(it.type!==lastType){parts.push(\'<div class="rg-dest-ts__group-label">\'+esc(LABELS[it.type]||it.type)+\'</div>\');lastType=it.type}parts.push(\'<a class="rg-dest-ts__opt" role="option" data-type="\'+esc(it.type)+\'" data-idx="\'+optIdx+\'" href="\'+esc(it.url)+\'"><span class="rg-dest-ts__opt-thumb">\'+iconFor(it.type)+\'</span><span class="rg-dest-ts__opt-body"><span class="rg-dest-ts__opt-label">\'+hl(it.label||"",toks)+\'</span>\'+(it.sub?\'<span class="rg-dest-ts__opt-sub">\'+esc(it.sub)+\'</span>\':"")+\'</span><span class="rg-dest-ts__opt-chip">\'+esc(LABELS[it.type]||it.type)+\'</span><svg class="rg-dest-ts__opt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>\');optIdx++}panel.innerHTML=parts.join("");panel.hidden=false;input.setAttribute("aria-expanded","true");setActive(-1)}'
+            . 'function iconFor(type,hasImage){if(hasImage)return"";if(type==="region")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3z"/><path d="M9 4v13M15 7v13"/></svg>\';if(type==="restaurant")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v8m0 0v10M5 3v6a3 3 0 0 0 3 3"/><path d="M16 3v18M19 3v6a3 3 0 0 1-3 3"/></svg>\';if(type==="spot")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>\';return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/></svg>\'}'
+            . 'function thumbStyleFor(item){if(!item.image)return"";var u=String(item.image).replace(/\'/g,"%27").replace(/"/g,"%22");return\' style="background-image:url(\\\'\'+u+\'\\\');background-size:cover;background-position:center;background-repeat:no-repeat"\'}'
+            . 'function render(q){if(!results.length){panel.innerHTML=\'<div class="rg-dest-ts__empty">No matches for <strong>"\'+esc(q)+\'"</strong>.<br>\'+esc(EMPTY)+\'</div>\';panel.hidden=false;input.setAttribute("aria-expanded","true");return}var toks=q.toLowerCase().trim().split(/\\s+/).filter(Boolean);var parts=[],lastType=null,optIdx=0;for(var i=0;i<results.length;i++){var it=results[i];if(it.type!==lastType){parts.push(\'<div class="rg-dest-ts__group-label">\'+esc(LABELS[it.type]||it.type)+\'</div>\');lastType=it.type}parts.push(\'<a class="rg-dest-ts__opt" role="option" data-type="\'+esc(it.type)+\'" data-idx="\'+optIdx+\'" href="\'+esc(it.url)+\'"><span class="rg-dest-ts__opt-thumb"\'+thumbStyleFor(it)+\'>\'+iconFor(it.type,!!it.image)+\'</span><span class="rg-dest-ts__opt-body"><span class="rg-dest-ts__opt-label">\'+hl(it.label||"",toks)+\'</span>\'+(it.sub?\'<span class="rg-dest-ts__opt-sub">\'+esc(it.sub)+\'</span>\':"")+\'</span><span class="rg-dest-ts__opt-chip">\'+esc(LABELS[it.type]||it.type)+\'</span><svg class="rg-dest-ts__opt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>\');optIdx++}panel.innerHTML=parts.join("");panel.hidden=false;input.setAttribute("aria-expanded","true");setActive(-1)}'
             . 'function close(){panel.hidden=true;input.setAttribute("aria-expanded","false");activeIdx=-1}'
             . 'function setActive(i){var opts=panel.querySelectorAll(".rg-dest-ts__opt");if(!opts.length)return;opts.forEach(function(o){o.classList.remove("is-active")});if(i<0||i>=opts.length){activeIdx=-1;return}activeIdx=i;opts[i].classList.add("is-active");opts[i].scrollIntoView({block:"nearest"})}'
             . 'function runSearch(q){results=doSearch(q);render(q)}'
