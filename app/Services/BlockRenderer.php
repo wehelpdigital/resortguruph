@@ -3646,8 +3646,8 @@ class BlockRenderer
 
             // featuredSpots data shape: name / location / region /
             // image (relative storage path) / slug (keyword slug).
-            // Also tolerate keyword-cluster-style restaurants:
-            // name / cuisine / city / hero_path / url.
+            // Also tolerate restaurant-style shape: name / cuisine /
+            // city / hero_path / url.
             $name = $this->e((string) ($rArr['name'] ?? ''));
             $location = $this->e((string) ($rArr['location'] ?? $rArr['city'] ?? ''));
             $region = $this->e((string) ($rArr['region'] ?? $rArr['cuisine'] ?? $rArr['category'] ?? ''));
@@ -3656,9 +3656,6 @@ class BlockRenderer
             $url = (string) ($rArr['url'] ?? ($slug !== '' ? url('/' . $slug) : '#'));
             if ($name === '') continue;
 
-            // Resolve image URL. Absolute (http/https or /-prefixed)
-            // stays as-is; bare relative paths get /storage/ prefix
-            // so they line up with the public symlink.
             $imgUrl = '';
             if ($rawImage !== '') {
                 $imgUrl = str_starts_with($rawImage, 'http') || str_starts_with($rawImage, '/')
@@ -3666,64 +3663,92 @@ class BlockRenderer
             }
 
             $out .= '<li class="splide__slide">';
-            $out .= '<a href="' . $this->e($url) . '" class="rg-dfs-card group">';
+            $out .= '<a href="' . $this->e($url) . '" class="rg-dfs-card">';
+
+            // Photo block — landscape 4:3, no text overlay so the
+            // image gets to breathe. A faint inner gradient at the
+            // very bottom adds subtle depth without competing with
+            // anything in the photo.
+            $out .= '<div class="rg-dfs-img-wrap">';
             if ($imgUrl !== '') {
                 $alt = $name . ($location !== '' ? ' in ' . $location : '');
                 $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $this->e($alt) . '" loading="lazy" class="rg-dfs-img">';
             } else {
-                // No-image fallback: muted gradient, no emoji. Keeps
-                // the card visually consistent rather than dropping
-                // into a placeholder icon that breaks the row.
-                $out .= '<div class="rg-dfs-img" style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%)"></div>';
+                // No-image fallback: clean muted gradient with a small
+                // pin glyph centered. Stays visually consistent with
+                // photo cards in the same row.
+                $out .= '<div class="rg-dfs-img rg-dfs-img--fallback">';
+                $out .= '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>';
+                $out .= '</div>';
             }
-            $out .= '<div class="rg-dfs-overlay"></div>';
-            $out .= '<div class="rg-dfs-content">';
-            if ($region !== '') $out .= '<div class="rg-dfs-region">' . $region . '</div>';
-            $out .= '<div class="rg-dfs-name">' . $name . '</div>';
+            $out .= '<div class="rg-dfs-img-inner-grad"></div>';
+            $out .= '</div>';
+
+            // Caption strip — white card body. Region eyebrow + name
+            // + location with pin + a thin divider + Explore link
+            // that nudges its arrow on hover.
+            $out .= '<div class="rg-dfs-body">';
+            if ($region !== '') $out .= '<span class="rg-dfs-region">' . $region . '</span>';
+            $out .= '<h3 class="rg-dfs-name">' . $name . '</h3>';
             if ($location !== '') {
                 $out .= '<div class="rg-dfs-location">'
-                    . '<svg class="w-4 h-4 inline-block opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>'
-                    . ' ' . $location . '</div>';
+                    . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>'
+                    . '<span>' . $location . '</span></div>';
             }
-            $out .= '<div class="rg-dfs-cta">See nearby stays'
-                . '<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>'
+            $out .= '<div class="rg-dfs-explore">'
+                . '<span>Explore stays</span>'
+                . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
                 . '</div>';
             $out .= '</div></a></li>';
         }
         $out .= '</ul></div></section>';
 
-        // CSS — large full-bleed cards. Heights: 360 mobile / 420
-        // tablet / 480 desktop. Image fills, gradient overlay anchors
-        // text to the bottom, hover lifts card + zooms image.
+        // Editorial split card: 4:3 landscape photo on top, clean
+        // white caption strip below. Photo can breathe (no dark
+        // scrim), text is unambiguously readable, hover feels
+        // considered (card lift + image zoom + Explore arrow nudge).
         $out .= '<style>'
-            . '.rg-dfs-splide{border-radius:1rem;overflow:visible}'
+            . '.rg-dfs-splide{overflow:visible}'
             . '.rg-dfs-splide .splide__list{align-items:stretch}'
-            . '.rg-dfs-splide .splide__slide{padding:0}'
-            . '.rg-dfs-splide .splide__arrow{background:rgba(15,23,42,.7);width:2.75rem;height:2.75rem;opacity:.95}'
+            . '.rg-dfs-splide .splide__slide{padding:.25rem 0;display:flex}'
+            . '.rg-dfs-splide .splide__arrow{background:rgba(15,23,42,.85);width:2.75rem;height:2.75rem;opacity:.95;box-shadow:0 8px 18px -6px rgba(15,23,42,.4)}'
             . '.rg-dfs-splide .splide__arrow:hover{background:#2563eb}'
             . '.rg-dfs-splide .splide__arrow svg{fill:#fff;width:1rem;height:1rem}'
             . '.rg-dfs-splide .splide__arrow--prev{left:-.5rem}'
             . '.rg-dfs-splide .splide__arrow--next{right:-.5rem}'
             . '@media(min-width:768px){.rg-dfs-splide .splide__arrow--prev{left:-1.25rem}.rg-dfs-splide .splide__arrow--next{right:-1.25rem}}'
-            . '.rg-dfs-splide .splide__pagination{bottom:-1.75rem}'
-            . '.rg-dfs-splide .splide__pagination__page{background:#cbd5e1;opacity:1}'
-            . '.rg-dfs-splide .splide__pagination__page.is-active{background:#2563eb;transform:scale(1.3)}'
-            . '.rg-dfs-card{position:relative;display:block;height:360px;overflow:hidden;border-radius:1rem;background:#e2e8f0;box-shadow:0 4px 12px -2px rgba(15,23,42,.15);transition:transform .35s ease,box-shadow .35s ease;text-decoration:none;color:inherit}'
-            . '@media(min-width:768px){.rg-dfs-card{height:420px}}'
-            . '@media(min-width:1024px){.rg-dfs-card{height:480px}}'
-            . '.rg-dfs-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px -12px rgba(15,23,42,.35)}'
-            . '.rg-dfs-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.22,1,.36,1)}'
+            . '.rg-dfs-splide .splide__pagination{bottom:-2rem}'
+            . '.rg-dfs-splide .splide__pagination__page{background:#cbd5e1;opacity:1;width:.6rem;height:.6rem;margin:0 .25rem}'
+            . '.rg-dfs-splide .splide__pagination__page.is-active{background:#2563eb;transform:scale(1.25);width:1.5rem;border-radius:.6rem}'
+            // Card: flex column so caption fills remaining height
+            // when slides line up at uniform height.
+            . '.rg-dfs-card{display:flex;flex-direction:column;width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:1.1rem;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.05),0 1px 2px rgba(15,23,42,.04);transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s ease,border-color .35s ease;text-decoration:none;color:inherit}'
+            . '.rg-dfs-card:hover{transform:translateY(-6px);box-shadow:0 24px 48px -16px rgba(15,23,42,.22),0 8px 16px -8px rgba(15,23,42,.12);border-color:#cbd5e1}'
+            // Photo block
+            . '.rg-dfs-img-wrap{position:relative;aspect-ratio:4/3;background:#f1f5f9;overflow:hidden}'
+            . '.rg-dfs-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .85s cubic-bezier(.22,1,.36,1)}'
             . '.rg-dfs-card:hover .rg-dfs-img{transform:scale(1.06)}'
-            . '.rg-dfs-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.05) 0%,rgba(15,23,42,.35) 50%,rgba(15,23,42,.9) 100%);pointer-events:none}'
-            . '.rg-dfs-content{position:absolute;left:0;right:0;bottom:0;padding:1.5rem 1.75rem;color:#fff}'
-            . '.rg-dfs-region{display:inline-block;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#fef3c7;background:rgba(0,0,0,.35);padding:.25rem .6rem;border-radius:.35rem;margin-bottom:.5rem}'
-            . '.rg-dfs-name{font-size:1.75rem;font-weight:800;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.45);margin-bottom:.6rem}'
-            . '@media(min-width:768px){.rg-dfs-name{font-size:2rem}}'
-            . '.rg-dfs-location{display:flex;align-items:center;gap:.4rem;font-size:.875rem;color:rgba(255,255,255,.92);margin-bottom:.85rem}'
-            . '.rg-dfs-cta{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:600;color:#fef3c7;border-top:1px solid rgba(255,255,255,.2);padding-top:.65rem;transition:color .2s ease,transform .2s ease}'
-            . '.rg-dfs-card:hover .rg-dfs-cta{color:#fff}'
-            . '.rg-dfs-card:hover .rg-dfs-cta svg{transform:translateX(.18rem)}'
-            . '.rg-dfs-cta svg{transition:transform .2s ease}'
+            // Faint bottom-edge gradient on the photo (8% opacity max)
+            // for subtle depth at the photo/caption boundary. Sits
+            // above the image but below any future overlay slot.
+            . '.rg-dfs-img-inner-grad{position:absolute;inset:auto 0 0 0;height:35%;background:linear-gradient(180deg,transparent 0%,rgba(15,23,42,.08) 100%);pointer-events:none}'
+            . '.rg-dfs-img--fallback{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#475569 0%,#334155 60%,#1e293b 100%);color:rgba(255,255,255,.4)}'
+            . '.rg-dfs-img--fallback svg{width:3.5rem;height:3.5rem}'
+            // Caption strip — clean editorial type. Padding ramps up
+            // a touch on tablet+ so the body breathes.
+            . '.rg-dfs-body{display:flex;flex-direction:column;flex:1;padding:1.1rem 1.25rem 1.15rem;gap:0}'
+            . '@media(min-width:768px){.rg-dfs-body{padding:1.25rem 1.4rem 1.35rem}}'
+            . '.rg-dfs-region{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:#2563eb;margin-bottom:.5rem;display:block}'
+            . '.rg-dfs-name{font-size:1.25rem;font-weight:800;line-height:1.2;color:#0f172a;margin:0 0 .55rem;letter-spacing:-.01em}'
+            . '@media(min-width:768px){.rg-dfs-name{font-size:1.4rem}}'
+            . '.rg-dfs-location{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:#64748b;margin-bottom:.95rem}'
+            . '.rg-dfs-location svg{width:.95rem;height:.95rem;flex:0 0 auto;color:#2563eb}'
+            // Explore link — a subtle CTA divided by a hairline rule.
+            // The arrow nudges on hover (gap grows) for a small
+            // "go deeper" affordance.
+            . '.rg-dfs-explore{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:700;color:#2563eb;border-top:1px solid #e2e8f0;padding-top:.75rem;margin-top:auto;letter-spacing:.01em}'
+            . '.rg-dfs-explore svg{width:1rem;height:1rem;transition:transform .25s cubic-bezier(.22,1,.36,1);flex:0 0 auto}'
+            . '.rg-dfs-card:hover .rg-dfs-explore svg{transform:translateX(.35rem)}'
             . '</style>';
 
         $out .= $this->splideAutoMount($sliderId);
