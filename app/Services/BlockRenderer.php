@@ -3601,16 +3601,18 @@ class BlockRenderer
         $sliderId = 'rg-dfs-' . substr(md5(json_encode([$source, count($itemArr)])), 0, 6);
 
         // Full-bleed band that breaks out of the article wrapper so
-        // the slate background extends across the viewport, matching
-        // the original /destinations layout. Inner container holds
-        // the carousel at max-w-7xl.
+        // the slate background extends across the viewport. The
+        // heading stays centered inside a max-w-7xl column, but
+        // the carousel itself extends to the section's full width
+        // (only side padding clamps the cards from the edge) so the
+        // slider feels as expansive as the band beneath it.
         $out = '<section class="rg-dest-fslider ' . $bg . ' my-10 py-12 md:py-16" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
-        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">';
-        $out .= '<div class="mb-8 text-center">';
+        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">';
         if ($eyebrow !== '') $out .= '<p class="text-xs sm:text-sm uppercase tracking-[0.18em] ' . $eyebrowClass . ' font-bold mb-2">' . $eyebrow . '</p>';
         if ($heading !== '') $out .= '<h2 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600 max-w-3xl mx-auto">' . $subhead . '</p>';
         $out .= '</div>';
+        $out .= '<div class="px-4 sm:px-8 lg:px-12 xl:px-16">';
 
         // Splide config
         $config = [
