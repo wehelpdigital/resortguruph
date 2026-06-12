@@ -79,6 +79,17 @@ class RgContentBlock extends Model
         //   dest_region_clusters — Sticky "Jump to region" pill nav
         //                          + cluster grids of keyword cards.
         'dest_hero_search', 'dest_featured_slider', 'dest_region_clusters',
+        // Homepage custom block types — each reads live data from
+        // HomeController context (featuredKeywords / regions /
+        // featuredResorts / latestPosts / stats).
+        //   home_hero_centered  → centered gradient hero + stats row
+        //   home_keyword_grid   → 3-up popular destinations grid
+        //   home_region_grid    → region-cluster summary cards
+        //   home_resort_grid    → featured properties with images
+        //   home_blog_strip     → 3-up blog post cards
+        //   home_cta_band       → full-bleed brand-colored CTA band
+        'home_hero_centered', 'home_keyword_grid', 'home_region_grid',
+        'home_resort_grid', 'home_blog_strip', 'home_cta_band',
         // Page-header content elements migrated out of rg_seo_pages
         // columns into blocks so the admin can reorder / remove / add
         // them like any other content. subtitle_intro replaces the

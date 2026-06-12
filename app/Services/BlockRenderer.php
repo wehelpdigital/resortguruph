@@ -105,6 +105,15 @@ class BlockRenderer
             'dest_hero_search' => $this->destHeroSearch($p, $context),
             'dest_featured_slider' => $this->destFeaturedSlider($p, $context),
             'dest_region_clusters' => $this->destRegionClusters($p, $context),
+            // Homepage custom block types — each reads its live data
+            // (featuredKeywords / regions / featuredResorts / latestPosts
+            // / stats) from the HomeController context.
+            'home_hero_centered' => $this->homeHeroCentered($p, $context),
+            'home_keyword_grid' => $this->homeKeywordGrid($p, $context),
+            'home_region_grid' => $this->homeRegionGrid($p, $context),
+            'home_resort_grid' => $this->homeResortGrid($p, $context),
+            'home_blog_strip' => $this->homeBlogStrip($p, $context),
+            'home_cta_band' => $this->homeCtaBand($p, $context),
             default => '',
         };
     }
@@ -3907,5 +3916,306 @@ class BlockRenderer
         if (is_array($item)) return $item;
         if (is_object($item) && method_exists($item, 'toArray')) return $item->toArray();
         return (array) $item;
+    }
+
+    /* ============================================================
+     * Homepage custom block types
+     * ============================================================
+     * 6 blocks that reproduce the home/ page sections as builder
+     * elements so /resort-guru-static can edit the homepage row.
+     * Each reads its live data (featuredKeywords / regions /
+     * featuredResorts / latestPosts / stats) from $context.
+     * ============================================================ */
+
+    /**
+     * home_hero_centered — full-bleed gradient hero with centered
+     * title + tagline + dual CTA buttons + 3-stat row. Matches the
+     * original home page hero.
+     *
+     * Payload:
+     *   title, tagline, bg_gradient (none|brand-emerald|amber-rose|...),
+     *   primary_cta { label, url }, secondary_cta { label, url },
+     *   stats [{ label, value, value_source }],
+     *   accent (brand|amber|emerald|rose|violet|teal)
+     */
+    private function homeHeroCentered(array $p, array $context): string
+    {
+        foreach (['stats'] as $j) {
+            if (isset($p[$j]) && is_string($p[$j])) {
+                $t = trim($p[$j]);
+                if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                    $d = json_decode($t, true);
+                    if (is_array($d)) $p[$j] = $d;
+                }
+            }
+        }
+        $title = trim((string) ($p['title'] ?? ''));
+        $tagline = $this->e((string) ($p['tagline'] ?? ''));
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
+        $bgGradient = in_array($p['bg_gradient'] ?? 'brand-emerald', ['none', 'brand-emerald', 'amber-rose', 'rose-amber', 'violet-teal', 'teal-emerald'], true) ? $p['bg_gradient'] : 'brand-emerald';
+
+        $bgClass = [
+            'none' => '',
+            'brand-emerald' => 'bg-gradient-to-br from-blue-50 via-white to-emerald-50',
+            'amber-rose' => 'bg-gradient-to-br from-amber-50 via-white to-rose-50',
+            'rose-amber' => 'bg-gradient-to-br from-rose-50 via-white to-amber-50',
+            'violet-teal' => 'bg-gradient-to-br from-violet-50 via-white to-teal-50',
+            'teal-emerald' => 'bg-gradient-to-br from-teal-50 via-white to-emerald-50',
+        ][$bgGradient];
+        $accentBg = ['brand' => 'bg-blue-600 hover:bg-blue-700', 'amber' => 'bg-amber-600 hover:bg-amber-700', 'emerald' => 'bg-emerald-600 hover:bg-emerald-700', 'rose' => 'bg-rose-600 hover:bg-rose-700', 'violet' => 'bg-violet-600 hover:bg-violet-700', 'teal' => 'bg-teal-600 hover:bg-teal-700'][$accent];
+
+        $titleHtml = $title !== '' ? str_replace('|', '<br class="hidden md:block">', $this->e($title)) : '';
+        $pCta = $p['primary_cta'] ?? [];
+        if (is_string($pCta)) $pCta = json_decode($pCta, true) ?: [];
+        $sCta = $p['secondary_cta'] ?? [];
+        if (is_string($sCta)) $sCta = json_decode($sCta, true) ?: [];
+
+        $out = '<section class="rg-home-hero ' . $bgClass . '" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-5">' . $titleHtml . '</h1>';
+        if ($tagline !== '') $out .= '<p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
+        if (!empty($pCta['label']) || !empty($sCta['label'])) {
+            $out .= '<div class="flex flex-wrap items-center justify-center gap-3">';
+            if (!empty($pCta['label'])) {
+                $out .= '<a href="' . $this->e($pCta['url'] ?? '#') . '" class="px-6 py-3 rounded-md ' . $accentBg . ' text-white font-semibold transition">' . $this->e($pCta['label']) . '</a>';
+            }
+            if (!empty($sCta['label'])) {
+                $out .= '<a href="' . $this->e($sCta['url'] ?? '#') . '" class="px-6 py-3 rounded-md bg-white border border-slate-300 font-semibold hover:bg-slate-50 transition">' . $this->e($sCta['label']) . '</a>';
+            }
+            $out .= '</div>';
+        }
+
+        $stats = $p['stats'] ?? [];
+        if (is_array($stats) && !empty($stats)) {
+            $out .= '<div class="mt-10 flex flex-wrap justify-center gap-8 text-sm text-slate-600">';
+            foreach ($stats as $s) {
+                $label = $this->e((string) ($s['label'] ?? ''));
+                $value = $this->resolveStatValueSimple($s, (string) ($s['value_source'] ?? 'literal'), $context);
+                if ($value === null && !empty($s['value'])) $value = (string) $s['value'];
+                if ($value === null) continue;
+                $out .= '<div><strong class="text-2xl text-slate-900 block">' . $this->e($value) . '</strong> ' . $label . '</div>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * home_keyword_grid — "Popular destinations" 3-up grid of keyword
+     * cards. Reads $context[source] (default featuredKeywords).
+     *
+     * Payload: heading, subhead, view_all { label, url },
+     *          source, columns (2|3|4), accent
+     */
+    private function homeKeywordGrid(array $p, array $context): string
+    {
+        $source = (string) ($p['source'] ?? 'featuredKeywords');
+        $items = $context[$source] ?? null;
+        $itemArr = is_array($items) ? $items : (is_object($items) && method_exists($items, 'all') ? $items->all() : []);
+        if (empty($itemArr)) return '';
+
+        $heading = $this->e(trim($p['heading'] ?? ''));
+        $subhead = $this->e(trim($p['subhead'] ?? ''));
+        $columns = max(2, min(4, (int) ($p['columns'] ?? 3)));
+        $gridClass = [2 => 'sm:grid-cols-2', 3 => 'sm:grid-cols-2 lg:grid-cols-3', 4 => 'sm:grid-cols-2 lg:grid-cols-4'][$columns];
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
+        $accentText = ['brand' => 'text-blue-600 group-hover:text-blue-700', 'amber' => 'text-amber-600 group-hover:text-amber-700', 'emerald' => 'text-emerald-600', 'rose' => 'text-rose-600', 'violet' => 'text-violet-600', 'teal' => 'text-teal-600'][$accent];
+        $borderHover = ['brand' => 'hover:border-blue-300', 'amber' => 'hover:border-amber-300', 'emerald' => 'hover:border-emerald-300', 'rose' => 'hover:border-rose-300', 'violet' => 'hover:border-violet-300', 'teal' => 'hover:border-teal-300'][$accent];
+        $viewAll = $p['view_all'] ?? [];
+        if (is_string($viewAll)) $viewAll = json_decode($viewAll, true) ?: [];
+
+        $sectionId = 'rg-hkg-' . substr(md5(json_encode([$heading, $source])), 0, 6);
+        $out = '<section id="' . $sectionId . '" class="py-16">';
+        $out .= '<div class="flex items-end justify-between mb-8 flex-wrap gap-3"><div>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl font-bold text-slate-900">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-slate-600 mt-1">' . $subhead . '</p>';
+        $out .= '</div>';
+        if (!empty($viewAll['label']) && !empty($viewAll['url'])) {
+            $out .= '<a href="' . $this->e($viewAll['url']) . '" class="font-semibold hover:underline whitespace-nowrap ' . $accentText . '">' . $this->e($viewAll['label']) . ' &rarr;</a>';
+        }
+        $out .= '</div>';
+        $out .= '<div class="grid ' . $gridClass . ' gap-5">';
+        foreach ($itemArr as $k) {
+            $kArr = $this->toArrayShapeSimple($k);
+            $phrase = $this->e((string) ($kArr['phrase'] ?? ''));
+            $slug = (string) ($kArr['slug'] ?? '');
+            if ($phrase === '' || $slug === '') continue;
+            $out .= '<a href="' . $this->e(url($slug)) . '" class="block group rounded-xl border border-slate-200 ' . $borderHover . ' hover:shadow-md p-5 transition">'
+                . '<h3 class="font-semibold text-slate-900 mb-2 capitalize ' . $accentText . '">' . $phrase . '</h3>'
+                . '<p class="text-sm text-slate-500">Browse top picks &rarr;</p>'
+                . '</a>';
+        }
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * home_region_grid — region-cluster summary cards. Reads
+     * $context[source] (default regions). Each item shape:
+     * { slug, name, tagline, count }
+     */
+    private function homeRegionGrid(array $p, array $context): string
+    {
+        $source = (string) ($p['source'] ?? 'regions');
+        $items = $context[$source] ?? null;
+        $itemArr = is_array($items) ? $items : (is_object($items) && method_exists($items, 'all') ? $items->all() : []);
+        if (empty($itemArr)) return '';
+
+        $heading = $this->e(trim($p['heading'] ?? ''));
+        $subhead = $this->e(trim($p['subhead'] ?? ''));
+        $bg = ($p['bg'] ?? 'soft') === 'soft' ? 'bg-gradient-to-b from-white to-slate-50' : '';
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
+        $accentText = ['brand' => 'group-hover:text-blue-600', 'amber' => 'group-hover:text-amber-600', 'emerald' => 'group-hover:text-emerald-600', 'rose' => 'group-hover:text-rose-600', 'violet' => 'group-hover:text-violet-600', 'teal' => 'group-hover:text-teal-600'][$accent];
+        $accentPill = ['brand' => 'bg-blue-100 text-blue-700', 'amber' => 'bg-amber-100 text-amber-700', 'emerald' => 'bg-emerald-100 text-emerald-700', 'rose' => 'bg-rose-100 text-rose-700', 'violet' => 'bg-violet-100 text-violet-700', 'teal' => 'bg-teal-100 text-teal-700'][$accent];
+        $borderHover = ['brand' => 'hover:border-blue-300', 'amber' => 'hover:border-amber-300', 'emerald' => 'hover:border-emerald-300', 'rose' => 'hover:border-rose-300', 'violet' => 'hover:border-violet-300', 'teal' => 'hover:border-teal-300'][$accent];
+        $viewAll = $p['view_all'] ?? [];
+        if (is_string($viewAll)) $viewAll = json_decode($viewAll, true) ?: [];
+
+        $out = '<section class="py-16 ' . $bg . '" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="flex items-end justify-between mb-8 flex-wrap gap-3"><div>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl font-bold text-slate-900">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-slate-600 mt-1">' . $subhead . '</p>';
+        $out .= '</div>';
+        if (!empty($viewAll['label']) && !empty($viewAll['url'])) {
+            $out .= '<a href="' . $this->e($viewAll['url']) . '" class="font-semibold hover:underline whitespace-nowrap text-blue-600">' . $this->e($viewAll['label']) . ' &rarr;</a>';
+        }
+        $out .= '</div>';
+        $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">';
+        foreach ($itemArr as $r) {
+            $rArr = $this->toArrayShapeSimple($r);
+            $name = $this->e((string) ($rArr['name'] ?? ''));
+            $tagline = $this->e((string) ($rArr['tagline'] ?? ''));
+            $count = (int) ($rArr['count'] ?? 0);
+            $slug = (string) ($rArr['slug'] ?? '');
+            if ($name === '' || $slug === '') continue;
+            $url = url('/destinations/' . $slug);
+            $out .= '<a href="' . $this->e($url) . '" class="block group rounded-xl bg-white border border-slate-200 ' . $borderHover . ' hover:shadow-md p-5 transition">'
+                . '<div class="flex items-start justify-between mb-2 gap-2">'
+                . '<h3 class="font-bold text-lg text-slate-900 ' . $accentText . '">' . $name . '</h3>';
+            if ($count > 0) $out .= '<span class="text-xs px-2 py-1 rounded-full ' . $accentPill . ' font-semibold whitespace-nowrap">' . $count . '</span>';
+            $out .= '</div>';
+            if ($tagline !== '') $out .= '<p class="text-sm text-slate-500 line-clamp-2">' . $tagline . '</p>';
+            $out .= '</a>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_resort_grid — Featured properties grid with hero images.
+     * Reads $context[source] (default featuredResorts).
+     */
+    private function homeResortGrid(array $p, array $context): string
+    {
+        $source = (string) ($p['source'] ?? 'featuredResorts');
+        $items = $context[$source] ?? null;
+        $itemArr = is_array($items) ? $items : (is_object($items) && method_exists($items, 'all') ? $items->all() : []);
+        if (empty($itemArr)) return '';
+
+        $heading = $this->e(trim($p['heading'] ?? ''));
+        $subhead = $this->e(trim($p['subhead'] ?? ''));
+        $bg = ($p['bg'] ?? 'slate') === 'slate' ? 'bg-slate-50' : '';
+
+        $out = '<section class="py-16 ' . $bg . '" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-slate-600 mb-8">' . $subhead . '</p>';
+        $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">';
+        foreach ($itemArr as $r) {
+            $rArr = $this->toArrayShapeSimple($r);
+            $name = $this->e((string) ($rArr['name'] ?? ''));
+            $slug = (string) ($rArr['slug'] ?? '');
+            $city = $this->e((string) ($rArr['city'] ?? ''));
+            $province = $this->e((string) ($rArr['province'] ?? ''));
+            $heroPath = (string) ($rArr['hero_path'] ?? '');
+            if ($name === '' || $slug === '') continue;
+            $resortUrl = url('/listing/' . $slug);
+            $out .= '<a href="' . $this->e($resortUrl) . '" class="block group rounded-xl overflow-hidden bg-white border border-slate-200 hover:shadow-lg transition">';
+            $out .= '<div class="aspect-[4/3] bg-slate-200 overflow-hidden">';
+            if ($heroPath !== '') {
+                $img = str_starts_with($heroPath, '/') || str_starts_with($heroPath, 'http') ? $heroPath : '/storage/' . ltrim($heroPath, '/');
+                $out .= '<img src="' . $this->e($img) . '" alt="' . $name . '" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">';
+            } else {
+                $out .= '<div class="w-full h-full flex items-center justify-center text-5xl">🏖️</div>';
+            }
+            $out .= '</div><div class="p-4">';
+            $out .= '<h3 class="font-semibold text-slate-900 mb-1">' . $name . '</h3>';
+            $loc = trim($city . ($city !== '' && $province !== '' ? ', ' : '') . $province);
+            if ($loc !== '') $out .= '<p class="text-sm text-slate-500">' . $loc . '</p>';
+            $out .= '</div></a>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_blog_strip — "From the blog" 3-up post cards. Reads
+     * $context[source] (default latestPosts).
+     */
+    private function homeBlogStrip(array $p, array $context): string
+    {
+        $source = (string) ($p['source'] ?? 'latestPosts');
+        $items = $context[$source] ?? null;
+        $itemArr = is_array($items) ? $items : (is_object($items) && method_exists($items, 'all') ? $items->all() : []);
+        if (empty($itemArr)) return '';
+
+        $heading = $this->e(trim($p['heading'] ?? ''));
+        $subhead = $this->e(trim($p['subhead'] ?? ''));
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
+        $accentText = ['brand' => 'group-hover:text-blue-600', 'amber' => 'group-hover:text-amber-600', 'emerald' => 'group-hover:text-emerald-600', 'rose' => 'group-hover:text-rose-600', 'violet' => 'group-hover:text-violet-600', 'teal' => 'group-hover:text-teal-600'][$accent];
+
+        $out = '<section class="py-16">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-slate-600 mb-8">' . $subhead . '</p>';
+        $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">';
+        foreach ($itemArr as $post) {
+            $pArr = $this->toArrayShapeSimple($post);
+            $title = $this->e((string) ($pArr['title'] ?? ''));
+            $slug = (string) ($pArr['slug'] ?? '');
+            $excerpt = $this->e((string) ($pArr['excerpt'] ?? ''));
+            $coverPath = (string) ($pArr['cover_path'] ?? '');
+            if ($title === '' || $slug === '') continue;
+            $postUrl = url('/blog/' . $slug);
+            $out .= '<a href="' . $this->e($postUrl) . '" class="block group">';
+            $out .= '<div class="aspect-[16/10] rounded-lg bg-slate-200 mb-3 overflow-hidden">';
+            if ($coverPath !== '') {
+                $img = str_starts_with($coverPath, '/') || str_starts_with($coverPath, 'http') ? $coverPath : '/storage/' . ltrim($coverPath, '/');
+                $out .= '<img src="' . $this->e($img) . '" alt="' . $title . '" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">';
+            }
+            $out .= '</div>';
+            $out .= '<h3 class="font-semibold text-slate-900 mb-1 ' . $accentText . '">' . $title . '</h3>';
+            if ($excerpt !== '') $out .= '<p class="text-sm text-slate-500 line-clamp-2">' . $excerpt . '</p>';
+            $out .= '</a>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_cta_band — full-bleed brand-colored band with H2 +
+     * paragraph + single CTA button.
+     */
+    private function homeCtaBand(array $p, array $context): string
+    {
+        $heading = $this->e(trim($p['heading'] ?? ''));
+        $body = $this->e(trim($p['body'] ?? ''));
+        $cta = $p['cta'] ?? [];
+        if (is_string($cta)) $cta = json_decode($cta, true) ?: [];
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal', 'slate'], true) ? $p['accent'] : 'brand';
+
+        $bandMap = ['brand' => ['bg' => 'bg-blue-600', 'sub' => 'text-blue-100', 'btn' => 'text-blue-700 hover:bg-blue-50'], 'amber' => ['bg' => 'bg-amber-600', 'sub' => 'text-amber-100', 'btn' => 'text-amber-700 hover:bg-amber-50'], 'emerald' => ['bg' => 'bg-emerald-600', 'sub' => 'text-emerald-100', 'btn' => 'text-emerald-700 hover:bg-emerald-50'], 'rose' => ['bg' => 'bg-rose-600', 'sub' => 'text-rose-100', 'btn' => 'text-rose-700 hover:bg-rose-50'], 'violet' => ['bg' => 'bg-violet-600', 'sub' => 'text-violet-100', 'btn' => 'text-violet-700 hover:bg-violet-50'], 'teal' => ['bg' => 'bg-teal-600', 'sub' => 'text-teal-100', 'btn' => 'text-teal-700 hover:bg-teal-50'], 'slate' => ['bg' => 'bg-slate-800', 'sub' => 'text-slate-300', 'btn' => 'text-slate-800 hover:bg-slate-100']][$accent];
+
+        $out = '<section class="' . $bandMap['bg'] . ' py-16" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-bold mb-4">' . $heading . '</h2>';
+        if ($body !== '') $out .= '<p class="' . $bandMap['sub'] . ' mb-6 text-lg">' . $body . '</p>';
+        if (!empty($cta['label'])) {
+            $out .= '<a href="' . $this->e($cta['url'] ?? '#') . '" class="inline-block px-7 py-3 rounded-md bg-white font-bold transition ' . $bandMap['btn'] . '">' . $this->e($cta['label']) . '</a>';
+        }
+        $out .= '</div></section>';
+        return $out;
     }
 }

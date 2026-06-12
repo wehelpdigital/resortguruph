@@ -55,6 +55,42 @@ class HomeController extends Controller
             ->sortByDesc('total_volume')
             ->values();
 
+        // Block-driven render: if the `home` static_page row has
+        // blocks attached, render them via BlockRenderer with the
+        // controller data exposed via context. Otherwise fall back
+        // to the legacy hardcoded view.
+        $page = \DB::table('rg_static_pages')
+            ->where('slug', 'home')
+            ->where('is_published', 1)
+            ->first();
+        if ($page) {
+            $blocks = \App\Models\RgContentBlock::forOwner('static_page', $page->id);
+            if ($blocks->isNotEmpty()) {
+                $liveEdit = false;
+                $request = request();
+                if ($request && $request->query('_lt')) {
+                    $liveEdit = \App\Support\LiveEditToken::valid('home', $request->query('_lt'));
+                }
+                $renderer = app(\App\Services\BlockRenderer::class);
+                $renderedBlocks = $renderer->renderBlocks($blocks, [
+                    'static_page_id' => $page->id,
+                    'featuredKeywords' => $featuredKeywords,
+                    'featuredResorts' => $featuredResorts,
+                    'latestPosts' => $latestPosts,
+                    'regions' => $regions,
+                    'stats' => $stats,
+                    'jsonld' => $jsonld,
+                    'live_edit' => $liveEdit,
+                ]);
+                return view('home.blocks', [
+                    'page' => $page,
+                    'renderedBlocks' => $renderedBlocks,
+                    'liveEdit' => $liveEdit,
+                    'jsonld' => $jsonld,
+                ]);
+            }
+        }
+
         return view('home', compact('featuredKeywords', 'featuredResorts', 'latestPosts', 'stats', 'regions', 'jsonld'));
     }
 }
