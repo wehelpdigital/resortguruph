@@ -3587,7 +3587,7 @@ class BlockRenderer
             ? $p['accent'] : 'brand';
         $bg = ($p['bg'] ?? 'light') === 'light' ? 'bg-slate-50' : '';
         $autoplay = !empty($p['autoplay']) || !isset($p['autoplay']) ? 'true' : 'false';
-        $interval = (int) ($p['interval'] ?? 5000);
+        $interval = (int) ($p['interval'] ?? 5500);
         $perView = (int) ($p['slides_per_view'] ?? 3);
         $perView = max(1, min(4, $perView));
         $eyebrowClass = [
@@ -3600,14 +3600,19 @@ class BlockRenderer
 
         $sliderId = 'rg-dfs-' . substr(md5(json_encode([$source, count($itemArr)])), 0, 6);
 
-        $out = '<section class="rg-dest-fslider ' . $bg . ' -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-12 md:py-16 my-10 rounded-2xl">';
+        // Full-bleed band that breaks out of the article wrapper so
+        // the slate background extends across the viewport, matching
+        // the original /destinations layout. Inner container holds
+        // the carousel at max-w-7xl.
+        $out = '<section class="rg-dest-fslider ' . $bg . ' my-10 py-12 md:py-16" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">';
         $out .= '<div class="mb-8 text-center">';
         if ($eyebrow !== '') $out .= '<p class="text-xs sm:text-sm uppercase tracking-[0.18em] ' . $eyebrowClass . ' font-bold mb-2">' . $eyebrow . '</p>';
-        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600 max-w-3xl mx-auto">' . $subhead . '</p>';
         $out .= '</div>';
 
-        // Splide slider markup
+        // Splide config
         $config = [
             'type' => 'loop',
             'autoplay' => $autoplay === 'true',
@@ -3624,39 +3629,95 @@ class BlockRenderer
         ];
         $configJson = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
 
-        $out .= '<section id="' . $sliderId . '" class="splide" aria-label="Featured" data-splide-config="' . $configJson . '">';
+        $out .= '<section id="' . $sliderId . '" class="rg-dfs-splide splide" aria-label="Featured tourist spots" data-splide-config="' . $configJson . '">';
         $out .= '<div class="splide__track"><ul class="splide__list">';
         foreach ($itemArr as $r) {
             $rArr = $this->toArrayShapeSimple($r);
+
+            // featuredSpots data shape: name / location / region /
+            // image (relative storage path) / slug (keyword slug).
+            // Also tolerate keyword-cluster-style restaurants:
+            // name / cuisine / city / hero_path / url.
             $name = $this->e((string) ($rArr['name'] ?? ''));
-            $cuisine = $this->e((string) ($rArr['cuisine'] ?? $rArr['category'] ?? ''));
-            $city = $this->e((string) ($rArr['city'] ?? $rArr['region'] ?? $rArr['location'] ?? ''));
-            $heroPath = (string) ($rArr['hero_path'] ?? $rArr['image_path'] ?? '');
-            $c1 = $this->e((string) ($rArr['primary_color'] ?? '#0f172a'));
-            $c2 = $this->e((string) ($rArr['secondary_color'] ?? '#fbbf24'));
-            $url = (string) ($rArr['url'] ?? '#');
+            $location = $this->e((string) ($rArr['location'] ?? $rArr['city'] ?? ''));
+            $region = $this->e((string) ($rArr['region'] ?? $rArr['cuisine'] ?? $rArr['category'] ?? ''));
+            $rawImage = (string) ($rArr['image'] ?? $rArr['hero_path'] ?? $rArr['image_path'] ?? '');
+            $slug = (string) ($rArr['slug'] ?? '');
+            $url = (string) ($rArr['url'] ?? ($slug !== '' ? url('/' . $slug) : '#'));
             if ($name === '') continue;
 
-            $out .= '<li class="splide__slide">';
-            $out .= '<a href="' . $this->e($url) . '" class="block rounded-xl overflow-hidden bg-white border border-slate-200 hover:shadow-lg transition h-full">';
-            $out .= '<div class="aspect-[4/3] overflow-hidden" style="background: linear-gradient(135deg, ' . $c1 . ' 0%, ' . $c2 . ' 100%)">';
-            if ($heroPath !== '') {
-                $imgUrl = str_starts_with($heroPath, '/') || str_starts_with($heroPath, 'http')
-                    ? $heroPath : '/storage/' . ltrim($heroPath, '/');
-                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $name . '" loading="lazy" class="w-full h-full object-cover">';
-            } else {
-                $out .= '<div class="w-full h-full flex items-center justify-center text-5xl text-white/80">📍</div>';
+            // Resolve image URL. Absolute (http/https or /-prefixed)
+            // stays as-is; bare relative paths get /storage/ prefix
+            // so they line up with the public symlink.
+            $imgUrl = '';
+            if ($rawImage !== '') {
+                $imgUrl = str_starts_with($rawImage, 'http') || str_starts_with($rawImage, '/')
+                    ? $rawImage : '/storage/' . ltrim($rawImage, '/');
             }
-            $out .= '</div>';
-            $out .= '<div class="p-4"><h3 class="font-semibold text-slate-900">' . $name . '</h3>';
-            if ($cuisine !== '') $out .= '<p class="text-xs uppercase tracking-wide font-bold mt-1" style="color:' . $c1 . '">' . $cuisine . '</p>';
-            if ($city !== '') $out .= '<p class="text-sm text-slate-500 mt-1">' . $city . '</p>';
+
+            $out .= '<li class="splide__slide">';
+            $out .= '<a href="' . $this->e($url) . '" class="rg-dfs-card group">';
+            if ($imgUrl !== '') {
+                $alt = $name . ($location !== '' ? ' in ' . $location : '');
+                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $this->e($alt) . '" loading="lazy" class="rg-dfs-img">';
+            } else {
+                // No-image fallback: muted gradient, no emoji. Keeps
+                // the card visually consistent rather than dropping
+                // into a placeholder icon that breaks the row.
+                $out .= '<div class="rg-dfs-img" style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%)"></div>';
+            }
+            $out .= '<div class="rg-dfs-overlay"></div>';
+            $out .= '<div class="rg-dfs-content">';
+            if ($region !== '') $out .= '<div class="rg-dfs-region">' . $region . '</div>';
+            $out .= '<div class="rg-dfs-name">' . $name . '</div>';
+            if ($location !== '') {
+                $out .= '<div class="rg-dfs-location">'
+                    . '<svg class="w-4 h-4 inline-block opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>'
+                    . ' ' . $location . '</div>';
+            }
+            $out .= '<div class="rg-dfs-cta">See nearby stays'
+                . '<svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>'
+                . '</div>';
             $out .= '</div></a></li>';
         }
         $out .= '</ul></div></section>';
 
+        // CSS — large full-bleed cards. Heights: 360 mobile / 420
+        // tablet / 480 desktop. Image fills, gradient overlay anchors
+        // text to the bottom, hover lifts card + zooms image.
+        $out .= '<style>'
+            . '.rg-dfs-splide{border-radius:1rem;overflow:visible}'
+            . '.rg-dfs-splide .splide__list{align-items:stretch}'
+            . '.rg-dfs-splide .splide__slide{padding:0}'
+            . '.rg-dfs-splide .splide__arrow{background:rgba(15,23,42,.7);width:2.75rem;height:2.75rem;opacity:.95}'
+            . '.rg-dfs-splide .splide__arrow:hover{background:#2563eb}'
+            . '.rg-dfs-splide .splide__arrow svg{fill:#fff;width:1rem;height:1rem}'
+            . '.rg-dfs-splide .splide__arrow--prev{left:-.5rem}'
+            . '.rg-dfs-splide .splide__arrow--next{right:-.5rem}'
+            . '@media(min-width:768px){.rg-dfs-splide .splide__arrow--prev{left:-1.25rem}.rg-dfs-splide .splide__arrow--next{right:-1.25rem}}'
+            . '.rg-dfs-splide .splide__pagination{bottom:-1.75rem}'
+            . '.rg-dfs-splide .splide__pagination__page{background:#cbd5e1;opacity:1}'
+            . '.rg-dfs-splide .splide__pagination__page.is-active{background:#2563eb;transform:scale(1.3)}'
+            . '.rg-dfs-card{position:relative;display:block;height:360px;overflow:hidden;border-radius:1rem;background:#e2e8f0;box-shadow:0 4px 12px -2px rgba(15,23,42,.15);transition:transform .35s ease,box-shadow .35s ease;text-decoration:none;color:inherit}'
+            . '@media(min-width:768px){.rg-dfs-card{height:420px}}'
+            . '@media(min-width:1024px){.rg-dfs-card{height:480px}}'
+            . '.rg-dfs-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px -12px rgba(15,23,42,.35)}'
+            . '.rg-dfs-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.22,1,.36,1)}'
+            . '.rg-dfs-card:hover .rg-dfs-img{transform:scale(1.06)}'
+            . '.rg-dfs-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.05) 0%,rgba(15,23,42,.35) 50%,rgba(15,23,42,.9) 100%);pointer-events:none}'
+            . '.rg-dfs-content{position:absolute;left:0;right:0;bottom:0;padding:1.5rem 1.75rem;color:#fff}'
+            . '.rg-dfs-region{display:inline-block;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#fef3c7;background:rgba(0,0,0,.35);padding:.25rem .6rem;border-radius:.35rem;margin-bottom:.5rem}'
+            . '.rg-dfs-name{font-size:1.75rem;font-weight:800;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.45);margin-bottom:.6rem}'
+            . '@media(min-width:768px){.rg-dfs-name{font-size:2rem}}'
+            . '.rg-dfs-location{display:flex;align-items:center;gap:.4rem;font-size:.875rem;color:rgba(255,255,255,.92);margin-bottom:.85rem}'
+            . '.rg-dfs-cta{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:600;color:#fef3c7;border-top:1px solid rgba(255,255,255,.2);padding-top:.65rem;transition:color .2s ease,transform .2s ease}'
+            . '.rg-dfs-card:hover .rg-dfs-cta{color:#fff}'
+            . '.rg-dfs-card:hover .rg-dfs-cta svg{transform:translateX(.18rem)}'
+            . '.rg-dfs-cta svg{transition:transform .2s ease}'
+            . '</style>';
+
         $out .= $this->splideAutoMount($sliderId);
-        $out .= '</section>';
+        $out .= '</div></section>';
         return $out;
     }
 
