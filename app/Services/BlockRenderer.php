@@ -3614,7 +3614,14 @@ class BlockRenderer
         $out .= '</div>';
         $out .= '<div class="px-4 sm:px-8 lg:px-12 xl:px-16">';
 
-        // Splide config
+        // fixedWidth (instead of perPage) keeps each card at a stable
+        // size; the carousel just shows more cards as the viewport
+        // widens. perView still drives the desktop card width — at
+        // perView=3 cards come out ~400px (matches the prior 3-up
+        // look on a 1280px container), at perView=4 they shrink to
+        // ~300px so 4 fit, etc. Clamped 280-700 so admin can't
+        // accidentally pick a value that breaks on common viewports.
+        $fixedWidthPx = max(280, min(700, (int) round(1200 / $perView)));
         $config = [
             'type' => 'loop',
             'autoplay' => $autoplay === 'true',
@@ -3622,11 +3629,12 @@ class BlockRenderer
             'arrows' => true,
             'pagination' => true,
             'gap' => '1rem',
-            'perPage' => $perView,
+            'fixedWidth' => $fixedWidthPx . 'px',
             'perMove' => 1,
             'breakpoints' => [
-                640 => ['perPage' => 1],
-                1024 => ['perPage' => min(2, $perView)],
+                // Phones: card peeks past the edge so the user knows
+                // there's more to swipe.
+                640 => ['fixedWidth' => '85vw', 'gap' => '0.75rem'],
             ],
         ];
         $configJson = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
