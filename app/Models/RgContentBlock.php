@@ -90,6 +90,10 @@ class RgContentBlock extends Model
         //   home_cta_band       → full-bleed brand-colored CTA band
         'home_hero_centered', 'home_keyword_grid', 'home_region_grid',
         'home_resort_grid', 'home_blog_strip', 'home_cta_band',
+        // Phase-2 homepage blocks: editorial intro, experience
+        // tiles, hub-link cards, season guide, testimonials, FAQ.
+        'home_editorial_intro', 'home_experience_grid', 'home_hub_links',
+        'home_season_guide', 'home_testimonials', 'home_faq',
         // Page-header content elements migrated out of rg_seo_pages
         // columns into blocks so the admin can reorder / remove / add
         // them like any other content. subtitle_intro replaces the

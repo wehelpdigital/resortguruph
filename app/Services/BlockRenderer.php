@@ -114,6 +114,15 @@ class BlockRenderer
             'home_resort_grid' => $this->homeResortGrid($p, $context),
             'home_blog_strip' => $this->homeBlogStrip($p, $context),
             'home_cta_band' => $this->homeCtaBand($p, $context),
+            // Phase-2 homepage blocks — editorial intro, experience
+            // tiles, hub-link cards, seasonal guide, testimonials,
+            // FAQ. Content seeded from Fable 5 content gen.
+            'home_editorial_intro' => $this->homeEditorialIntro($p, $context),
+            'home_experience_grid' => $this->homeExperienceGrid($p, $context),
+            'home_hub_links' => $this->homeHubLinks($p, $context),
+            'home_season_guide' => $this->homeSeasonGuide($p, $context),
+            'home_testimonials' => $this->homeTestimonials($p, $context),
+            'home_faq' => $this->homeFaq($p, $context),
             default => '',
         };
     }
@@ -4220,6 +4229,415 @@ class BlockRenderer
             $out .= '<a href="' . $this->e($cta['url'] ?? '#') . '" class="inline-block px-7 py-3 rounded-md bg-white font-bold transition ' . $bandMap['btn'] . '">' . $this->e($cta['label']) . '</a>';
         }
         $out .= '</div></section>';
+        return $out;
+    }
+
+    /* ============================================================
+     * Phase-2 homepage block types
+     * ============================================================
+     * Editorial intro, experience grid, hub-link cards, season
+     * guide, testimonials, FAQ. Content seeded from Fable 5
+     * (homepage-content-gen workflow).
+     * ============================================================ */
+
+    /**
+     * home_editorial_intro — editorial 2-col: H2 + paragraphs on
+     * one side, featured photo + caption on the other. Sets the
+     * site's voice right under the hero.
+     *
+     * Payload: heading, paragraphs[], image_src, image_alt,
+     *          image_caption, image_position (left|right|none), accent
+     */
+    private function homeEditorialIntro(array $p, array $context): string
+    {
+        if (isset($p['paragraphs']) && is_string($p['paragraphs'])) {
+            $t = trim($p['paragraphs']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['paragraphs'] = $d;
+            } else {
+                $p['paragraphs'] = array_values(array_filter(preg_split('/\n\n+/', $t)));
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $paragraphs = $p['paragraphs'] ?? [];
+        if (!is_array($paragraphs)) $paragraphs = [];
+        $imgSrc = trim((string) ($p['image_src'] ?? ''));
+        $imgAlt = $this->e((string) ($p['image_alt'] ?? ''));
+        $imgCaption = $this->e((string) ($p['image_caption'] ?? ''));
+        $imgPosition = in_array($p['image_position'] ?? 'right', ['left', 'right', 'none'], true) ? $p['image_position'] : 'right';
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
+        $accentBar = ['brand' => 'bg-blue-600', 'amber' => 'bg-amber-600', 'emerald' => 'bg-emerald-600', 'rose' => 'bg-rose-600', 'violet' => 'bg-violet-600', 'teal' => 'bg-teal-600'][$accent];
+
+        $imgUrl = '';
+        if ($imgSrc !== '') {
+            $imgUrl = str_starts_with($imgSrc, 'http') || str_starts_with($imgSrc, '/') ? $imgSrc : '/storage/' . ltrim($imgSrc, '/');
+        }
+
+        $prose = '<div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 [&_p]:m-0">';
+        foreach ($paragraphs as $para) {
+            $para = trim((string) $para);
+            if ($para === '') continue;
+            $prose .= '<p>' . $this->e($para) . '</p>';
+        }
+        $prose .= '</div>';
+
+        $imgHtml = '';
+        if ($imgUrl !== '' && $imgPosition !== 'none') {
+            $imgHtml = '<figure class="m-0">'
+                . '<img src="' . $this->e($imgUrl) . '" alt="' . $imgAlt . '" loading="lazy" '
+                . 'class="w-full aspect-[4/5] lg:aspect-[3/4] object-cover rounded-2xl shadow-md">'
+                . ($imgCaption !== '' ? '<figcaption class="text-xs text-slate-400 mt-2">' . $imgCaption . '</figcaption>' : '')
+                . '</figure>';
+        }
+
+        $out = '<section class="py-16 md:py-20">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="mb-3 flex items-center gap-3">';
+        $out .= '<span class="block h-[3px] w-12 ' . $accentBar . ' rounded-full"></span>';
+        $out .= '<span class="text-xs uppercase tracking-[0.2em] font-bold text-slate-500">Editorial</span>';
+        $out .= '</div>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight mb-8 max-w-3xl">' . $heading . '</h2>';
+
+        if ($imgHtml !== '' && $imgPosition === 'left') {
+            $out .= '<div class="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 lg:gap-12 items-start">' . $imgHtml . $prose . '</div>';
+        } elseif ($imgHtml !== '' && $imgPosition === 'right') {
+            $out .= '<div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12 items-start">' . $prose . $imgHtml . '</div>';
+        } else {
+            $out .= '<div class="max-w-3xl">' . $prose . '</div>';
+        }
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * home_experience_grid — 6 large image tiles, each linking to
+     * a discovery hub. Photos with gradient overlay + name + tagline.
+     *
+     * Payload: heading, subhead, columns (2|3),
+     *          categories[] of { name, tagline, url, image_src, image_alt }
+     */
+    private function homeExperienceGrid(array $p, array $context): string
+    {
+        if (isset($p['categories']) && is_string($p['categories'])) {
+            $t = trim($p['categories']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['categories'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $categories = $p['categories'] ?? [];
+        if (!is_array($categories) || empty($categories)) return '';
+        $columns = max(2, min(3, (int) ($p['columns'] ?? 3)));
+        $gridClass = [2 => 'sm:grid-cols-2', 3 => 'sm:grid-cols-2 lg:grid-cols-3'][$columns];
+
+        $out = '<section class="py-16 md:py-20 bg-slate-50" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="mb-8 text-center max-w-3xl mx-auto">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+        $out .= '</div>';
+        $out .= '<div class="grid ' . $gridClass . ' gap-4 md:gap-5">';
+        foreach ($categories as $cat) {
+            $cArr = $this->toArrayShapeSimple($cat);
+            $name = $this->e((string) ($cArr['name'] ?? ''));
+            $tagline = $this->e((string) ($cArr['tagline'] ?? ''));
+            $url = $this->e((string) ($cArr['url'] ?? '#'));
+            $imgSrc = (string) ($cArr['image_src'] ?? '');
+            $imgAlt = $this->e((string) ($cArr['image_alt'] ?? $name));
+            if ($name === '') continue;
+            $imgUrl = '';
+            if ($imgSrc !== '') {
+                $imgUrl = str_starts_with($imgSrc, 'http') || str_starts_with($imgSrc, '/') ? $imgSrc : '/storage/' . ltrim($imgSrc, '/');
+            }
+            $out .= '<a href="' . $url . '" class="rg-exp-card group">';
+            if ($imgUrl !== '') {
+                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $imgAlt . '" loading="lazy" class="rg-exp-img">';
+            } else {
+                $out .= '<div class="rg-exp-img" style="background:linear-gradient(135deg,#475569 0%,#334155 60%,#1e293b 100%)"></div>';
+            }
+            $out .= '<div class="rg-exp-overlay"></div>';
+            $out .= '<div class="rg-exp-body">';
+            $out .= '<h3 class="rg-exp-name">' . $name . '</h3>';
+            if ($tagline !== '') $out .= '<p class="rg-exp-tag">' . $tagline . '</p>';
+            $out .= '<span class="rg-exp-cue">Explore '
+                . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
+                . '</span>';
+            $out .= '</div></a>';
+        }
+        $out .= '</div></div>';
+        $out .= '<style>'
+            . '.rg-exp-card{position:relative;display:block;height:340px;border-radius:1.1rem;overflow:hidden;background:#e2e8f0;box-shadow:0 4px 12px -4px rgba(15,23,42,.18);transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s ease;text-decoration:none;color:inherit}'
+            . '@media(min-width:768px){.rg-exp-card{height:380px}}'
+            . '.rg-exp-card:hover{transform:translateY(-6px);box-shadow:0 24px 48px -16px rgba(15,23,42,.3)}'
+            . '.rg-exp-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.22,1,.36,1)}'
+            . '.rg-exp-card:hover .rg-exp-img{transform:scale(1.05)}'
+            . '.rg-exp-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.05) 0%,rgba(15,23,42,.35) 45%,rgba(15,23,42,.85) 100%);pointer-events:none}'
+            . '.rg-exp-body{position:absolute;left:0;right:0;bottom:0;padding:1.5rem 1.6rem;color:#fff}'
+            . '.rg-exp-name{font-size:1.6rem;font-weight:800;line-height:1.15;text-shadow:0 2px 12px rgba(0,0,0,.4);margin:0 0 .35rem;letter-spacing:-.01em}'
+            . '@media(min-width:768px){.rg-exp-name{font-size:1.85rem}}'
+            . '.rg-exp-tag{font-size:.95rem;color:rgba(255,255,255,.92);margin:0 0 .85rem;line-height:1.4;max-width:30ch}'
+            . '.rg-exp-cue{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:700;color:#fef3c7;letter-spacing:.04em;text-transform:uppercase;transition:gap .25s ease}'
+            . '.rg-exp-card:hover .rg-exp-cue{gap:.7rem}'
+            . '.rg-exp-cue svg{width:.95rem;height:.95rem;transition:transform .25s ease}'
+            . '.rg-exp-card:hover .rg-exp-cue svg{transform:translateX(.2rem)}'
+            . '</style>';
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * home_hub_links — 4 hub-page link cards (Eat / Do / Buy / Meet).
+     * Compact card row with icon + label + tagline + arrow.
+     *
+     * Payload: heading, subhead, hubs[] of { label, url, icon, tagline }
+     */
+    private function homeHubLinks(array $p, array $context): string
+    {
+        if (isset($p['hubs']) && is_string($p['hubs'])) {
+            $t = trim($p['hubs']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['hubs'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $hubs = $p['hubs'] ?? [];
+        if (!is_array($hubs) || empty($hubs)) return '';
+
+        $accentMap = [
+            'rose' => ['bg' => 'bg-rose-50', 'text' => 'text-rose-700', 'border' => 'hover:border-rose-300'],
+            'emerald' => ['bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'border' => 'hover:border-emerald-300'],
+            'violet' => ['bg' => 'bg-violet-50', 'text' => 'text-violet-700', 'border' => 'hover:border-violet-300'],
+            'teal' => ['bg' => 'bg-teal-50', 'text' => 'text-teal-700', 'border' => 'hover:border-teal-300'],
+            'amber' => ['bg' => 'bg-amber-50', 'text' => 'text-amber-700', 'border' => 'hover:border-amber-300'],
+            'brand' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-700', 'border' => 'hover:border-blue-300'],
+        ];
+
+        $out = '<section class="py-16 md:py-20">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="mb-8 max-w-3xl">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+        $out .= '</div>';
+        $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">';
+        foreach ($hubs as $h) {
+            $hArr = $this->toArrayShapeSimple($h);
+            $label = $this->e((string) ($hArr['label'] ?? ''));
+            $url = $this->e((string) ($hArr['url'] ?? '#'));
+            $icon = (string) ($hArr['icon'] ?? '🌟');
+            $tagline = $this->e((string) ($hArr['tagline'] ?? ''));
+            $accent = $hArr['accent'] ?? 'brand';
+            if (!isset($accentMap[$accent])) $accent = 'brand';
+            $am = $accentMap[$accent];
+            if ($label === '') continue;
+            $out .= '<a href="' . $url . '" class="group block rounded-2xl border border-slate-200 ' . $am['border'] . ' bg-white hover:shadow-lg p-5 transition-all">';
+            $out .= '<div class="w-12 h-12 rounded-xl ' . $am['bg'] . ' ' . $am['text'] . ' flex items-center justify-center text-2xl mb-4">' . $icon . '</div>';
+            $out .= '<h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:' . $am['text'] . ' transition-colors">' . $label . '</h3>';
+            if ($tagline !== '') $out .= '<p class="text-sm text-slate-600 leading-relaxed mb-4">' . $tagline . '</p>';
+            $out .= '<span class="text-xs font-bold ' . $am['text'] . ' inline-flex items-center gap-1.5 uppercase tracking-wider">Open <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>';
+            $out .= '</a>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_season_guide — 3 season cards with months + blurb + tip.
+     * Helps travelers plan when to come.
+     *
+     * Payload: heading, subhead, seasons[] of { name, months, blurb, tip }
+     */
+    private function homeSeasonGuide(array $p, array $context): string
+    {
+        if (isset($p['seasons']) && is_string($p['seasons'])) {
+            $t = trim($p['seasons']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['seasons'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $seasons = $p['seasons'] ?? [];
+        if (!is_array($seasons) || empty($seasons)) return '';
+        $palettes = [
+            ['accent' => 'amber', 'bg' => 'bg-amber-50', 'text' => 'text-amber-700', 'border' => 'border-amber-200', 'icon' => '☀️'],
+            ['accent' => 'brand', 'bg' => 'bg-blue-50', 'text' => 'text-blue-700', 'border' => 'border-blue-200', 'icon' => '🌧️'],
+            ['accent' => 'emerald', 'bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200', 'icon' => '🌤️'],
+        ];
+
+        $out = '<section class="py-16 md:py-20 bg-gradient-to-b from-white to-slate-50" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="mb-10 text-center max-w-3xl mx-auto">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+        $out .= '</div>';
+        $out .= '<div class="grid md:grid-cols-3 gap-5">';
+        foreach ($seasons as $idx => $s) {
+            $sArr = $this->toArrayShapeSimple($s);
+            $name = $this->e((string) ($sArr['name'] ?? ''));
+            $months = $this->e((string) ($sArr['months'] ?? ''));
+            $blurb = $this->e((string) ($sArr['blurb'] ?? ''));
+            $tip = $this->e((string) ($sArr['tip'] ?? ''));
+            if ($name === '') continue;
+            $pal = $palettes[$idx % count($palettes)];
+            $out .= '<div class="rounded-2xl border ' . $pal['border'] . ' bg-white p-6 shadow-sm">';
+            $out .= '<div class="flex items-start justify-between mb-3">';
+            $out .= '<div>';
+            $out .= '<div class="text-2xl mb-1">' . $pal['icon'] . '</div>';
+            $out .= '<h3 class="text-xl font-extrabold text-slate-900">' . $name . '</h3>';
+            if ($months !== '') $out .= '<div class="text-xs font-bold uppercase tracking-wider ' . $pal['text'] . ' mt-1">' . $months . '</div>';
+            $out .= '</div></div>';
+            if ($blurb !== '') $out .= '<p class="text-sm text-slate-700 leading-relaxed mb-4">' . $blurb . '</p>';
+            if ($tip !== '') {
+                $out .= '<div class="' . $pal['bg'] . ' rounded-lg p-3 border-l-4 border-' . str_replace(['brand'], ['blue'], $pal['accent']) . '-400">';
+                $out .= '<div class="text-[10px] uppercase tracking-wider font-bold ' . $pal['text'] . ' mb-1">Tip</div>';
+                $out .= '<p class="text-sm text-slate-700 leading-snug m-0">' . $tip . '</p>';
+                $out .= '</div>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_testimonials — 3-up traveler review cards with avatar,
+     * star rating, location.
+     *
+     * Payload: heading, subhead, reviews[] of
+     *          { text, author, location, rating, avatar_url }
+     */
+    private function homeTestimonials(array $p, array $context): string
+    {
+        if (isset($p['reviews']) && is_string($p['reviews'])) {
+            $t = trim($p['reviews']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['reviews'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $reviews = $p['reviews'] ?? [];
+        if (!is_array($reviews) || empty($reviews)) return '';
+
+        $out = '<section class="py-16 md:py-20">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="mb-10 text-center max-w-3xl mx-auto">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+        $out .= '</div>';
+        $out .= '<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">';
+        foreach ($reviews as $rev) {
+            $rArr = $this->toArrayShapeSimple($rev);
+            $text = $this->e((string) ($rArr['text'] ?? ''));
+            $author = $this->e((string) ($rArr['author'] ?? ''));
+            $location = $this->e((string) ($rArr['location'] ?? ''));
+            $rating = (int) ($rArr['rating'] ?? 5);
+            $rating = max(1, min(5, $rating));
+            $avatar = (string) ($rArr['avatar_url'] ?? '');
+            $initial = $author !== '' ? mb_strtoupper(mb_substr(strip_tags($author), 0, 1)) : '?';
+            if ($text === '') continue;
+
+            $out .= '<figure class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">';
+            $out .= '<div class="flex items-center gap-1 mb-3">';
+            for ($i = 0; $i < 5; $i++) {
+                $color = $i < $rating ? '#f59e0b' : '#e2e8f0';
+                $out .= '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="' . $color . '"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+            }
+            $out .= '</div>';
+            $out .= '<blockquote class="text-sm text-slate-700 leading-relaxed mb-5 flex-1 m-0">';
+            $out .= '<svg class="w-5 h-5 text-slate-300 mb-1 inline-block" viewBox="0 0 24 24" fill="currentColor"><path d="M6 17h3l2-4V7H5v6h3l-2 4zm10 0h3l2-4V7h-6v6h3l-2 4z"/></svg> ';
+            $out .= $text;
+            $out .= '</blockquote>';
+            $out .= '<figcaption class="flex items-center gap-3 mt-auto">';
+            if ($avatar !== '') {
+                $imgUrl = str_starts_with($avatar, 'http') || str_starts_with($avatar, '/') ? $avatar : '/storage/' . ltrim($avatar, '/');
+                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $author . '" class="w-10 h-10 rounded-full object-cover bg-slate-200">';
+            } else {
+                $out .= '<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-emerald-500 text-white flex items-center justify-center font-bold text-sm">' . $this->e($initial) . '</div>';
+            }
+            $out .= '<div>';
+            if ($author !== '') $out .= '<div class="text-sm font-bold text-slate-900">' . $author . '</div>';
+            if ($location !== '') $out .= '<div class="text-xs text-slate-500">' . $location . '</div>';
+            $out .= '</div></figcaption>';
+            $out .= '</figure>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_faq — FAQ accordion with schema.org markup baked-in.
+     * Each Q is a native <details> for keyboard + screen-reader
+     * support. Also emits FAQPage JSON-LD inline so Google can
+     * pull the rich-result eligible markup straight from the
+     * homepage.
+     *
+     * Payload: heading, subhead, faqs[] of { question, answer }
+     */
+    private function homeFaq(array $p, array $context): string
+    {
+        if (isset($p['faqs']) && is_string($p['faqs'])) {
+            $t = trim($p['faqs']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['faqs'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $faqs = $p['faqs'] ?? [];
+        if (!is_array($faqs) || empty($faqs)) return '';
+
+        // Schema.org FAQPage JSON-LD for rich results
+        $jsonLdItems = [];
+        foreach ($faqs as $f) {
+            $fArr = $this->toArrayShapeSimple($f);
+            $q = trim((string) ($fArr['question'] ?? ''));
+            $a = trim((string) ($fArr['answer'] ?? ''));
+            if ($q === '' || $a === '') continue;
+            $jsonLdItems[] = [
+                '@type' => 'Question',
+                'name' => $q,
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $a],
+            ];
+        }
+
+        $out = '<section class="py-16 md:py-20 bg-slate-50" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="mb-10 text-center">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+        $out .= '</div>';
+        $out .= '<div class="space-y-3">';
+        foreach ($faqs as $f) {
+            $fArr = $this->toArrayShapeSimple($f);
+            $q = $this->e(trim((string) ($fArr['question'] ?? '')));
+            $a = $this->e(trim((string) ($fArr['answer'] ?? '')));
+            if ($q === '' || $a === '') continue;
+            $out .= '<details class="group rounded-xl border border-slate-200 bg-white overflow-hidden">';
+            $out .= '<summary class="flex items-center justify-between gap-4 p-5 cursor-pointer select-none hover:bg-slate-50 transition-colors">';
+            $out .= '<h3 class="text-base sm:text-lg font-bold text-slate-900 m-0">' . $q . '</h3>';
+            $out .= '<svg class="w-5 h-5 text-slate-400 shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
+            $out .= '</summary>';
+            $out .= '<div class="px-5 pb-5 pt-1 text-slate-700 leading-relaxed text-sm sm:text-base border-t border-slate-100">' . $a . '</div>';
+            $out .= '</details>';
+        }
+        $out .= '</div></div>';
+        if (!empty($jsonLdItems)) {
+            $out .= '<script type="application/ld+json">' . json_encode([
+                '@context' => 'https://schema.org',
+                '@type' => 'FAQPage',
+                'mainEntity' => $jsonLdItems,
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
+        }
+        $out .= '</section>';
         return $out;
     }
 }
