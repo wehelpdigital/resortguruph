@@ -4026,7 +4026,10 @@ class BlockRenderer
         if (is_string($viewAll)) $viewAll = json_decode($viewAll, true) ?: [];
 
         $sectionId = 'rg-hkg-' . substr(md5(json_encode([$heading, $source])), 0, 6);
+        // Inner max-w-6xl matches the other home_* blocks; without
+        // it the grid spans the page-home wrapper's full width.
         $out = '<section id="' . $sectionId . '" class="py-16">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
         $out .= '<div class="flex items-end justify-between mb-8 flex-wrap gap-3"><div>';
         if ($heading !== '') $out .= '<h2 class="text-3xl font-bold text-slate-900">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-slate-600 mt-1">' . $subhead . '</p>';
@@ -4046,7 +4049,8 @@ class BlockRenderer
                 . '<p class="text-sm text-slate-500">Browse top picks &rarr;</p>'
                 . '</a>';
         }
-        $out .= '</div></section>';
+        // Closes: grid </div>, max-w-6xl wrapper </div>, </section>.
+        $out .= '</div></div></section>';
         return $out;
     }
 
