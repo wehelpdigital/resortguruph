@@ -4315,21 +4315,24 @@ class BlockRenderer
                 $preText = $this->e(trim($m[1]));
                 if ($curveWord !== '' && $preText !== '') {
                     $escCurve = preg_quote($curveWord, '/');
-                    // Filled brush silhouette (not stroked) — thin on
-                    // the left, thicker on the right. Shape is a
-                    // closed path: top edge cubic from (8,8) →
-                    // (225,9), vertical right end (225,9) → (225,15),
-                    // bottom edge cubic back to (8,10), implicit
-                    // close to (8,8). Right end extended from x=210
-                    // to x=225 (+15 viewBox units ≈ +17-19px screen).
+                    // Filled brush silhouette (not stroked) — true
+                    // brush taper: thin at BOTH tips, thick in the
+                    // middle. Shape is a closed path: top edge cubic
+                    // from (8,7) → (225,8), vertical right tip (225,8)
+                    // → (225,10), bottom edge cubic back to (8,9),
+                    // implicit close to (8,7).
                     // Widths along the brush:
-                    //   left  (x=8):   10-8 = 2 units (thin)
-                    //   apex  (x~104): bottom y(.5) - top y(.5)
-                    //                  = 19.25 - 15.25 = 4 units
-                    //   right (x=225): 15-9 = 6 units (thick)
+                    //   left tip  (x=8):    9-7 = 2 units (thin)
+                    //   apex      (x~104):  bottom y(.5) - top y(.5)
+                    //                       = 27.5 - 21.75 = 5.75
+                    //                       units (thick middle)
+                    //   right tip (x=225):  10-8 = 2 units (thin)
+                    // Controls pushed deeper (y=25/28 top, y=32/35
+                    // bottom) for a more visible arc — brush apex
+                    // now sits near the bottom of viewBox 28.
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
                         . '<svg class="rg-uss-curve-svg" viewBox="0 0 240 28" aria-hidden="true">'
-                        . '<path d="M 8 8 C 60 18 140 17 225 9 L 225 15 C 140 21 60 22 8 10 Z" fill="currentColor"/>'
+                        . '<path d="M 8 7 C 60 25 140 28 225 8 L 225 10 C 140 35 60 32 8 9 Z" fill="currentColor"/>'
                         . '</svg>'
                         . '</span>';
                     $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
@@ -4393,7 +4396,11 @@ class BlockRenderer
         }
         $hasBgVideo = $bgVideoId !== '';
 
-        $sectionStyle = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;position:relative;overflow:hidden';
+        // No overflow:hidden on the section itself — .rg-uss-video
+        // already clips the oversized iframe internally, and
+        // overflow:hidden here would also clip the typeahead panel
+        // that drops down below the search shell.
+        $sectionStyle = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;position:relative';
         if ($hasBgImage) {
             $sectionStyle .= ';background-image:url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
         }
@@ -4517,7 +4524,7 @@ class BlockRenderer
             . '.rg-uss__chips>span{font-weight:700;letter-spacing:.02em;margin-right:.25rem}'
             . '.rg-uss__chip{background:rgba(255,255,255,.85);border:1.5px solid #e2e8f0;color:#334155;padding:.4rem .85rem;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}'
             . '.rg-uss__chip:hover{background:var(--rg-acc);border-color:var(--rg-acc);color:#fff;transform:translateY(-1px)}'
-            . '.rg-uss__panel{position:absolute;top:calc(100% + .85rem);left:0;right:0;max-height:30rem;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 30px 70px -20px rgba(15,23,42,.35),0 10px 24px -8px rgba(15,23,42,.15);padding:.6rem;z-index:30;animation:rgUssFade .18s ease-out;text-align:left}'
+            . '.rg-uss__panel{position:absolute;top:calc(100% + .85rem);left:0;right:0;max-height:30rem;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 30px 70px -20px rgba(15,23,42,.35),0 10px 24px -8px rgba(15,23,42,.15);padding:.6rem;z-index:100;animation:rgUssFade .18s ease-out;text-align:left}'
             . '@keyframes rgUssFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}'
             . '.rg-uss__group-label{font-size:.68rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#94a3b8;padding:.75rem 1rem .35rem}'
             . '.rg-uss__opt{display:flex;align-items:center;gap:.95rem;padding:.7rem 1rem;border-radius:.85rem;cursor:pointer;text-decoration:none;color:inherit;transition:background .12s ease}'
@@ -4532,8 +4539,8 @@ class BlockRenderer
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
             . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.55em}'
-            . '.rg-uss-curve-svg{position:absolute;left:-10px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
-            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 10px)}}'
+            . '.rg-uss-curve-svg{position:absolute;left:-10px;width:100%;height:auto;bottom:calc(-.7rem - 25px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 25px)}}'
             . '.rg-uss-title-break{display:block;height:15px}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
