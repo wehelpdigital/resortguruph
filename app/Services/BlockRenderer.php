@@ -4303,6 +4303,15 @@ class BlockRenderer
         ][$bgGradient] ?? '';
         $accentText = ['brand' => 'text-blue-700', 'amber' => 'text-amber-700', 'emerald' => 'text-emerald-700', 'rose' => 'text-rose-700', 'violet' => 'text-violet-700', 'teal' => 'text-teal-700'][$accent];
         $accentHex = ['brand' => '#2563eb', 'amber' => '#d97706', 'emerald' => '#059669', 'rose' => '#e11d48', 'violet' => '#7c3aed', 'teal' => '#0d9488'][$accent];
+        // The brush underline color is independent of the accent
+        // (which still drives the Search button bg, hover state,
+        // etc). Defaults to accent hex but can be overridden via
+        // the curve_color payload field for a totally different
+        // brush tint.
+        $curveColor = trim((string) ($p['curve_color'] ?? ''));
+        if ($curveColor === '' || !preg_match('/^#[0-9a-fA-F]{3,8}$/', $curveColor)) {
+            $curveColor = $accentHex;
+        }
 
         // Title with {{accent}}...{{/accent}} support, optional
         // line-break before the accent span, and optional curved
@@ -4561,7 +4570,7 @@ class BlockRenderer
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
             . '.rg-uss-curve{position:relative;display:inline-block;color:inherit}'
-            . '.rg-uss-curve-svg{position:absolute;left:5px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '.rg-uss-curve-svg{position:absolute;left:5px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $curveColor . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
             . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 10px)}}'
             . '.rg-uss-title-break{display:block;height:30px}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
