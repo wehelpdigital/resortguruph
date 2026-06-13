@@ -4467,16 +4467,16 @@ class BlockRenderer
         $out .= '<input id="' . $boxId . '" type="search" class="rg-uss__input" placeholder="' . $placeholder . '" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' . $panelId . '">';
         $out .= '<button type="button" class="rg-uss__clear" aria-label="Clear" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
         $out .= '<button type="button" class="rg-uss__submit" aria-label="Search">Search</button>';
-        // Alt CTA inside the shell, after Search. "or Create Your
-        // Adventure" with a left-pointing arrow that nudges left
+        // Alt CTA inside the shell, after Search. Solid yellow pill
+        // (like the blue Search but in amber) with the label first
+        // and a right-pointing arrow after that nudges right
         // periodically (CSS-only animation). Click focuses the
-        // search input, treating the text as a softer "or start
-        // typing" invitation. On small screens the label hides
-        // and only the animated arrow shows (aria-label keeps
-        // accessibility intact).
+        // search input. On small screens the label hides and only
+        // the animated arrow shows (aria-label keeps accessibility
+        // intact).
         $out .= '<button type="button" class="rg-uss__alt" aria-label="or Create Your Adventure" onclick="document.getElementById(\'' . $boxId . '\').focus()">';
-        $out .= '<svg class="rg-uss__alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
         $out .= '<span class="rg-uss__alt-text">or Create Your Adventure</span>';
+        $out .= '<svg class="rg-uss__alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
         $out .= '</button>';
         $out .= '</div>';
         $out .= '<div class="rg-uss__panel" id="' . $panelId . '" role="listbox" hidden></div>';
@@ -4508,7 +4508,7 @@ class BlockRenderer
 
         // CSS — search styling that matches modern travel sites
         $out .= '<style>'
-            . '.rg-uss-search{max-width:780px;width:100%;margin:0 auto;position:relative;z-index:10;--rg-acc:' . $accentHex . '}'
+            . '.rg-uss-search{max-width:1000px;width:100%;margin:0 auto;position:relative;z-index:10;--rg-acc:' . $accentHex . '}'
             . '.rg-uss__tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin-bottom:1.1rem}'
             . '.rg-uss__tab{display:inline-flex;align-items:center;padding:.55rem 1.05rem;background:rgba(255,255,255,.85);border:1.5px solid #e2e8f0;border-radius:999px;font-size:.85rem;font-weight:600;color:#475569;cursor:pointer;transition:all .15s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}'
             . '.rg-uss__tab:hover{border-color:#94a3b8;color:#0f172a;transform:translateY(-1px)}'
@@ -4531,12 +4531,12 @@ class BlockRenderer
             . '.rg-uss__submit{flex:0 0 auto;background:var(--rg-acc);color:#fff;border:0;border-radius:999px;padding:.85rem 1.4rem;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s ease;letter-spacing:.01em}'
             . '@media(min-width:768px){.rg-uss__submit{padding:1rem 1.8rem;font-size:1rem}}'
             . '.rg-uss__submit:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(0,0,0,.25)}'
-            . '.rg-uss__alt{flex:0 0 auto;display:inline-flex;align-items:center;gap:.45rem;padding:.55rem .9rem;margin-left:.25rem;font-size:.82rem;font-weight:700;color:#475569;background:transparent;border:0;cursor:pointer;border-radius:999px;transition:color .18s ease,background-color .18s ease;white-space:nowrap;letter-spacing:.01em;text-transform:uppercase}'
-            . '@media(min-width:768px){.rg-uss__alt{padding:.7rem 1rem;font-size:.85rem}}'
-            . '.rg-uss__alt:hover{color:var(--rg-acc);background:color-mix(in srgb,var(--rg-acc) 10%,transparent)}'
-            . '.rg-uss__alt-arrow{width:1.05rem;height:1.05rem;flex-shrink:0;animation:rgUssArrowNudge 1.6s ease-in-out infinite}'
-            . '@keyframes rgUssArrowNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-5px)}}'
-            . '@media(max-width:639px){.rg-uss__alt-text{display:none}.rg-uss__alt{padding:.55rem .55rem;margin-left:.1rem}}'
+            . '.rg-uss__alt{flex:0 0 auto;display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.4rem;margin-left:.35rem;font-size:.95rem;font-weight:700;color:#fff;background:#eab308;border:0;cursor:pointer;border-radius:999px;transition:all .18s ease;white-space:nowrap;letter-spacing:.01em}'
+            . '@media(min-width:768px){.rg-uss__alt{padding:1rem 1.6rem;font-size:1rem}}'
+            . '.rg-uss__alt:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(202,138,4,.45);background:#ca8a04}'
+            . '.rg-uss__alt-arrow{width:1.15rem;height:1.15rem;flex-shrink:0;animation:rgUssArrowNudge 1.6s ease-in-out infinite}'
+            . '@keyframes rgUssArrowNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}'
+            . '@media(max-width:639px){.rg-uss__alt-text{display:none}.rg-uss__alt{padding:.85rem .85rem;margin-left:.15rem}}'
             . '@media(prefers-reduced-motion:reduce){.rg-uss__alt-arrow{animation:none}}'
             . '.rg-uss__chips{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.45rem;margin-top:1.1rem;font-size:.82rem;color:#64748b}'
             . '.rg-uss__chips>span{font-weight:700;letter-spacing:.02em;margin-right:.25rem}'
@@ -4556,9 +4556,9 @@ class BlockRenderer
             . '.rg-uss__opt-chip{flex:0 0 auto;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:#64748b;background:#f1f5f9;padding:.2rem .5rem;border-radius:999px}'
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
-            . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.55em}'
-            . '.rg-uss-curve-svg{position:absolute;left:-10px;width:100%;height:auto;bottom:calc(-.7rem - 25px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
-            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 25px)}}'
+            . '.rg-uss-curve{position:relative;display:inline-block;color:inherit}'
+            . '.rg-uss-curve-svg{position:absolute;left:-10px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 10px)}}'
             . '.rg-uss-title-break{display:block;height:15px}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
