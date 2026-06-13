@@ -47,6 +47,40 @@ class FoodTripController extends Controller
 
         $searchIndex = $this->buildSearchIndex($groups);
 
+        // Block-driven render: if the `food-trip` static_page row
+        // has blocks attached, render them via BlockRenderer with
+        // the controller data exposed via context. Falls back to
+        // the legacy view otherwise. Validates _lt for Live Editor.
+        $page = \DB::table('rg_static_pages')
+            ->where('slug', 'food-trip')
+            ->where('is_published', 1)
+            ->first();
+        if ($page) {
+            $blocks = \App\Models\RgContentBlock::forOwner('static_page', $page->id);
+            if ($blocks->isNotEmpty()) {
+                $liveEdit = false;
+                $request = request();
+                if ($request && $request->query('_lt')) {
+                    $liveEdit = \App\Support\LiveEditToken::valid('food-trip', $request->query('_lt'));
+                }
+                $renderer = app(\App\Services\BlockRenderer::class);
+                $renderedBlocks = $renderer->renderBlocks($blocks, [
+                    'static_page_id' => $page->id,
+                    'foodKeywords' => $foodKeywords,
+                    'groups' => $groups,
+                    'featuredRestaurants' => $featuredRestaurants,
+                    'stats' => $stats,
+                    'searchIndex' => $searchIndex,
+                    'live_edit' => $liveEdit,
+                ]);
+                return view('food-trip.blocks', [
+                    'page' => $page,
+                    'renderedBlocks' => $renderedBlocks,
+                    'liveEdit' => $liveEdit,
+                ]);
+            }
+        }
+
         return view('food-trip.index', compact('foodKeywords', 'groups', 'featuredRestaurants', 'stats', 'searchIndex'));
     }
 
