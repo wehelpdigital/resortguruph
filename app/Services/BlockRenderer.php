@@ -4317,8 +4317,12 @@ class BlockRenderer
                     $escCurve = preg_quote($curveWord, '/');
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
                         . '<svg class="rg-uss-curve-svg" viewBox="0 0 200 14" aria-hidden="true" preserveAspectRatio="none">'
-                        . '<path d="M3 9 Q 45 1 100 7 T 197 6" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'
-                        . '</svg></span>';
+                        . '<path d="M2 8 C 30 2 60 14 100 8 C 140 2 170 14 198 8" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'
+                        . '</svg>'
+                        . '<svg class="rg-uss-curve-plane" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">'
+                        . '<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z"/>'
+                        . '</svg>'
+                        . '</span>';
                     $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
                 }
                 $separator = $breakBefore ? '<br class="rg-uss-title-break">' : ($m[1] !== '' ? ' ' : '');
@@ -4384,15 +4388,14 @@ class BlockRenderer
         if ($hasBgImage) {
             $sectionStyle .= ';background-image:url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
         }
-        // Text color flips to white for any darkened background
-        // (photo overlay OR dark-tinted video). The video scrim is
-        // a soft dark gradient so light text reads cleanly.
-        $darkBg = $hasBgImage || $hasBgVideo;
-        $titleColor = $darkBg ? 'text-white' : 'text-slate-900';
-        $taglineColor = $darkBg ? 'text-white/90' : 'text-slate-600';
-        $eyebrowColor = $darkBg ? 'text-white/85' : $accentText;
-        $statsValueColor = $darkBg ? 'text-white' : 'text-slate-900';
-        $statsLabelColor = $darkBg ? 'text-white/80' : 'text-slate-600';
+        // Text color flips to white only for photo backgrounds. The
+        // video uses a light white scrim that fades the footage but
+        // keeps slate-900 text readable through it.
+        $titleColor = $hasBgImage ? 'text-white' : 'text-slate-900';
+        $taglineColor = $hasBgImage ? 'text-white/90' : 'text-slate-600';
+        $eyebrowColor = $hasBgImage ? 'text-white/85' : $accentText;
+        $statsValueColor = $hasBgImage ? 'text-white' : 'text-slate-900';
+        $statsLabelColor = $hasBgImage ? 'text-white/80' : 'text-slate-600';
 
         $out = '<section class="rg-uss ' . $bgClass . '" style="' . $sectionStyle . '">';
         // Photo-mode dark overlay — enough to keep large titles readable
@@ -4407,10 +4410,12 @@ class BlockRenderer
         // white scrim above it fades the video so the slate-900 text
         // remains crisp and the page still reads as a clean hero.
         if ($hasBgVideo) {
+            $ytStart = max(0, (int) ($p['video_start_seconds'] ?? 10));
             $ytSrc = 'https://www.youtube.com/embed/' . $bgVideoId
                 . '?autoplay=1&mute=1&loop=1&playlist=' . $bgVideoId
                 . '&controls=0&showinfo=0&modestbranding=1&rel=0'
-                . '&playsinline=1&iv_load_policy=3&disablekb=1&fs=0';
+                . '&playsinline=1&iv_load_policy=3&disablekb=1&fs=0'
+                . '&start=' . $ytStart;
             $out .= '<div class="rg-uss-video" aria-hidden="true">';
             $out .= '<iframe src="' . $this->e($ytSrc) . '" frameborder="0"'
                 . ' allow="autoplay; encrypted-media; picture-in-picture"'
@@ -4421,7 +4426,7 @@ class BlockRenderer
         }
         $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
         if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
-        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.05]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.25] md:leading-[1.22]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
         if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . $taglineColor . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
 
         // Search shell
@@ -4512,13 +4517,15 @@ class BlockRenderer
             . '.rg-uss__opt-chip{flex:0 0 auto;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:#64748b;background:#f1f5f9;padding:.2rem .5rem;border-radius:999px}'
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
-            . '.rg-uss-curve{position:relative;display:inline-block;color:inherit}'
-            . '.rg-uss-curve-svg{position:absolute;left:0;right:0;bottom:-.6rem;width:100%;height:1.1rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;stroke-width:6}'
-            . '.rg-uss-title-break{display:block;line-height:0}'
+            . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.3em}'
+            . '.rg-uss-curve-svg{position:absolute;left:0;right:.3em;bottom:-.7rem;width:calc(100% - .3em);height:1.2rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;stroke-width:6}'
+            . '.rg-uss-curve-plane{position:absolute;right:-.55em;bottom:-1.1rem;width:1.5rem;height:1.5rem;color:' . $accentHex . ';pointer-events:none;transform:rotate(-12deg);filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '@media(min-width:768px){.rg-uss-curve-plane{width:1.85rem;height:1.85rem;right:-.7em;bottom:-1.35rem}}'
+            . '.rg-uss-title-break{display:block}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
             . '@media(min-aspect-ratio:16/9){.rg-uss-video iframe{width:100%;height:56.25vw;min-height:100%}}'
-            . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.42) 0%,rgba(15,23,42,.32) 50%,rgba(15,23,42,.5) 100%);pointer-events:none;z-index:1}'
+            . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.50) 50%,rgba(255,255,255,.65) 100%);pointer-events:none;z-index:1}'
             . '</style>';
 
         // JSON index + JS
