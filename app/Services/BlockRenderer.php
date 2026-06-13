@@ -133,6 +133,7 @@ class BlockRenderer
             'home_faq' => $this->homeFaq($p, $context),
             'home_owner_inline_band' => $this->homeOwnerInlineBand($p, $context),
             'home_how_it_works' => $this->homeHowItWorks($p, $context),
+            'home_category_accordion' => $this->homeCategoryAccordion($p, $context),
             default => '',
         };
     }
@@ -5137,6 +5138,192 @@ class BlockRenderer
             $out .= '</div>';
         }
         $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_category_accordion — vertical accordion of category
+     * panels using native <details>/<summary>. Synthesized from
+     * Editorial Strips + Bento Peel + Immersive Bands archetypes.
+     *
+     * Each item: icon tile + thumbnail + label/kicker + chevron in
+     * the collapsed strip. Expanded panel uses a bento layout:
+     * hero image left (42% on desktop), content panel right with
+     * accent rule + description + CTA button.
+     *
+     * Payload:
+     *   eyebrow, heading, subhead
+     *   items[] of {
+     *     label, eyebrow, description, cta_label, url,
+     *     image (path), image_alt, accent (brand|amber|emerald|
+     *     rose|violet|teal|sky)
+     *   }
+     */
+    private function homeCategoryAccordion(array $p, array $context): string
+    {
+        if (isset($p['items']) && is_string($p['items'])) {
+            $t = trim($p['items']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['items'] = $d;
+            }
+        }
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $items = $p['items'] ?? [];
+        if (!is_array($items) || empty($items)) return '';
+
+        $accentRgb = [
+            'brand'   => '37,99,235',
+            'amber'   => '217,119,6',
+            'emerald' => '5,150,105',
+            'rose'    => '225,29,72',
+            'violet'  => '124,58,237',
+            'teal'    => '13,148,136',
+            'sky'     => '14,165,233',
+        ];
+
+        // Category-specific icon SVG paths (Heroicons-style).
+        // Keyed by label so the payload doesn't need to ship them.
+        $iconPaths = [
+            'Where to Go'      => '<path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/>',
+            'Where to Eat'     => '<path d="M3 11h18M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M6 11v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6"/>',
+            'What to Eat'      => '<path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M9 7V4M12 7V4M15 7V4"/>',
+            'What to Do'       => '<polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9 12 2"/>',
+            'What to Buy'      => '<path d="M5 8h14l-1.5 12.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 8z"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/>',
+            'Cultures to Meet' => '<path d="M5 9c0-3 2.5-5 6-5s6 2 6 5c0 3-1.5 6-6 6S5 12 5 9z"/><path d="M9 19l3 3 3-3"/>',
+        ];
+
+        $out = '<section class="rg-cat-acc py-16 md:py-24" style="background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)" aria-label="' . ($heading !== '' ? $heading : 'Explore the Philippines') . '">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+
+        if ($eyebrow !== '' || $heading !== '' || $subhead !== '') {
+            $out .= '<div class="mb-10 md:mb-14 text-center max-w-2xl mx-auto">';
+            if ($eyebrow !== '') $out .= '<p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-3">' . $eyebrow . '</p>';
+            if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-[-0.015em] leading-tight mb-3">' . $heading . '</h2>';
+            if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600 leading-relaxed">' . $subhead . '</p>';
+            $out .= '</div>';
+        }
+
+        $out .= '<div class="rg-cat-acc__list">';
+        foreach ($items as $idx => $item) {
+            $arr = $this->toArrayShapeSimple($item);
+            $label = (string) ($arr['label'] ?? '');
+            if ($label === '') continue;
+            $labelEsc = $this->e($label);
+            $kicker = $this->e((string) ($arr['eyebrow'] ?? ''));
+            $desc = $this->e((string) ($arr['description'] ?? ''));
+            $ctaLabel = $this->e((string) ($arr['cta_label'] ?? 'Open'));
+            $url = $this->e((string) ($arr['url'] ?? '#'));
+            $image = (string) ($arr['image'] ?? '');
+            $imageAlt = $this->e((string) ($arr['image_alt'] ?? $label));
+            $accent = $arr['accent'] ?? 'brand';
+            if (!isset($accentRgb[$accent])) $accent = 'brand';
+            $rgb = $accentRgb[$accent];
+            $iconSvg = $iconPaths[$label] ?? '<circle cx="12" cy="12" r="9"/>';
+
+            $imgUrl = '';
+            if ($image !== '') {
+                $imgUrl = (str_starts_with($image, 'http') || str_starts_with($image, '/'))
+                    ? $image
+                    : '/storage/' . ltrim($image, '/');
+            }
+            // First two open eagerly — most likely to be opened
+            $loading = $idx < 2 ? 'eager' : 'lazy';
+            $isFirst = $idx === 0;
+
+            $out .= '<details class="rg-cat-acc__item" style="--acc-rgb:' . $rgb . '"' . ($isFirst ? ' open' : '') . '>';
+            $out .= '<summary class="rg-cat-acc__summary">';
+            $out .= '<span class="rg-cat-acc__icon" aria-hidden="true">';
+            $out .= '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $iconSvg . '</svg>';
+            $out .= '</span>';
+            if ($imgUrl !== '') {
+                $out .= '<img src="' . $this->e($imgUrl) . '" alt="" loading="' . $loading . '" class="rg-cat-acc__thumb" aria-hidden="true">';
+            }
+            $out .= '<span class="rg-cat-acc__text">';
+            if ($kicker !== '') $out .= '<span class="rg-cat-acc__kicker">' . $kicker . '</span>';
+            $out .= '<span class="rg-cat-acc__title">' . $labelEsc . '</span>';
+            $out .= '</span>';
+            $out .= '<span class="rg-cat-acc__chevron" aria-hidden="true">';
+            $out .= '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+            $out .= '</span>';
+            $out .= '</summary>';
+
+            $out .= '<div class="rg-cat-acc__body-wrap"><div class="rg-cat-acc__body"><div class="rg-cat-acc__bento">';
+            // Hero image (left on desktop)
+            $out .= '<div class="rg-cat-acc__hero">';
+            if ($imgUrl !== '') {
+                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $imageAlt . '" loading="' . $loading . '" class="rg-cat-acc__hero-img">';
+            }
+            $out .= '<div class="rg-cat-acc__hero-scrim"></div>';
+            $out .= '<span class="rg-cat-acc__hero-label">' . $labelEsc . '</span>';
+            $out .= '</div>';
+            // Content (right on desktop)
+            $out .= '<div class="rg-cat-acc__content">';
+            $out .= '<span class="rg-cat-acc__rule"></span>';
+            if ($desc !== '') $out .= '<p class="rg-cat-acc__desc">' . $desc . '</p>';
+            $out .= '<a href="' . $url . '" class="rg-cat-acc__cta">' . $ctaLabel
+                . '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
+                . '</a>';
+            $out .= '</div>';
+            $out .= '</div></div></div>';
+            $out .= '</details>';
+        }
+        $out .= '</div></div>';
+
+        // CSS
+        $out .= '<style>'
+            . '.rg-cat-acc__list{display:flex;flex-direction:column;gap:.5rem}'
+            . '.rg-cat-acc__item{background:#fff;border:1px solid #e2e8f0;border-left:4px solid transparent;border-radius:1rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:box-shadow .25s ease,border-color .25s ease}'
+            . '.rg-cat-acc__item:hover{box-shadow:0 4px 16px rgba(0,0,0,.09)}'
+            . '.rg-cat-acc__item[open]{border-left-color:rgb(var(--acc-rgb));box-shadow:0 6px 24px rgba(var(--acc-rgb),.12)}'
+            . '.rg-cat-acc__summary{display:flex;align-items:center;gap:.85rem;padding:.85rem 1.25rem .85rem 1rem;cursor:pointer;list-style:none;user-select:none;background:#fff;transition:background-color .15s ease}'
+            . '.rg-cat-acc__summary::-webkit-details-marker{display:none}'
+            . '.rg-cat-acc__summary::marker{display:none}'
+            . '.rg-cat-acc__item[open]>.rg-cat-acc__summary,.rg-cat-acc__summary:hover{background:#f8fafc}'
+            . '.rg-cat-acc__summary:focus-visible{outline:2px solid rgb(var(--acc-rgb));outline-offset:-2px;border-radius:.85rem}'
+            . '.rg-cat-acc__icon{flex-shrink:0;width:2.75rem;height:2.75rem;border-radius:.65rem;background:rgba(var(--acc-rgb),.10);color:rgb(var(--acc-rgb));display:flex;align-items:center;justify-content:center}'
+            . '.rg-cat-acc__thumb{flex-shrink:0;width:4.5rem;height:4.5rem;border-radius:.65rem;object-fit:cover;border:1px solid #e2e8f0;transition:transform .4s ease}'
+            . '.rg-cat-acc__item:hover .rg-cat-acc__thumb,.rg-cat-acc__item[open] .rg-cat-acc__thumb{transform:scale(1.04)}'
+            . '@media(min-width:640px){.rg-cat-acc__thumb{width:5.75rem;height:5.75rem}}'
+            . '.rg-cat-acc__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:.1rem}'
+            . '.rg-cat-acc__kicker{display:none;font-size:.65rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgb(var(--acc-rgb));line-height:1.1}'
+            . '@media(min-width:640px){.rg-cat-acc__kicker{display:block}}'
+            . '.rg-cat-acc__title{font-size:1.05rem;font-weight:800;color:#0f172a;line-height:1.25;letter-spacing:-.015em}'
+            . '@media(min-width:640px){.rg-cat-acc__title{font-size:1.25rem}}'
+            . '.rg-cat-acc__chevron{flex-shrink:0;color:rgb(var(--acc-rgb));transition:transform .3s ease}'
+            . '.rg-cat-acc__item[open] .rg-cat-acc__chevron{transform:rotate(180deg)}'
+            . '.rg-cat-acc__body-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s cubic-bezier(.4,0,.2,1)}'
+            . '.rg-cat-acc__item[open]>.rg-cat-acc__body-wrap{grid-template-rows:1fr}'
+            . '.rg-cat-acc__body{overflow:hidden}'
+            . '.rg-cat-acc__bento{display:flex;flex-direction:column;border-top:1px solid #e2e8f0}'
+            . '@media(min-width:768px){.rg-cat-acc__bento{flex-direction:row;min-height:320px}}'
+            . '.rg-cat-acc__hero{position:relative;overflow:hidden;background:#cbd5e1;min-height:200px;flex-shrink:0}'
+            . '@media(min-width:768px){.rg-cat-acc__hero{width:42%;min-height:320px}}'
+            . '.rg-cat-acc__hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);transition:opacity .4s ease .08s,transform .7s cubic-bezier(.22,1,.36,1) .08s}'
+            . '.rg-cat-acc__item[open] .rg-cat-acc__hero-img{opacity:1;transform:scale(1)}'
+            . '.rg-cat-acc__hero-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,42,.72) 0%,rgba(15,23,42,.18) 45%,transparent 100%);pointer-events:none}'
+            . '.rg-cat-acc__hero-label{position:absolute;bottom:1rem;left:1.25rem;right:1.25rem;color:#fff;font-size:1.2rem;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 12px rgba(0,0,0,.5);opacity:0;transform:translateY(.4rem);transition:opacity .32s ease .22s,transform .36s cubic-bezier(.22,1,.36,1) .2s}'
+            . '@media(min-width:768px){.rg-cat-acc__hero-label{font-size:1.4rem}}'
+            . '.rg-cat-acc__item[open] .rg-cat-acc__hero-label{opacity:1;transform:translateY(0)}'
+            . '.rg-cat-acc__content{flex:1;display:flex;flex-direction:column;background:#fff;padding:1.25rem;opacity:0;transform:translateY(.7rem);transition:opacity .3s ease .14s,transform .38s cubic-bezier(.22,1,.36,1) .12s}'
+            . '@media(min-width:768px){.rg-cat-acc__content{padding:1.75rem 1.75rem 1.25rem;justify-content:center}}'
+            . '.rg-cat-acc__item[open] .rg-cat-acc__content{opacity:1;transform:translateY(0)}'
+            . '.rg-cat-acc__rule{display:block;width:2.5rem;height:3px;border-radius:2px;background:rgb(var(--acc-rgb));margin-bottom:.85rem}'
+            . '.rg-cat-acc__desc{font-size:.92rem;color:#475569;line-height:1.7;margin:0 0 1.1rem;max-width:50ch}'
+            . '@media(min-width:768px){.rg-cat-acc__desc{font-size:.98rem}}'
+            . '.rg-cat-acc__cta{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.1rem;border-radius:.6rem;background:rgb(var(--acc-rgb));color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.01em;text-decoration:none;align-self:flex-start;box-shadow:0 4px 14px -4px rgba(var(--acc-rgb),.45);transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}'
+            . '.rg-cat-acc__cta:hover{transform:translateX(3px);box-shadow:0 6px 18px -4px rgba(var(--acc-rgb),.55)}'
+            . '.rg-cat-acc__cta svg{width:.9rem;height:.9rem;flex-shrink:0}'
+            . '@media(max-width:767px){.rg-cat-acc__cta{width:100%;justify-content:center}}'
+            . '@media(prefers-reduced-motion:reduce){.rg-cat-acc__item,.rg-cat-acc__thumb,.rg-cat-acc__body-wrap,.rg-cat-acc__hero-img,.rg-cat-acc__hero-label,.rg-cat-acc__content,.rg-cat-acc__cta,.rg-cat-acc__chevron{transition:none!important;animation:none!important}.rg-cat-acc__item[open] .rg-cat-acc__hero-img,.rg-cat-acc__item[open] .rg-cat-acc__hero-label,.rg-cat-acc__item[open] .rg-cat-acc__content{opacity:1;transform:none}}'
+            . '</style>';
+
+        // Sibling-close JS — only one panel open at a time.
+        $out .= '<script>(function(){var l=document.querySelectorAll(".rg-cat-acc__list");l.forEach(function(list){list.addEventListener("toggle",function(e){if(!e.target.matches(".rg-cat-acc__item")||!e.target.open)return;list.querySelectorAll(".rg-cat-acc__item[open]").forEach(function(s){if(s!==e.target)s.removeAttribute("open")})},true)})})();</script>';
+
+        $out .= '</section>';
         return $out;
     }
 
