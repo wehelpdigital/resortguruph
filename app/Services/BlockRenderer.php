@@ -117,6 +117,7 @@ class BlockRenderer
             // Phase-2 homepage blocks — editorial intro, experience
             // tiles, hub-link cards, seasonal guide, testimonials,
             // FAQ. Content seeded from Fable 5 content gen.
+            'home_unified_search' => $this->homeUnifiedSearch($p, $context),
             'home_editorial_intro' => $this->homeEditorialIntro($p, $context),
             'home_experience_grid' => $this->homeExperienceGrid($p, $context),
             'home_hub_links' => $this->homeHubLinks($p, $context),
@@ -4239,6 +4240,241 @@ class BlockRenderer
      * guide, testimonials, FAQ. Content seeded from Fable 5
      * (homepage-content-gen workflow).
      * ============================================================ */
+
+    /**
+     * home_unified_search — search-first hero block. Big title +
+     * tagline + filter tabs + powerful typeahead pill + popular
+     * chips + stats row. Reads the cross-site search index from
+     * $context['unifiedSearchIndex'] (App\Services\UnifiedSearchIndex).
+     *
+     * Indexes: regions, destination pages, resorts, restaurants,
+     * tourist spots, blog posts — ~1,100+ items total. Result panel
+     * groups them and renders photos when available.
+     *
+     * Payload:
+     *   eyebrow, title (with {{accent}} markers),
+     *   tagline (string),
+     *   accent (brand|amber|emerald|rose|violet|teal),
+     *   bg_gradient (brand-emerald|amber-rose|...|none),
+     *   placeholder,
+     *   tabs [{ value, label }],
+     *   chips [string],
+     *   labels_json (type → group-header label map JSON string),
+     *   empty_hint,
+     *   stats [{ label, value, value_source }]
+     */
+    private function homeUnifiedSearch(array $p, array $context): string
+    {
+        foreach (['tabs', 'chips', 'stats'] as $j) {
+            if (isset($p[$j]) && is_string($p[$j])) {
+                $t = trim($p[$j]);
+                if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                    $d = json_decode($t, true);
+                    if (is_array($d)) $p[$j] = $d;
+                }
+            }
+        }
+        $searchIndex = $context['unifiedSearchIndex'] ?? [];
+        if (is_object($searchIndex) && method_exists($searchIndex, 'toArray')) {
+            $searchIndex = $searchIndex->toArray();
+        }
+
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $title = trim((string) ($p['title'] ?? ''));
+        $tagline = $this->e(trim((string) ($p['tagline'] ?? '')));
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
+        $bgGradient = $p['bg_gradient'] ?? 'brand-emerald';
+        $bgClass = [
+            'none' => '',
+            'brand-emerald' => 'bg-gradient-to-br from-blue-50 via-white to-emerald-50',
+            'amber-rose' => 'bg-gradient-to-br from-amber-50 via-white to-rose-50',
+            'rose-amber' => 'bg-gradient-to-br from-rose-50 via-white to-amber-50',
+            'violet-teal' => 'bg-gradient-to-br from-violet-50 via-white to-teal-50',
+            'teal-emerald' => 'bg-gradient-to-br from-teal-50 via-white to-emerald-50',
+        ][$bgGradient] ?? '';
+        $accentText = ['brand' => 'text-blue-700', 'amber' => 'text-amber-700', 'emerald' => 'text-emerald-700', 'rose' => 'text-rose-700', 'violet' => 'text-violet-700', 'teal' => 'text-teal-700'][$accent];
+        $accentHex = ['brand' => '#2563eb', 'amber' => '#d97706', 'emerald' => '#059669', 'rose' => '#e11d48', 'violet' => '#7c3aed', 'teal' => '#0d9488'][$accent];
+
+        // Title with {{accent}}...{{/accent}} support
+        $titleHtml = '';
+        if ($title !== '') {
+            if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
+                $titleHtml = $this->e(trim($m[1]))
+                    . ($m[1] !== '' ? ' ' : '')
+                    . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
+                    . ($m[3] !== '' ? ' ' : '')
+                    . $this->e(trim($m[3]));
+            } else {
+                $titleHtml = $this->e($title);
+            }
+        }
+
+        $placeholder = $this->e((string) ($p['placeholder'] ?? 'Try Coron, lechon, Sinulog, El Nido…'));
+        $tabs = $p['tabs'] ?? [
+            ['value' => 'all', 'label' => 'All'],
+            ['value' => 'destination', 'label' => 'Destinations'],
+            ['value' => 'resort', 'label' => 'Stays'],
+            ['value' => 'restaurant', 'label' => 'Food'],
+            ['value' => 'spot', 'label' => 'Spots'],
+            ['value' => 'region', 'label' => 'Regions'],
+            ['value' => 'blog', 'label' => 'Blog'],
+        ];
+        if (!is_array($tabs)) $tabs = [];
+        $chips = $p['chips'] ?? ['Cebu', 'Palawan', 'Tagaytay', 'Boracay', 'Siargao', 'Vigan', 'Mt. Pulag'];
+        if (!is_array($chips)) $chips = [];
+        $labelsJson = $p['labels_json'] ?? '{"destination":"Destinations","resort":"Stays","restaurant":"Food finds","spot":"Tourist spots","region":"Regions","blog":"Blog"}';
+        if (is_array($labelsJson)) $labelsJson = json_encode($labelsJson);
+        $emptyHint = $this->e((string) ($p['empty_hint'] ?? 'Try a region, a city name, a dish, or a spot like Mt. Pulag.'));
+
+        $boxId = 'rg-uss-' . substr(md5(json_encode([$title])), 0, 6);
+        $dataId = $boxId . '-data';
+        $panelId = $boxId . '-panel';
+
+        $out = '<section class="rg-uss ' . $bgClass . '" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
+        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.22em] font-bold ' . $accentText . ' mb-4">' . $eyebrow . '</div>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-4 leading-[1.05]">' . $titleHtml . '</h1>';
+        if ($tagline !== '') $out .= '<p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
+
+        // Search shell
+        $out .= '<div class="rg-uss-search" data-rg-search>';
+        $out .= '<div class="rg-uss__tabs" role="tablist">';
+        foreach ($tabs as $i => $tab) {
+            $val = $this->e((string) ($tab['value'] ?? 'all'));
+            $lab = $this->e((string) ($tab['label'] ?? ''));
+            $active = $i === 0 ? ' is-active' : '';
+            $sel = $i === 0 ? 'true' : 'false';
+            $out .= '<button type="button" class="rg-uss__tab' . $active . '" role="tab" aria-selected="' . $sel . '" data-rg-filter="' . $val . '">' . $lab . '</button>';
+        }
+        $out .= '</div>';
+        $out .= '<div class="rg-uss__core">';
+        $out .= '<div class="rg-uss__shell">';
+        $out .= '<svg class="rg-uss__pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+        $out .= '<input id="' . $boxId . '" type="search" class="rg-uss__input" placeholder="' . $placeholder . '" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' . $panelId . '">';
+        $out .= '<button type="button" class="rg-uss__clear" aria-label="Clear" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
+        $out .= '<button type="button" class="rg-uss__submit" aria-label="Search">Search</button>';
+        $out .= '</div>';
+        $out .= '<div class="rg-uss__panel" id="' . $panelId . '" role="listbox" hidden></div>';
+        $out .= '</div>';
+        if (!empty($chips)) {
+            $out .= '<div class="rg-uss__chips" aria-hidden="true"><span>Popular:</span>';
+            foreach ($chips as $chip) {
+                $cval = $this->e((string) $chip);
+                $out .= '<button type="button" class="rg-uss__chip" data-rg-quick="' . $cval . '">' . $cval . '</button>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div>';
+
+        // Stats row
+        $stats = $p['stats'] ?? [];
+        if (is_array($stats) && !empty($stats)) {
+            $out .= '<div class="mt-10 flex flex-wrap justify-center gap-8 text-sm text-slate-600">';
+            foreach ($stats as $s) {
+                $label = $this->e((string) ($s['label'] ?? ''));
+                $value = $this->resolveStatValueSimple($s, (string) ($s['value_source'] ?? 'literal'), $context);
+                if ($value === null && !empty($s['value'])) $value = (string) $s['value'];
+                if ($value === null) continue;
+                $out .= '<div><strong class="text-2xl text-slate-900 block">' . $this->e($value) . '</strong> ' . $label . '</div>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div>';
+
+        // CSS — search styling that matches modern travel sites
+        $out .= '<style>'
+            . '.rg-uss-search{max-width:780px;width:100%;margin:0 auto;position:relative;z-index:10;--rg-acc:' . $accentHex . '}'
+            . '.rg-uss__tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin-bottom:1.1rem}'
+            . '.rg-uss__tab{display:inline-flex;align-items:center;padding:.55rem 1.05rem;background:rgba(255,255,255,.85);border:1.5px solid #e2e8f0;border-radius:999px;font-size:.85rem;font-weight:600;color:#475569;cursor:pointer;transition:all .15s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}'
+            . '.rg-uss__tab:hover{border-color:#94a3b8;color:#0f172a;transform:translateY(-1px)}'
+            . '.rg-uss__tab.is-active{background:#0f172a;border-color:#0f172a;color:#fff;box-shadow:0 6px 14px -4px rgba(15,23,42,.35)}'
+            . '@media(min-width:768px){.rg-uss__tab{padding:.65rem 1.25rem;font-size:.92rem}}'
+            . '.rg-uss__core{position:relative}'
+            . '.rg-uss__shell{position:relative;display:flex;align-items:center;background:#fff;border:2px solid #0f172a;border-radius:999px;padding:.45rem;transition:border-color .18s ease;box-shadow:0 12px 24px -12px rgba(15,23,42,.18)}'
+            . '@media(min-width:768px){.rg-uss__shell{padding:.55rem}}'
+            . '.rg-uss__shell:focus-within{border-color:var(--rg-acc)}'
+            . '.rg-uss__pin{flex:0 0 auto;width:1.3rem;height:1.3rem;color:#475569;margin-left:1rem;margin-right:.5rem}'
+            . '@media(min-width:768px){.rg-uss__pin{width:1.5rem;height:1.5rem;margin-left:1.4rem;margin-right:.7rem}}'
+            . '.rg-uss__input{flex:1 1 auto;min-width:0;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;font-size:1rem;line-height:1.2;color:#0f172a;padding:.85rem .3rem;font-weight:500}'
+            . '.rg-uss__input::placeholder{color:#94a3b8;font-weight:400}'
+            . '.rg-uss__input::-webkit-search-cancel-button{display:none!important;-webkit-appearance:none!important}'
+            . '@media(min-width:768px){.rg-uss__input{font-size:1.2rem;padding:1rem .4rem}}'
+            . '.rg-uss__clear{flex:0 0 auto;width:2.2rem;height:2.2rem;border-radius:999px;background:#f1f5f9;color:#475569;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:.5rem;transition:all .15s ease}'
+            . '.rg-uss__clear[hidden]{display:none!important}'
+            . '.rg-uss__clear svg{width:.85rem;height:.85rem}'
+            . '.rg-uss__clear:hover{background:#e2e8f0;color:#0f172a}'
+            . '.rg-uss__submit{flex:0 0 auto;background:var(--rg-acc);color:#fff;border:0;border-radius:999px;padding:.85rem 1.4rem;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s ease;letter-spacing:.01em}'
+            . '@media(min-width:768px){.rg-uss__submit{padding:1rem 1.8rem;font-size:1rem}}'
+            . '.rg-uss__submit:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(0,0,0,.25)}'
+            . '.rg-uss__chips{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.45rem;margin-top:1.1rem;font-size:.82rem;color:#64748b}'
+            . '.rg-uss__chips>span{font-weight:700;letter-spacing:.02em;margin-right:.25rem}'
+            . '.rg-uss__chip{background:rgba(255,255,255,.85);border:1.5px solid #e2e8f0;color:#334155;padding:.4rem .85rem;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}'
+            . '.rg-uss__chip:hover{background:var(--rg-acc);border-color:var(--rg-acc);color:#fff;transform:translateY(-1px)}'
+            . '.rg-uss__panel{position:absolute;top:calc(100% + .85rem);left:0;right:0;max-height:30rem;overflow-y:auto;background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 30px 70px -20px rgba(15,23,42,.35),0 10px 24px -8px rgba(15,23,42,.15);padding:.6rem;z-index:30;animation:rgUssFade .18s ease-out;text-align:left}'
+            . '@keyframes rgUssFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}'
+            . '.rg-uss__group-label{font-size:.68rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#94a3b8;padding:.75rem 1rem .35rem}'
+            . '.rg-uss__opt{display:flex;align-items:center;gap:.95rem;padding:.7rem 1rem;border-radius:.85rem;cursor:pointer;text-decoration:none;color:inherit;transition:background .12s ease}'
+            . '.rg-uss__opt:hover,.rg-uss__opt.is-active{background:color-mix(in srgb,var(--rg-acc) 8%,transparent)}'
+            . '.rg-uss__opt-thumb{flex:0 0 auto;width:2.6rem;height:2.6rem;border-radius:.65rem;background:color-mix(in srgb,var(--rg-acc) 10%,transparent);color:var(--rg-acc);display:flex;align-items:center;justify-content:center;overflow:hidden}'
+            . '.rg-uss__opt-thumb svg{width:1.2rem;height:1.2rem}'
+            . '.rg-uss__opt-body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:.1rem}'
+            . '.rg-uss__opt-label{display:block;font-size:.95rem;font-weight:700;color:#0f172a;text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+            . '.rg-uss__opt-label mark{background:rgba(252,211,77,.55);color:inherit;padding:0 .12em;border-radius:.25em}'
+            . '.rg-uss__opt-sub{display:block;font-size:.75rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+            . '.rg-uss__opt-chip{flex:0 0 auto;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:#64748b;background:#f1f5f9;padding:.2rem .5rem;border-radius:999px}'
+            . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
+            . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
+            . '</style>';
+
+        // JSON index + JS
+        $out .= '<script id="' . $dataId . '" type="application/json">' . json_encode($searchIndex, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '</script>';
+
+        $emptyHintJs = json_encode($emptyHint);
+        $labelsJsonJs = $labelsJson;
+        $boxIdJs = json_encode($boxId);
+        $dataIdJs = json_encode($dataId);
+
+        $out .= '<script>(function(){'
+            . 'var input=document.getElementById(' . $boxIdJs . ');if(!input)return;'
+            . 'var root=input.closest("[data-rg-search]");'
+            . 'var panel=root.querySelector(".rg-uss__panel");'
+            . 'var clearBtn=root.querySelector(".rg-uss__clear");'
+            . 'var chips=root.querySelectorAll(".rg-uss__chip");'
+            . 'var tabs=root.querySelectorAll(".rg-uss__tab");'
+            . 'var submitBtn=root.querySelector(".rg-uss__submit");'
+            . 'var dataEl=document.getElementById(' . $dataIdJs . ');'
+            . 'var index=[];try{index=JSON.parse(dataEl.textContent)}catch(e){index=[]}'
+            . 'var LABELS=' . $labelsJsonJs . ';'
+            . 'var EMPTY=' . $emptyHintJs . ';'
+            . 'var TYPE_ORDER={region:0,destination:1,resort:2,restaurant:3,spot:4,blog:5};'
+            . 'var MAX_PER_GROUP={region:3,destination:5,resort:4,restaurant:4,spot:4,blog:3};'
+            . 'var results=[],activeIdx=-1,debounceId=0,currentFilter="all";'
+            . 'function esc(s){return String(s).replace(/[&<>"\']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]})}'
+            . 'function escRe(s){return s.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&")}'
+            . 'function hl(t,toks){var o=esc(t);for(var i=0;i<toks.length;i++){if(!toks[i])continue;var r=new RegExp("("+escRe(toks[i])+")","gi");o=o.replace(r,"<mark>$1</mark>")}return o}'
+            . 'function score(it,q,toks){var h=(it.haystack||it.label||"").toLowerCase();if(h.indexOf(q)===0)return 1000;if(new RegExp("\\\\b"+escRe(q)).test(h))return 800;if(toks.every(function(t){return h.indexOf(t)!==-1})){var b=toks.some(function(t){return new RegExp("\\\\b"+escRe(t)).test(h)})?50:0;return 500+b}if(h.indexOf(q)!==-1)return 300;return 0}'
+            . 'function search(q){var ql=q.toLowerCase().trim();if(!ql)return[];var toks=ql.split(/\\s+/).filter(Boolean);var scored=[];for(var i=0;i<index.length;i++){var it=index[i];if(currentFilter!=="all"&&it.type!==currentFilter)continue;var s=score(it,ql,toks);if(s>0)scored.push({it:it,s:s})}scored.sort(function(a,b){return(b.s-a.s)||((b.it.volume||0)-(a.it.volume||0))});if(currentFilter!=="all")return scored.slice(0,15).map(function(r){return r.it});var caps=Object.assign({},MAX_PER_GROUP);var picked=[];for(var j=0;j<scored.length;j++){var t=scored[j].it.type;if(caps[t]>0){caps[t]--;picked.push(scored[j].it)}if(picked.length>=15)break}picked.sort(function(a,b){return((TYPE_ORDER[a.type]||0)-(TYPE_ORDER[b.type]||0))||((b.volume||0)-(a.volume||0))});return picked}'
+            . 'function iconFor(t){if(t==="region")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3z"/><path d="M9 4v13M15 7v13"/></svg>\';if(t==="resort"||t==="restaurant")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4 8 4v14M9 9v.01M9 12v.01M9 15v.01M9 18v.01M15 9v.01M15 12v.01M15 15v.01M15 18v.01"/></svg>\';if(t==="spot")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>\';if(t==="blog")return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>\';return\'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>\'}'
+            . 'function thumbStyle(it){if(!it.image)return"";var u=String(it.image).replace(/\'/g,"%27").replace(/"/g,"%22");return\' style="background-image:url(\\\'\'+u+\'\\\');background-size:cover;background-position:center;background-repeat:no-repeat"\'}'
+            . 'function render(q){if(!results.length){panel.innerHTML=\'<div class="rg-uss__empty">No matches for <strong>"\'+esc(q)+\'"</strong>.<br>\'+esc(EMPTY)+\'</div>\';panel.hidden=false;input.setAttribute("aria-expanded","true");return}var toks=q.toLowerCase().trim().split(/\\s+/).filter(Boolean);var parts=[],lastType=null,optIdx=0;for(var i=0;i<results.length;i++){var it=results[i];if(it.type!==lastType){parts.push(\'<div class="rg-uss__group-label">\'+esc(LABELS[it.type]||it.type)+\'</div>\');lastType=it.type}var icon=it.image?"":iconFor(it.type);parts.push(\'<a class="rg-uss__opt" role="option" data-idx="\'+optIdx+\'" href="\'+esc(it.url)+\'"><span class="rg-uss__opt-thumb"\'+thumbStyle(it)+\'>\'+icon+\'</span><span class="rg-uss__opt-body"><span class="rg-uss__opt-label">\'+hl(it.label||"",toks)+\'</span>\'+(it.sub?\'<span class="rg-uss__opt-sub">\'+esc(it.sub)+\'</span>\':"")+\'</span><span class="rg-uss__opt-chip">\'+esc(LABELS[it.type]||it.type)+\'</span><svg class="rg-uss__opt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>\');optIdx++}panel.innerHTML=parts.join("");panel.hidden=false;input.setAttribute("aria-expanded","true");setActive(-1)}'
+            . 'function close(){panel.hidden=true;input.setAttribute("aria-expanded","false");activeIdx=-1}'
+            . 'function setActive(i){var opts=panel.querySelectorAll(".rg-uss__opt");if(!opts.length)return;opts.forEach(function(o){o.classList.remove("is-active")});if(i<0||i>=opts.length){activeIdx=-1;return}activeIdx=i;opts[i].classList.add("is-active");opts[i].scrollIntoView({block:"nearest"})}'
+            . 'function runSearch(q){results=search(q);render(q)}'
+            . 'input.addEventListener("input",function(e){var q=e.target.value;clearBtn.hidden=!q;clearTimeout(debounceId);if(!q.trim()){close();return}debounceId=setTimeout(function(){runSearch(q)},80)});'
+            . 'input.addEventListener("focus",function(){if(input.value.trim())runSearch(input.value)});'
+            . 'input.addEventListener("keydown",function(e){if(e.key==="ArrowDown"){if(panel.hidden&&input.value.trim())runSearch(input.value);e.preventDefault();var opts=panel.querySelectorAll(".rg-uss__opt");setActive(Math.min(activeIdx+1,opts.length-1))}else if(e.key==="ArrowUp"){e.preventDefault();var opts=panel.querySelectorAll(".rg-uss__opt");setActive(activeIdx<=0?opts.length-1:activeIdx-1)}else if(e.key==="Enter"){var opts=panel.querySelectorAll(".rg-uss__opt");if(!opts.length)return;e.preventDefault();var target=activeIdx>=0?opts[activeIdx]:opts[0];if(target)window.location.href=target.getAttribute("href")}else if(e.key==="Escape"){if(input.value){input.value="";clearBtn.hidden=true}close()}});'
+            . 'panel.addEventListener("mousedown",function(e){var opt=e.target.closest(".rg-uss__opt");if(!opt)return;e.preventDefault();window.location.href=opt.getAttribute("href")});'
+            . 'panel.addEventListener("mouseover",function(e){var opt=e.target.closest(".rg-uss__opt");if(!opt)return;setActive(parseInt(opt.dataset.idx,10))});'
+            . 'clearBtn.addEventListener("click",function(){input.value="";clearBtn.hidden=true;close();input.focus()});'
+            . 'chips.forEach(function(c){c.addEventListener("click",function(){var q=c.dataset.rgQuick;input.value=q;clearBtn.hidden=false;input.focus();runSearch(q)})});'
+            . 'tabs.forEach(function(t){t.addEventListener("click",function(){tabs.forEach(function(x){x.classList.remove("is-active");x.setAttribute("aria-selected","false")});t.classList.add("is-active");t.setAttribute("aria-selected","true");currentFilter=t.dataset.rgFilter||"all";if(input.value.trim())runSearch(input.value);input.focus()})});'
+            . 'submitBtn.addEventListener("click",function(){var opts=panel.querySelectorAll(".rg-uss__opt");if(opts.length){var target=activeIdx>=0?opts[activeIdx]:opts[0];window.location.href=target.getAttribute("href");return}if(input.value.trim())runSearch(input.value);input.focus()});'
+            . 'document.addEventListener("click",function(e){if(!root.contains(e.target))close()});'
+        . '})();</script>';
+
+        $out .= '</section>';
+        return $out;
+    }
 
     /**
      * home_editorial_intro — editorial 2-col: H2 + paragraphs on

@@ -79,6 +79,7 @@ class HomeController extends Controller
                     'latestPosts' => $latestPosts,
                     'regions' => $regions,
                     'stats' => $stats,
+                    'unifiedSearchIndex' => app(\App\Services\UnifiedSearchIndex::class)->build(),
                     'jsonld' => $jsonld,
                     'live_edit' => $liveEdit,
                 ]);
