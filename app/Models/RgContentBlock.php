@@ -99,6 +99,9 @@ class RgContentBlock extends Model
         // destinations + resorts + restaurants + tourist spots +
         // blog posts).
         'home_unified_search',
+        // Hub-page block types (foods/activities/buys/cultures).
+        // Each reads category data from $context['categories'].
+        'hub_hero', 'hub_category_nav', 'hub_category_grid', 'hub_footer_rail',
         // Page-header content elements migrated out of rg_seo_pages
         // columns into blocks so the admin can reorder / remove / add
         // them like any other content. subtitle_intro replaces the

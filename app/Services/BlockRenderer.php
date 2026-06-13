@@ -118,6 +118,12 @@ class BlockRenderer
             // tiles, hub-link cards, seasonal guide, testimonials,
             // FAQ. Content seeded from Fable 5 content gen.
             'home_unified_search' => $this->homeUnifiedSearch($p, $context),
+            // Hub-page custom block types (foods/activities/buys/
+            // cultures). Each reads category data from $context.
+            'hub_hero' => $this->hubHero($p, $context),
+            'hub_category_nav' => $this->hubCategoryNav($p, $context),
+            'hub_category_grid' => $this->hubCategoryGrid($p, $context),
+            'hub_footer_rail' => $this->hubFooterRail($p, $context),
             'home_editorial_intro' => $this->homeEditorialIntro($p, $context),
             'home_experience_grid' => $this->homeExperienceGrid($p, $context),
             'home_hub_links' => $this->homeHubLinks($p, $context),
@@ -4872,6 +4878,226 @@ class BlockRenderer
                 '@type' => 'FAQPage',
                 'mainEntity' => $jsonLdItems,
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
+        }
+        $out .= '</section>';
+        return $out;
+    }
+
+    /* ============================================================
+     * Hub-page block types (foods/activities/buys/cultures)
+     * ============================================================ */
+
+    /**
+     * hub_hero — eyebrow + colored H1 + paragraphs. Used as the
+     * top of each hub page. Title supports {{accent}}…{{/accent}}.
+     */
+    private function hubHero(array $p, array $context): string
+    {
+        if (isset($p['paragraphs']) && is_string($p['paragraphs'])) {
+            $t = trim($p['paragraphs']);
+            $d = json_decode($t, true);
+            if (is_array($d)) $p['paragraphs'] = $d;
+            elseif ($t !== '') $p['paragraphs'] = array_values(array_filter(preg_split('/\n\n+/', $t)));
+        }
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $title = trim((string) ($p['title'] ?? ''));
+        $paragraphs = $p['paragraphs'] ?? [];
+        if (!is_array($paragraphs)) $paragraphs = [];
+        $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
+        $accentText = ['brand' => 'text-blue-700', 'amber' => 'text-amber-700', 'emerald' => 'text-emerald-700', 'rose' => 'text-rose-700', 'violet' => 'text-violet-700', 'teal' => 'text-teal-700'][$accent];
+
+        $titleHtml = '';
+        if ($title !== '') {
+            if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
+                $titleHtml = $this->e(trim($m[1]))
+                    . ($m[1] !== '' ? ' ' : '')
+                    . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
+                    . ($m[3] !== '' ? ' ' : '')
+                    . $this->e(trim($m[3]));
+            } else {
+                $titleHtml = $this->e($title);
+            }
+        }
+
+        $out = '<header class="rg-hub-hero mb-10">';
+        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold ' . $accentText . ' mb-3">' . $eyebrow . '</div>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-6 max-w-4xl">' . $titleHtml . '</h1>';
+        if (!empty($paragraphs)) {
+            $out .= '<div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 max-w-3xl [&_p]:m-0">';
+            foreach ($paragraphs as $para) {
+                $p2 = trim((string) $para);
+                if ($p2 === '') continue;
+                $out .= '<p>' . $this->e($p2) . '</p>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</header>';
+        return $out;
+    }
+
+    /**
+     * hub_category_nav — sticky horizontal pill nav jumping to
+     * each category section anchor. Pulls categories from
+     * $context['categories'].
+     */
+    private function hubCategoryNav(array $p, array $context): string
+    {
+        $cats = $context['categories'] ?? [];
+        if (!is_array($cats) || empty($cats)) return '';
+        $accent = in_array($p['accent'] ?? 'slate', ['rose', 'emerald', 'violet', 'teal', 'amber', 'slate'], true) ? $p['accent'] : 'slate';
+        $hover = [
+            'rose' => 'hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700',
+            'emerald' => 'hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700',
+            'violet' => 'hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700',
+            'teal' => 'hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700',
+            'amber' => 'hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700',
+            'slate' => 'hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700',
+        ][$accent];
+        $sticky = !isset($p['sticky']) || (bool) $p['sticky'];
+        $stickyClass = $sticky ? 'sticky top-16 z-10 bg-white/90 backdrop-blur border-y border-slate-200' : '';
+
+        $out = '<nav class="rg-hub-cat-nav ' . $stickyClass . ' -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 mb-10">';
+        $out .= '<div class="flex flex-wrap items-center gap-2 text-sm">';
+        $out .= '<span class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mr-1">' . $this->e($p['label'] ?? 'Jump to') . '</span>';
+        foreach ($cats as $cat) {
+            $key = (string) ($cat['key'] ?? '');
+            $label = $this->e((string) ($cat['label'] ?? ''));
+            $icon = trim((string) ($cat['icon'] ?? ''));
+            if ($key === '' || $label === '') continue;
+            $out .= '<a href="#cat-' . $this->e($key) . '" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white ' . $hover . ' font-semibold text-slate-700 transition">';
+            if ($icon !== '') $out .= '<span aria-hidden="true">' . $icon . '</span>';
+            $out .= '<span>' . $label . '</span></a>';
+        }
+        $out .= '</div></nav>';
+        return $out;
+    }
+
+    /**
+     * hub_category_grid — renders ONE category as a collapsible
+     * accordion containing a grid of item cards. Looks up the
+     * category by category_key from $context['categories'] (which
+     * the hub controllers pass to BlockRenderer).
+     */
+    private function hubCategoryGrid(array $p, array $context): string
+    {
+        $key = (string) ($p['category_key'] ?? '');
+        $cats = $context['categories'] ?? [];
+        if ($key === '' || !is_array($cats) || empty($cats)) return '';
+        $match = null;
+        foreach ($cats as $cat) {
+            if (($cat['key'] ?? null) === $key) { $match = $cat; break; }
+        }
+        if (!$match) return '';
+
+        $urlPrefix = rtrim((string) ($p['item_url_prefix'] ?? ''), '/');
+        $perRow = max(2, min(6, (int) ($p['cards_per_row'] ?? 4)));
+        $gridClass = [
+            2 => 'grid-cols-2',
+            3 => 'grid-cols-2 md:grid-cols-3',
+            4 => 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+            5 => 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
+            6 => 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
+        ][$perRow];
+        $asAccordion = !isset($p['as_accordion']) || (bool) $p['as_accordion'];
+
+        $label = $this->e(trim((string) ($match['label'] ?? '')));
+        $icon = trim((string) ($match['icon'] ?? ''));
+        $intro = $this->e(trim((string) ($match['intro'] ?? '')));
+        $items = $match['items'] ?? [];
+
+        if ($asAccordion) {
+            $out = '<details class="rg-accordion rg-hub-category mb-4 scroll-mt-32 rounded-2xl border border-slate-200 bg-white overflow-hidden" id="cat-' . $this->e($key) . '" data-rg-accordion-group="categories">';
+            $out .= '<summary class="flex items-center justify-between gap-4 p-5 sm:p-6 cursor-pointer select-none hover:bg-slate-50 transition">';
+            $out .= '<div class="flex items-center gap-3 min-w-0">';
+            if ($icon !== '') $out .= '<span class="text-2xl sm:text-3xl shrink-0" aria-hidden="true">' . $icon . '</span>';
+            $out .= '<div class="min-w-0">';
+            if ($label !== '') $out .= '<div class="text-lg sm:text-xl font-extrabold text-slate-900 truncate">' . $label . '</div>';
+            if ($intro !== '') $out .= '<div class="text-sm text-slate-500 truncate">' . $intro . '</div>';
+            $out .= '</div></div>';
+            $out .= '<svg class="w-5 h-5 text-slate-400 shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
+            $out .= '</summary>';
+            $out .= '<div class="p-5 sm:p-6 pt-2 border-t border-slate-100">';
+            if (!empty($items)) {
+                $out .= '<div class="grid ' . $gridClass . ' gap-3">';
+                foreach ($items as $item) {
+                    $slug = (string) ($item['slug'] ?? '');
+                    $name = $this->e((string) ($item['name'] ?? ''));
+                    $note = $this->e((string) ($item['note'] ?? $item['description'] ?? ''));
+                    if ($slug === '' || $name === '') continue;
+                    $href = $urlPrefix !== '' ? $urlPrefix . '/' . $slug : '#';
+                    $out .= '<a href="' . $this->e($href) . '" class="block rounded-xl border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-md transition-all">';
+                    $out .= '<div class="font-bold text-slate-900 text-sm mb-1">' . $name . '</div>';
+                    if ($note !== '') $out .= '<div class="text-xs text-slate-500 line-clamp-3 leading-snug">' . $note . '</div>';
+                    $out .= '</a>';
+                }
+                $out .= '</div>';
+            }
+            $out .= '</div></details>';
+        } else {
+            $out = '<section class="rg-hub-category my-12" id="cat-' . $this->e($key) . '">';
+            $out .= '<div class="mb-6">';
+            if ($icon !== '') $out .= '<div class="text-3xl mb-2" aria-hidden="true">' . $icon . '</div>';
+            if ($label !== '') $out .= '<h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">' . $label . '</h2>';
+            if ($intro !== '') $out .= '<p class="text-slate-600 leading-relaxed mt-2 max-w-3xl">' . $intro . '</p>';
+            $out .= '</div>';
+            $out .= '<div class="grid ' . $gridClass . ' gap-3">';
+            foreach ($items as $item) {
+                $slug = (string) ($item['slug'] ?? '');
+                $name = $this->e((string) ($item['name'] ?? ''));
+                $note = $this->e((string) ($item['note'] ?? $item['description'] ?? ''));
+                if ($slug === '' || $name === '') continue;
+                $href = $urlPrefix !== '' ? $urlPrefix . '/' . $slug : '#';
+                $out .= '<a href="' . $this->e($href) . '" class="block rounded-xl border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-md transition-all">'
+                    . '<div class="font-bold text-slate-900 text-sm mb-1">' . $name . '</div>';
+                if ($note !== '') $out .= '<div class="text-xs text-slate-500 line-clamp-3 leading-snug">' . $note . '</div>';
+                $out .= '</a>';
+            }
+            $out .= '</div></section>';
+        }
+        return $out;
+    }
+
+    /**
+     * hub_footer_rail — heading + body + pill link rail. Closes
+     * out a hub page with related-pages CTAs.
+     */
+    private function hubFooterRail(array $p, array $context): string
+    {
+        if (isset($p['links']) && is_string($p['links'])) {
+            $t = trim($p['links']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['links'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $body = $this->e(trim((string) ($p['body'] ?? '')));
+        $links = $p['links'] ?? [];
+        if (!is_array($links)) $links = [];
+        $themeMap = [
+            'slate' => 'bg-slate-100 hover:bg-slate-200 text-slate-800',
+            'amber' => 'bg-amber-100 hover:bg-amber-200 text-amber-900',
+            'indigo' => 'bg-indigo-100 hover:bg-indigo-200 text-indigo-900',
+            'rose' => 'bg-rose-100 hover:bg-rose-200 text-rose-900',
+            'emerald' => 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900',
+            'violet' => 'bg-violet-100 hover:bg-violet-200 text-violet-900',
+            'teal' => 'bg-teal-100 hover:bg-teal-200 text-teal-900',
+        ];
+
+        $out = '<section class="rg-hub-footer mt-12 pt-10 border-t border-slate-200">';
+        if ($heading !== '') $out .= '<h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($body !== '') $out .= '<p class="text-slate-700 leading-relaxed max-w-3xl mb-5">' . $body . '</p>';
+        if (!empty($links)) {
+            $out .= '<div class="flex flex-wrap gap-2 text-sm">';
+            foreach ($links as $link) {
+                $label = $this->e((string) ($link['label'] ?? ''));
+                $url = $this->e((string) ($link['url'] ?? '#'));
+                $theme = $link['theme'] ?? 'slate';
+                $cls = $themeMap[$theme] ?? $themeMap['slate'];
+                if ($label === '') continue;
+                $out .= '<a href="' . $url . '" class="inline-flex items-center gap-1 px-4 py-2 rounded-full ' . $cls . ' font-semibold">' . $label . '</a>';
+            }
+            $out .= '</div>';
         }
         $out .= '</section>';
         return $out;

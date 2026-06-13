@@ -18,9 +18,11 @@ namespace App\Http\Controllers;
  */
 class FoodsController extends Controller
 {
+    use \App\Http\Controllers\Concerns\RendersBlockableHub;
+
     public function index()
     {
-        return view('foods.index', [
+        $blockView = $this->renderHubBlocks('foods', ['categories' => $this->categories()]); if ($blockView) return $blockView; return view('foods.index', [
             'categories' => $this->categories(),
         ]);
     }

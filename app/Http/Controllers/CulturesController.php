@@ -18,9 +18,11 @@ namespace App\Http\Controllers;
  */
 class CulturesController extends Controller
 {
+    use \App\Http\Controllers\Concerns\RendersBlockableHub;
+
     public function index()
     {
-        return view('cultures.index', [
+        $blockView = $this->renderHubBlocks('cultures', ['categories' => $this->categories()]); if ($blockView) return $blockView; return view('cultures.index', [
             'categories' => $this->categories(),
         ]);
     }

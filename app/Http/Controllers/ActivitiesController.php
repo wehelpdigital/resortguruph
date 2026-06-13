@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Cache;
  */
 class ActivitiesController extends Controller
 {
+    use \App\Http\Controllers\Concerns\RendersBlockableHub;
+
     public function index()
     {
         // Three fiesta covers used as the rotating background for the
@@ -49,7 +51,7 @@ class ActivitiesController extends Controller
             return $picks;
         });
 
-        return view('activities.index', [
+        $blockView = $this->renderHubBlocks('activities', ['categories' => $this->categories()]); if ($blockView) return $blockView; return view('activities.index', [
             'categories' => $this->categories(),
             'fiestaCovers' => $fiestaCovers,
             'fiestasUrl' => route('fiestas.index'),
