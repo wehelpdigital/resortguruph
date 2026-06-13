@@ -4561,7 +4561,7 @@ class BlockRenderer
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
             . '.rg-uss-curve{position:relative;display:inline-block;color:inherit}'
-            . '.rg-uss-curve-svg{position:absolute;left:-10px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '.rg-uss-curve-svg{position:absolute;left:5px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
             . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 10px)}}'
             . '.rg-uss-title-break{display:block;height:30px}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
