@@ -4318,22 +4318,23 @@ class BlockRenderer
                     // Filled brush silhouette (not stroked) — thin on
                     // the left, thicker on the right. Shape is a
                     // closed path: top edge cubic from (8,8) →
-                    // (210,9), vertical right end (210,9) → (210,15),
+                    // (225,9), vertical right end (225,9) → (225,15),
                     // bottom edge cubic back to (8,10), implicit
-                    // close to (8,8).
+                    // close to (8,8). Right end extended from x=210
+                    // to x=225 (+15 viewBox units ≈ +17-19px screen).
                     // Widths along the brush:
                     //   left  (x=8):   10-8 = 2 units (thin)
-                    //   apex  (x~100): bottom y(.5) - top y(.5)
+                    //   apex  (x~104): bottom y(.5) - top y(.5)
                     //                  = 19.25 - 15.25 = 4 units
-                    //   right (x=210): 15-9 = 6 units (thick)
+                    //   right (x=225): 15-9 = 6 units (thick)
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
                         . '<svg class="rg-uss-curve-svg" viewBox="0 0 240 28" aria-hidden="true">'
-                        . '<path d="M 8 8 C 60 18 140 17 210 9 L 210 15 C 140 21 60 22 8 10 Z" fill="currentColor"/>'
+                        . '<path d="M 8 8 C 60 18 140 17 225 9 L 225 15 C 140 21 60 22 8 10 Z" fill="currentColor"/>'
                         . '</svg>'
                         . '</span>';
                     $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
                 }
-                $separator = $breakBefore ? '<br class="rg-uss-title-break">' : ($m[1] !== '' ? ' ' : '');
+                $separator = $breakBefore ? '<span class="rg-uss-title-break" aria-hidden="true"></span>' : ($m[1] !== '' ? ' ' : '');
                 $titleHtml = $preText
                     . $separator
                     . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
@@ -4433,7 +4434,7 @@ class BlockRenderer
             $out .= '<div class="rg-uss-video-scrim" aria-hidden="true"></div>';
         }
         $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
-        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
+        if ($eyebrow !== '') $out .= '<div class="text-[13px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
         if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.5] md:leading-[1.4]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
         if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . $taglineColor . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
 
@@ -4528,7 +4529,7 @@ class BlockRenderer
             . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.55em}'
             . '.rg-uss-curve-svg{position:absolute;left:-10px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
             . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 10px)}}'
-            . '.rg-uss-title-break{display:block}'
+            . '.rg-uss-title-break{display:block;height:15px}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
             . '@media(min-aspect-ratio:16/9){.rg-uss-video iframe{width:100%;height:56.25vw;min-height:100%}}'
