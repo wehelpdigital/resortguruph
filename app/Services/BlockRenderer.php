@@ -4316,35 +4316,19 @@ class BlockRenderer
                 if ($curveWord !== '' && $preText !== '') {
                     $escCurve = preg_quote($curveWord, '/');
                     // Filled brush silhouette (not stroked) — thin on
-                    // the left, thicker on the right where the plane
-                    // attaches. The shape is a closed path: top edge
-                    // cubic from (8,8) → (210,9), short vertical
-                    // right end from (210,9) → (210,15), bottom edge
-                    // cubic back from (210,15) → (8,10), implicit
-                    // close from (8,10) → (8,8).
+                    // the left, thicker on the right. Shape is a
+                    // closed path: top edge cubic from (8,8) →
+                    // (210,9), vertical right end (210,9) → (210,15),
+                    // bottom edge cubic back to (8,10), implicit
+                    // close to (8,8).
                     // Widths along the brush:
                     //   left  (x=8):   10-8 = 2 units (thin)
                     //   apex  (x~100): bottom y(.5) - top y(.5)
                     //                  = 19.25 - 15.25 = 4 units
                     //   right (x=210): 15-9 = 6 units (thick)
-                    // Plane at translate(215 8) rotate(-15) scale
-                    // (0.6) — center positioned at viewBox x=215
-                    // (right portion of the "s" letter, viewBox
-                    // x ratio 215/240 ≈ 90% across the span) and
-                    // y=8 (higher up, near baseline). Smaller scale
-                    // 0.6 keeps the plane out of "Island" line below.
-                    // Back-left chain: (3,12) → translate(-12,-12)
-                    // → (-9,0) → scale(0.6) → (-5.4,0) → rotate(-15)
-                    // → (-5.22, 1.40) → translate(215,8) → (209.78,
-                    // 9.40). Brush right edge is at x=210, y=9..15.
-                    // Plane back-left at (209.78, 9.40) sits inside
-                    // the upper-left corner of the brush right end.
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
                         . '<svg class="rg-uss-curve-svg" viewBox="0 0 240 28" aria-hidden="true">'
                         . '<path d="M 8 8 C 60 18 140 17 210 9 L 210 15 C 140 21 60 22 8 10 Z" fill="currentColor"/>'
-                        . '<g transform="translate(215 8) rotate(-15) scale(0.6)" fill="currentColor">'
-                        . '<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z" transform="translate(-12 -12)"/>'
-                        . '</g>'
                         . '</svg>'
                         . '</span>';
                     $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
@@ -4450,7 +4434,7 @@ class BlockRenderer
         }
         $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
         if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
-        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.25] md:leading-[1.22]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.5] md:leading-[1.4]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
         if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . $taglineColor . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
 
         // Search shell
@@ -4542,8 +4526,8 @@ class BlockRenderer
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
             . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.55em}'
-            . '.rg-uss-curve-svg{position:absolute;left:0;width:100%;height:auto;bottom:-.7rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
-            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:-1rem}}'
+            . '.rg-uss-curve-svg{position:absolute;left:-10px;width:100%;height:auto;bottom:calc(-.7rem - 10px);color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:calc(-1rem - 10px)}}'
             . '.rg-uss-title-break{display:block}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
