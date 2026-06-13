@@ -9,23 +9,24 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
-    {{-- Breadcrumb --}}
-    <nav class="text-sm text-slate-500 mb-4">
-        <a href="/" class="hover:text-emerald-700">Home</a>
-        <span class="mx-1.5">/</span>
-        <a href="{{ route('activities.index') }}" class="hover:text-emerald-700">Activities</a>
-        <span class="mx-1.5">/</span>
-        <span class="text-slate-700">Fiestas &amp; Festivals</span>
+    {{-- Modern breadcrumb (slate-300 separators, emerald hover) --}}
+    <nav class="text-sm text-slate-500 mb-8 flex items-center gap-1.5 flex-wrap">
+        <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
+        <span class="text-slate-300 mx-0.5">/</span>
+        <a href="{{ route('activities.index') }}" class="hover:text-emerald-700 transition-colors">Activities</a>
+        <span class="text-slate-300 mx-0.5">/</span>
+        <span class="text-slate-700 font-medium">Fiestas &amp; Festivals</span>
     </nav>
 
-    {{-- Page header --}}
+    {{-- Page header — bigger H1 + tighter typography matching the
+         keyword / blog / listing pages. --}}
     <header class="mb-10">
-        <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-2">Activities · Cultural &amp; Heritage</div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-tight mb-3">
+        <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-3">Activities · Cultural &amp; Heritage</div>
+        <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 leading-[1.05] tracking-[-0.018em] mb-5 max-w-4xl">
             Philippine Fiestas &amp; Festivals Guide
         </h1>
-        <div class="prose prose-slate text-base sm:text-lg leading-relaxed text-slate-700 mb-2 max-w-3xl">
-            <p>
+        <div class="text-base sm:text-lg leading-relaxed text-slate-700 max-w-3xl">
+            <p class="m-0">
                 The Philippines runs on fiestas. Every town has at least one, every region has a dozen, and the calendar is so packed you could chase a different celebration every weekend of the year and still not see them all. This is the complete regional guide: {{ $totalCount }} fiestas across the archipelago, sorted by region so a trip lines up cleanly with whichever one fits your dates.
             </p>
         </div>
@@ -53,8 +54,12 @@
         @if($regionRows->isEmpty()) @continue @endif
 
         <section id="region-{{ $key }}" class="mb-14 scroll-mt-24">
-            <div class="flex items-end justify-between gap-3 mb-5 flex-wrap pb-3 border-b border-slate-200">
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">{{ $label }}</h2>
+            <div class="mb-5 flex items-center gap-3">
+                <span class="block h-[3px] w-10 bg-emerald-600 rounded-full"></span>
+                <span class="text-xs uppercase tracking-[0.18em] font-bold text-emerald-700">Region</span>
+            </div>
+            <div class="flex items-end justify-between gap-3 mb-6 flex-wrap pb-4 border-b border-slate-200">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-[-0.015em]">{{ $label }}</h2>
                 <div class="text-sm text-slate-500">{{ $regionRows->count() }} fiesta{{ $regionRows->count() === 1 ? '' : 's' }}</div>
             </div>
 

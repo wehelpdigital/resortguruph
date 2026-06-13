@@ -16,24 +16,24 @@
 @section('content')
 <article class="page-fiesta-{{ $fiesta->slug }} max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
-    {{-- Breadcrumb --}}
-    <nav class="text-sm text-slate-500 mb-5">
-        <a href="/" class="hover:text-emerald-700">Home</a>
-        <span class="mx-1.5">/</span>
-        <a href="{{ route('fiestas.index') }}" class="hover:text-emerald-700">Fiestas</a>
-        <span class="mx-1.5">/</span>
-        <span class="text-slate-700">{{ $fiesta->name }}</span>
+    {{-- Modern breadcrumb (slate-300 separators, emerald hover) --}}
+    <nav class="text-sm text-slate-500 mb-8 flex items-center gap-1.5 flex-wrap">
+        <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
+        <span class="text-slate-300 mx-0.5">/</span>
+        <a href="{{ route('fiestas.index') }}" class="hover:text-emerald-700 transition-colors">Fiestas</a>
+        <span class="text-slate-300 mx-0.5">/</span>
+        <span class="text-slate-700 font-medium">{{ $fiesta->name }}</span>
     </nav>
 
-    {{-- Page header --}}
+    {{-- Page header — editorial typography matching the rest of the site --}}
     <header class="mb-8">
-        <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-2">
+        <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-3">
             {{ $fiesta->regionLabel() }}
             @if($fiesta->city_or_town)
                 · {{ $fiesta->city_or_town }}@if($fiesta->province), {{ $fiesta->province }}@endif
             @endif
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-tight mb-3">
+        <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 leading-[1.05] tracking-[-0.018em] mb-4">
             {{ $fiesta->h1 ?: $fiesta->name }}
         </h1>
         @if($fiesta->date_label)
