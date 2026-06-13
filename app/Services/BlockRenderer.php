@@ -5142,14 +5142,19 @@ class BlockRenderer
     }
 
     /**
-     * home_category_accordion — vertical accordion of category
-     * panels using native <details>/<summary>. Synthesized from
-     * Editorial Strips + Bento Peel + Immersive Bands archetypes.
+     * home_category_accordion — horizontal image-strip accordion.
+     * Six vertical image cards in a row; clicking one expands its
+     * width (desktop) or height (tablet/mobile) while the others
+     * shrink. The inner content (kicker + title + description +
+     * CTA) fades in 0.4s after the size transition starts.
      *
-     * Each item: icon tile + thumbnail + label/kicker + chevron in
-     * the collapsed strip. Expanded panel uses a bento layout:
-     * hero image left (42% on desktop), content panel right with
-     * accent rule + description + CTA button.
+     * Pattern follows the classic "vertical accordion card"
+     * (Stripe / Apple style):
+     *   - Desktop  (≥1025px): horizontal flex row, expand on
+     *                        click via flex-grow ratio.
+     *   - Tablet   (≤1024px): vertical stack, expand on click
+     *                        via height transition (500px).
+     *   - Mobile   (≤480px):  same as tablet but expand to 380px.
      *
      * Payload:
      *   eyebrow, heading, subhead
@@ -5206,7 +5211,7 @@ class BlockRenderer
             $out .= '</div>';
         }
 
-        $out .= '<div class="rg-cat-acc__list">';
+        $out .= '<div class="rg-cat-acc__row">';
         foreach ($items as $idx => $item) {
             $arr = $this->toArrayShapeSimple($item);
             $label = (string) ($arr['label'] ?? '');
@@ -5229,99 +5234,95 @@ class BlockRenderer
                     ? $image
                     : '/storage/' . ltrim($image, '/');
             }
-            // First two open eagerly — most likely to be opened
-            $loading = $idx < 2 ? 'eager' : 'lazy';
             $isFirst = $idx === 0;
-
-            $out .= '<details class="rg-cat-acc__item" style="--acc-rgb:' . $rgb . '"' . ($isFirst ? ' open' : '') . '>';
-            $out .= '<summary class="rg-cat-acc__summary">';
-            $out .= '<span class="rg-cat-acc__icon" aria-hidden="true">';
-            $out .= '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $iconSvg . '</svg>';
-            $out .= '</span>';
+            $cardClass = 'rg-cat-acc__card' . ($isFirst ? ' expanded' : '');
+            $innerClass = 'rg-cat-acc__inner' . ($isFirst ? ' active' : '');
+            $cardStyle = '--acc-rgb:' . $rgb;
             if ($imgUrl !== '') {
-                $out .= '<img src="' . $this->e($imgUrl) . '" alt="" loading="' . $loading . '" class="rg-cat-acc__thumb" aria-hidden="true">';
+                $cardStyle .= ';background-image:url(\'' . $this->e($imgUrl) . '\')';
             }
-            $out .= '<span class="rg-cat-acc__text">';
-            if ($kicker !== '') $out .= '<span class="rg-cat-acc__kicker">' . $kicker . '</span>';
-            $out .= '<span class="rg-cat-acc__title">' . $labelEsc . '</span>';
-            $out .= '</span>';
-            $out .= '<span class="rg-cat-acc__chevron" aria-hidden="true">';
-            $out .= '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
-            $out .= '</span>';
-            $out .= '</summary>';
 
-            $out .= '<div class="rg-cat-acc__body-wrap"><div class="rg-cat-acc__body"><div class="rg-cat-acc__bento">';
-            // Hero image (left on desktop)
-            $out .= '<div class="rg-cat-acc__hero">';
-            if ($imgUrl !== '') {
-                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $imageAlt . '" loading="' . $loading . '" class="rg-cat-acc__hero-img">';
-            }
-            $out .= '<div class="rg-cat-acc__hero-scrim"></div>';
-            $out .= '<span class="rg-cat-acc__hero-label">' . $labelEsc . '</span>';
+            $out .= '<div class="' . $cardClass . '" style="' . $cardStyle . '" role="button" tabindex="0" aria-label="' . $labelEsc . '">';
+            // Always-visible label (icon + title) — fades out when card is expanded
+            $out .= '<div class="rg-cat-acc__cardlabel">';
+            $out .= '<div class="rg-cat-acc__cardicon" aria-hidden="true">';
+            $out .= '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' . $iconSvg . '</svg>';
             $out .= '</div>';
-            // Content (right on desktop)
-            $out .= '<div class="rg-cat-acc__content">';
-            $out .= '<span class="rg-cat-acc__rule"></span>';
+            $out .= '<span class="rg-cat-acc__cardtitle">' . $labelEsc . '</span>';
+            $out .= '</div>';
+
+            // Inner content — fades in when card is expanded
+            $out .= '<div class="' . $innerClass . '">';
+            $out .= '<div class="rg-cat-acc__innerbox">';
+            if ($kicker !== '') $out .= '<span class="rg-cat-acc__kicker">' . $kicker . '</span>';
+            $out .= '<h3 class="rg-cat-acc__heading">' . $labelEsc . '</h3>';
             if ($desc !== '') $out .= '<p class="rg-cat-acc__desc">' . $desc . '</p>';
             $out .= '<a href="' . $url . '" class="rg-cat-acc__cta">' . $ctaLabel
                 . '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
                 . '</a>';
+            $out .= '</div></div>';
             $out .= '</div>';
-            $out .= '</div></div></div>';
-            $out .= '</details>';
         }
         $out .= '</div></div>';
 
-        // CSS
+        // CSS — horizontal slider accordion (flex-grow expand on
+        // desktop ≥1025px) that collapses to a vertical accordion
+        // (height transition) below 1025px.
         $out .= '<style>'
-            . '.rg-cat-acc__list{display:flex;flex-direction:column;gap:.5rem}'
-            . '.rg-cat-acc__item{background:#fff;border:1px solid #e2e8f0;border-left:4px solid transparent;border-radius:1rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:box-shadow .25s ease,border-color .25s ease}'
-            . '.rg-cat-acc__item:hover{box-shadow:0 4px 16px rgba(0,0,0,.09)}'
-            . '.rg-cat-acc__item[open]{border-left-color:rgb(var(--acc-rgb));box-shadow:0 6px 24px rgba(var(--acc-rgb),.12)}'
-            . '.rg-cat-acc__summary{display:flex;align-items:center;gap:.85rem;padding:.85rem 1.25rem .85rem 1rem;cursor:pointer;list-style:none;user-select:none;background:#fff;transition:background-color .15s ease}'
-            . '.rg-cat-acc__summary::-webkit-details-marker{display:none}'
-            . '.rg-cat-acc__summary::marker{display:none}'
-            . '.rg-cat-acc__item[open]>.rg-cat-acc__summary,.rg-cat-acc__summary:hover{background:#f8fafc}'
-            . '.rg-cat-acc__summary:focus-visible{outline:2px solid rgb(var(--acc-rgb));outline-offset:-2px;border-radius:.85rem}'
-            . '.rg-cat-acc__icon{flex-shrink:0;width:2.75rem;height:2.75rem;border-radius:.65rem;background:rgba(var(--acc-rgb),.10);color:rgb(var(--acc-rgb));display:flex;align-items:center;justify-content:center}'
-            . '.rg-cat-acc__thumb{flex-shrink:0;width:4.5rem;height:4.5rem;border-radius:.65rem;object-fit:cover;border:1px solid #e2e8f0;transition:transform .4s ease}'
-            . '.rg-cat-acc__item:hover .rg-cat-acc__thumb,.rg-cat-acc__item[open] .rg-cat-acc__thumb{transform:scale(1.04)}'
-            . '@media(min-width:640px){.rg-cat-acc__thumb{width:5.75rem;height:5.75rem}}'
-            . '.rg-cat-acc__text{flex:1;min-width:0;display:flex;flex-direction:column;gap:.1rem}'
-            . '.rg-cat-acc__kicker{display:none;font-size:.65rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgb(var(--acc-rgb));line-height:1.1}'
-            . '@media(min-width:640px){.rg-cat-acc__kicker{display:block}}'
-            . '.rg-cat-acc__title{font-size:1.05rem;font-weight:800;color:#0f172a;line-height:1.25;letter-spacing:-.015em}'
-            . '@media(min-width:640px){.rg-cat-acc__title{font-size:1.25rem}}'
-            . '.rg-cat-acc__chevron{flex-shrink:0;color:rgb(var(--acc-rgb));transition:transform .3s ease}'
-            . '.rg-cat-acc__item[open] .rg-cat-acc__chevron{transform:rotate(180deg)}'
-            . '.rg-cat-acc__body-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s cubic-bezier(.4,0,.2,1)}'
-            . '.rg-cat-acc__item[open]>.rg-cat-acc__body-wrap{grid-template-rows:1fr}'
-            . '.rg-cat-acc__body{overflow:hidden}'
-            . '.rg-cat-acc__bento{display:flex;flex-direction:column;border-top:1px solid #e2e8f0}'
-            . '@media(min-width:768px){.rg-cat-acc__bento{flex-direction:row;min-height:320px}}'
-            . '.rg-cat-acc__hero{position:relative;overflow:hidden;background:#cbd5e1;min-height:200px;flex-shrink:0}'
-            . '@media(min-width:768px){.rg-cat-acc__hero{width:42%;min-height:320px}}'
-            . '.rg-cat-acc__hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);transition:opacity .4s ease .08s,transform .7s cubic-bezier(.22,1,.36,1) .08s}'
-            . '.rg-cat-acc__item[open] .rg-cat-acc__hero-img{opacity:1;transform:scale(1)}'
-            . '.rg-cat-acc__hero-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,23,42,.72) 0%,rgba(15,23,42,.18) 45%,transparent 100%);pointer-events:none}'
-            . '.rg-cat-acc__hero-label{position:absolute;bottom:1rem;left:1.25rem;right:1.25rem;color:#fff;font-size:1.2rem;font-weight:800;letter-spacing:-.02em;text-shadow:0 2px 12px rgba(0,0,0,.5);opacity:0;transform:translateY(.4rem);transition:opacity .32s ease .22s,transform .36s cubic-bezier(.22,1,.36,1) .2s}'
-            . '@media(min-width:768px){.rg-cat-acc__hero-label{font-size:1.4rem}}'
-            . '.rg-cat-acc__item[open] .rg-cat-acc__hero-label{opacity:1;transform:translateY(0)}'
-            . '.rg-cat-acc__content{flex:1;display:flex;flex-direction:column;background:#fff;padding:1.25rem;opacity:0;transform:translateY(.7rem);transition:opacity .3s ease .14s,transform .38s cubic-bezier(.22,1,.36,1) .12s}'
-            . '@media(min-width:768px){.rg-cat-acc__content{padding:1.75rem 1.75rem 1.25rem;justify-content:center}}'
-            . '.rg-cat-acc__item[open] .rg-cat-acc__content{opacity:1;transform:translateY(0)}'
-            . '.rg-cat-acc__rule{display:block;width:2.5rem;height:3px;border-radius:2px;background:rgb(var(--acc-rgb));margin-bottom:.85rem}'
-            . '.rg-cat-acc__desc{font-size:.92rem;color:#475569;line-height:1.7;margin:0 0 1.1rem;max-width:50ch}'
-            . '@media(min-width:768px){.rg-cat-acc__desc{font-size:.98rem}}'
-            . '.rg-cat-acc__cta{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.1rem;border-radius:.6rem;background:rgb(var(--acc-rgb));color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.01em;text-decoration:none;align-self:flex-start;box-shadow:0 4px 14px -4px rgba(var(--acc-rgb),.45);transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}'
-            . '.rg-cat-acc__cta:hover{transform:translateX(3px);box-shadow:0 6px 18px -4px rgba(var(--acc-rgb),.55)}'
+            . '.rg-cat-acc__row{display:flex;flex-direction:row;gap:.5rem;height:520px;border-radius:1rem;overflow:hidden}'
+            . '.rg-cat-acc__card{flex:1;position:relative;background-size:cover;background-position:center;background-color:#0f172a;cursor:pointer;transition:flex .5s cubic-bezier(.4,0,.2,1),height .5s cubic-bezier(.4,0,.2,1);overflow:hidden;min-width:0}'
+            . '.rg-cat-acc__card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.08) 0%,rgba(15,23,42,.55) 65%,rgba(15,23,42,.85) 100%);pointer-events:none;z-index:1;transition:opacity .35s ease}'
+            . '.rg-cat-acc__card.expanded::after{content:"";position:absolute;inset:0;background:rgba(15,23,42,.55);z-index:1;pointer-events:none}'
+            . '.rg-cat-acc__card.expanded::before{opacity:0}'
+            . '.rg-cat-acc__card:focus-visible{outline:3px solid rgb(var(--acc-rgb));outline-offset:-3px}'
+            . '@media(min-width:1025px){.rg-cat-acc__card.expanded{flex:3.5}}'
+            // Always-visible card label (icon + title at bottom)
+            . '.rg-cat-acc__cardlabel{position:absolute;left:1.25rem;right:1.25rem;bottom:1.25rem;z-index:2;color:#fff;display:flex;flex-direction:column;gap:.55rem;transition:opacity .25s ease,transform .35s cubic-bezier(.22,1,.36,1)}'
+            . '.rg-cat-acc__card.expanded .rg-cat-acc__cardlabel{opacity:0;transform:translateY(.5rem);pointer-events:none}'
+            . '.rg-cat-acc__cardicon{width:2.4rem;height:2.4rem;border-radius:.55rem;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#fff;border:1px solid rgba(255,255,255,.22)}'
+            . '.rg-cat-acc__cardtitle{font-size:1rem;font-weight:800;letter-spacing:-.01em;text-shadow:0 2px 10px rgba(0,0,0,.65)}'
+            . '@media(min-width:1025px){.rg-cat-acc__cardtitle{font-size:1.1rem}}'
+            // Inner content (fades in when expanded)
+            . '.rg-cat-acc__inner{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end;padding:1.5rem;opacity:0;transition:opacity 0s;pointer-events:none;color:#fff}'
+            . '.rg-cat-acc__inner.active{opacity:1;transition:opacity .5s .4s;pointer-events:auto}'
+            . '@media(min-width:1025px){.rg-cat-acc__inner{padding:2rem 2.25rem}}'
+            . '.rg-cat-acc__innerbox{max-width:46ch}'
+            . '.rg-cat-acc__kicker{display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:rgb(var(--acc-rgb));padding:.3rem .7rem;border-radius:999px;margin-bottom:.85rem;box-shadow:0 4px 12px -2px rgba(var(--acc-rgb),.5)}'
+            . '.rg-cat-acc__heading{font-size:1.65rem;font-weight:800;margin:0 0 .85rem;text-shadow:0 2px 14px rgba(0,0,0,.7);letter-spacing:-.02em;line-height:1.15}'
+            . '@media(min-width:1025px){.rg-cat-acc__heading{font-size:2.1rem}}'
+            . '.rg-cat-acc__desc{font-size:.92rem;line-height:1.7;margin:0 0 1.2rem;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.55)}'
+            . '@media(min-width:1025px){.rg-cat-acc__desc{font-size:.98rem}}'
+            . '.rg-cat-acc__cta{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.3rem;background:rgb(var(--acc-rgb));color:#fff;border-radius:.6rem;font-weight:700;font-size:.85rem;letter-spacing:.01em;text-decoration:none;box-shadow:0 8px 22px -6px rgba(var(--acc-rgb),.65);transition:transform .18s ease,box-shadow .18s ease}'
+            . '.rg-cat-acc__cta:hover{transform:translateX(4px);box-shadow:0 10px 26px -4px rgba(var(--acc-rgb),.75)}'
             . '.rg-cat-acc__cta svg{width:.9rem;height:.9rem;flex-shrink:0}'
-            . '@media(max-width:767px){.rg-cat-acc__cta{width:100%;justify-content:center}}'
-            . '@media(prefers-reduced-motion:reduce){.rg-cat-acc__item,.rg-cat-acc__thumb,.rg-cat-acc__body-wrap,.rg-cat-acc__hero-img,.rg-cat-acc__hero-label,.rg-cat-acc__content,.rg-cat-acc__cta,.rg-cat-acc__chevron{transition:none!important;animation:none!important}.rg-cat-acc__item[open] .rg-cat-acc__hero-img,.rg-cat-acc__item[open] .rg-cat-acc__hero-label,.rg-cat-acc__item[open] .rg-cat-acc__content{opacity:1;transform:none}}'
+            // Tablet (≤1024px): vertical stack, height-based expand
+            . '@media(max-width:1024px){'
+            . '.rg-cat-acc__row{flex-direction:column;height:auto;gap:.4rem}'
+            . '.rg-cat-acc__card{flex:none;width:100%;height:110px;transition:height .5s cubic-bezier(.4,0,.2,1)}'
+            . '.rg-cat-acc__card.expanded{height:520px}'
+            . '.rg-cat-acc__cardlabel{flex-direction:row;align-items:center;gap:.85rem;bottom:auto;top:50%;transform:translateY(-50%);left:1.25rem;right:1.25rem}'
+            . '.rg-cat-acc__card.expanded .rg-cat-acc__cardlabel{transform:translateY(-50%) translateY(.5rem)}'
+            . '.rg-cat-acc__cardicon{width:2.2rem;height:2.2rem}'
+            . '.rg-cat-acc__cardtitle{font-size:1rem}'
+            . '}'
+            // Mobile (≤480px): same stack, shorter expanded card
+            . '@media(max-width:480px){'
+            . '.rg-cat-acc__card.expanded{height:400px}'
+            . '.rg-cat-acc__inner{padding:1.25rem}'
+            . '.rg-cat-acc__heading{font-size:1.5rem}'
+            . '.rg-cat-acc__desc{font-size:.88rem}'
+            . '.rg-cat-acc__cta{width:100%;justify-content:center}'
+            . '}'
+            // Reduced motion
+            . '@media(prefers-reduced-motion:reduce){'
+            . '.rg-cat-acc__card,.rg-cat-acc__cardlabel,.rg-cat-acc__inner,.rg-cat-acc__cta{transition:none!important}'
+            . '}'
             . '</style>';
 
-        // Sibling-close JS — only one panel open at a time.
-        $out .= '<script>(function(){var l=document.querySelectorAll(".rg-cat-acc__list");l.forEach(function(list){list.addEventListener("toggle",function(e){if(!e.target.matches(".rg-cat-acc__item")||!e.target.open)return;list.querySelectorAll(".rg-cat-acc__item[open]").forEach(function(s){if(s!==e.target)s.removeAttribute("open")})},true)})})();</script>';
+        // JS — click/keyboard expands the chosen card and collapses
+        // siblings; links inside the card bubble normally so the
+        // CTA still navigates.
+        $out .= '<script>(function(){var rows=document.querySelectorAll(".rg-cat-acc__row");rows.forEach(function(row){var cards=row.querySelectorAll(".rg-cat-acc__card");var expand=function(card){cards.forEach(function(c){var inner=c.querySelector(".rg-cat-acc__inner");if(c===card){c.classList.add("expanded");if(inner)inner.classList.add("active")}else{c.classList.remove("expanded");if(inner)inner.classList.remove("active")}})};cards.forEach(function(card){card.addEventListener("click",function(e){if(e.target.closest("a"))return;expand(card)});card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){if(e.target.closest("a"))return;e.preventDefault();expand(card)}})})})})();</script>';
 
         $out .= '</section>';
         return $out;
