@@ -4428,10 +4428,15 @@ class BlockRenderer
             $out .= '<div class="rg-uss-video" aria-hidden="true">';
             $out .= '<iframe src="' . $this->e($ytSrc) . '" frameborder="0"'
                 . ' allow="autoplay; encrypted-media; picture-in-picture"'
-                . ' loading="lazy" referrerpolicy="strict-origin-when-cross-origin"'
+                . ' loading="eager" referrerpolicy="strict-origin-when-cross-origin"'
                 . ' title=""></iframe>';
             $out .= '</div>';
             $out .= '<div class="rg-uss-video-scrim" aria-hidden="true"></div>';
+            // Init overlay — solid white for ~600ms then fades over
+            // ~900ms. Masks the YouTube loading state (big center
+            // play button and any control flicker) until the muted
+            // autoplay has actually started.
+            $out .= '<div class="rg-uss-video-init" aria-hidden="true"></div>';
         }
         $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
         if ($eyebrow !== '') $out .= '<div class="text-[13px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
@@ -4534,6 +4539,9 @@ class BlockRenderer
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
             . '@media(min-aspect-ratio:16/9){.rg-uss-video iframe{width:100%;height:56.25vw;min-height:100%}}'
             . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.82) 0%,rgba(255,255,255,.80) 50%,rgba(255,255,255,.88) 100%);pointer-events:none;z-index:1}'
+            . '.rg-uss-video-init{position:absolute;inset:0;background:#ffffff;pointer-events:none;z-index:2;animation:rg-uss-video-init-out 1.5s ease-out forwards}'
+            . '@keyframes rg-uss-video-init-out{0%,40%{opacity:1}100%{opacity:0}}'
+            . '@media(prefers-reduced-motion:reduce){.rg-uss-video-init{animation-duration:.3s}}'
             . '</style>';
 
         // JSON index + JS
