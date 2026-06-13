@@ -4315,27 +4315,34 @@ class BlockRenderer
                 $preText = $this->e(trim($m[1]));
                 if ($curveWord !== '' && $preText !== '') {
                     $escCurve = preg_quote($curveWord, '/');
-                    // Single combined SVG: curve and plane share one
-                    // coordinate system so the path tip meets the
-                    // back of the plane without CSS positioning math.
-                    // Path: M 8 8 C 60 30 140 30 200 14 — single
-                    // cubic Bezier. Controls at y=30 pull the curve
-                    // deep into the underline area (apex around y=24
-                    // at t=0.5). Tip at (200, 14) sits in the
-                    // descender area where the plane lives.
-                    // Tangent at tip: 3*((200,14)-(140,30)) =
-                    // (180, -48) → angle atan2(-48, 180) ≈ -15°.
-                    // Plane rotated -15° aligns with the trajectory.
-                    // Plane back-left chain: (3,12) → translate
-                    // (-12,-12) → (-9,0) → scale 1.0 → (-9,0) →
-                    // rotate -15° → (-8.69, 2.33). For this to land
-                    // at path tip (200,14): translate = (208.69,
-                    // 11.67) ≈ (209, 12). Distance to tip ~0.46
-                    // units — inside the 3-unit round cap radius.
+                    // Filled brush silhouette (not stroked) — thin on
+                    // the left, thicker on the right where the plane
+                    // attaches. The shape is a closed path: top edge
+                    // cubic from (8,8) → (210,9), short vertical
+                    // right end from (210,9) → (210,15), bottom edge
+                    // cubic back from (210,15) → (8,10), implicit
+                    // close from (8,10) → (8,8).
+                    // Widths along the brush:
+                    //   left  (x=8):   10-8 = 2 units (thin)
+                    //   apex  (x~100): bottom y(.5) - top y(.5)
+                    //                  = 19.25 - 15.25 = 4 units
+                    //   right (x=210): 15-9 = 6 units (thick)
+                    // Plane at translate(215 8) rotate(-15) scale
+                    // (0.6) — center positioned at viewBox x=215
+                    // (right portion of the "s" letter, viewBox
+                    // x ratio 215/240 ≈ 90% across the span) and
+                    // y=8 (higher up, near baseline). Smaller scale
+                    // 0.6 keeps the plane out of "Island" line below.
+                    // Back-left chain: (3,12) → translate(-12,-12)
+                    // → (-9,0) → scale(0.6) → (-5.4,0) → rotate(-15)
+                    // → (-5.22, 1.40) → translate(215,8) → (209.78,
+                    // 9.40). Brush right edge is at x=210, y=9..15.
+                    // Plane back-left at (209.78, 9.40) sits inside
+                    // the upper-left corner of the brush right end.
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
                         . '<svg class="rg-uss-curve-svg" viewBox="0 0 240 28" aria-hidden="true">'
-                        . '<path d="M 8 8 C 60 30 140 30 200 14" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'
-                        . '<g transform="translate(209 12) rotate(-15) scale(1.0)" fill="currentColor">'
+                        . '<path d="M 8 8 C 60 18 140 17 210 9 L 210 15 C 140 21 60 22 8 10 Z" fill="currentColor"/>'
+                        . '<g transform="translate(215 8) rotate(-15) scale(0.6)" fill="currentColor">'
                         . '<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z" transform="translate(-12 -12)"/>'
                         . '</g>'
                         . '</svg>'
@@ -4535,8 +4542,8 @@ class BlockRenderer
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
             . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.55em}'
-            . '.rg-uss-curve-svg{position:absolute;left:0;width:100%;height:auto;bottom:-1.9rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
-            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:-2.3rem}}'
+            . '.rg-uss-curve-svg{position:absolute;left:0;width:100%;height:auto;bottom:-.7rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:-1rem}}'
             . '.rg-uss-title-break{display:block}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
