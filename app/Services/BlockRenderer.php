@@ -131,6 +131,8 @@ class BlockRenderer
             'home_season_guide' => $this->homeSeasonGuide($p, $context),
             'home_testimonials' => $this->homeTestimonials($p, $context),
             'home_faq' => $this->homeFaq($p, $context),
+            'home_owner_inline_band' => $this->homeOwnerInlineBand($p, $context),
+            'home_how_it_works' => $this->homeHowItWorks($p, $context),
             default => '',
         };
     }
@@ -4751,6 +4753,7 @@ class BlockRenderer
             $sArr = $this->toArrayShapeSimple($s);
             $name = $this->e((string) ($sArr['name'] ?? ''));
             $months = $this->e((string) ($sArr['months'] ?? ''));
+            $headline = $this->e((string) ($sArr['headline'] ?? ''));
             $blurb = $this->e((string) ($sArr['blurb'] ?? ''));
             $tip = $this->e((string) ($sArr['tip'] ?? ''));
             if ($name === '') continue;
@@ -4762,6 +4765,7 @@ class BlockRenderer
             $out .= '<h3 class="text-xl font-extrabold text-slate-900">' . $name . '</h3>';
             if ($months !== '') $out .= '<div class="text-xs font-bold uppercase tracking-wider ' . $pal['text'] . ' mt-1">' . $months . '</div>';
             $out .= '</div></div>';
+            if ($headline !== '') $out .= '<p class="text-sm md:text-[0.95rem] font-bold text-slate-900 leading-snug mb-3">' . $headline . '</p>';
             if ($blurb !== '') $out .= '<p class="text-sm text-slate-700 leading-relaxed mb-4">' . $blurb . '</p>';
             if ($tip !== '') {
                 $out .= '<div class="' . $pal['bg'] . ' rounded-lg p-3 border-l-4 border-' . str_replace(['brand'], ['blue'], $pal['accent']) . '-400">';
@@ -4908,6 +4912,111 @@ class BlockRenderer
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
         }
         $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * home_owner_inline_band — mid-page lighter owner-conversion
+     * surface. Sits between traveler-discovery blocks without
+     * stealing the closing CTA's job. Soft warm tint (amber) so
+     * it signals a different audience without breaking flow.
+     *
+     * Payload:
+     *   eyebrow, heading, body, cta_label, cta_url, accent
+     *   (amber | emerald | teal | brand — default amber)
+     */
+    private function homeOwnerInlineBand(array $p, array $context): string
+    {
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $body = $this->e(trim((string) ($p['body'] ?? '')));
+        $ctaLabel = $this->e(trim((string) ($p['cta_label'] ?? '')));
+        $ctaUrl = $this->e(trim((string) ($p['cta_url'] ?? '#')));
+        $accent = in_array($p['accent'] ?? 'amber', ['amber', 'emerald', 'teal', 'brand'], true) ? $p['accent'] : 'amber';
+        if ($heading === '') return '';
+
+        $tint = [
+            'amber'   => ['wash' => 'bg-gradient-to-br from-amber-50 to-orange-50', 'ring' => 'border-amber-200', 'eyebrow' => 'text-amber-700', 'btn' => 'bg-amber-600 hover:bg-amber-700'],
+            'emerald' => ['wash' => 'bg-gradient-to-br from-emerald-50 to-teal-50', 'ring' => 'border-emerald-200', 'eyebrow' => 'text-emerald-700', 'btn' => 'bg-emerald-600 hover:bg-emerald-700'],
+            'teal'    => ['wash' => 'bg-gradient-to-br from-teal-50 to-cyan-50', 'ring' => 'border-teal-200', 'eyebrow' => 'text-teal-700', 'btn' => 'bg-teal-600 hover:bg-teal-700'],
+            'brand'   => ['wash' => 'bg-gradient-to-br from-blue-50 to-indigo-50', 'ring' => 'border-blue-200', 'eyebrow' => 'text-blue-700', 'btn' => 'bg-blue-600 hover:bg-blue-700'],
+        ][$accent];
+
+        $out = '<section class="py-10 md:py-12">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="' . $tint['wash'] . ' border ' . $tint['ring'] . ' rounded-2xl px-6 py-7 md:px-10 md:py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 md:gap-8 shadow-sm">';
+        $out .= '<div class="flex-1 min-w-0">';
+        if ($eyebrow !== '') {
+            $out .= '<div class="text-[11px] uppercase tracking-[0.18em] font-bold ' . $tint['eyebrow'] . ' mb-2">' . $eyebrow . '</div>';
+        }
+        $out .= '<h2 class="text-xl md:text-2xl font-extrabold text-slate-900 leading-snug tracking-[-0.01em] mb-2">' . $heading . '</h2>';
+        if ($body !== '') {
+            $out .= '<p class="text-slate-700 text-sm md:text-base leading-relaxed m-0 max-w-2xl">' . $body . '</p>';
+        }
+        $out .= '</div>';
+        if ($ctaLabel !== '') {
+            $out .= '<a href="' . $ctaUrl . '" class="inline-flex items-center gap-2 px-5 py-3 rounded-lg ' . $tint['btn'] . ' text-white font-bold transition-colors shadow-sm hover:shadow shrink-0 whitespace-nowrap">';
+            $out .= $ctaLabel;
+            $out .= '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 5l7 7-7 7"/></svg>';
+            $out .= '</a>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
+
+    /**
+     * home_how_it_works — trust block. Three pillars in a row,
+     * each with emoji icon + bold title + short body. Anchors
+     * editorial credibility for first-time visitors.
+     *
+     * Payload:
+     *   heading, subhead
+     *   pillars[] of { icon, title, body }
+     */
+    private function homeHowItWorks(array $p, array $context): string
+    {
+        if (isset($p['pillars']) && is_string($p['pillars'])) {
+            $t = trim($p['pillars']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['pillars'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $pillars = $p['pillars'] ?? [];
+        if (!is_array($pillars) || empty($pillars)) return '';
+
+        $palettes = [
+            ['bg' => 'bg-blue-50',    'fg' => 'text-blue-700',    'ring' => 'ring-blue-100'],
+            ['bg' => 'bg-emerald-50', 'fg' => 'text-emerald-700', 'ring' => 'ring-emerald-100'],
+            ['bg' => 'bg-amber-50',   'fg' => 'text-amber-700',   'ring' => 'ring-amber-100'],
+            ['bg' => 'bg-rose-50',    'fg' => 'text-rose-700',    'ring' => 'ring-rose-100'],
+            ['bg' => 'bg-violet-50',  'fg' => 'text-violet-700',  'ring' => 'ring-violet-100'],
+        ];
+
+        $out = '<section class="py-16 md:py-20 bg-white">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="mb-10 text-center max-w-3xl mx-auto">';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight tracking-[-0.01em] mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600 leading-relaxed">' . $subhead . '</p>';
+        $out .= '</div>';
+        $cols = count($pillars) === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
+        $out .= '<div class="grid ' . $cols . ' gap-5 md:gap-6">';
+        foreach ($pillars as $idx => $pi) {
+            $pArr = $this->toArrayShapeSimple($pi);
+            $title = $this->e((string) ($pArr['title'] ?? ''));
+            $body = $this->e((string) ($pArr['body'] ?? ''));
+            $icon = (string) ($pArr['icon'] ?? '✨');
+            if ($title === '') continue;
+            $pal = $palettes[$idx % count($palettes)];
+            $out .= '<div class="rounded-2xl bg-white border border-slate-200 p-7 shadow-sm hover:shadow-md transition-shadow flex flex-col">';
+            $out .= '<div class="w-14 h-14 rounded-2xl ' . $pal['bg'] . ' ' . $pal['fg'] . ' flex items-center justify-center text-3xl mb-5 ring-4 ' . $pal['ring'] . '">' . $icon . '</div>';
+            $out .= '<h3 class="text-lg font-bold text-slate-900 leading-tight mb-2">' . $title . '</h3>';
+            if ($body !== '') $out .= '<p class="text-sm text-slate-600 leading-relaxed m-0">' . $body . '</p>';
+            $out .= '</div>';
+        }
+        $out .= '</div></div></section>';
         return $out;
     }
 
