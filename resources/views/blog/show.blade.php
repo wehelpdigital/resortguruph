@@ -5,33 +5,49 @@
 @section('jsonld') {!! $jsonld ?? '' !!} @endsection
 
 @section('content')
-<article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <nav class="text-sm text-slate-500 mb-6">
-        <a href="{{ url('/') }}" class="hover:text-brand-600">Home</a>
-        <span class="mx-2">/</span>
-        <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
+@php
+    // Reading time estimate based on word count of the rendered
+    // content (blocks or content_html). Average reader = 220wpm.
+    $contentSource = strlen(trim($renderedBlocks ?? '')) > 0 ? $renderedBlocks : ($post->content_html ?? '');
+    $wordCount = str_word_count(strip_tags($contentSource));
+    $readingMinutes = max(1, (int) ceil($wordCount / 220));
+@endphp
+<article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 page-blog-post">
+    <nav class="text-sm text-slate-500 mb-8 flex items-center gap-1">
+        <a href="{{ url('/') }}" class="hover:text-blue-600 transition-colors">Home</a>
+        <span class="text-slate-300 mx-1">/</span>
+        <a href="{{ route('blog.index') }}" class="hover:text-blue-600 transition-colors">Blog</a>
     </nav>
 
-    <h1 class="text-4xl font-extrabold text-slate-900 mb-3 leading-tight">{{ $post->title }}</h1>
+    {{-- Title — bigger, tighter leading, slight negative letter-spacing for editorial weight --}}
+    <h1 class="text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold text-slate-900 mb-4 leading-[1.1] tracking-[-0.015em]">{{ $post->title }}</h1>
     @if(!empty($post->subtitle))
-        <p class="italic text-base text-slate-600 mb-6 leading-relaxed" style="overflow: visible; white-space: normal; text-overflow: clip; max-width: 100%;">{{ $post->subtitle }}</p>
-    @else
-        <div class="mb-6"></div>
+        <p class="text-lg md:text-xl text-slate-600 mb-6 leading-relaxed font-serif italic" style="overflow: visible; white-space: normal;">{{ $post->subtitle }}</p>
     @endif
 
-    {{-- Aggregate rating chip from approved comments, if any --}}
-    @if(!empty($avgRating))
-        <div class="flex items-center gap-2 mb-6 text-sm">
-            <span class="rg-stars">
-                @for($i = 1; $i <= 5; $i++)<span class="{{ $i <= round($avgRating) ? 'text-amber-400' : 'text-slate-200' }}">★</span>@endfor
+    {{-- Article meta row: reading time + (optional) rating chip --}}
+    <div class="flex items-center gap-4 flex-wrap text-sm text-slate-500 mb-8">
+        <span class="inline-flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+            {{ $readingMinutes }} min read
+        </span>
+        @if(!empty($avgRating))
+            <span class="text-slate-300">·</span>
+            <span class="inline-flex items-center gap-2">
+                <span class="rg-stars">
+                    @for($i = 1; $i <= 5; $i++)<span class="{{ $i <= round($avgRating) ? 'text-amber-400' : 'text-slate-200' }}">★</span>@endfor
+                </span>
+                <strong class="text-slate-700">{{ $avgRating }}</strong>
+                <span class="text-slate-500">from {{ $ratingCount }} {{ $ratingCount === 1 ? 'rating' : 'ratings' }}</span>
             </span>
-            <span class="text-slate-600"><strong>{{ $avgRating }}</strong>/5 from {{ $ratingCount }} reader {{ $ratingCount === 1 ? 'rating' : 'ratings' }}</span>
-        </div>
-    @endif
+        @endif
+    </div>
 
     @if($post->cover_path)
-        <div class="aspect-[16/9] rounded-xl bg-slate-200 mb-8 overflow-hidden">
-            <img src="{{ asset('storage/' . $post->cover_path) }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+        <div class="relative aspect-[16/9] rounded-2xl bg-slate-200 mb-10 overflow-hidden shadow-md">
+            <img src="{{ asset('storage/' . $post->cover_path) }}" alt="{{ $post->title }}" loading="eager" class="w-full h-full object-cover">
+            {{-- Subtle bottom-edge gradient gives the photo cinematic depth without darkening the photo content itself --}}
+            <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-slate-900/15 to-transparent pointer-events-none"></div>
         </div>
     @endif
 
@@ -43,11 +59,16 @@
     @include('partials.social-share', ['url' => url()->current(), 'title' => $post->title])
 
     @php $hasBlocks = strlen(trim($renderedBlocks ?? '')) > 0; @endphp
-    @if($hasBlocks)
-        <div class="prose prose-slate max-w-none">{!! $renderedBlocks !!}</div>
-    @else
-        <div class="prose prose-slate max-w-none">{!! $post->content_html !!}</div>
-    @endif
+    {{-- Modern prose: lg sizing for comfortable reading, slightly heavier
+         h2/h3 styling, and a drop-cap on the first paragraph for that
+         editorial-magazine feel. --}}
+    <div class="prose prose-lg prose-slate max-w-none rg-blog-prose">
+        @if($hasBlocks)
+            {!! $renderedBlocks !!}
+        @else
+            {!! $post->content_html !!}
+        @endif
+    </div>
 
     {{-- Share again at the bottom for readers who finished the post --}}
     @include('partials.social-share', ['url' => url()->current(), 'title' => $post->title])
@@ -161,18 +182,74 @@
 </article>
 
 @if($related->isNotEmpty())
-<section class="bg-slate-50 py-12 mt-16">
+<section class="bg-slate-50 py-14 md:py-16 mt-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-slate-900 mb-6">Keep reading</h2>
-        <div class="grid sm:grid-cols-3 gap-6">
+        <div class="mb-8">
+            <p class="text-xs uppercase tracking-[0.18em] text-slate-500 font-bold mb-1">Keep reading</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900">More from the blog</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($related as $r)
                 <a href="{{ route('blog.show', $r->slug) }}" class="block group">
-                    <h3 class="font-semibold text-slate-900 group-hover:text-brand-600 mb-2">{{ $r->title }}</h3>
-                    <p class="text-sm text-slate-500 line-clamp-2">{{ $r->excerpt }}</p>
+                    <div class="aspect-[16/10] rounded-xl bg-slate-200 mb-4 overflow-hidden">
+                        @if($r->cover_path)
+                            <img src="{{ asset('storage/' . $r->cover_path) }}" alt="{{ $r->title }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        @endif
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-900 group-hover:text-blue-600 mb-1.5 leading-snug">{{ $r->title }}</h3>
+                    <p class="text-sm text-slate-600 line-clamp-2 leading-relaxed">{{ $r->excerpt }}</p>
                 </a>
             @endforeach
         </div>
     </div>
 </section>
 @endif
+
+{{-- Drop-cap + editorial-prose polish, scoped under .rg-blog-prose so
+     other prose blocks elsewhere on the site stay untouched. --}}
+@push('head')
+<style>
+    .rg-blog-prose > *:first-child::first-letter {
+        float: left;
+        font-size: 3.6rem;
+        line-height: 0.95;
+        font-weight: 800;
+        margin: 0.3rem 0.55rem 0 0;
+        color: #0f172a;
+        font-family: Georgia, 'Times New Roman', serif;
+    }
+    .rg-blog-prose h2 {
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        margin-top: 2.2rem;
+        margin-bottom: 0.7rem;
+    }
+    .rg-blog-prose h3 {
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+    .rg-blog-prose p {
+        line-height: 1.78;
+    }
+    .rg-blog-prose blockquote {
+        font-style: italic;
+        border-left-width: 3px;
+        border-left-color: #cbd5e1;
+        color: #475569;
+        font-size: 1.1em;
+    }
+    .rg-blog-prose img {
+        border-radius: 0.75rem;
+    }
+    /* Disable drop-cap on small screens where it gets awkward */
+    @media (max-width: 640px) {
+        .rg-blog-prose > *:first-child::first-letter {
+            float: none;
+            font-size: inherit;
+            margin: 0;
+            font-family: inherit;
+        }
+    }
+</style>
+@endpush
 @endsection
