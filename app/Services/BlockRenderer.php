@@ -4304,12 +4304,26 @@ class BlockRenderer
         $accentText = ['brand' => 'text-blue-700', 'amber' => 'text-amber-700', 'emerald' => 'text-emerald-700', 'rose' => 'text-rose-700', 'violet' => 'text-violet-700', 'teal' => 'text-teal-700'][$accent];
         $accentHex = ['brand' => '#2563eb', 'amber' => '#d97706', 'emerald' => '#059669', 'rose' => '#e11d48', 'violet' => '#7c3aed', 'teal' => '#0d9488'][$accent];
 
-        // Title with {{accent}}...{{/accent}} support
+        // Title with {{accent}}...{{/accent}} support, optional
+        // line-break before the accent span, and optional curved
+        // SVG underline on a chosen word in the pre-accent text.
+        $breakBefore = (bool) ($p['title_break_before_accent'] ?? false);
+        $curveWord = trim((string) ($p['title_curve_word'] ?? ''));
         $titleHtml = '';
         if ($title !== '') {
             if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
-                $titleHtml = $this->e(trim($m[1]))
-                    . ($m[1] !== '' ? ' ' : '')
+                $preText = $this->e(trim($m[1]));
+                if ($curveWord !== '' && $preText !== '') {
+                    $escCurve = preg_quote($curveWord, '/');
+                    $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
+                        . '<svg class="rg-uss-curve-svg" viewBox="0 0 200 14" aria-hidden="true" preserveAspectRatio="none">'
+                        . '<path d="M3 9 Q 45 1 100 7 T 197 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>'
+                        . '</svg></span>';
+                    $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
+                }
+                $separator = $breakBefore ? '<br class="rg-uss-title-break">' : ($m[1] !== '' ? ' ' : '');
+                $titleHtml = $preText
+                    . $separator
                     . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
                     . ($m[3] !== '' ? ' ' : '')
                     . $this->e(trim($m[3]));
@@ -4349,11 +4363,30 @@ class BlockRenderer
                 ? $bgImage : '/storage/' . ltrim($bgImage, '/');
         }
         $hasBgImage = $bgImageUrl !== '';
-        $sectionStyle = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;position:relative';
+
+        // Optional background video. Accepts a YouTube URL (watch,
+        // share, youtu.be, or /embed/ form). When set, a muted+looped
+        // iframe sits behind the content with a heavy white scrim so
+        // the text stays slate-900 (the video reads as a faded back-
+        // ground watermark, not a hero photo).
+        $bgVideo = trim((string) ($p['background_video'] ?? ''));
+        $bgVideoId = '';
+        if ($bgVideo !== '') {
+            if (preg_match('#(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/)|youtu\.be/)([A-Za-z0-9_-]{11})#', $bgVideo, $vm)) {
+                $bgVideoId = $vm[1];
+            } elseif (preg_match('/^[A-Za-z0-9_-]{11}$/', $bgVideo)) {
+                $bgVideoId = $bgVideo;
+            }
+        }
+        $hasBgVideo = $bgVideoId !== '';
+
+        $sectionStyle = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;position:relative;overflow:hidden';
         if ($hasBgImage) {
             $sectionStyle .= ';background-image:url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
         }
-        // Text color flips to white on top of a photo for contrast.
+        // Text color flips to white only for photo backgrounds. For
+        // video-with-white-scrim we KEEP slate-900 (the video reads
+        // through a faded white overlay; dark text reads cleanly).
         $titleColor = $hasBgImage ? 'text-white' : 'text-slate-900';
         $taglineColor = $hasBgImage ? 'text-white/90' : 'text-slate-600';
         $eyebrowColor = $hasBgImage ? 'text-white/85' : $accentText;
@@ -4367,7 +4400,25 @@ class BlockRenderer
         if ($hasBgImage) {
             $out .= '<div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,rgba(15,23,42,0.55) 0%,rgba(15,23,42,0.35) 30%,rgba(15,23,42,0.55) 100%)"></div>';
         }
-        $out .= '<div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
+        // Video-mode background — muted, looped, no controls,
+        // pointer-events disabled. The iframe is over-sized so that
+        // its 16:9 aspect covers any section aspect ratio. A heavy
+        // white scrim above it fades the video so the slate-900 text
+        // remains crisp and the page still reads as a clean hero.
+        if ($hasBgVideo) {
+            $ytSrc = 'https://www.youtube.com/embed/' . $bgVideoId
+                . '?autoplay=1&mute=1&loop=1&playlist=' . $bgVideoId
+                . '&controls=0&showinfo=0&modestbranding=1&rel=0'
+                . '&playsinline=1&iv_load_policy=3&disablekb=1&fs=0';
+            $out .= '<div class="rg-uss-video" aria-hidden="true">';
+            $out .= '<iframe src="' . $this->e($ytSrc) . '" frameborder="0"'
+                . ' allow="autoplay; encrypted-media; picture-in-picture"'
+                . ' loading="lazy" referrerpolicy="strict-origin-when-cross-origin"'
+                . ' title=""></iframe>';
+            $out .= '</div>';
+            $out .= '<div class="rg-uss-video-scrim" aria-hidden="true"></div>';
+        }
+        $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
         if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
         if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.05]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
         if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . $taglineColor . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
@@ -4460,6 +4511,13 @@ class BlockRenderer
             . '.rg-uss__opt-chip{flex:0 0 auto;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:#64748b;background:#f1f5f9;padding:.2rem .5rem;border-radius:999px}'
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
+            . '.rg-uss-curve{position:relative;display:inline-block;color:inherit}'
+            . '.rg-uss-curve-svg{position:absolute;left:0;right:0;bottom:-.55rem;width:100%;height:.85rem;color:' . $accentHex . ';pointer-events:none;overflow:visible}'
+            . '.rg-uss-title-break{display:block;line-height:0}'
+            . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
+            . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
+            . '@media(min-aspect-ratio:16/9){.rg-uss-video iframe{width:100%;height:56.25vw;min-height:100%}}'
+            . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.78) 0%,rgba(255,255,255,.85) 50%,rgba(255,255,255,.92) 100%);pointer-events:none;z-index:1}'
             . '</style>';
 
         // JSON index + JS
