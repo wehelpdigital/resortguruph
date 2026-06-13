@@ -118,6 +118,7 @@ class BlockRenderer
             // tiles, hub-link cards, seasonal guide, testimonials,
             // FAQ. Content seeded from Fable 5 content gen.
             'home_unified_search' => $this->homeUnifiedSearch($p, $context),
+            'home_values_grid' => $this->homeValuesGrid($p, $context),
             // Hub-page custom block types (foods/activities/buys/
             // cultures). Each reads category data from $context.
             'hub_hero' => $this->hubHero($p, $context),
@@ -4886,6 +4887,73 @@ class BlockRenderer
     /* ============================================================
      * Hub-page block types (foods/activities/buys/cultures)
      * ============================================================ */
+
+    /**
+     * home_values_grid — 4-card grid of editorial principles or
+     * mission values. Each card: emoji icon tile + title + body.
+     * Per-card accents cycle through a palette so the row reads
+     * colorful without competing palettes.
+     *
+     * Payload:
+     *   heading, subhead
+     *   values [] of { title, body, icon }
+     *   columns (2|3|4 — default 4 on lg+)
+     *   bg (none | light | gradient)
+     */
+    private function homeValuesGrid(array $p, array $context): string
+    {
+        if (isset($p['values']) && is_string($p['values'])) {
+            $t = trim($p['values']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['values'] = $d;
+            }
+        }
+        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $values = $p['values'] ?? [];
+        if (!is_array($values) || empty($values)) return '';
+        $columns = max(2, min(4, (int) ($p['columns'] ?? 4)));
+        $gridClass = [2 => 'sm:grid-cols-2', 3 => 'sm:grid-cols-2 lg:grid-cols-3', 4 => 'sm:grid-cols-2 lg:grid-cols-4'][$columns];
+        $bg = $p['bg'] ?? 'light';
+        $bgClass = $bg === 'light' ? 'bg-slate-50' : ($bg === 'gradient' ? 'bg-gradient-to-b from-white to-slate-50' : '');
+
+        // Per-card accent palette — cycles through to give the row
+        // some color without overwhelming.
+        $palettes = [
+            ['bg' => 'bg-blue-50', 'fg' => 'text-blue-700', 'ring' => 'ring-blue-100'],
+            ['bg' => 'bg-emerald-50', 'fg' => 'text-emerald-700', 'ring' => 'ring-emerald-100'],
+            ['bg' => 'bg-amber-50', 'fg' => 'text-amber-700', 'ring' => 'ring-amber-100'],
+            ['bg' => 'bg-rose-50', 'fg' => 'text-rose-700', 'ring' => 'ring-rose-100'],
+            ['bg' => 'bg-violet-50', 'fg' => 'text-violet-700', 'ring' => 'ring-violet-100'],
+            ['bg' => 'bg-teal-50', 'fg' => 'text-teal-700', 'ring' => 'ring-teal-100'],
+        ];
+
+        $out = '<section class="rg-home-values py-16 md:py-20 ' . $bgClass . '" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        if ($heading !== '' || $subhead !== '') {
+            $out .= '<div class="mb-10 text-center max-w-3xl mx-auto">';
+            if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+            if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+            $out .= '</div>';
+        }
+        $out .= '<div class="grid ' . $gridClass . ' gap-5">';
+        foreach ($values as $idx => $v) {
+            $vArr = $this->toArrayShapeSimple($v);
+            $title = $this->e((string) ($vArr['title'] ?? ''));
+            $body = $this->e((string) ($vArr['body'] ?? ''));
+            $icon = (string) ($vArr['icon'] ?? '✨');
+            if ($title === '') continue;
+            $pal = $palettes[$idx % count($palettes)];
+            $out .= '<div class="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col">';
+            $out .= '<div class="w-14 h-14 rounded-2xl ' . $pal['bg'] . ' ' . $pal['fg'] . ' flex items-center justify-center text-3xl mb-4 ring-4 ' . $pal['ring'] . '">' . $icon . '</div>';
+            $out .= '<h3 class="text-lg font-bold text-slate-900 mb-2 leading-tight">' . $title . '</h3>';
+            if ($body !== '') $out .= '<p class="text-sm text-slate-600 leading-relaxed m-0">' . $body . '</p>';
+            $out .= '</div>';
+        }
+        $out .= '</div></div></section>';
+        return $out;
+    }
 
     /**
      * hub_hero — eyebrow + colored H1 + paragraphs. Used as the

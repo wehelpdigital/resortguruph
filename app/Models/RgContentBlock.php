@@ -99,6 +99,8 @@ class RgContentBlock extends Model
         // destinations + resorts + restaurants + tourist spots +
         // blog posts).
         'home_unified_search',
+        // 4-card editorial-values grid (mission, principles, etc.).
+        'home_values_grid',
         // Hub-page block types (foods/activities/buys/cultures).
         // Each reads category data from $context['categories'].
         'hub_hero', 'hub_category_nav', 'hub_category_grid', 'hub_footer_rail',

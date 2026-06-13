@@ -12,12 +12,22 @@ use Illuminate\Support\Facades\Auth;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(BlockRenderer $renderer)
     {
         $posts = RgBlogPost::where('status', 'published')
             ->orderByDesc('published_at')
             ->paginate(12);
-        return view('blog.index', compact('posts'));
+
+        // Read editorial intro / FAQ / CTA blocks from the
+        // `blog-index` static_page row so the index reads as a
+        // landing page, not just a card grid.
+        $page = \DB::table('rg_static_pages')
+            ->where('slug', 'blog-index')
+            ->where('is_published', 1)
+            ->first();
+        $renderedBlocks = $page ? $renderer->renderFor('static_page', $page->id) : '';
+
+        return view('blog.index', compact('posts', 'page', 'renderedBlocks'));
     }
 
     public function show(RgBlogPost $post, BlockRenderer $renderer, SchemaGenerator $schema)
