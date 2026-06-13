@@ -38,22 +38,23 @@
     {{-- Breadcrumb — category-aware:
          food pages: Home / Food Trip / Food Destinations / restaurant in X
          resort pages: Home / Destinations / Cluster / X (original behaviour). --}}
-    <nav class="text-sm text-slate-500 mb-6">
-        <a href="{{ url('/') }}" class="hover:text-brand-600">Home</a>
-        <span class="mx-2">/</span>
+    {{-- Breadcrumb with thin separators, blue-on-hover, current page in slate-700 --}}
+    <nav class="text-sm text-slate-500 mb-8 flex items-center gap-1.5 flex-wrap">
+        <a href="{{ url('/') }}" class="hover:text-blue-600 transition-colors">Home</a>
+        <span class="text-slate-300 mx-0.5">/</span>
         @if($keyword->category === 'food')
-            <a href="{{ url('/food-trip') }}" class="hover:text-brand-600">Food Trip</a>
-            <span class="mx-2">/</span>
-            <a href="{{ url('/food-trip') }}" class="hover:text-brand-600">Food Destinations</a>
+            <a href="{{ url('/food-trip') }}" class="hover:text-blue-600 transition-colors">Food Trip</a>
+            <span class="text-slate-300 mx-0.5">/</span>
+            <a href="{{ url('/food-trip') }}" class="hover:text-blue-600 transition-colors">Food Destinations</a>
         @else
-            <a href="{{ url('/destinations') }}" class="hover:text-brand-600">Destinations</a>
+            <a href="{{ url('/destinations') }}" class="hover:text-blue-600 transition-colors">Destinations</a>
             @if($cluster)
-                <span class="mx-2">/</span>
-                <a href="{{ route('destinations.cluster', $keyword->cluster_tag) }}" class="hover:text-brand-600">{{ $cluster['name'] }}</a>
+                <span class="text-slate-300 mx-0.5">/</span>
+                <a href="{{ route('destinations.cluster', $keyword->cluster_tag) }}" class="hover:text-blue-600 transition-colors">{{ $cluster['name'] }}</a>
             @endif
         @endif
-        <span class="mx-2">/</span>
-        <span class="text-slate-700 capitalize">{{ $keyword->phrase }}</span>
+        <span class="text-slate-300 mx-0.5">/</span>
+        <span class="text-slate-700 capitalize font-medium">{{ $keyword->phrase }}</span>
     </nav>
 
     @php
@@ -78,8 +79,8 @@
          an Edit toolbar that opens the page-metadata editor in the parent
          admin shell — the H1/eyebrow live in rg_seo_pages columns, not in
          rg_content_blocks, so they need their own edit hook. --}}
-    <div class="text-base sm:text-lg text-slate-600 mb-2 font-medium" @if(!empty($liveEdit)) data-rg-page-meta="h1_eyebrow" data-rg-meta-label="Eyebrow (above H1)" @endif>{{ $eyebrowText }}</div>
-    <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3 leading-tight" @if(!empty($liveEdit)) data-rg-page-meta="h1" data-rg-meta-label="H1 Heading" @endif>{{ $h1Display }}</h1>
+    <div class="text-base sm:text-lg text-slate-600 mb-3 font-medium leading-relaxed" @if(!empty($liveEdit)) data-rg-page-meta="h1_eyebrow" data-rg-meta-label="Eyebrow (above H1)" @endif>{{ $eyebrowText }}</div>
+    <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 mb-4 leading-[1.05] tracking-[-0.018em]" @if(!empty($liveEdit)) data-rg-page-meta="h1" data-rg-meta-label="H1 Heading" @endif>{{ $h1Display }}</h1>
 
     {{-- The italic intro under the H1, the TL;DR card, and the WWWW
          card all moved into the content-blocks system (subtitle_intro,
