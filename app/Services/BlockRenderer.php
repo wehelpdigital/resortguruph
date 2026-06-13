@@ -4467,15 +4467,16 @@ class BlockRenderer
         $out .= '<input id="' . $boxId . '" type="search" class="rg-uss__input" placeholder="' . $placeholder . '" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' . $panelId . '">';
         $out .= '<button type="button" class="rg-uss__clear" aria-label="Clear" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
         $out .= '<button type="button" class="rg-uss__submit" aria-label="Search">Search</button>';
-        // Alt CTA inside the shell, after Search. Solid yellow pill
-        // (like the blue Search but in amber) with the label first
-        // and a right-pointing arrow after that nudges right
-        // periodically (CSS-only animation). Click focuses the
-        // search input. On small screens the label hides and only
-        // the animated arrow shows (aria-label keeps accessibility
-        // intact).
-        $out .= '<button type="button" class="rg-uss__alt" aria-label="or Create Your Adventure" onclick="document.getElementById(\'' . $boxId . '\').focus()">';
-        $out .= '<span class="rg-uss__alt-text">or Create Your Adventure</span>';
+        // Alt CTA inside the shell, after Search. "or" sits as
+        // plain text between Search and the red pill so the pill
+        // reads as a clean "Create Your Adventure" CTA on its own.
+        // Right-pointing arrow inside the pill nudges right
+        // periodically. Click focuses the search input. On small
+        // screens the "or" text + button label both hide; only
+        // the animated arrow shows (aria-label preserves context).
+        $out .= '<span class="rg-uss__alt-or" aria-hidden="true">or</span>';
+        $out .= '<button type="button" class="rg-uss__alt" aria-label="Create Your Adventure" onclick="document.getElementById(\'' . $boxId . '\').focus()">';
+        $out .= '<span class="rg-uss__alt-text">Create Your Adventure</span>';
         $out .= '<svg class="rg-uss__alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
         $out .= '</button>';
         $out .= '</div>';
@@ -4531,7 +4532,10 @@ class BlockRenderer
             . '.rg-uss__submit{flex:0 0 auto;background:var(--rg-acc);color:#fff;border:0;border-radius:999px;padding:.85rem 1.4rem;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s ease;letter-spacing:.01em}'
             . '@media(min-width:768px){.rg-uss__submit{padding:1rem 1.8rem;font-size:1rem}}'
             . '.rg-uss__submit:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(0,0,0,.25)}'
-            . '.rg-uss__alt{flex:0 0 auto;display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.4rem;margin-left:.35rem;font-size:.95rem;font-weight:700;color:#000;background:#ef4444;border:0;cursor:pointer;border-radius:999px;transition:all .18s ease;white-space:nowrap;letter-spacing:.01em}'
+            . '.rg-uss__alt-or{flex:0 0 auto;margin:0 .4rem;font-size:.95rem;font-weight:600;color:#475569;white-space:nowrap}'
+            . '@media(min-width:768px){.rg-uss__alt-or{font-size:1rem;margin:0 .6rem}}'
+            . '@media(max-width:639px){.rg-uss__alt-or{display:none}}'
+            . '.rg-uss__alt{flex:0 0 auto;display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.4rem;font-size:.95rem;font-weight:700;color:#fff;background:#ef4444;border:0;cursor:pointer;border-radius:999px;transition:all .18s ease;white-space:nowrap;letter-spacing:.01em}'
             . '@media(min-width:768px){.rg-uss__alt{padding:1rem 1.6rem;font-size:1rem}}'
             . '.rg-uss__alt:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(220,38,38,.5);background:#dc2626}'
             . '.rg-uss__alt-arrow{width:1.15rem;height:1.15rem;flex-shrink:0;animation:rgUssArrowNudge 1.6s ease-in-out infinite}'
