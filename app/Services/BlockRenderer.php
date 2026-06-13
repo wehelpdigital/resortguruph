@@ -4315,19 +4315,27 @@ class BlockRenderer
                 $preText = $this->e(trim($m[1]));
                 if ($curveWord !== '' && $preText !== '') {
                     $escCurve = preg_quote($curveWord, '/');
-                    // Single combined SVG: the check-mark stroke and
-                    // the paper-plane share one coordinate system, so
-                    // the tip of the rising stroke meets the back of
-                    // the plane exactly — no CSS positioning math.
-                    // Path: M 5 12 L 58 28 L 200 2 — short downstroke
-                    // to apex at (58,28), then long rising stroke up
-                    // to (200,2). Plane translated to (212,2) puts its
-                    // back-left point at ~(200.7, 4.8) — right inside
-                    // the round line cap of the path endpoint.
+                    // Single combined SVG: curve and plane share one
+                    // coordinate system so the path tip meets the
+                    // back of the plane without CSS positioning math.
+                    // Path: M 8 8 C 60 30 140 30 200 14 — single
+                    // cubic Bezier. Controls at y=30 pull the curve
+                    // deep into the underline area (apex around y=24
+                    // at t=0.5). Tip at (200, 14) sits in the
+                    // descender area where the plane lives.
+                    // Tangent at tip: 3*((200,14)-(140,30)) =
+                    // (180, -48) → angle atan2(-48, 180) ≈ -15°.
+                    // Plane rotated -15° aligns with the trajectory.
+                    // Plane back-left chain: (3,12) → translate
+                    // (-12,-12) → (-9,0) → scale 1.0 → (-9,0) →
+                    // rotate -15° → (-8.69, 2.33). For this to land
+                    // at path tip (200,14): translate = (208.69,
+                    // 11.67) ≈ (209, 12). Distance to tip ~0.46
+                    // units — inside the 3-unit round cap radius.
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
-                        . '<svg class="rg-uss-curve-svg" viewBox="0 0 240 32" aria-hidden="true">'
-                        . '<path d="M 5 12 L 58 28 L 200 2" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'
-                        . '<g transform="translate(212 2) rotate(-14) scale(1.3)" fill="currentColor">'
+                        . '<svg class="rg-uss-curve-svg" viewBox="0 0 240 28" aria-hidden="true">'
+                        . '<path d="M 8 8 C 60 30 140 30 200 14" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'
+                        . '<g transform="translate(209 12) rotate(-15) scale(1.0)" fill="currentColor">'
                         . '<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z" transform="translate(-12 -12)"/>'
                         . '</g>'
                         . '</svg>'
