@@ -4317,7 +4317,7 @@ class BlockRenderer
                     $escCurve = preg_quote($curveWord, '/');
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
                         . '<svg class="rg-uss-curve-svg" viewBox="0 0 200 14" aria-hidden="true" preserveAspectRatio="none">'
-                        . '<path d="M3 9 Q 45 1 100 7 T 197 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>'
+                        . '<path d="M3 9 Q 45 1 100 7 T 197 6" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'
                         . '</svg></span>';
                     $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
                 }
@@ -4384,14 +4384,15 @@ class BlockRenderer
         if ($hasBgImage) {
             $sectionStyle .= ';background-image:url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
         }
-        // Text color flips to white only for photo backgrounds. For
-        // video-with-white-scrim we KEEP slate-900 (the video reads
-        // through a faded white overlay; dark text reads cleanly).
-        $titleColor = $hasBgImage ? 'text-white' : 'text-slate-900';
-        $taglineColor = $hasBgImage ? 'text-white/90' : 'text-slate-600';
-        $eyebrowColor = $hasBgImage ? 'text-white/85' : $accentText;
-        $statsValueColor = $hasBgImage ? 'text-white' : 'text-slate-900';
-        $statsLabelColor = $hasBgImage ? 'text-white/80' : 'text-slate-600';
+        // Text color flips to white for any darkened background
+        // (photo overlay OR dark-tinted video). The video scrim is
+        // a soft dark gradient so light text reads cleanly.
+        $darkBg = $hasBgImage || $hasBgVideo;
+        $titleColor = $darkBg ? 'text-white' : 'text-slate-900';
+        $taglineColor = $darkBg ? 'text-white/90' : 'text-slate-600';
+        $eyebrowColor = $darkBg ? 'text-white/85' : $accentText;
+        $statsValueColor = $darkBg ? 'text-white' : 'text-slate-900';
+        $statsLabelColor = $darkBg ? 'text-white/80' : 'text-slate-600';
 
         $out = '<section class="rg-uss ' . $bgClass . '" style="' . $sectionStyle . '">';
         // Photo-mode dark overlay — enough to keep large titles readable
@@ -4512,12 +4513,12 @@ class BlockRenderer
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
             . '.rg-uss-curve{position:relative;display:inline-block;color:inherit}'
-            . '.rg-uss-curve-svg{position:absolute;left:0;right:0;bottom:-.55rem;width:100%;height:.85rem;color:' . $accentHex . ';pointer-events:none;overflow:visible}'
+            . '.rg-uss-curve-svg{position:absolute;left:0;right:0;bottom:-.6rem;width:100%;height:1.1rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;stroke-width:6}'
             . '.rg-uss-title-break{display:block;line-height:0}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
             . '@media(min-aspect-ratio:16/9){.rg-uss-video iframe{width:100%;height:56.25vw;min-height:100%}}'
-            . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.78) 0%,rgba(255,255,255,.85) 50%,rgba(255,255,255,.92) 100%);pointer-events:none;z-index:1}'
+            . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.42) 0%,rgba(15,23,42,.32) 50%,rgba(15,23,42,.5) 100%);pointer-events:none;z-index:1}'
             . '</style>';
 
         // JSON index + JS
