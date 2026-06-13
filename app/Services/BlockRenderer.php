@@ -4467,6 +4467,17 @@ class BlockRenderer
         $out .= '<input id="' . $boxId . '" type="search" class="rg-uss__input" placeholder="' . $placeholder . '" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' . $panelId . '">';
         $out .= '<button type="button" class="rg-uss__clear" aria-label="Clear" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
         $out .= '<button type="button" class="rg-uss__submit" aria-label="Search">Search</button>';
+        // Alt CTA inside the shell, after Search. "or Create Your
+        // Adventure" with a left-pointing arrow that nudges left
+        // periodically (CSS-only animation). Click focuses the
+        // search input, treating the text as a softer "or start
+        // typing" invitation. On small screens the label hides
+        // and only the animated arrow shows (aria-label keeps
+        // accessibility intact).
+        $out .= '<button type="button" class="rg-uss__alt" aria-label="or Create Your Adventure" onclick="document.getElementById(\'' . $boxId . '\').focus()">';
+        $out .= '<svg class="rg-uss__alt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>';
+        $out .= '<span class="rg-uss__alt-text">or Create Your Adventure</span>';
+        $out .= '</button>';
         $out .= '</div>';
         $out .= '<div class="rg-uss__panel" id="' . $panelId . '" role="listbox" hidden></div>';
         $out .= '</div>';
@@ -4520,6 +4531,13 @@ class BlockRenderer
             . '.rg-uss__submit{flex:0 0 auto;background:var(--rg-acc);color:#fff;border:0;border-radius:999px;padding:.85rem 1.4rem;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s ease;letter-spacing:.01em}'
             . '@media(min-width:768px){.rg-uss__submit{padding:1rem 1.8rem;font-size:1rem}}'
             . '.rg-uss__submit:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(0,0,0,.25)}'
+            . '.rg-uss__alt{flex:0 0 auto;display:inline-flex;align-items:center;gap:.45rem;padding:.55rem .9rem;margin-left:.25rem;font-size:.82rem;font-weight:700;color:#475569;background:transparent;border:0;cursor:pointer;border-radius:999px;transition:color .18s ease,background-color .18s ease;white-space:nowrap;letter-spacing:.01em;text-transform:uppercase}'
+            . '@media(min-width:768px){.rg-uss__alt{padding:.7rem 1rem;font-size:.85rem}}'
+            . '.rg-uss__alt:hover{color:var(--rg-acc);background:color-mix(in srgb,var(--rg-acc) 10%,transparent)}'
+            . '.rg-uss__alt-arrow{width:1.05rem;height:1.05rem;flex-shrink:0;animation:rgUssArrowNudge 1.6s ease-in-out infinite}'
+            . '@keyframes rgUssArrowNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-5px)}}'
+            . '@media(max-width:639px){.rg-uss__alt-text{display:none}.rg-uss__alt{padding:.55rem .55rem;margin-left:.1rem}}'
+            . '@media(prefers-reduced-motion:reduce){.rg-uss__alt-arrow{animation:none}}'
             . '.rg-uss__chips{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.45rem;margin-top:1.1rem;font-size:.82rem;color:#64748b}'
             . '.rg-uss__chips>span{font-weight:700;letter-spacing:.02em;margin-right:.25rem}'
             . '.rg-uss__chip{background:rgba(255,255,255,.85);border:1.5px solid #e2e8f0;color:#334155;padding:.4rem .85rem;border-radius:999px;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}'
