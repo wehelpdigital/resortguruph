@@ -4315,12 +4315,21 @@ class BlockRenderer
                 $preText = $this->e(trim($m[1]));
                 if ($curveWord !== '' && $preText !== '') {
                     $escCurve = preg_quote($curveWord, '/');
+                    // Single combined SVG: the check-mark stroke and
+                    // the paper-plane share one coordinate system, so
+                    // the tip of the rising stroke meets the back of
+                    // the plane exactly — no CSS positioning math.
+                    // Path: M 5 12 L 58 28 L 200 2 — short downstroke
+                    // to apex at (58,28), then long rising stroke up
+                    // to (200,2). Plane translated to (212,2) puts its
+                    // back-left point at ~(200.7, 4.8) — right inside
+                    // the round line cap of the path endpoint.
                     $curveSpan = '<span class="rg-uss-curve">' . $this->e($curveWord)
-                        . '<svg class="rg-uss-curve-svg" viewBox="0 0 200 14" aria-hidden="true" preserveAspectRatio="none">'
-                        . '<path d="M2 8 C 30 2 60 14 100 8 C 140 2 170 14 198 8" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'
-                        . '</svg>'
-                        . '<svg class="rg-uss-curve-plane" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">'
-                        . '<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z"/>'
+                        . '<svg class="rg-uss-curve-svg" viewBox="0 0 240 32" aria-hidden="true">'
+                        . '<path d="M 5 12 L 58 28 L 200 2" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'
+                        . '<g transform="translate(212 2) rotate(-14) scale(1.3)" fill="currentColor">'
+                        . '<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z" transform="translate(-12 -12)"/>'
+                        . '</g>'
                         . '</svg>'
                         . '</span>';
                     $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
@@ -4517,15 +4526,14 @@ class BlockRenderer
             . '.rg-uss__opt-chip{flex:0 0 auto;font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:#64748b;background:#f1f5f9;padding:.2rem .5rem;border-radius:999px}'
             . '.rg-uss__opt-arrow{flex:0 0 auto;color:#cbd5e1;width:.95rem;height:.95rem}'
             . '.rg-uss__empty{padding:1.6rem 1.5rem;text-align:center;color:#64748b;font-size:.9rem;line-height:1.45}'
-            . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.3em}'
-            . '.rg-uss-curve-svg{position:absolute;left:0;right:.3em;bottom:-.7rem;width:calc(100% - .3em);height:1.2rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;stroke-width:6}'
-            . '.rg-uss-curve-plane{position:absolute;right:-.55em;bottom:-1.1rem;width:1.5rem;height:1.5rem;color:' . $accentHex . ';pointer-events:none;transform:rotate(-12deg);filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
-            . '@media(min-width:768px){.rg-uss-curve-plane{width:1.85rem;height:1.85rem;right:-.7em;bottom:-1.35rem}}'
+            . '.rg-uss-curve{position:relative;display:inline-block;color:inherit;padding-right:.55em}'
+            . '.rg-uss-curve-svg{position:absolute;left:0;width:100%;height:auto;bottom:-1.9rem;color:' . $accentHex . ';pointer-events:none;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18))}'
+            . '@media(min-width:768px){.rg-uss-curve-svg{bottom:-2.3rem}}'
             . '.rg-uss-title-break{display:block}'
             . '.rg-uss-video{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
             . '.rg-uss-video iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);border:0;pointer-events:none}'
             . '@media(min-aspect-ratio:16/9){.rg-uss-video iframe{width:100%;height:56.25vw;min-height:100%}}'
-            . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.50) 50%,rgba(255,255,255,.65) 100%);pointer-events:none;z-index:1}'
+            . '.rg-uss-video-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.82) 0%,rgba(255,255,255,.80) 50%,rgba(255,255,255,.88) 100%);pointer-events:none;z-index:1}'
             . '</style>';
 
         // JSON index + JS
