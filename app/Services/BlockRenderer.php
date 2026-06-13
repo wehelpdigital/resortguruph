@@ -4337,11 +4337,38 @@ class BlockRenderer
         $dataId = $boxId . '-data';
         $panelId = $boxId . '-panel';
 
-        $out = '<section class="rg-uss ' . $bgClass . '" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
-        $out .= '<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
-        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.22em] font-bold ' . $accentText . ' mb-4">' . $eyebrow . '</div>';
-        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-4 leading-[1.05]">' . $titleHtml . '</h1>';
-        if ($tagline !== '') $out .= '<p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
+        // Optional background image. When set, a darker gradient
+        // overlay covers the image and the eyebrow/title/tagline
+        // switch from slate-900 to white for legibility.
+        $bgImage = trim((string) ($p['background_image'] ?? ''));
+        $bgImageUrl = '';
+        if ($bgImage !== '') {
+            $bgImageUrl = str_starts_with($bgImage, 'http') || str_starts_with($bgImage, '/')
+                ? $bgImage : '/storage/' . ltrim($bgImage, '/');
+        }
+        $hasBgImage = $bgImageUrl !== '';
+        $sectionStyle = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;position:relative';
+        if ($hasBgImage) {
+            $sectionStyle .= ';background-image:url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
+        }
+        // Text color flips to white on top of a photo for contrast.
+        $titleColor = $hasBgImage ? 'text-white' : 'text-slate-900';
+        $taglineColor = $hasBgImage ? 'text-white/90' : 'text-slate-600';
+        $eyebrowColor = $hasBgImage ? 'text-white/85' : $accentText;
+        $statsValueColor = $hasBgImage ? 'text-white' : 'text-slate-900';
+        $statsLabelColor = $hasBgImage ? 'text-white/80' : 'text-slate-600';
+
+        $out = '<section class="rg-uss ' . $bgClass . '" style="' . $sectionStyle . '">';
+        // Photo-mode dark overlay — enough to keep large titles readable
+        // on any photo without muddying the image too much. Title block
+        // gets a slight extra text-shadow for crispness.
+        if ($hasBgImage) {
+            $out .= '<div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,rgba(15,23,42,0.55) 0%,rgba(15,23,42,0.35) 30%,rgba(15,23,42,0.55) 100%)"></div>';
+        }
+        $out .= '<div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
+        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.05]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
+        if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . $taglineColor . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
 
         // Search shell
         $out .= '<div class="rg-uss-search" data-rg-search>';
@@ -4376,13 +4403,13 @@ class BlockRenderer
         // Stats row
         $stats = $p['stats'] ?? [];
         if (is_array($stats) && !empty($stats)) {
-            $out .= '<div class="mt-10 flex flex-wrap justify-center gap-8 text-sm text-slate-600">';
+            $out .= '<div class="mt-10 flex flex-wrap justify-center gap-8 text-sm ' . $statsLabelColor . '">';
             foreach ($stats as $s) {
                 $label = $this->e((string) ($s['label'] ?? ''));
                 $value = $this->resolveStatValueSimple($s, (string) ($s['value_source'] ?? 'literal'), $context);
                 if ($value === null && !empty($s['value'])) $value = (string) $s['value'];
                 if ($value === null) continue;
-                $out .= '<div><strong class="text-2xl text-slate-900 block">' . $this->e($value) . '</strong> ' . $label . '</div>';
+                $out .= '<div><strong class="text-2xl ' . $statsValueColor . ' block">' . $this->e($value) . '</strong> ' . $label . '</div>';
             }
             $out .= '</div>';
         }
