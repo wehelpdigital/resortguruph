@@ -33,7 +33,7 @@
                 <h2 class="text-3xl font-bold text-slate-900">Popular destinations</h2>
                 <p class="text-slate-600 mt-1">The most-searched places we cover this month.</p>
             </div>
-            <a href="{{ url('/destinations') }}" class="text-brand-600 font-semibold hover:underline whitespace-nowrap">View all destinations &rarr;</a>
+            <a href="{{ route('destinations.index') }}" class="text-brand-600 font-semibold hover:underline whitespace-nowrap">View all destinations &rarr;</a>
         </div>
         @if($featuredKeywords->isEmpty())
             <p class="text-slate-500 text-center py-12 border border-dashed border-slate-200 rounded-lg">No destinations published yet. Check back soon.</p>
@@ -58,7 +58,7 @@
                 <h2 class="text-3xl font-bold text-slate-900">Browse by region</h2>
                 <p class="text-slate-600 mt-1">Regional clusters across Luzon, Visayas, Mindanao, and Palawan.</p>
             </div>
-            <a href="{{ url('/destinations') }}" class="text-brand-600 font-semibold hover:underline whitespace-nowrap">All regions &rarr;</a>
+            <a href="{{ route('destinations.index') }}" class="text-brand-600 font-semibold hover:underline whitespace-nowrap">All regions &rarr;</a>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 rg-stagger">
             @foreach($regions as $region)

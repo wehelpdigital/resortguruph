@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Light-only site: stops Chrome/Edge "Auto Dark Mode" from inverting images (green photos -> purple). --}}
+    <meta name="color-scheme" content="light">
+    <meta name="darkreader-lock">
 
     <title>@yield('title', config('app.name'))</title>
     <meta name="description" content="@yield('meta_description', \App\Models\RgSetting::get('site_tagline', 'Find the best resorts and hotels in the Philippines'))">
@@ -17,7 +20,7 @@
     <meta property="og:url" content="{{ url()->current() }}">
     @hasSection('og_image')<meta property="og:image" content="@yield('og_image')">@endif
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/webp" href="{{ asset('images/logo.webp') }}">
 
     <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
     <script>
@@ -25,7 +28,9 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: { 50: '#eef4ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' },
+                        brand: { 50: '#eaf2f8', 100: '#d4e6f1', 200: '#a9cce3', 300: '#7fb3d5', 400: '#5499c7', 500: '#3498db', 600: '#2980b9', 700: '#2471a3', 800: '#1f618b', 900: '#1a5276' },
+                        blue:  { 50: '#eaf2f8', 100: '#d4e6f1', 200: '#a9cce3', 300: '#7fb3d5', 400: '#5499c7', 500: '#3498db', 600: '#2980b9', 700: '#2471a3', 800: '#1f618b', 900: '#1a5276' },
+                        rose:  { 50: '#f9ebea', 100: '#f2d7d5', 200: '#e6b0aa', 300: '#d98880', 400: '#cd6155', 500: '#e74c3c', 600: '#c0392b', 700: '#a93226', 800: '#922b21', 900: '#7b241c' },
                     },
                     fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] }
                 }
@@ -109,7 +114,44 @@
 
     {{-- Global UX animations + smooth scrolling --}}
     <style>
+        @font-face {
+            font-family: 'Tahu';
+            src: url('{{ asset('fonts/Tahu.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        .font-brand { font-family: 'Tahu', cursive; }
+        @keyframes rgCtaArrow { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+        .rg-cta-arrow { animation: rgCtaArrow 1.2s ease-in-out infinite; }
+        a:hover > .rg-cta-arrow { animation-duration: .7s; }
+        @media (prefers-reduced-motion: reduce) { .rg-cta-arrow { animation: none; } }
+        /* Water-ripple border pulse for the corner check badge */
+        @keyframes rgRipple {
+            0%   { transform: scale(1);   opacity: .6; }
+            100% { transform: scale(2.1); opacity: 0; }
+        }
+        .rg-ripple::before, .rg-ripple::after {
+            content: ''; position: absolute; inset: 0;
+            border-radius: 9999px; border: 2px solid #10b981;
+            animation: rgRipple 2.6s ease-out infinite; pointer-events: none;
+        }
+        .rg-ripple::after { animation-delay: 1.3s; }
+        @media (prefers-reduced-motion: reduce) {
+            .rg-ripple::before, .rg-ripple::after { animation: none; display: none; }
+        }
+        :root { color-scheme: light; }
         html { scroll-behavior: smooth; }
+        /* Kill the horizontal scrollbar and stop centered content from
+           jumping sideways:
+           - full-bleed `width:100vw` sections are ~one scrollbar-width wider
+             than the content area; `overflow-x: hidden` on the root scroller
+             trims that overflow (the sticky header still works because html
+             stays the vertical scroll container).
+           - `overflow-y: scroll` always shows the vertical scrollbar, so the
+             content width never changes when the page gets taller/shorter
+             (e.g. opening an accordion card) — no horizontal shift. */
+        html { overflow-x: hidden; overflow-y: scroll; }
         @media (prefers-reduced-motion: reduce) {
             html { scroll-behavior: auto; }
             *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
@@ -550,7 +592,7 @@
     // section spans more than just its hub URL — Where to Go also covers
     // /destinations/{cluster} and individual keyword resort pages; What
     // to Do also covers fiestas. We match by request path prefix.
-    $activeWhereToGo = request()->is('destinations*')
+    $activeWhereToGo = request()->is('tourist-spots-destinations-philippines*')
         || (request()->path() !== '/' && \App\Models\RgKeyword::where('slug', request()->path())->where('category', 'resort')->exists());
     $activeWhereToEat = request()->is('food-trip*')
         || (request()->path() !== '/' && \App\Models\RgKeyword::where('slug', request()->path())->where('category', 'food')->exists());
@@ -564,24 +606,99 @@
 
 <header class="border-b border-slate-200 bg-white sticky top-0 z-50 backdrop-blur bg-white/85">
     {{-- Level 1: brand + utility nav --}}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-lg">
-            <span class="text-2xl">🏖️</span>
-            <span>{{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</span>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 h-20">
+        <a href="{{ route('home') }}" class="flex items-center gap-0 font-bold text-lg shrink-0">
+            <img src="{{ asset('images/logo.webp') }}" alt="{{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} logo" class="h-14 sm:h-16 w-auto" width="160" height="100">
+            <span class="font-brand text-4xl sm:text-5xl leading-none font-light pt-2"><span style="color:#2980b9">Tourist</span><span style="color:#c0392b">Guide</span><span style="color:#f39c12">.Ph</span></span>
         </a>
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a href="{{ route('home') }}" class="hover:text-brand-600">Home</a>
-            <a href="{{ route('blog.index') }}" class="hover:text-brand-600">Blog</a>
-            <a href="{{ route('about') }}" class="hover:text-brand-600">About</a>
-            <a href="{{ route('contact') }}" class="hover:text-brand-600">Contact</a>
+
+        {{-- Dynamic typeahead search (server-suggested, like the homepage
+             hero search). Sits between the logo and the nav on md+ screens. --}}
+        <div class="hidden md:block relative flex-1 max-w-xl mx-2 lg:mx-4" id="rgNavSearch">
+            <div class="flex items-center rounded-full border border-slate-300 bg-white px-4 h-10 focus-within:border-brand-600 focus-within:ring-2 focus-within:ring-brand-600/20 transition-colors">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input id="rgNavSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="Search" aria-label="Search the site" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="rgNavSearchPanel" class="ml-2 w-full bg-transparent border-0 appearance-none outline-none focus:ring-0 text-sm text-slate-800 placeholder-slate-400">
+                <button id="rgNavSearchClear" type="button" aria-label="Clear search" class="hidden text-slate-400 hover:text-slate-600 shrink-0"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div id="rgNavSearchPanel" class="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-xl ring-1 ring-slate-200 overflow-hidden hidden" style="z-index:60;max-height:70vh;overflow-y:auto" role="listbox" aria-label="Search suggestions"></div>
+        </div>
+        <style>#rgNavSearchPanel{padding:.4rem;min-width:30rem;max-width:calc(100vw - 1rem)}@media(min-width:1024px){#rgNavSearchPanel{min-width:42rem}}.rg-ns-group{font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;padding:.6rem .75rem .3rem}.rg-ns-item{border-radius:.6rem}.rg-ns-item:hover{background:#f8fafc}.rg-ns-item.is-active{background:#eff6ff}.rg-ns-ico{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;flex-shrink:0;overflow:hidden}</style>
+        <script>
+        (function(){
+            var wrap=document.getElementById('rgNavSearch'); if(!wrap) return;
+            var input=document.getElementById('rgNavSearchInput');
+            var panel=document.getElementById('rgNavSearchPanel');
+            var clear=document.getElementById('rgNavSearchClear');
+            var endpoint='{{ route('search.suggest') }}';
+            var timer=null, active=-1, items=[];
+            var TYPE={destination:{k:'pin',c:'#2563eb',bg:'#dbeafe',l:'Destination'},resort:{k:'bed',c:'#059669',bg:'#d1fae5',l:'Resort'},restaurant:{k:'cup',c:'#dc2626',bg:'#fee2e2',l:'Food'},spot:{k:'cam',c:'#7c3aed',bg:'#ede9fe',l:'Tourist spot'},region:{k:'map',c:'#d97706',bg:'#fef3c7',l:'Region'},blog:{k:'doc',c:'#475569',bg:'#e2e8f0',l:'Blog'}};
+            var ICON={pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',bed:'<path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>',cup:'<path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/>',cam:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',map:'<path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15"/><path d="M15 6v15"/>',doc:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v6h6"/>'};
+            function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+            function svg(k){return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICON[k]||ICON.pin)+'</svg>';}
+            function open(){panel.classList.remove('hidden');input.setAttribute('aria-expanded','true');}
+            function close(){panel.classList.add('hidden');input.setAttribute('aria-expanded','false');active=-1;}
+            var GROUP_ORDER=['region','destination','resort','restaurant','spot','blog'];
+            var GROUP_LABEL={region:'Regions',destination:'Destinations',resort:'Stays',restaurant:'Food finds',spot:'Tourist spots',blog:'Blog'};
+            function rowHtml(it,idx){
+                var tp=TYPE[it.type]||{k:'pin',c:'#475569',bg:'#e2e8f0'};
+                var thumb=it.image?'<span class="rg-ns-ico" style="background:#f1f5f9"><img src="'+esc(it.image)+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></span>':'<span class="rg-ns-ico" style="background:'+tp.bg+';color:'+tp.c+'">'+svg(tp.k)+'</span>';
+                return '<a href="'+esc(it.url)+'" class="rg-ns-item flex items-center gap-3 px-3 py-2 no-underline" role="option" data-idx="'+idx+'">'+thumb+
+                    '<span class="min-w-0 flex-1"><span class="block text-sm font-semibold text-slate-900 truncate">'+esc(it.label)+'</span>'+
+                    (it.sub?'<span class="block text-xs text-slate-500 truncate">'+esc(it.sub)+'</span>':'')+'</span></a>';
+            }
+            function render(res,q){
+                items=res||[];
+                if(!items.length){panel.innerHTML='<div class="px-4 py-4 text-sm text-slate-500">No matches for “'+esc(q)+'”</div>';open();return;}
+                var groups={};
+                items.forEach(function(it){var t=it.type||'other';(groups[t]=groups[t]||[]).push(it);});
+                var order=GROUP_ORDER.slice();
+                Object.keys(groups).forEach(function(t){if(order.indexOf(t)<0)order.push(t);});
+                var h='', flat=0; items=[];
+                order.forEach(function(t){
+                    var arr=groups[t]; if(!arr||!arr.length)return;
+                    h+='<div class="rg-ns-group">'+esc(GROUP_LABEL[t]||t)+'</div>';
+                    arr.forEach(function(it){h+=rowHtml(it,flat);items.push(it);flat++;});
+                });
+                panel.innerHTML=h; active=-1; open();
+            }
+            function fetchSuggest(q){
+                fetch(endpoint+'?q='+encodeURIComponent(q),{headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}})
+                    .then(function(r){return r.json();})
+                    .then(function(d){ if(input.value.trim()===q) render(d.results,q); })
+                    .catch(function(){});
+            }
+            function hl(rows){rows.forEach(function(r,i){r.classList.toggle('is-active',i===active);if(i===active)r.scrollIntoView({block:'nearest'});});}
+            input.addEventListener('input',function(){
+                var q=input.value.trim();
+                clear.classList.toggle('hidden', q==='');
+                if(timer)clearTimeout(timer);
+                if(q.length<2){close();return;}
+                timer=setTimeout(function(){fetchSuggest(q);},180);
+            });
+            input.addEventListener('keydown',function(e){
+                var rows=panel.querySelectorAll('.rg-ns-item');
+                if(e.key==='ArrowDown'){e.preventDefault();if(!rows.length)return;active=(active+1)%rows.length;hl(rows);}
+                else if(e.key==='ArrowUp'){e.preventDefault();if(!rows.length)return;active=(active-1+rows.length)%rows.length;hl(rows);}
+                else if(e.key==='Enter'){var sel=active>=0?rows[active]:rows[0];if(sel){window.location.href=sel.getAttribute('href');}}
+                else if(e.key==='Escape'){close();}
+            });
+            input.addEventListener('focus',function(){if(items.length&&input.value.trim().length>=2)open();});
+            clear.addEventListener('click',function(){input.value='';clear.classList.add('hidden');close();input.focus();});
+            document.addEventListener('click',function(e){if(!wrap.contains(e.target))close();});
+        })();
+        </script>
+
+        <nav class="hidden lg:flex items-center gap-5 text-sm font-medium shrink-0">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-brand-600 font-semibold' : 'hover:text-brand-600' }}">Home</a>
             @auth
-                <a href="{{ route('dashboard.index') }}" class="px-3 py-1.5 rounded-md bg-brand-600 text-white hover:bg-brand-700">Dashboard</a>
+                <a href="{{ route('dashboard.index') }}" class="px-3 py-1.5 rounded-md bg-brand-600 text-white hover:bg-brand-700 whitespace-nowrap">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="hover:text-brand-600">Sign in</a>
-                <a href="{{ route('register') }}" class="px-3 py-1.5 rounded-md bg-brand-600 text-white hover:bg-brand-700">List your resort</a>
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition whitespace-nowrap">Create Your Adventure for Free<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+                <a href="{{ route('register') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-600 text-white font-bold hover:bg-brand-700 transition whitespace-nowrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Become a Partner</a>
             @endauth
         </nav>
-        <button class="md:hidden" onclick="document.getElementById('mobileNav').classList.toggle('hidden')" aria-label="Menu">
+        <button class="lg:hidden shrink-0" onclick="document.getElementById('mobileNav').classList.toggle('hidden')" aria-label="Menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
     </div>
@@ -594,47 +711,47 @@
          visible on mobile with a horizontal scroll if needed. --}}
     <div class="border-t border-slate-100 bg-slate-50/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 overflow-x-auto">
-            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400 shrink-0 mr-1">Discover Philippines</span>
+            <span class="hidden sm:inline text-[10px] uppercase tracking-[0.18em] font-bold text-slate-900 shrink-0 mr-1">Discover Philippines</span>
 
-            <a href="{{ url('/destinations') }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
-                      {{ $activeWhereToGo ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm' : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' }}">
-                <span aria-hidden="true">🗺️</span>
+            <a href="{{ route('destinations.index') }}"
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0 transition
+                      {{ $activeWhereToGo ? 'bg-emerald-700 text-white ring-2 ring-emerald-400 ring-offset-2 ring-offset-slate-50 shadow-md' : 'bg-emerald-600 text-white hover:bg-emerald-700' }}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/></svg>
                 Where to Go
             </a>
 
             <a href="{{ url('/food-trip') }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
-                      {{ $activeWhereToEat ? 'bg-amber-600 text-white border-amber-600 shadow-sm' : 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100 hover:border-amber-300' }}">
-                <span aria-hidden="true">🍽️</span>
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0 transition
+                      {{ $activeWhereToEat ? 'bg-amber-700 text-white ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-50 shadow-md' : 'bg-amber-600 text-white hover:bg-amber-700' }}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2v7"/><path d="M8 2v7"/><path d="M11.5 2v7"/><path d="M4.5 9h7"/><path d="M8 9v13"/><path d="M17 2c-1.7 0-3 2-3 4.5S15.3 11 17 11s3-2 3-4.5S18.7 2 17 2z"/><path d="M17 11v11"/></svg>
                 Where to Eat
             </a>
 
             <a href="{{ route('foods.index') }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
-                      {{ $activeWhatToEat ? 'bg-rose-600 text-white border-rose-600 shadow-sm' : 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 hover:border-rose-300' }}">
-                <span aria-hidden="true">🥘</span>
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0 transition
+                      {{ $activeWhatToEat ? 'bg-rose-700 text-white ring-2 ring-rose-400 ring-offset-2 ring-offset-slate-50 shadow-md' : 'bg-rose-600 text-white hover:bg-rose-700' }}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M9 7V4M12 7V4M15 7V4"/></svg>
                 What to Eat
             </a>
 
             <a href="{{ route('activities.index') }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
-                      {{ $activeWhatToDo ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-indigo-50 text-indigo-800 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' }}">
-                <span aria-hidden="true">🎪</span>
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0 transition
+                      {{ $activeWhatToDo ? 'bg-indigo-700 text-white ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-50 shadow-md' : 'bg-indigo-600 text-white hover:bg-indigo-700' }}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/></svg>
                 What to Do
             </a>
 
             <a href="{{ route('buys.index') }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
-                      {{ $activeWhatToBuy ? 'bg-violet-600 text-white border-violet-600 shadow-sm' : 'bg-violet-50 text-violet-800 border-violet-200 hover:bg-violet-100 hover:border-violet-300' }}">
-                <span aria-hidden="true">🛍️</span>
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0 transition
+                      {{ $activeWhatToBuy ? 'bg-violet-700 text-white ring-2 ring-violet-400 ring-offset-2 ring-offset-slate-50 shadow-md' : 'bg-violet-600 text-white hover:bg-violet-700' }}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.5 12.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 8z"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/></svg>
                 What to Buy
             </a>
 
             <a href="{{ route('cultures.index') }}"
-               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border whitespace-nowrap shrink-0 transition
-                      {{ $activeCultures ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-teal-50 text-teal-800 border-teal-200 hover:bg-teal-100 hover:border-teal-300' }}">
-                <span aria-hidden="true">🪶</span>
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0 transition
+                      {{ $activeCultures ? 'bg-teal-700 text-white ring-2 ring-teal-400 ring-offset-2 ring-offset-slate-50 shadow-md' : 'bg-teal-600 text-white hover:bg-teal-700' }}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/></svg>
                 Cultures to Meet
             </a>
         </div>
@@ -642,17 +759,15 @@
 
     {{-- Mobile menu (level-1 utility links only — the pillar pills
          above stay visible at all viewport widths). --}}
-    <div id="mobileNav" class="hidden md:hidden border-t border-slate-200 bg-white">
-        <div class="px-4 py-3 space-y-2 text-sm font-medium">
-            <a href="{{ route('home') }}" class="block">Home</a>
-            <a href="{{ route('blog.index') }}" class="block">Blog</a>
-            <a href="{{ route('about') }}" class="block">About</a>
-            <a href="{{ route('contact') }}" class="block">Contact</a>
+    <div id="mobileNav" class="hidden lg:hidden border-t border-slate-200 bg-white">
+        <div class="px-4 py-3 space-y-3 text-sm font-medium">
+            <a href="{{ route('home') }}" class="block {{ request()->routeIs('home') ? 'text-brand-600 font-semibold' : '' }}">Home</a>
             @auth
                 <a href="{{ route('dashboard.index') }}" class="block text-brand-600">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="block">Sign in</a>
-                <a href="{{ route('register') }}" class="block text-brand-600">List your resort</a>
+                <a href="{{ route('home') }}" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition">Create Your Adventure for Free<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+                <a href="{{ route('register') }}" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 rounded-full bg-brand-600 text-white font-bold hover:bg-brand-700 transition"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Become a Partner</a>
             @endauth
         </div>
     </div>
@@ -663,13 +778,13 @@
 </main>
 
 @php
-    $footerRegions = \Illuminate\Support\Facades\Cache::remember('footer_regions_v2_resort', 600, function () {
+    $footerRegions = \Illuminate\Support\Facades\Cache::remember('footer_regions_v3_resort', 600, function () {
         $meta = \App\Http\Controllers\DestinationsController::clusterMetadata();
         return \App\Models\RgKeyword::query()
             ->where('category', 'resort')
             ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
             ->get()
-            ->groupBy('cluster_tag')
+            ->groupBy(fn($k) => \App\Support\RegionResolver::resolve($k->cluster_tag, $k->phrase))
             ->map(function ($kws, $slug) use ($meta) {
                 if (!isset($meta[$slug])) return null;
                 return [
@@ -696,39 +811,33 @@
     // renders the complete internal-link surface for resort-side crawlability.
     // Food keywords have their own /food-trip index and are intentionally
     // kept out of the destination/resort footer cloud.
-    $footerAllKeywords = \Illuminate\Support\Facades\Cache::remember('footer_all_keywords_v3_resort', 600, function () {
+    $footerAllKeywords = \Illuminate\Support\Facades\Cache::remember('footer_all_keywords_v4_resort', 600, function () {
         return \App\Models\RgKeyword::query()
             ->where('category', 'resort')
             ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
             ->orderByDesc('search_volume_monthly')
             ->get(['slug', 'phrase', 'cluster_tag', 'search_volume_monthly'])
-            ->groupBy('cluster_tag');
+            ->groupBy(fn($k) => \App\Support\RegionResolver::resolve($k->cluster_tag, $k->phrase));
     });
-    $clusterLabels = [
-        'antipolo' => 'Rizal', 'rizal' => 'Rizal',
-        'cavite' => 'Cavite', 'tagaytay' => 'Cavite',
-        'batangas' => 'Batangas',
-        'laguna' => 'Laguna',
-        'quezon' => 'Quezon',
-        'bulacan' => 'Bulacan',
-        'pampanga' => 'Pampanga',
-        'metro-manila' => 'Metro Manila',
-        'bicol' => 'Bicol',
-        'north-luzon' => 'North Luzon (Pangasinan + La Union + Ilocos)',
-        'mindanao' => 'Mindanao',
-        'visayas' => 'Visayas',
-        'palawan' => 'Palawan',
-        'other' => 'Other',
-    ];
+    // Footer hashtag cloud — all active tags from rg_tags (populated by
+    // RgTagsSeeder from the published keyword pages, editable later in admin).
+    $footerHashtags = \Illuminate\Support\Facades\Cache::remember('footer_hashtags_v2_resort', 600, function () {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('rg_tags')) return collect();
+        return \App\Models\RgTag::query()
+            ->where('is_active', true)
+            ->orderBy('position')
+            ->orderByDesc('search_volume_monthly')
+            ->get(['tag', 'slug']);
+    });
 @endphp
 
 <footer class="bg-slate-900 text-slate-300 mt-16 mt-auto">
     {{-- Mega-footer: regional links (sitewide internal linking for SEO) --}}
     @if($footerRegions->isNotEmpty())
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 border-b border-slate-800">
             <div class="flex items-end justify-between mb-5 flex-wrap gap-2">
                 <h4 class="text-white font-bold text-lg">Browse by region</h4>
-                <a href="{{ url('/destinations') }}" class="text-sm text-brand-300 hover:text-white">View all destinations &rarr;</a>
+                <a href="{{ route('destinations.index') }}" class="text-sm text-brand-300 hover:text-white">View all destinations &rarr;</a>
             </div>
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 text-sm">
                 @foreach($footerRegions as $region)
@@ -748,26 +857,31 @@
     @endif
 
     {{-- Standard footer --}}
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-4 gap-8 text-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-[2fr_auto_auto_auto] gap-x-12 gap-y-8 text-sm">
         <div>
-            <h4 class="text-white font-bold mb-3 flex items-center gap-2">🏖️ {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</h4>
-            <p>{{ \App\Models\RgSetting::get('site_tagline', '') }}</p>
+            <a href="{{ route('home') }}" class="inline-flex items-center gap-0 mb-4">
+                <img src="{{ asset('images/logo.webp') }}" alt="{{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}" class="h-11 w-auto shrink-0" style="filter:brightness(0) invert(1)">
+                <span class="font-brand text-2xl sm:text-3xl leading-none font-light pt-1 text-white">TouristGuide.Ph</span>
+            </a>
+            <p class="text-slate-400 leading-relaxed">Your one-stop guide to exploring the Philippines. Find where to stay, what to eat, and where to go next across more than 7,000 islands, with picks from travelers who have actually been there.</p>
+            <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-1.5 max-w-xs">
+                <a href="{{ route('about') }}" class="hover:text-white">About</a>
+                <a href="{{ route('about.logo') }}" class="hover:text-white">About the Logo</a>
+            </div>
         </div>
         <div>
             <h5 class="text-white font-semibold mb-3">Discover</h5>
             <ul class="space-y-1.5">
                 <li><a href="{{ route('home') }}" class="hover:text-white">Home</a></li>
-                <li><a href="{{ url('/destinations') }}" class="hover:text-white">All destinations</a></li>
+                <li><a href="{{ route('destinations.index') }}" class="hover:text-white">All destinations</a></li>
                 <li><a href="{{ route('blog.index') }}" class="hover:text-white">Blog</a></li>
-                <li><a href="{{ route('about') }}" class="hover:text-white">About</a></li>
             </ul>
         </div>
         <div>
-            <h5 class="text-white font-semibold mb-3">For Resort Owners</h5>
+            <h5 class="text-white font-semibold mb-3">For Business Owners</h5>
             <ul class="space-y-1.5">
-                <li><a href="{{ route('register') }}" class="hover:text-white">List your resort</a></li>
+                <li><a href="{{ route('register') }}" class="hover:text-white">Become a Partner</a></li>
                 <li><a href="{{ route('login') }}" class="hover:text-white">Sign in</a></li>
-                <li><a href="{{ route('contact') }}" class="hover:text-white">Get help</a></li>
             </ul>
         </div>
         <div>
@@ -776,18 +890,45 @@
                 <li><a href="{{ route('terms') }}" class="hover:text-white">Terms of Service</a></li>
                 <li><a href="{{ route('privacy') }}" class="hover:text-white">Privacy Policy</a></li>
                 <li><a href="{{ route('contact') }}" class="hover:text-white">Contact</a></li>
+                <li><a href="{{ route('sitemap.page') }}" class="hover:text-white">Sitemap</a></li>
             </ul>
         </div>
     </div>
+
+    {{-- Hashtag cloud: every active tag from rg_tags rendered as small plain
+         "#tag" text links (no pills). Collapsed by default behind a <details>
+         toggle, mirroring the "All destinations" block below. --}}
+    @if($footerHashtags->isNotEmpty())
+        <div class="border-t border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <details class="group rg-details">
+                    <summary class="flex items-center justify-between cursor-pointer select-none">
+                        <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-brand-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+                            Trending tags
+                        </p>
+                        <span class="text-xs text-slate-500 flex items-center gap-1">
+                            <span class="group-open:hidden">Show all</span>
+                            <span class="hidden group-open:inline">Hide</span>
+                            <svg class="w-3 h-3 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+                        </span>
+                    </summary>
+                    <div class="flex flex-wrap gap-x-2.5 gap-y-1 text-xs leading-5 text-slate-500 pt-2">
+                        @foreach($footerHashtags as $h)<a href="{{ url($h['slug']) }}" class="text-slate-400 hover:text-white">#{{ $h['tag'] }}</a>@endforeach
+                    </div>
+                </details>
+            </div>
+        </div>
+    @endif
 
     {{-- All keyword pages grouped by cluster,full internal-link surface
          for site-wide crawlability. Rendered inside a <details> so the
          visual footer stays compact while the HTML is fully indexable. --}}
     @if($footerAllKeywords->isNotEmpty())
         <div class="border-t border-slate-800">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <details class="group">
-                    <summary class="flex items-center justify-between cursor-pointer select-none mb-3">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <details class="group rg-details">
+                    <summary class="flex items-center justify-between cursor-pointer select-none">
                         <p class="text-xs uppercase tracking-wider text-slate-400 font-semibold">All destinations on Tourist Guide Ph</p>
                         <span class="text-xs text-slate-500 flex items-center gap-1">
                             <span class="group-open:hidden">Show all</span>
@@ -795,18 +936,26 @@
                             <svg class="w-3 h-3 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
                         </span>
                     </summary>
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5 mt-2">
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-1 pt-2 items-start">
                         @foreach($footerAllKeywords->sortKeys() as $cluster => $kws)
-                            @php $label = $clusterLabels[$cluster] ?? ucwords(str_replace('-', ' ', $cluster)); @endphp
-                            <div>
-                                <h6 class="text-white font-semibold mb-1.5 text-sm">{{ $label }}</h6>
-                                <div class="flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] leading-snug">
+                            @php $label = \App\Support\RegionResolver::label($cluster); @endphp
+                            {{-- Groups sit in a responsive column grid; an open group
+                                 breaks out to the full container width (see rg-region
+                                 CSS) and lays its destinations out in multiple columns. --}}
+                            <details class="group/cl rg-details rg-region border-b border-slate-800/70">
+                                <summary class="flex items-center justify-between cursor-pointer select-none py-2">
+                                    <h6 class="text-white font-semibold text-sm flex items-center gap-2">
+                                        {{ $label }}
+                                        <span class="text-[11px] font-normal text-slate-500">{{ $kws->count() }}</span>
+                                    </h6>
+                                    <svg class="w-3 h-3 text-slate-500 shrink-0 transition-transform group-open/cl:rotate-180" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+                                </summary>
+                                <ul class="list-none columns-2 sm:columns-3 lg:columns-4 gap-x-6 pt-1 pb-3 text-[11px] leading-relaxed">
                                     @foreach($kws as $k)
-                                        <a href="{{ url($k->slug) }}" class="text-slate-400 hover:text-white capitalize">{{ $k->phrase }}</a>
-                                        @if(!$loop->last)<span class="text-slate-600">·</span>@endif
+                                        <li class="break-inside-avoid"><a href="{{ url($k->slug) }}" class="block text-slate-400 hover:text-white capitalize">{{ $k->phrase }}</a></li>
                                     @endforeach
-                                </div>
-                            </div>
+                                </ul>
+                            </details>
                         @endforeach
                     </div>
                 </details>
@@ -817,24 +966,77 @@
     {{-- Most popular destinations strip (compact top-20 above the fold) --}}
     @if($footerTopKeywords->isNotEmpty())
         <div class="border-t border-slate-800">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2">Most popular keyword pages</p>
-                <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                <p class="text-xs uppercase tracking-wider text-slate-500 mb-2">Check what's popular</p>
+                <ul class="list-none columns-2 sm:columns-3 lg:columns-4 gap-x-6 text-xs leading-relaxed">
                     @foreach($footerTopKeywords as $k)
-                        <a href="{{ url($k->slug) }}" class="text-slate-400 hover:text-white capitalize">{{ $k->phrase }}</a>
-                        @if(!$loop->last)<span class="text-slate-600">·</span>@endif
+                        <li class="break-inside-avoid"><a href="{{ url($k->slug) }}" class="block py-0.5 text-slate-400 hover:text-white capitalize">{{ $k->phrase }}</a></li>
                     @endforeach
-                </div>
+                </ul>
             </div>
         </div>
     @endif
 
     <div class="border-t border-slate-800">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-2">
             <p>&copy; {{ date('Y') }} {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}. All rights reserved.</p>
             <p>Made with love in the Philippines.</p>
         </div>
     </div>
+
+    {{-- Smooth height animation for the collapsible footer sections. Native
+         <details> snaps open/closed; this animates both directions by tweening
+         the panel height, and falls back to an instant toggle when motion is
+         reduced. Scoped to footer .rg-details so nothing else is affected. --}}
+    @verbatim
+    <style>
+      footer details.rg-details > summary { list-style: none; }
+      footer details.rg-details > summary::-webkit-details-marker { display: none; }
+      footer details.rg-details > summary + * { overflow: hidden; will-change: height; transition: height .3s cubic-bezier(.4, 0, .2, 1); }
+      @media (prefers-reduced-motion: reduce) { footer details.rg-details > summary + * { transition: none; } }
+      /* An open region breaks out of its grid column to span the whole row,
+         then returns to a single cell when collapsed. */
+      footer details.rg-region[open] { grid-column: 1 / -1; }
+    </style>
+    <script>
+    (function () {
+        var motionOK = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+        document.querySelectorAll('footer details.rg-details').forEach(function (d) {
+            var summary = d.querySelector(':scope > summary');
+            if (!summary) return;
+            var panel = summary.nextElementSibling;
+            if (!panel) return;
+            summary.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (d.dataset.animating) return;
+                if (!motionOK) { d.open = !d.open; return; }
+                d.dataset.animating = '1';
+                if (d.open) {
+                    panel.style.height = panel.scrollHeight + 'px';
+                    panel.getBoundingClientRect();
+                    panel.style.height = '0px';
+                    panel.addEventListener('transitionend', function te(ev) {
+                        if (ev.propertyName !== 'height' || ev.target !== panel) return;
+                        panel.removeEventListener('transitionend', te);
+                        d.open = false; panel.style.height = ''; delete d.dataset.animating;
+                    });
+                } else {
+                    d.open = true;
+                    var target = panel.scrollHeight;
+                    panel.style.height = '0px';
+                    panel.getBoundingClientRect();
+                    panel.style.height = target + 'px';
+                    panel.addEventListener('transitionend', function te(ev) {
+                        if (ev.propertyName !== 'height' || ev.target !== panel) return;
+                        panel.removeEventListener('transitionend', te);
+                        panel.style.height = ''; delete d.dataset.animating;
+                    });
+                }
+            });
+        });
+    })();
+    </script>
+    @endverbatim
 </footer>
 
 @stack('scripts')

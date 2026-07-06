@@ -170,7 +170,7 @@
             Most Philippine adventures cluster in specific provinces. Once you have picked the activity, sort the trip around where it lives best. Browse our destination and food guides for the area, lock in the listing for your stay, and time the visit so a regional fiesta lands on your dates.
         </p>
         <div class="flex flex-wrap gap-2 text-sm">
-            <a href="{{ url('/destinations') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
+            <a href="{{ route('destinations.index') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
                 Destinations by region
             </a>
             <a href="{{ url('/food-trip') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">

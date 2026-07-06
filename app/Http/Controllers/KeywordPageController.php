@@ -117,7 +117,7 @@ class KeywordPageController extends Controller
         } else {
             $crumbs = [
                 ['name' => 'Home', 'url' => url('/')],
-                ['name' => 'Destinations', 'url' => url('/destinations')],
+                ['name' => 'Destinations', 'url' => route('destinations.index')],
             ];
             if ($cluster) {
                 $crumbs[] = ['name' => $cluster['name'], 'url' => route('destinations.cluster', $keyword->cluster_tag)];

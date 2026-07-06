@@ -9,7 +9,7 @@
 
 @section('title', $page->meta_title ?: ($page->title ?? 'Destinations'))
 @section('meta_description', $page->meta_description ?? '')
-@section('canonical', url('/destinations'))
+@section('canonical', route('destinations.index'))
 
 @section('jsonld')
 <script type="application/ld+json">
@@ -18,7 +18,7 @@
     '@type' => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
-        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Destinations', 'item' => url('/destinations')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Destinations', 'item' => route('destinations.index')],
     ]
 ]) !!}
 </script>
@@ -35,7 +35,7 @@
                 ownerType: 'static_page'
             };
         </script>
-        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=1"></script>
+        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=2"></script>
     @endpush
 @endif
 

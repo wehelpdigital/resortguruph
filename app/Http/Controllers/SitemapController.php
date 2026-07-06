@@ -16,7 +16,7 @@ class SitemapController extends Controller
         $xml = Cache::remember('rg.sitemap.v6', 3600, function () {
             $urls = [
                 ['loc' => route('home'), 'lastmod' => now()->toAtomString(), 'priority' => '1.0'],
-                ['loc' => url('/destinations'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
+                ['loc' => route('destinations.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => route('activities.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => route('foods.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
                 ['loc' => route('buys.index'), 'lastmod' => now()->toAtomString(), 'priority' => '0.9'],
@@ -98,6 +98,90 @@ class SitemapController extends Controller
             return $xml;
         });
         return response($xml, 200)->header('Content-Type', 'application/xml');
+    }
+
+    /**
+     * Human-readable HTML sitemap at /sitemap. Every public URL, grouped and
+     * ordered, for both visitors and crawlers. Cached 1 hour; content is fully
+     * dynamic (regions, keyword pages, fiestas, resorts, blog).
+     */
+    public function page()
+    {
+        $sections = Cache::remember('rg.sitemap.page.v1', 3600, function () {
+            $sections = [];
+
+            $sections[] = ['group' => 'Explore', 'title' => 'Main pages', 'links' => [
+                ['label' => 'Home', 'url' => route('home'), 'strong' => true],
+                ['label' => 'All Destinations', 'url' => route('destinations.index'), 'strong' => true],
+                ['label' => 'Food Trip', 'url' => route('foods.index')],
+                ['label' => 'Things to Do', 'url' => route('activities.index')],
+                ['label' => 'What to Buy', 'url' => route('buys.index')],
+                ['label' => 'Culture', 'url' => route('cultures.index')],
+                ['label' => 'Fiestas & Festivals', 'url' => route('fiestas.index')],
+                ['label' => 'Blog', 'url' => route('blog.index')],
+            ]];
+
+            // Destination keyword pages, grouped by resolved region.
+            $meta = \App\Http\Controllers\DestinationsController::clusterMetadata();
+            RgKeyword::query()
+                ->where('category', 'resort')
+                ->whereHas('seoPage', fn ($q) => $q->where('is_published', true))
+                ->orderByDesc('search_volume_monthly')
+                ->get(['phrase', 'slug', 'cluster_tag'])
+                ->groupBy(fn ($k) => \App\Support\RegionResolver::resolve($k->cluster_tag, $k->phrase))
+                ->sortKeys()
+                ->each(function ($kws, $regionKey) use (&$sections, $meta) {
+                    if (!isset($meta[$regionKey])) {
+                        return;
+                    }
+                    $links = [['label' => 'All resorts in ' . $meta[$regionKey]['name'], 'url' => route('destinations.cluster', $regionKey), 'strong' => true]];
+                    foreach ($kws as $k) {
+                        $links[] = ['label' => ucwords($k->phrase), 'url' => url($k->slug)];
+                    }
+                    $sections[] = ['group' => 'Destinations by region', 'title' => $meta[$regionKey]['name'], 'links' => $links];
+                });
+
+            // Food keyword pages.
+            $foodKws = RgKeyword::query()
+                ->where('category', 'food')
+                ->whereHas('seoPage', fn ($q) => $q->where('is_published', true))
+                ->orderByDesc('search_volume_monthly')
+                ->get(['phrase', 'slug']);
+            if ($foodKws->isNotEmpty()) {
+                $sections[] = ['group' => 'Food & experiences', 'title' => 'Food finds', 'links' => $foodKws->map(fn ($k) => ['label' => ucwords($k->phrase), 'url' => url($k->slug)])->all()];
+            }
+
+            // Fiestas.
+            $fiestas = RgFiesta::where('is_published', true)->orderBy('name')->get(['name', 'slug']);
+            if ($fiestas->isNotEmpty()) {
+                $sections[] = ['group' => 'Food & experiences', 'title' => 'Fiestas & festivals', 'links' => $fiestas->map(fn ($f) => ['label' => $f->name, 'url' => route('fiestas.show', $f->slug)])->all()];
+            }
+
+            // Published resorts.
+            $resorts = RgResort::where('status', 'published')->orderBy('name')->get(['name', 'slug']);
+            if ($resorts->isNotEmpty()) {
+                $sections[] = ['group' => 'Stays', 'title' => 'Resorts', 'links' => $resorts->map(fn ($r) => ['label' => $r->name, 'url' => route('resort.show', $r->slug)])->all()];
+            }
+
+            // Blog posts.
+            $posts = RgBlogPost::where('status', 'published')->orderByDesc('id')->get(['title', 'slug']);
+            if ($posts->isNotEmpty()) {
+                $sections[] = ['group' => 'Reading', 'title' => 'Blog articles', 'links' => $posts->map(fn ($p) => ['label' => $p->title, 'url' => route('blog.show', $p->slug)])->all()];
+            }
+
+            // Company + legal.
+            $sections[] = ['group' => 'Company', 'title' => 'About & legal', 'links' => [
+                ['label' => 'About', 'url' => route('about')],
+                ['label' => 'Contact', 'url' => route('contact')],
+                ['label' => 'Terms of Service', 'url' => route('terms')],
+                ['label' => 'Privacy Policy', 'url' => route('privacy')],
+                ['label' => 'XML Sitemap', 'url' => route('sitemap')],
+            ]];
+
+            return $sections;
+        });
+
+        return view('sitemap', ['sections' => $sections]);
     }
 
     public function robots()

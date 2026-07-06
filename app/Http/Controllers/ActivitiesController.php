@@ -51,8 +51,12 @@ class ActivitiesController extends Controller
             return $picks;
         });
 
-        $blockView = $this->renderHubBlocks('activities', ['categories' => $this->categories()]); if ($blockView) return $blockView; return view('activities.index', [
-            'categories' => $this->categories(),
+        $cats = $this->categories();
+        $svc = app(\App\Services\HubLocationSearch::class);
+        $blockView = $this->renderHubBlocks('activities', ['categories' => $cats, 'searchIndex' => $svc->build('activities', $cats), 'featured' => $svc->featured('activities', $cats), 'hubTags' => $svc->tags('activities', $cats)]);
+        if ($blockView) return $blockView;
+        return view('activities.index', [
+            'categories' => $cats,
             'fiestaCovers' => $fiestaCovers,
             'fiestasUrl' => route('fiestas.index'),
         ]);

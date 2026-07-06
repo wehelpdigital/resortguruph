@@ -131,7 +131,7 @@
             Most cultural visits work best when timed around a real event. Sinulog and Dinagyang put the Cebuano and Ilonggo on display in January. Panagbenga and Adivay highlight the Ibaloi and the Cordillera in February and November. Kadayawan brings the Davao Lumad to the city in August. T\'nalak Festival in Koronadal shows the Tboli loom in July. Match the trip to the calendar, then add a destination guide for transport.
         </p>
         <div class="flex flex-wrap gap-2 text-sm">
-            <a href="{{ url('/destinations') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
+            <a href="{{ route('destinations.index') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
                 Destinations by region
             </a>
             <a href="{{ route('fiestas.index') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold">

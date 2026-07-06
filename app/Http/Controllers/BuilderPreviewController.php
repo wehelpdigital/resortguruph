@@ -58,6 +58,22 @@ class BuilderPreviewController extends Controller
      */
     private function resolveContext(RgContentBlock $block): array
     {
+        // Homepage static_page blocks get the same context HomeController
+        // exposes, so context-driven home blocks (keyword grid, region
+        // grid, resort grid, blog strip, unified search) preview with real
+        // data instead of rendering empty.
+        if ($block->owner_type === 'static_page') {
+            $page = \Illuminate\Support\Facades\DB::table('rg_static_pages')
+                ->where('id', $block->owner_id)->first();
+            if ($page && ($page->slug ?? '') === 'home') {
+                try {
+                    return $this->homeContext();
+                } catch (\Throwable $e) {
+                    return [];
+                }
+            }
+            return [];
+        }
         if ($block->owner_type !== 'seo_page') {
             return [];
         }
@@ -97,6 +113,67 @@ class BuilderPreviewController extends Controller
             'listings'           => $listings,
             'restaurantListings' => $restaurantListings,
             'listingGalleries'   => [],
+        ];
+    }
+
+    /**
+     * The homepage render context, mirroring HomeController@index so the
+     * builder's per-block previews show the same data the live home page
+     * does.
+     */
+    private function homeContext(): array
+    {
+        $publishedResortKeyword = fn($q) => $q->where('is_published', true);
+
+        $featuredKeywords = RgKeyword::query()
+            ->where('category', 'resort')
+            ->whereHas('seoPage', $publishedResortKeyword)
+            ->orderByDesc('search_volume_monthly')
+            ->limit(12)
+            ->get();
+
+        $featuredResorts = \App\Models\RgResort::where('status', 'published')
+            ->orderByDesc('updated_at')
+            ->limit(6)
+            ->get();
+
+        $latestPosts = \App\Models\RgBlogPost::where('status', 'published')
+            ->inRandomOrder()
+            ->limit(9)
+            ->get();
+
+        $stats = [
+            'pages' => RgSeoPage::where('is_published', true)->count(),
+            'resorts' => \App\Models\RgResort::where('status', 'published')->count(),
+        ];
+
+        $clusterMeta = \App\Http\Controllers\DestinationsController::clusterMetadata();
+        $regions = RgKeyword::query()
+            ->where('category', 'resort')
+            ->whereHas('seoPage', $publishedResortKeyword)
+            ->get()
+            ->groupBy('cluster_tag')
+            ->map(function ($kws, $slug) use ($clusterMeta) {
+                if (!isset($clusterMeta[$slug])) return null;
+                return [
+                    'slug' => $slug,
+                    'name' => $clusterMeta[$slug]['name'],
+                    'tagline' => $clusterMeta[$slug]['tagline'],
+                    'count' => $kws->count(),
+                    'total_volume' => $kws->sum('search_volume_monthly'),
+                ];
+            })
+            ->filter()
+            ->sortByDesc('total_volume')
+            ->values();
+
+        return [
+            'featuredKeywords'   => $featuredKeywords,
+            'featuredResorts'    => $featuredResorts,
+            'latestPosts'        => $latestPosts,
+            'regions'            => $regions,
+            'stats'              => $stats,
+            'unifiedSearchIndex' => app(\App\Services\UnifiedSearchIndex::class)->build(),
         ];
     }
 }

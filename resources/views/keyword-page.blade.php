@@ -23,7 +23,7 @@
                 ownerType: 'seo_page'
             };
         </script>
-        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=1"></script>
+        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=2"></script>
     @endpush
 @endif
 @if($page->og_image_path)
@@ -47,7 +47,7 @@
             <span class="text-slate-300 mx-0.5">/</span>
             <a href="{{ url('/food-trip') }}" class="hover:text-blue-600 transition-colors">Food Destinations</a>
         @else
-            <a href="{{ url('/destinations') }}" class="hover:text-blue-600 transition-colors">Destinations</a>
+            <a href="{{ route('destinations.index') }}" class="hover:text-blue-600 transition-colors">Destinations</a>
             @if($cluster)
                 <span class="text-slate-300 mx-0.5">/</span>
                 <a href="{{ route('destinations.cluster', $keyword->cluster_tag) }}" class="hover:text-blue-600 transition-colors">{{ $cluster['name'] }}</a>

@@ -42,7 +42,7 @@ class SchemaGenerator
                 '@type' => 'SearchAction',
                 'target' => [
                     '@type' => 'EntryPoint',
-                    'urlTemplate' => rtrim($url, '/') . '/destinations?q={search_term_string}',
+                    'urlTemplate' => rtrim($url, '/') . '/tourist-spots-destinations-philippines?q={search_term_string}',
                 ],
                 'query-input' => 'required name=search_term_string',
             ],

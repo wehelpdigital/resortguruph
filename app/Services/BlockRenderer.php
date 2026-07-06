@@ -25,6 +25,17 @@ class BlockRenderer
         return $out;
     }
 
+    /**
+     * Render a destination-cluster block by delegating to its Blade partial
+     * (resources/views/destinations/blocks/{name}.blade.php) with the block
+     * payload as $p plus the full cluster context. Keeps the tested cluster
+     * markup in Blade rather than duplicating it as PHP strings.
+     */
+    private function destclusterPartial(string $name, array $p, array $context): string
+    {
+        return view('destinations.blocks.' . $name, array_merge($context, ['p' => $p]))->render();
+    }
+
     public function renderBlock(RgContentBlock $block, array $context = []): string
     {
         $p = $block->payload ?? [];
@@ -105,11 +116,20 @@ class BlockRenderer
             'dest_hero_search' => $this->destHeroSearch($p, $context),
             'dest_featured_slider' => $this->destFeaturedSlider($p, $context),
             'dest_region_clusters' => $this->destRegionClusters($p, $context),
+            // Destination CLUSTER page blocks (render Blade partials with the
+            // per-cluster context supplied by DestinationsController@cluster).
+            'destcluster_hero' => $this->destclusterPartial('hero', $p, $context),
+            'destcluster_whats_in' => $this->destclusterPartial('whats_in', $p, $context),
+            'destcluster_featured_spots' => $this->destclusterPartial('featured_spots', $p, $context),
+            'destcluster_testimonials' => $this->destclusterPartial('testimonials', $p, $context),
+            'destcluster_explore_regions' => $this->destclusterPartial('explore_regions', $p, $context),
+            'destcluster_hashtags' => $this->destclusterPartial('hashtags', $p, $context),
             // Homepage custom block types — each reads its live data
             // (featuredKeywords / regions / featuredResorts / latestPosts
             // / stats) from the HomeController context.
             'home_hero_centered' => $this->homeHeroCentered($p, $context),
             'home_keyword_grid' => $this->homeKeywordGrid($p, $context),
+            'home_keyword_hashtags' => $this->homeKeywordHashtags($p, $context),
             'home_region_grid' => $this->homeRegionGrid($p, $context),
             'home_resort_grid' => $this->homeResortGrid($p, $context),
             'home_blog_strip' => $this->homeBlogStrip($p, $context),
@@ -118,6 +138,10 @@ class BlockRenderer
             // tiles, hub-link cards, seasonal guide, testimonials,
             // FAQ. Content seeded from Fable 5 content gen.
             'home_unified_search' => $this->homeUnifiedSearch($p, $context),
+            'home_press_logos' => $this->homePressLogos($p, $context),
+            'home_alt_features' => $this->homeAltFeatures($p, $context),
+            'home_badge_explainer' => $this->homeBadgeExplainer($p, $context),
+            'home_partner_perks' => $this->homePartnerPerks($p, $context),
             'home_values_grid' => $this->homeValuesGrid($p, $context),
             // Hub-page custom block types (foods/activities/buys/
             // cultures). Each reads category data from $context.
@@ -175,6 +199,30 @@ class BlockRenderer
         return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
+    /**
+     * Build a ` title="..."` attribute for an image's SEO title, or an
+     * empty string when none is set. Accepts the raw (unescaped) value;
+     * escaping is applied here. Used across every block that outputs an
+     * <img> so the admin-set image title attribute renders consistently.
+     */
+    private function titleAttr($title): string
+    {
+        $t = trim((string) $title);
+        return $t !== '' ? ' title="' . $this->e($t) . '"' : '';
+    }
+
+    /**
+     * Resolve an image's title from a payload row, trying the common
+     * key shapes used across blocks (explicit `*_title`, `title`).
+     */
+    private function imgTitle(array $row, string ...$keys): string
+    {
+        foreach ($keys as $k) {
+            if (isset($row[$k]) && trim((string) $row[$k]) !== '') return (string) $row[$k];
+        }
+        return '';
+    }
+
     private function heading(array $p): string
     {
         $level = in_array($p['level'] ?? 'h2', ['h2', 'h3', 'h4'], true) ? $p['level'] : 'h2';
@@ -196,7 +244,7 @@ class BlockRenderer
         $alignClass = ['left' => 'mr-auto', 'right' => 'ml-auto', 'center' => 'mx-auto'][$align] ?? 'mx-auto';
         $alt = $this->e($p['alt'] ?? '');
         $caption = !empty($p['caption']) ? '<figcaption class="text-sm text-slate-500 mt-2 text-center">' . $this->e($p['caption']) . '</figcaption>' : '';
-        return '<figure class="my-6"><img src="' . $this->e($p['src']) . '" alt="' . $alt . '" class="rounded-lg max-w-full ' . $alignClass . '" loading="lazy">' . $caption . '</figure>';
+        return '<figure class="my-6"><img src="' . $this->e($p['src']) . '" alt="' . $alt . '"' . $this->titleAttr($p['title'] ?? '') . ' class="rounded-lg max-w-full ' . $alignClass . '" loading="lazy">' . $caption . '</figure>';
     }
 
     private function gallery(array $p): string
@@ -209,7 +257,7 @@ class BlockRenderer
         $out = '<div class="grid ' . $gridClass . ' gap-3 my-6">';
         foreach ($images as $img) {
             if (empty($img['src'])) continue;
-            $out .= '<img src="' . $this->e($img['src']) . '" alt="' . $this->e($img['alt'] ?? '') . '" class="rounded-lg w-full aspect-square object-cover" loading="lazy">';
+            $out .= '<img src="' . $this->e($img['src']) . '" alt="' . $this->e($img['alt'] ?? '') . '"' . $this->titleAttr($img['title'] ?? '') . ' class="rounded-lg w-full aspect-square object-cover" loading="lazy">';
         }
         $out .= '</div>';
         return $out;
@@ -579,7 +627,7 @@ class BlockRenderer
 
             $slides .= '<li class="splide__slide"><figure class="rg-area-hero__slide">'
                 . '<img src="' . $this->e($this->normalizeMediaUrl($img['src'])) . '" alt="' . $this->e($img['alt'] ?? '')
-                . '" loading="lazy">' . $captionHtml . '</figure></li>';
+                . '"' . $this->titleAttr($img['title'] ?? '') . ' loading="lazy">' . $captionHtml . '</figure></li>';
         }
 
         return '<section class="rg-area-hero my-8 not-prose" aria-label="Photo gallery">'
@@ -617,7 +665,7 @@ class BlockRenderer
             $slides .= '<li class="splide__slide">'
                 . '<div class="relative w-full h-full bg-slate-900">'
                 . '<img src="' . $this->e($this->normalizeMediaUrl($img['src'])) . '" alt="' . $this->e($img['alt'] ?? '')
-                . '" class="absolute inset-0 w-full h-full object-cover" loading="lazy">'
+                . '"' . $this->titleAttr($img['title'] ?? '') . ' class="absolute inset-0 w-full h-full object-cover" loading="lazy">'
                 . '<div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent"></div>'
                 . $captionBlock
                 . '</div></li>';
@@ -710,9 +758,9 @@ class BlockRenderer
         if (!$cards) return '';
 
         $palettes = [
-            'blue'    => ['bg' => '#eff6ff', 'br' => '#bfdbfe', 'fg' => '#1d4ed8', 'sm' => '#1e3a8a'],
+            'blue'    => ['bg' => '#eaf2f8', 'br' => '#a9cce3', 'fg' => '#2471a3', 'sm' => '#1a5276'],
             'emerald' => ['bg' => '#ecfdf5', 'br' => '#a7f3d0', 'fg' => '#047857', 'sm' => '#064e3b'],
-            'rose'    => ['bg' => '#fff1f2', 'br' => '#fecdd3', 'fg' => '#be123c', 'sm' => '#881337'],
+            'rose'    => ['bg' => '#f9ebea', 'br' => '#f2d7d5', 'fg' => '#c0392b', 'sm' => '#7b241c'],
             'amber'   => ['bg' => '#fffbeb', 'br' => '#fcd34d', 'fg' => '#b45309', 'sm' => '#78350f'],
             'violet'  => ['bg' => '#f5f3ff', 'br' => '#ddd6fe', 'fg' => '#6d28d9', 'sm' => '#4c1d95'],
             'slate'   => ['bg' => '#f8fafc', 'br' => '#cbd5e1', 'fg' => '#334155', 'sm' => '#0f172a'],
@@ -1157,9 +1205,9 @@ class BlockRenderer
         // restaurant pages render with the same visual rhythm.
         $iconPalettes = [
             'amber'   => ['from' => '#fef3c7', 'to' => '#fffbeb'],
-            'blue'    => ['from' => '#dbeafe', 'to' => '#eff6ff'],
+            'blue'    => ['from' => '#d4e6f1', 'to' => '#eaf2f8'],
             'emerald' => ['from' => '#d1fae5', 'to' => '#ecfdf5'],
-            'rose'    => ['from' => '#ffe4e6', 'to' => '#fff1f2'],
+            'rose'    => ['from' => '#f9ebea', 'to' => '#f9ebea'],
             'violet'  => ['from' => '#ede9fe', 'to' => '#f5f3ff'],
             'slate'   => ['from' => '#e2e8f0', 'to' => '#f8fafc'],
         ];
@@ -1433,8 +1481,8 @@ class BlockRenderer
         $palettes = [
             'amber'  => ['bg' => 'linear-gradient(135deg,#0f172a 0%,#1e293b 100%)', 'fg' => '#ffffff', 'eyebrow' => '#fbbf24'],
             'emerald'=> ['bg' => 'linear-gradient(135deg,#064e3b 0%,#065f46 100%)', 'fg' => '#ffffff', 'eyebrow' => '#6ee7b7'],
-            'rose'   => ['bg' => 'linear-gradient(135deg,#4c0519 0%,#881337 100%)', 'fg' => '#ffffff', 'eyebrow' => '#fda4af'],
-            'blue'   => ['bg' => 'linear-gradient(135deg,#1e3a8a 0%,#1e40af 100%)', 'fg' => '#ffffff', 'eyebrow' => '#93c5fd'],
+            'rose'   => ['bg' => 'linear-gradient(135deg,#641e16 0%,#7b241c 100%)', 'fg' => '#ffffff', 'eyebrow' => '#e6b0aa'],
+            'blue'   => ['bg' => 'linear-gradient(135deg,#1a5276 0%,#1f618b 100%)', 'fg' => '#ffffff', 'eyebrow' => '#7fb3d5'],
         ];
         $pal = $palettes[$accent] ?? $palettes['amber'];
         // Body text bumped from text-base (16px) to text-lg (18px) with
@@ -1491,7 +1539,7 @@ class BlockRenderer
         $headerX = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 
         $left = $renderColumn($prosLabel, $pros, '#10b981', '#047857', '#d1fae5', $headerCheck, $checkSvg);
-        $right = $renderColumn($consLabel, $cons, '#f43f5e', '#be123c', '#ffe4e6', $headerX, $xSvg);
+        $right = $renderColumn($consLabel, $cons, '#e74c3c', '#c0392b', '#f9ebea', $headerX, $xSvg);
 
         return '<div class="not-prose my-10 grid grid-cols-1 md:grid-cols-2 gap-4">' . $left . $right . '</div>';
     }
@@ -1793,8 +1841,8 @@ class BlockRenderer
         $palettes = [
             'amber'   => ['bg' => '#fef3c7', 'br' => '#f59e0b', 'eb' => '#92400e', 'ic' => '#b45309', 'icbg' => '#fde68a', 'emoji' => '💡'],
             'emerald' => ['bg' => '#ecfdf5', 'br' => '#10b981', 'eb' => '#065f46', 'ic' => '#047857', 'icbg' => '#a7f3d0', 'emoji' => '🌿'],
-            'blue'    => ['bg' => '#eff6ff', 'br' => '#3b82f6', 'eb' => '#1e3a8a', 'ic' => '#1d4ed8', 'icbg' => '#bfdbfe', 'emoji' => '🧭'],
-            'rose'    => ['bg' => '#fff1f2', 'br' => '#f43f5e', 'eb' => '#881337', 'ic' => '#be123c', 'icbg' => '#fecdd3', 'emoji' => '⚠️'],
+            'blue'    => ['bg' => '#eaf2f8', 'br' => '#3498db', 'eb' => '#1a5276', 'ic' => '#2471a3', 'icbg' => '#a9cce3', 'emoji' => '🧭'],
+            'rose'    => ['bg' => '#f9ebea', 'br' => '#e74c3c', 'eb' => '#7b241c', 'ic' => '#c0392b', 'icbg' => '#f2d7d5', 'emoji' => '⚠️'],
         ];
         $pal = $palettes[$color] ?? $palettes['amber'];
         return '<aside class="not-prose my-8 p-5 rounded-2xl border-l-4" style="background:' . $pal['bg'] . ';border-color:' . $pal['br'] . '">'
@@ -1825,7 +1873,7 @@ class BlockRenderer
 
         $palettes = [
             'amber'   => ['bg' => '#fef3c7', 'fg' => '#78350f', 'hi' => '#b45309'],
-            'rose'    => ['bg' => '#fee2e2', 'fg' => '#7f1d1d', 'hi' => '#be123c'],
+            'rose'    => ['bg' => '#f9ebea', 'fg' => '#7b241c', 'hi' => '#c0392b'],
             'emerald' => ['bg' => '#dcfce7', 'fg' => '#14532d', 'hi' => '#047857'],
             'indigo'  => ['bg' => '#e0e7ff', 'fg' => '#3730a3', 'hi' => '#4338ca'],
             'pink'    => ['bg' => '#fce7f3', 'fg' => '#831843', 'hi' => '#be185d'],
@@ -3015,9 +3063,9 @@ class BlockRenderer
         if (!$cards) return '';
 
         $palettes = [
-            'blue'    => ['bg' => '#eff6ff', 'br' => '#bfdbfe', 'fg' => '#1d4ed8', 'sm' => '#1e3a8a'],
+            'blue'    => ['bg' => '#eaf2f8', 'br' => '#a9cce3', 'fg' => '#2471a3', 'sm' => '#1a5276'],
             'emerald' => ['bg' => '#ecfdf5', 'br' => '#a7f3d0', 'fg' => '#047857', 'sm' => '#064e3b'],
-            'rose'    => ['bg' => '#fff1f2', 'br' => '#fecdd3', 'fg' => '#be123c', 'sm' => '#881337'],
+            'rose'    => ['bg' => '#f9ebea', 'br' => '#f2d7d5', 'fg' => '#c0392b', 'sm' => '#7b241c'],
             'amber'   => ['bg' => '#fffbeb', 'br' => '#fcd34d', 'fg' => '#b45309', 'sm' => '#78350f'],
             'violet'  => ['bg' => '#f5f3ff', 'br' => '#ddd6fe', 'fg' => '#6d28d9', 'sm' => '#4c1d95'],
             'slate'   => ['bg' => '#f8fafc', 'br' => '#cbd5e1', 'fg' => '#334155', 'sm' => '#0f172a'],
@@ -3298,12 +3346,17 @@ class BlockRenderer
             'teal-emerald' => 'bg-gradient-to-br from-teal-50 via-white to-emerald-50',
         ][$bgGradient] ?? '';
 
-        // Title rendering with {{accent}}…{{/accent}} support
+        // Title rendering with {{accent}}…{{/accent}} support. The accent
+        // portion renders in the Tahu brush script (brand red) to match the
+        // region cluster pages, instead of a flat coloured word.
+        $tahu = '<span class="font-brand" style="color:#c0392b;font-weight:400;font-size:1.6em;line-height:1.05;display:inline-block;vertical-align:baseline;margin-top:.1em">';
         $titleHtml = '';
         if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
+            // The accent (Tahu) phrase drops onto its own line beneath the
+            // sans lead-in.
             $titleHtml = $this->e(trim($m[1]))
-                . ($m[1] !== '' ? ' ' : '')
-                . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
+                . ($m[1] !== '' ? '<br>' : '')
+                . $tahu . $this->e(trim($m[2])) . '</span>'
                 . ($m[3] !== '' ? ' ' : '')
                 . $this->e(trim($m[3]));
         } else {
@@ -3333,7 +3386,7 @@ class BlockRenderer
         $statsHtml = '';
         $pills = $p['stats_pills'] ?? [];
         if (is_array($pills) && !empty($pills)) {
-            $statsHtml = '<div class="flex flex-wrap gap-3 mt-6">';
+            $statsHtml = '<div class="flex flex-wrap gap-3 mt-6 justify-center">';
             foreach ($pills as $pill) {
                 $label = $this->e((string) ($pill['label'] ?? ''));
                 $valueSource = (string) ($pill['value_source'] ?? 'literal');
@@ -3355,18 +3408,27 @@ class BlockRenderer
         // .rg-dest-hero--bleed class uses vw-based negative margins
         // to break out of any parent container (the blocks view
         // wraps blocks in max-w-7xl mx-auto, so this breaks out).
-        $out = '<section class="rg-dest-hero rg-dest-hero--bleed ' . $bgClass . ' mb-10">';
+        // Optional faded background photo. A strong white scrim keeps the
+        // dark hero text + search box readable; the gradient class is
+        // dropped when an image is set (image + scrim become the backdrop).
+        $bgImage = trim((string) ($p['background_image'] ?? ''));
+        $bgImageUrl = $bgImage !== '' ? ((str_starts_with($bgImage, 'http') || str_starts_with($bgImage, '/')) ? $bgImage : '/storage/' . ltrim($bgImage, '/')) : '';
+        $secBg = '';
+        if ($bgImageUrl !== '') {
+            $secBg = ' style="background-image:linear-gradient(rgba(255,255,255,.84),rgba(255,255,255,.92)),url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center"';
+        }
+        $out = '<section class="rg-dest-hero rg-dest-hero--bleed ' . ($bgImageUrl !== '' ? '' : $bgClass) . ' -mt-8"' . $secBg . '>';
         $out .= '<style>.rg-dest-hero--bleed{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw}</style>';
-        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">';
+        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center">';
         $out .= $breadcrumbHtml;
         if ($eyebrow !== '') {
             $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold ' . $accentText . ' mb-3">' . $eyebrow . '</div>';
         }
         if ($titleHtml !== '') {
-            $out .= '<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-4 max-w-4xl">' . $titleHtml . '</h1>';
+            $out .= '<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-4 max-w-4xl mx-auto capitalize">' . $titleHtml . '</h1>';
         }
         if (!empty($paragraphs)) {
-            $out .= '<div class="text-lg text-slate-600 max-w-3xl space-y-3 [&_p]:m-0">';
+            $out .= '<div class="text-lg text-slate-600 max-w-3xl mx-auto space-y-3 [&_p]:m-0">';
             foreach ($paragraphs as $para) {
                 $para = trim((string) $para);
                 if ($para === '') continue;
@@ -3416,10 +3478,10 @@ class BlockRenderer
 
         // Accent color drives focus + submit + chip hover
         $accentHex = [
-            'brand' => '#2563eb', 'amber' => '#d97706', 'emerald' => '#059669',
-            'rose' => '#e11d48', 'violet' => '#7c3aed', 'teal' => '#0d9488',
+            'brand' => '#2980b9', 'amber' => '#d97706', 'emerald' => '#059669',
+            'rose' => '#c0392b', 'violet' => '#7c3aed', 'teal' => '#0d9488',
             'slate' => '#475569',
-        ][$accent] ?? '#2563eb';
+        ][$accent] ?? '#2980b9';
 
         // margin: 2.5rem auto 0 → centers the search bar within the
         // hero (matches the original /destinations layout). Without
@@ -3429,7 +3491,7 @@ class BlockRenderer
         // z-50). The result panel below uses z-20 — still above page
         // content but below the nav so the brand + utility links
         // never get covered when the typeahead is open.
-        $out = '<div class="rg-dest-ts ' . $accent . '" data-rg-search style="margin:2.5rem auto 0;max-width:920px;width:100%;position:relative;z-index:10;">';
+        $out = '<div class="rg-dest-ts ' . $accent . '" data-rg-search style="margin:2.5rem auto 0;max-width:920px;width:100%;position:relative;z-index:10;text-align:left;">';
 
         // Filter tabs
         $out .= '<div class="rg-dest-ts__tabs" role="tablist">';
@@ -3610,11 +3672,25 @@ class BlockRenderer
         if (empty($itemArr)) return '';
 
         $eyebrow = $this->e(trim($p['eyebrow'] ?? ''));
-        $heading = $this->e(trim($p['heading'] ?? ''));
+        // Heading supports {{accent}}…{{/accent}} → Tahu brush (brand red).
+        $headingRaw = trim((string) ($p['heading'] ?? ''));
+        $headingHtml = '';
+        if ($headingRaw !== '') {
+            $tahuFs = '<span class="font-brand" style="color:#c0392b;font-weight:400;font-size:1.2em;line-height:1;display:inline-block;vertical-align:baseline">';
+            if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $headingRaw, $mh)) {
+                $headingHtml = $this->e(trim($mh[1])) . ($mh[1] !== '' ? ' ' : '')
+                    . $tahuFs . $this->e(trim($mh[2])) . '</span>'
+                    . ($mh[3] !== '' ? ' ' : '') . $this->e(trim($mh[3]));
+            } else {
+                $headingHtml = $this->e($headingRaw);
+            }
+        }
         $subhead = $this->e(trim($p['subhead'] ?? ''));
         $accent = in_array($p['accent'] ?? 'brand', ['amber', 'brand', 'slate', 'rose', 'emerald'], true)
             ? $p['accent'] : 'brand';
         $bg = ($p['bg'] ?? 'light') === 'light' ? 'bg-slate-50' : '';
+        $ctaLabel = $this->e(trim((string) ($p['cta_label'] ?? 'Explore stays')));
+        if ($ctaLabel === '') $ctaLabel = 'Explore';
         $autoplay = !empty($p['autoplay']) || !isset($p['autoplay']) ? 'true' : 'false';
         $interval = (int) ($p['interval'] ?? 5500);
         $perView = (int) ($p['slides_per_view'] ?? 3);
@@ -3635,10 +3711,10 @@ class BlockRenderer
         // the carousel itself extends to the section's full width
         // (only side padding clamps the cards from the edge) so the
         // slider feels as expansive as the band beneath it.
-        $out = '<section class="rg-dest-fslider ' . $bg . ' my-10 py-12 md:py-16" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out = '<section class="rg-dest-fslider ' . $bg . ' mb-10 py-12 md:py-16" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
         $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">';
         if ($eyebrow !== '') $out .= '<p class="text-xs sm:text-sm uppercase tracking-[0.18em] ' . $eyebrowClass . ' font-bold mb-2">' . $eyebrow . '</p>';
-        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($headingHtml !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $headingHtml . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600 max-w-3xl mx-auto">' . $subhead . '</p>';
         $out .= '</div>';
         $out .= '<div class="px-4 sm:px-8 lg:px-12 xl:px-16">';
@@ -3739,7 +3815,7 @@ class BlockRenderer
                 $out .= '</div>';
             }
             $out .= '<div class="rg-dfs-explore">'
-                . '<span>Explore stays</span>'
+                . '<span>' . $ctaLabel . '</span>'
                 . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
                 . '</div>';
             $out .= '</div></a></li>';
@@ -3755,14 +3831,14 @@ class BlockRenderer
             . '.rg-dfs-splide .splide__list{align-items:stretch}'
             . '.rg-dfs-splide .splide__slide{padding:.25rem 0;display:flex}'
             . '.rg-dfs-splide .splide__arrow{background:rgba(15,23,42,.85);width:2.75rem;height:2.75rem;opacity:.95;box-shadow:0 8px 18px -6px rgba(15,23,42,.4)}'
-            . '.rg-dfs-splide .splide__arrow:hover{background:#2563eb}'
+            . '.rg-dfs-splide .splide__arrow:hover{background:#2980b9}'
             . '.rg-dfs-splide .splide__arrow svg{fill:#fff;width:1rem;height:1rem}'
             . '.rg-dfs-splide .splide__arrow--prev{left:-.5rem}'
             . '.rg-dfs-splide .splide__arrow--next{right:-.5rem}'
             . '@media(min-width:768px){.rg-dfs-splide .splide__arrow--prev{left:-1.25rem}.rg-dfs-splide .splide__arrow--next{right:-1.25rem}}'
             . '.rg-dfs-splide .splide__pagination{bottom:-2rem}'
             . '.rg-dfs-splide .splide__pagination__page{background:#cbd5e1;opacity:1;width:.6rem;height:.6rem;margin:0 .25rem}'
-            . '.rg-dfs-splide .splide__pagination__page.is-active{background:#2563eb;transform:scale(1.25);width:1.5rem;border-radius:.6rem}'
+            . '.rg-dfs-splide .splide__pagination__page.is-active{background:#2980b9;transform:scale(1.25);width:1.5rem;border-radius:.6rem}'
             // Card: flex column so caption fills remaining height
             // when slides line up at uniform height.
             . '.rg-dfs-card{display:flex;flex-direction:column;width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:1.1rem;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.05),0 1px 2px rgba(15,23,42,.04);transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s ease,border-color .35s ease;text-decoration:none;color:inherit}'
@@ -3790,15 +3866,15 @@ class BlockRenderer
             // a touch on tablet+ so the body breathes.
             . '.rg-dfs-body{display:flex;flex-direction:column;flex:1;padding:1.1rem 1.25rem 1.15rem;gap:0}'
             . '@media(min-width:768px){.rg-dfs-body{padding:1.25rem 1.4rem 1.35rem}}'
-            . '.rg-dfs-region{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:#2563eb;margin-bottom:.5rem;display:block}'
+            . '.rg-dfs-region{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:#2980b9;margin-bottom:.5rem;display:block}'
             . '.rg-dfs-name{font-size:1.25rem;font-weight:800;line-height:1.2;color:#0f172a;margin:0 0 .55rem;letter-spacing:-.01em}'
             . '@media(min-width:768px){.rg-dfs-name{font-size:1.4rem}}'
             . '.rg-dfs-location{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:#64748b;margin-bottom:.95rem}'
-            . '.rg-dfs-location svg{width:.95rem;height:.95rem;flex:0 0 auto;color:#2563eb}'
+            . '.rg-dfs-location svg{width:.95rem;height:.95rem;flex:0 0 auto;color:#2980b9}'
             // Explore link — a subtle CTA divided by a hairline rule.
             // The arrow nudges on hover (gap grows) for a small
             // "go deeper" affordance.
-            . '.rg-dfs-explore{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:700;color:#2563eb;border-top:1px solid #e2e8f0;padding-top:.75rem;margin-top:auto;letter-spacing:.01em}'
+            . '.rg-dfs-explore{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:700;color:#2980b9;border-top:1px solid #e2e8f0;padding-top:.75rem;margin-top:auto;letter-spacing:.01em}'
             . '.rg-dfs-explore svg{width:1rem;height:1rem;transition:transform .25s cubic-bezier(.22,1,.36,1);flex:0 0 auto}'
             . '.rg-dfs-card:hover .rg-dfs-explore svg{transform:translateX(.35rem)}'
             . '</style>';
@@ -3822,6 +3898,79 @@ class BlockRenderer
      *   show_volume    → bool
      *   sticky_nav     → bool (default true)
      */
+    /**
+     * Pick a destination-type icon for a keyword card from its phrase.
+     * Sunglasses for tourist spots, a beach umbrella for beaches/resorts,
+     * a bed for hotels, a house for Airbnb, and so on. Falls back to a map
+     * pin. Returns a stroke SVG (24x24, h-5 w-5) using currentColor so it
+     * inherits the accent chip colour. Icons are from the Lucide/Tabler
+     * open icon sets (same visual family as the rest of the site).
+     */
+    private function destSpotIcon(string $phrase): string
+    {
+        $t = ' ' . mb_strtolower($phrase) . ' ';
+        $paths = [
+            // binoculars — tourist spots / sightseeing
+            'spot' => '<path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M20 21a2 2 0 0 0 2-2v-3.851c0-1.39-2-2.962-2-4.829V8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2z"/><path d="M22 16H2"/><path d="M4 21a2 2 0 0 1-2-2v-3.851c0-1.39 2-2.962 2-4.829V8a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v11a2 2 0 0 1-2 2z"/><path d="M9 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/>',
+            // house — airbnb / staycation
+            'house' => '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+            // bed — hotel
+            'hotel' => '<path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>',
+            // droplet — hot springs, pools, waterfalls
+            'water' => '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/>',
+            // palm tree — islands
+            'palm' => '<path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4"/><path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3"/><path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35z"/><path d="M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14"/>',
+            // mountain — highlands, hiking, camping
+            'mountain' => '<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>',
+            // beach umbrella — beaches and resorts
+            'beach' => '<path d="M12 2v3"/><path d="M4 13a8 8 0 0 1 16 0Z"/><path d="M12 13v8"/><path d="M9 21h6"/>',
+            // map pin — default
+            'pin' => '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+        ];
+        if (preg_match('/tourist spot|\bspots?\b|attraction|landmark|scenic|sightsee|view ?deck|viewpoint/', $t)) $key = 'spot';
+        elseif (preg_match('/airbnb|staycation|\bbnb\b|transient/', $t)) $key = 'house';
+        elseif (preg_match('/\bhotels?\b|\binn\b|\blodge\b|\bmotel\b/', $t)) $key = 'hotel';
+        elseif (preg_match('/hot ?spring|\bspring\b|thermal|pansol|onsen|falls|waterfall|cascade/', $t)) $key = 'water';
+        elseif (preg_match('/\bisland\b|\bislet\b|hopping/', $t)) $key = 'palm';
+        elseif (preg_match('/mountain|highland|\bpeak\b|\bhills?\b|hiking|\bhike\b|summit|camp|glamping|\btent\b/', $t)) $key = 'mountain';
+        elseif (preg_match('/beach|resort/', $t)) $key = 'beach';
+        else $key = 'pin';
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' . $paths[$key] . '</svg>';
+    }
+
+    /**
+     * Food-vertical counterpart of destSpotIcon(): pick a food-type icon
+     * from a keyword phrase. Coffee cup for cafes, a fish for seafood, a
+     * flame for grills/lechon, an ice-cream for desserts/bakeries, a soup
+     * bowl for buffets/noodle houses, and fork-and-knife for everything
+     * else. Same stroke SVG family (currentColor, h-5 w-5).
+     */
+    private function foodSpotIcon(string $phrase): string
+    {
+        $t = ' ' . mb_strtolower($phrase) . ' ';
+        $paths = [
+            // coffee cup
+            'coffee' => '<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2"/><path d="M10 2v2"/><path d="M14 2v2"/>',
+            // flame — grills / bbq / lechon
+            'flame' => '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+            // fish — seafood
+            'fish' => '<path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"/><path d="M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4"/><path d="M16.01 17.93l.23 1.4A2 2 0 0 1 14.26 21H8.46c1.17-1.24 2.2-2.88 2.46-4.26"/>',
+            // ice-cream cone — desserts / bakeries
+            'dessert' => '<path d="m7 11 4.08 10.35a1 1 0 0 0 1.84 0L17 11"/><path d="M17 7A5 5 0 0 0 7 7"/><path d="M17 7a2 2 0 0 1 0 4H7a2 2 0 0 1 0-4"/>',
+            // soup bowl — buffets / noodle houses / lutong bahay
+            'bowl' => '<path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/><path d="M7 21h10"/><path d="M19.5 12 22 6"/><path d="M16.2 3c.3.1.8.5.8 1.4 0 .8-.9 1.2-1 2 0 .8.4 1.2.8 1.6"/><path d="M11.2 3c.3.1.8.5.8 1.4 0 .8-.9 1.2-1 2 0 .8.3 1.2.7 1.6"/>',
+            // fork + knife — default
+            'utensils' => '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+        ];
+        if (preg_match('/\bcafe\b|coffee|espresso|kapehan|milk ?tea|bubble ?tea|kape/', $t)) $key = 'coffee';
+        elseif (preg_match('/grill|bbq|barbecue|ihaw|inihaw|inasal|liempo|lechon|samgyup|kbbq|korean bbq/', $t)) $key = 'flame';
+        elseif (preg_match('/seafood|sea food|dampa|\bfish\b|oyster|crab|prawn|shrimp|sushi|sashimi/', $t)) $key = 'fish';
+        elseif (preg_match('/dessert|sweet|ice ?cream|gelato|\bcake\b|pastr|bakery|bake ?shop|bread|donut|doughnut|halo|churro|dessert/', $t)) $key = 'dessert';
+        elseif (preg_match('/buffet|eat all|\bunli\b|ramen|noodle|mami|batchoy|\bsoup\b|lugaw|congee|silog|lutong|carinderia|turo|kamayan/', $t)) $key = 'bowl';
+        else $key = 'utensils';
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' . $paths[$key] . '</svg>';
+    }
+
     private function destRegionClusters(array $p, array $context): string
     {
         $source = (string) ($p['source'] ?? 'orderedClusters');
@@ -3836,6 +3985,13 @@ class BlockRenderer
             ? $p['accent'] : 'brand';
         $showVolume = !isset($p['show_volume']) || (bool) $p['show_volume'];
         $stickyNav = !isset($p['sticky_nav']) || (bool) $p['sticky_nav'];
+        // icon_set picks the card icon vocabulary: destination (beach/hotel/…)
+        // or food (utensils/coffee/…). Wave + boat colour follow the accent.
+        $iconSet = ($p['icon_set'] ?? 'destination') === 'food' ? 'food' : 'destination';
+        $waveColor = [
+            'brand' => 'rgb(41,128,185)', 'amber' => 'rgb(217,119,6)', 'slate' => 'rgb(100,116,139)',
+            'teal' => 'rgb(13,148,136)', 'rose' => 'rgb(225,29,72)', 'violet' => 'rgb(124,58,237)',
+        ][$accent] ?? 'rgb(41,128,185)';
 
         $cardHoverMap = [
             'amber' => 'hover:border-amber-300 hover:shadow-md hover:bg-amber-50/30',
@@ -3861,12 +4017,71 @@ class BlockRenderer
             'rose' => 'hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700',
             'violet' => 'hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700',
         ][$accent];
+        // Leading icon chip colour + trailing-arrow hover colour for the
+        // redesigned keyword cards.
+        $iconWrapMap = [
+            'amber' => 'bg-amber-50 text-amber-600',
+            'brand' => 'bg-blue-50 text-blue-600',
+            'slate' => 'bg-slate-100 text-slate-600',
+            'teal' => 'bg-teal-50 text-teal-600',
+            'rose' => 'bg-rose-50 text-rose-600',
+            'violet' => 'bg-violet-50 text-violet-600',
+        ][$accent];
+        $arrowHoverMap = [
+            'amber' => 'group-hover:text-amber-600',
+            'brand' => 'group-hover:text-blue-600',
+            'slate' => 'group-hover:text-slate-600',
+            'teal' => 'group-hover:text-teal-600',
+            'rose' => 'group-hover:text-rose-600',
+            'violet' => 'group-hover:text-violet-600',
+        ][$accent];
 
         $out = '<section class="rg-dest-clusters my-10">';
 
+        // Short, centered animated divider shown between regions. Food pages
+        // get a steaming bowl flanked by fading rules; destination pages get a
+        // drifting wave with a rocking sailboat. Colour follows the accent.
+        // Emitted once.
+        if ($iconSet === 'food') {
+            $out .= '<style>'
+                . '.rg-fooddiv{display:flex;align-items:center;justify-content:center;width:240px;max-width:75%;margin:0 auto 1.6rem}'
+                . '.rg-fooddiv::before,.rg-fooddiv::after{content:"";height:2px;flex:1;border-radius:2px}'
+                . '.rg-fooddiv::before{background:linear-gradient(90deg,transparent,' . $waveColor . ')}'
+                . '.rg-fooddiv::after{background:linear-gradient(90deg,' . $waveColor . ',transparent)}'
+                . '.rg-fooddiv svg{width:30px;height:30px;flex:0 0 auto;margin:0 10px;overflow:visible}'
+                . '.rg-fooddiv .rg-st{transform-origin:center bottom;animation:rgSteam 2.6s ease-in-out infinite}'
+                . '.rg-fooddiv .rg-st2{animation-delay:.55s}'
+                . '.rg-fooddiv .rg-st3{animation-delay:1.1s}'
+                . '@keyframes rgSteam{0%{opacity:0;transform:translateY(2px) scaleY(.6)}35%{opacity:.85}100%{opacity:0;transform:translateY(-4px) scaleY(1.15)}}'
+                . '@media(prefers-reduced-motion:reduce){.rg-fooddiv .rg-st{animation:none;opacity:.7}}'
+                . '</style>';
+            $divider = '<div class="rg-fooddiv" aria-hidden="true">'
+                . '<svg viewBox="0 0 24 24" fill="none" stroke="' . $waveColor . '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+                . '<path class="rg-st rg-st1" d="M9 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/>'
+                . '<path class="rg-st rg-st2" d="M12 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/>'
+                . '<path class="rg-st rg-st3" d="M15 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/>'
+                . '<path d="M3 11h18"/>'
+                . '<path d="M5 11a7 7 0 0 0 14 0Z" fill="' . $waveColor . '" stroke="none"/>'
+                . '</svg></div>';
+        } else {
+            $waveTile = "<svg xmlns='http://www.w3.org/2000/svg' width='36' height='14' viewBox='0 0 36 14'><path d='M0 7 Q9 1 18 7 T36 7' fill='none' stroke='%s' stroke-width='2' stroke-linecap='round'/></svg>";
+            $waveFront = 'data:image/svg+xml,' . rawurlencode(sprintf($waveTile, $waveColor));
+            $boatSvg = '<svg class="rg-seadiv__boat" viewBox="0 0 24 24" fill="' . $waveColor . '" aria-hidden="true"><path d="M11.4 3h1.2v12.5h-1.2z"/><path d="M13 4c2.9 2 4.7 5.1 5.3 9.6H13z"/><path d="M11 6.4 6.6 13.6H11z"/><path d="M3.4 15.6h17.2l-1.7 3.4a2 2 0 0 1-1.8 1.1H6.9a2 2 0 0 1-1.8-1.1z"/></svg>';
+            $out .= '<style>'
+                . '.rg-seadiv{position:relative;width:220px;max-width:70%;height:40px;margin:0 auto 1.5rem}'
+                . '.rg-seadiv__w{position:absolute;left:0;right:0;bottom:0;height:14px;overflow:hidden}'
+                . '.rg-seadiv__w i{position:absolute;inset:0;background-repeat:repeat-x;background-position-y:center;background-size:36px 14px;opacity:.9;background-image:url("' . $waveFront . '");animation:rgSea 5s linear infinite}'
+                . '.rg-seadiv__boat{position:absolute;left:50%;bottom:2px;width:26px;height:26px;margin-left:-13px;transform-origin:50% 90%;animation:rgBoat 3.6s ease-in-out infinite}'
+                . '@keyframes rgSea{from{background-position-x:0}to{background-position-x:36px}}'
+                . '@keyframes rgBoat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-3px) rotate(6deg)}}'
+                . '@media(prefers-reduced-motion:reduce){.rg-seadiv__w i,.rg-seadiv__boat{animation:none}}'
+                . '</style>';
+            $divider = '<div class="rg-seadiv" aria-hidden="true"><div class="rg-seadiv__w"><i></i></div>' . $boatSvg . '</div>';
+        }
+
         // Sticky pill nav (Jump to ...)
         if ($stickyNav) {
-            $out .= '<nav class="rg-dest-clusters__nav sticky top-16 z-10 bg-white/90 backdrop-blur border-y border-slate-200 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 mb-8">';
+            $out .= '<nav class="rg-dest-clusters__nav sticky top-32 z-10 bg-white/90 backdrop-blur border-y border-slate-200 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 mb-8">';
             $out .= '<div class="flex flex-wrap items-center gap-2 text-sm">';
             $out .= '<span class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mr-1">' . $jumpLabel . '</span>';
             foreach ($clusterArr as $g) {
@@ -3883,10 +4098,11 @@ class BlockRenderer
 
         // Section heading
         if ($heading !== '') {
-            $out .= '<h2 class="text-xl font-bold text-slate-900 mb-4">' . $heading . '</h2>';
+            $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">' . $heading . '</h2>';
         }
 
         // Cluster sections
+        $ri = 0;
         foreach ($clusterArr as $g) {
             $arr = $this->toArrayShapeSimple($g);
             $name = $this->e((string) ($arr['name'] ?? ''));
@@ -3895,28 +4111,34 @@ class BlockRenderer
             $count = (int) ($arr['count'] ?? 0);
             $keywords = $arr['keywords'] ?? [];
 
-            $out .= '<section id="cluster-' . $clusterSlug . '" class="mb-12 scroll-mt-32">';
-            $out .= '<div class="flex items-end justify-between mb-3 flex-wrap gap-2"><div>';
-            if ($name !== '') $out .= '<h3 class="text-2xl md:text-3xl font-bold text-slate-900">' . $name . '</h3>';
+            $out .= '<section id="cluster-' . $clusterSlug . '" class="mb-12 scroll-mt-48">';
+            if ($ri++ > 0) $out .= $divider;
+            $out .= '<div class="flex items-center gap-3 mb-5">';
+            if ($name !== '') $out .= '<h3 class="text-xl md:text-2xl font-bold text-slate-900 flex-1 min-w-0">' . $name . '</h3>';
             if ($count > 0) {
                 $countLabel = $source === 'groups' ? 'restaurant guide' : 'destination';
-                $out .= '<p class="text-sm text-slate-500 mt-1">' . number_format($count) . ' ' . $countLabel . ($count === 1 ? '' : 's') . '</p>';
+                $out .= '<span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 whitespace-nowrap">' . number_format($count) . ' ' . $countLabel . ($count === 1 ? '' : 's') . '</span>';
             }
-            $out .= '</div></div>';
+            $out .= '</div>';
             $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">';
             foreach ($keywords as $k) {
                 $kArr = $this->toArrayShapeSimple($k);
-                $phrase = $this->e((string) ($kArr['phrase'] ?? ''));
+                $rawPhrase = (string) ($kArr['phrase'] ?? '');
+                $phrase = $this->e($rawPhrase);
                 $slug = (string) ($kArr['slug'] ?? '');
                 $volume = (int) ($kArr['search_volume_monthly'] ?? 0);
                 if ($phrase === '' || $slug === '') continue;
                 $out .= '<a href="' . $this->e(url($slug)) . '" '
-                    . 'class="group block p-4 rounded-lg border border-slate-200 ' . $cardHoverMap . '">'
-                    . '<h4 class="font-semibold text-slate-900 ' . $titleHoverMap . ' capitalize">' . $phrase . '</h4>';
+                    . 'class="group flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-white transition hover:-translate-y-0.5 ' . $cardHoverMap . '">'
+                    . '<span class="flex h-10 w-10 flex-none items-center justify-center rounded-lg ' . $iconWrapMap . '">' . ($iconSet === 'food' ? $this->foodSpotIcon($rawPhrase) : $this->destSpotIcon($rawPhrase)) . '</span>'
+                    . '<span class="min-w-0 flex-1">'
+                    . '<span class="block font-semibold text-slate-900 ' . $titleHoverMap . ' capitalize truncate">' . $phrase . '</span>';
                 if ($showVolume && $volume > 0) {
-                    $out .= '<p class="text-xs text-slate-500 mt-1">' . number_format($volume) . ' people search this monthly</p>';
+                    $out .= '<span class="block text-xs text-slate-500 mt-0.5">' . number_format($volume) . ' people checks on this every month</span>';
                 }
-                $out .= '</a>';
+                $out .= '</span>'
+                    . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 flex-none text-slate-300 transition ' . $arrowHoverMap . ' group-hover:translate-x-0.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
+                    . '</a>';
             }
             $out .= '</div></section>';
         }
@@ -3984,15 +4206,30 @@ class BlockRenderer
         ][$bgGradient];
         $accentBg = ['brand' => 'bg-blue-600 hover:bg-blue-700', 'amber' => 'bg-amber-600 hover:bg-amber-700', 'emerald' => 'bg-emerald-600 hover:bg-emerald-700', 'rose' => 'bg-rose-600 hover:bg-rose-700', 'violet' => 'bg-violet-600 hover:bg-violet-700', 'teal' => 'bg-teal-600 hover:bg-teal-700'][$accent];
 
-        $titleHtml = $title !== '' ? str_replace('|', '<br class="hidden md:block">', $this->e($title)) : '';
+        // *word* -> Tahu brush accent (brand red), sized a little larger than
+        // the sans title so the script flourish reads clearly. | -> line break.
+        $titleHtml = '';
+        if ($title !== '') {
+            $titleHtml = preg_replace('/\*([^*]+)\*/', '<span class="font-brand" style="color:#c0392b;font-weight:400;font-size:1.3em;line-height:0.9;display:inline-block;vertical-align:baseline">$1</span>', $this->e($title));
+            $titleHtml = str_replace('|', '<br class="hidden md:block">', $titleHtml);
+        }
         $pCta = $p['primary_cta'] ?? [];
         if (is_string($pCta)) $pCta = json_decode($pCta, true) ?: [];
         $sCta = $p['secondary_cta'] ?? [];
         if (is_string($sCta)) $sCta = json_decode($sCta, true) ?: [];
 
-        $out = '<section class="rg-home-hero ' . $bgClass . '" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        // Optional faded background photo. A strong white scrim is layered
+        // over it so the dark hero text stays readable; the gradient class
+        // is dropped since the image + scrim become the background.
+        $bgImage = trim((string) ($p['background_image'] ?? ''));
+        $bgImageUrl = $bgImage !== '' ? ((str_starts_with($bgImage, 'http') || str_starts_with($bgImage, '/')) ? $bgImage : '/storage/' . ltrim($bgImage, '/')) : '';
+        $secStyle = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw';
+        if ($bgImageUrl !== '') {
+            $secStyle .= ';background-image:linear-gradient(rgba(255,255,255,.82),rgba(255,255,255,.9)),url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
+        }
+        $out = '<section class="rg-home-hero ' . ($bgImageUrl !== '' ? '' : $bgClass) . '" style="' . $secStyle . '">';
         $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
-        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-5">' . $titleHtml . '</h1>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-5 leading-[1.12]">' . $titleHtml . '</h1>';
         if ($tagline !== '') $out .= '<p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
         if (!empty($pCta['label']) || !empty($sCta['label'])) {
             $out .= '<div class="flex flex-wrap items-center justify-center gap-3">';
@@ -4028,6 +4265,43 @@ class BlockRenderer
      * Payload: heading, subhead, view_all { label, url },
      *          source, columns (2|3|4), accent
      */
+    /**
+     * Builds one circular thumbnail whose stacked <img>s are crossfaded at
+     * random by rgCircleAssets(). Falls back to the first letter of $name.
+     */
+    private function rgCircleHtml($images, string $name): string
+    {
+        if (is_string($images)) $images = json_decode($images, true) ?: [];
+        $html = '<span class="rg-rgcircle" aria-hidden="true">';
+        $has = false;
+        if (is_array($images)) {
+            foreach ($images as $iu) {
+                $iu = (string) $iu;
+                if ($iu === '') continue;
+                $html .= '<img src="' . $this->e($iu) . '" alt="" loading="lazy"' . ($has ? '' : ' class="is-on"') . '>';
+                $has = true;
+            }
+        }
+        if (!$has) {
+            $init = mb_strtoupper(mb_substr($name, 0, 1));
+            $html .= '<span class="rg-rgcircle-fallback">' . $this->e($init !== '' ? $init : '?') . '</span>';
+        }
+
+        return $html . '</span>';
+    }
+
+    /**
+     * Shared CSS + JS for the crossfading circle thumbnails. Each circle runs
+     * on its OWN random timeline (random start image, random fade duration,
+     * random staggered first fade + intervals) so no two are ever in sync. The
+     * per-circle mount guard keeps it safe to emit from more than one block.
+     */
+    private function rgCircleAssets(): string
+    {
+        return '<style>.rg-rgcircle{position:relative;display:block;width:4.5rem;height:4.5rem;border-radius:9999px;overflow:hidden;flex:0 0 auto;background:linear-gradient(135deg,#e2e8f0,#cbd5e1);box-shadow:0 0 0 1px rgba(15,23,42,.06)}.rg-rgcircle img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}.rg-rgcircle img.is-on{opacity:1}.rg-rgcircle-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-weight:800;font-size:1.5rem}@media(prefers-reduced-motion:reduce){.rg-rgcircle img{transition:none!important}}</style>'
+            . '<script>(function(){if(window.__rgcBooted)return;window.__rgcBooted=1;var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;function rf(a,b){return a+Math.random()*(b-a);}function ri(a,b){return Math.floor(rf(a,b+1));}function start(c){if(c.dataset.rgcStarted)return;c.dataset.rgcStarted=1;var imgs=c.querySelectorAll("img");if(!imgs.length)return;var cur=ri(0,imgs.length-1);for(var i=0;i<imgs.length;i++){var im=imgs[i];im.removeAttribute("loading");im.classList.remove("is-on");var sc=im.getAttribute("src");if(sc){var pre=new Image();pre.src=sc;}im.style.opacity=(i===cur)?"1":"0";}if(imgs.length<2||reduce)return;var dur=rf(1.2,2.4).toFixed(2);void c.offsetWidth;for(var j=0;j<imgs.length;j++)imgs[j].style.transition="opacity "+dur+"s ease-in-out";function tick(){var n=cur;while(n===cur)n=ri(0,imgs.length-1);imgs[cur].style.opacity="0";imgs[n].style.opacity="1";cur=n;setTimeout(tick,rf(6000,13000));}setTimeout(tick,rf(2500,7000));}function boot(){var els=document.querySelectorAll(".rg-rgcircle");if("IntersectionObserver" in window){var io=new IntersectionObserver(function(ents){for(var k=0;k<ents.length;k++){if(ents[k].isIntersecting){start(ents[k].target);io.unobserve(ents[k].target);}}},{rootMargin:"300px 0px"});for(var i=0;i<els.length;i++)io.observe(els[i]);}else{for(var m=0;m<els.length;m++)start(els[m]);}}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",boot);}else{boot();}})();</script>';
+    }
+
     private function homeKeywordGrid(array $p, array $context): string
     {
         $source = (string) ($p['source'] ?? 'featuredKeywords');
@@ -4064,13 +4338,119 @@ class BlockRenderer
             $phrase = $this->e((string) ($kArr['phrase'] ?? ''));
             $slug = (string) ($kArr['slug'] ?? '');
             if ($phrase === '' || $slug === '') continue;
-            $out .= '<a href="' . $this->e(url($slug)) . '" class="block group rounded-xl border border-slate-200 ' . $borderHover . ' hover:shadow-md p-5 transition">'
-                . '<h3 class="font-semibold text-slate-900 mb-2 capitalize ' . $accentText . '">' . $phrase . '</h3>'
-                . '<p class="text-sm text-slate-500">Browse top picks &rarr;</p>'
+            $circle = $this->rgCircleHtml($kArr['images'] ?? [], (string) ($kArr['phrase'] ?? ''));
+            $out .= '<a href="' . $this->e(url($slug)) . '" class="group flex items-start gap-4 rounded-xl border border-slate-200 ' . $borderHover . ' hover:shadow-md p-5 transition">'
+                . $circle
+                . '<span class="min-w-0 flex-1 block">'
+                . '<span class="block font-semibold text-slate-900 mb-2 capitalize ' . $accentText . '">' . $phrase . '</span>'
+                . '<span class="block text-sm text-slate-500">Browse top picks &rarr;</span>'
+                . '</span>'
                 . '</a>';
         }
-        // Closes: grid </div>, max-w-6xl wrapper </div>, </section>.
-        $out .= '</div></div></section>';
+        $out .= '</div>';
+        $out .= $this->rgCircleAssets();
+        // Closes: max-w-6xl wrapper </div>, </section>.
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * home_keyword_hashtags — a hashtag cloud built live from the
+     * published keyword pages. Each phrase becomes a CamelCase hashtag
+     * that links to its page, with rotating accent colours.
+     *
+     * Payload: eyebrow, heading, subhead, limit (default 40)
+     */
+    private function homeKeywordHashtags(array $p, array $context): string
+    {
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $limit = (int) ($p['limit'] ?? 40);
+        if ($limit < 1) $limit = 40;
+        if ($limit > 200) $limit = 200;
+        // Optional category filter (e.g. 'resort' or 'food') so a page's tag
+        // cloud can be scoped to its own vertical. Empty = all categories.
+        $category = trim((string) ($p['category'] ?? ''));
+
+        // Optional caller-supplied tags via a context key (e.g. hub item
+        // names). Shape: [{tag, url}]. Lets pages without keyword pages (the
+        // activities/buys/cultures hubs) still show a #Tags cloud.
+        $source = trim((string) ($p['source'] ?? ''));
+        $tags = [];
+        if ($source !== '' && !empty($context[$source]) && is_array($context[$source])) {
+            foreach ($context[$source] as $t) {
+                $tg = (string) ($t['tag'] ?? '');
+                $u = (string) ($t['url'] ?? (isset($t['slug']) ? url('/' . ltrim((string) $t['slug'], '/')) : ''));
+                if ($tg === '' || $u === '') continue;
+                $tags[] = ['tag' => $tg, 'url' => $u];
+            }
+        } else {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('rg_keywords')) return '';
+            try {
+                $keywords = \App\Models\RgKeyword::query()
+                    ->whereHas('seoPages', fn($q) => $q->where('is_published', true))
+                    ->when($category !== '', fn($q) => $q->where('category', $category))
+                    ->inRandomOrder()
+                    ->limit($limit)
+                    ->get(['phrase', 'slug', 'search_volume_monthly']);
+            } catch (\Throwable $e) {
+                return '';
+            }
+            if ($keywords->isEmpty()) return '';
+
+            // Build a CamelCase hashtag from each phrase, dropping filler
+            // words, capping length, and de-duplicating collisions.
+            $stop = ['in', 'on', 'at', 'of', 'the', 'a', 'an', 'to', 'for', 'and', 'or', 'near', 'with', 'your', 'best', 'top'];
+            $seen = [];
+            foreach ($keywords as $kw) {
+                $slug = (string) $kw->slug;
+                if ($slug === '') continue;
+                $words = preg_split('/[^a-z0-9]+/i', mb_strtolower((string) $kw->phrase), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+                $sig = array_values(array_filter($words, fn($w) => !in_array($w, $stop, true)));
+                if (empty($sig)) $sig = $words;
+                $sig = array_slice($sig, 0, 4);
+                $tag = '';
+                foreach ($sig as $w) $tag .= ucfirst($w);
+                if ($tag === '') continue;
+                $key = mb_strtolower($tag);
+                if (isset($seen[$key])) continue;
+                $seen[$key] = true;
+                $tags[] = ['tag' => $tag, 'url' => url('/' . ltrim($slug, '/'))];
+            }
+        }
+        if (empty($tags)) return '';
+
+        // Flush variant (used on /destinations): a light top-rule acts as
+        // the divider and there is no inner max-width/padding so the block
+        // spans the page container edge to edge. A leading "#" in the
+        // heading is coloured brand blue (e.g. "#Tags"); the tag links
+        // below stay plain grey.
+        $flush = !empty($p['flush']);
+        // Colour a leading "#" in the heading brand blue (e.g. "#Tags") on
+        // any page, flush or not.
+        if ($heading !== '') {
+            $heading = preg_replace('/^#/', '<span class="text-blue-600">#</span>', $heading, 1);
+        }
+
+        $out = $flush
+            ? '<section class="mt-10 mb-8">'
+            : '<section class="py-14 md:py-16"><div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        if ($eyebrow !== '' || $heading !== '' || $subhead !== '') {
+            $out .= '<div class="mb-6 md:mb-8">';
+            if ($eyebrow !== '') $out .= '<p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-3">' . $eyebrow . '</p>';
+            if ($heading !== '') $out .= '<h2 class="text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
+            if ($subhead !== '') $out .= '<p class="text-slate-600">' . $subhead . '</p>';
+            $out .= '</div>';
+        }
+        // Plain text links (no pills), spanning the full content width and
+        // left-aligned with tight spacing so they read as a compact tag cloud.
+        $out .= '<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">';
+        foreach ($tags as $t) {
+            $out .= '<a href="' . $this->e($t['url']) . '" class="text-slate-500 hover:text-slate-900 no-underline transition-colors">#' . $this->e($t['tag']) . '</a>';
+        }
+        $out .= '</div>';
+        $out .= $flush ? '</section>' : '</div></section>';
         return $out;
     }
 
@@ -4114,16 +4494,42 @@ class BlockRenderer
             $count = (int) ($rArr['count'] ?? 0);
             $slug = (string) ($rArr['slug'] ?? '');
             if ($name === '' || $slug === '') continue;
-            $url = url('/destinations/' . $slug);
-            $out .= '<a href="' . $this->e($url) . '" class="block group rounded-xl bg-white border border-slate-200 ' . $borderHover . ' hover:shadow-md p-5 transition">'
+            $url = route('destinations.cluster', $slug);
+
+            // Circle thumbnail: the region's own photos, crossfaded at random
+            // (each card runs on its own independent, staggered timer via JS).
+            $images = $rArr['images'] ?? [];
+            if (is_string($images)) $images = json_decode($images, true) ?: [];
+            $circle = '<span class="rg-rgcircle" aria-hidden="true">';
+            $hasImg = false;
+            if (is_array($images)) {
+                foreach ($images as $iu) {
+                    $iu = (string) $iu;
+                    if ($iu === '') continue;
+                    $circle .= '<img src="' . $this->e($iu) . '" alt="" loading="lazy"' . ($hasImg ? '' : ' class="is-on"') . '>';
+                    $hasImg = true;
+                }
+            }
+            if (!$hasImg) {
+                $init = mb_strtoupper(mb_substr((string) ($rArr['name'] ?? '?'), 0, 1));
+                $circle .= '<span class="rg-rgcircle-fallback">' . $this->e($init) . '</span>';
+            }
+            $circle .= '</span>';
+
+            $out .= '<a href="' . $this->e($url) . '" class="group flex items-start gap-4 rounded-xl bg-white border border-slate-200 ' . $borderHover . ' hover:shadow-md p-5 transition">'
+                . $circle
+                . '<div class="min-w-0 flex-1">'
                 . '<div class="flex items-start justify-between mb-2 gap-2">'
                 . '<h3 class="font-bold text-lg text-slate-900 ' . $accentText . '">' . $name . '</h3>';
             if ($count > 0) $out .= '<span class="text-xs px-2 py-1 rounded-full ' . $accentPill . ' font-semibold whitespace-nowrap">' . $count . '</span>';
             $out .= '</div>';
             if ($tagline !== '') $out .= '<p class="text-sm text-slate-500 line-clamp-2">' . $tagline . '</p>';
+            $out .= '</div>';
             $out .= '</a>';
         }
-        $out .= '</div></div></section>';
+        $out .= '</div>';
+        $out .= $this->rgCircleAssets();
+        $out .= '</div></section>';
         return $out;
     }
 
@@ -4194,7 +4600,9 @@ class BlockRenderer
         $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
         if ($heading !== '') $out .= '<h2 class="text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-slate-600 mb-8">' . $subhead . '</p>';
-        $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">';
+        // Framed article cards, matching the /blog index card treatment
+        // (border + shadow, hover lift, cover with fallback, "Read article").
+        $out .= '<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">';
         foreach ($itemArr as $post) {
             $pArr = $this->toArrayShapeSimple($post);
             $title = $this->e((string) ($pArr['title'] ?? ''));
@@ -4203,16 +4611,25 @@ class BlockRenderer
             $coverPath = (string) ($pArr['cover_path'] ?? '');
             if ($title === '' || $slug === '') continue;
             $postUrl = url('/blog/' . $slug);
-            $out .= '<a href="' . $this->e($postUrl) . '" class="block group">';
-            $out .= '<div class="aspect-[16/10] rounded-lg bg-slate-200 mb-3 overflow-hidden">';
-            if ($coverPath !== '') {
-                $img = str_starts_with($coverPath, '/') || str_starts_with($coverPath, 'http') ? $coverPath : '/storage/' . ltrim($coverPath, '/');
-                $out .= '<img src="' . $this->e($img) . '" alt="' . $title . '" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">';
+            $img = $coverPath !== ''
+                ? (str_starts_with($coverPath, '/') || str_starts_with($coverPath, 'http') ? $coverPath : '/storage/' . ltrim($coverPath, '/'))
+                : '';
+            $out .= '<article class="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl">';
+            $out .= '<a href="' . $this->e($postUrl) . '" class="flex h-full flex-col no-underline">';
+            $out .= '<div class="aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">';
+            if ($img !== '') {
+                $out .= '<img src="' . $this->e($img) . '" alt="' . $title . '" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">';
+            } else {
+                $out .= '<div class="flex h-full w-full items-center justify-center text-slate-300"><svg class="h-12 w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></div>';
             }
             $out .= '</div>';
-            $out .= '<h3 class="font-semibold text-slate-900 mb-1 ' . $accentText . '">' . $title . '</h3>';
-            if ($excerpt !== '') $out .= '<p class="text-sm text-slate-500 line-clamp-2">' . $excerpt . '</p>';
+            $out .= '<div class="flex flex-1 flex-col p-5">';
+            $out .= '<h3 class="mb-2 line-clamp-2 text-lg font-bold leading-snug text-slate-900 transition-colors group-hover:text-brand-600">' . $title . '</h3>';
+            if ($excerpt !== '') $out .= '<p class="line-clamp-3 flex-1 text-sm leading-relaxed text-slate-600">' . $excerpt . '</p>';
+            $out .= '<span class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600">Read article <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>';
+            $out .= '</div>';
             $out .= '</a>';
+            $out .= '</article>';
         }
         $out .= '</div></div></section>';
         return $out;
@@ -4303,7 +4720,7 @@ class BlockRenderer
             'teal-emerald' => 'bg-gradient-to-br from-teal-50 via-white to-emerald-50',
         ][$bgGradient] ?? '';
         $accentText = ['brand' => 'text-blue-700', 'amber' => 'text-amber-700', 'emerald' => 'text-emerald-700', 'rose' => 'text-rose-700', 'violet' => 'text-violet-700', 'teal' => 'text-teal-700'][$accent];
-        $accentHex = ['brand' => '#2563eb', 'amber' => '#d97706', 'emerald' => '#059669', 'rose' => '#e11d48', 'violet' => '#7c3aed', 'teal' => '#0d9488'][$accent];
+        $accentHex = ['brand' => '#2980b9', 'amber' => '#d97706', 'emerald' => '#059669', 'rose' => '#c0392b', 'violet' => '#7c3aed', 'teal' => '#0d9488'][$accent];
         // The brush underline color is independent of the accent
         // (which still drives the Search button bg, hover state,
         // etc). Defaults to accent hex but can be overridden via
@@ -4320,6 +4737,7 @@ class BlockRenderer
         $breakBefore = (bool) ($p['title_break_before_accent'] ?? false);
         $curveWord = trim((string) ($p['title_curve_word'] ?? ''));
         $titleHtml = '';
+        $slotScript = '';
         if ($title !== '') {
             if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
                 $preText = $this->e(trim($m[1]));
@@ -4348,9 +4766,71 @@ class BlockRenderer
                     $preText = preg_replace('/\b' . $escCurve . '\b/u', $curveSpan, $preText, 1);
                 }
                 $separator = $breakBefore ? '<span class="rg-uss-title-break" aria-hidden="true"></span>' : ($m[1] !== '' ? ' ' : '');
+
+                // Accent phrase. When it reads "Word by Word" (e.g.
+                // "Island by Island") and the slot effect isn't disabled
+                // via payload, render it as a casino slot-machine: the
+                // word spins fast through a travel-themed list then snaps
+                // to a stop, on repeat. The plain phrase stays in the
+                // markup (sr-only) for crawlers, screen readers, no-JS.
+                $accentInner = trim($m[2]);
+                $accentSpan = '<span class="' . $accentText . '">' . $this->e($accentInner) . '</span>';
+                $slotEnabled = !isset($p['title_slot']) || (bool) $p['title_slot'];
+                if ($slotEnabled && preg_match('/^([\p{L}]+)\s+by\s+\1$/u', $accentInner, $sm)) {
+                    $canonical = $sm[1];
+                    $rawWords = $p['title_slot_words'] ?? ['Island', 'Beach', 'Sunset', 'Taste', 'Trail', 'Feast', 'Lagoon', 'Story', 'Harbor'];
+                    if (is_string($rawWords)) $rawWords = preg_split('/\s*,\s*/', trim($rawWords));
+                    $words = [];
+                    foreach (array_merge([$canonical], (array) $rawWords) as $w) {
+                        $w = trim((string) $w);
+                        if ($w !== '' && preg_match('/^[\p{L}]+$/u', $w) && !in_array($w, $words, true)) $words[] = $w;
+                    }
+                    if (count($words) >= 2) {
+                        $slotId = 'rg-uss-slot-' . substr(md5($title), 0, 6);
+                        // Vertical reel: the whole "Word by Word" line (incl.
+                        // "by") scrolls up like a physical slot machine and
+                        // decelerates onto a stop. The viewport is one line
+                        // tall with overflow hidden; the reel is a column of
+                        // stacked lines that translateY through them.
+                        $reelLine = $this->e($canonical) . ' by ' . $this->e($canonical);
+                        $accentSpan = '<span class="' . $accentText . ' rg-uss-slot">'
+                            . '<span class="sr-only">' . $this->e($accentInner) . '</span>'
+                            . '<span class="rg-uss-reel-vp" aria-hidden="true">'
+                            . '<span class="rg-uss-reel" id="' . $slotId . '" data-slot-words="' . $this->e(implode(',', $words)) . '">'
+                            . '<span class="rg-uss-reel-item">' . $reelLine . '</span>'
+                            . '</span></span></span>';
+                        $slotScript = '<style>'
+                            . '.rg-uss-slot{display:inline-block}'
+                            . '.rg-uss-reel-vp{display:inline-block;overflow:hidden;vertical-align:top;max-width:100%}'
+                            . '.rg-uss-reel{display:block;will-change:transform}'
+                            . '.rg-uss-reel-item{display:block;text-align:center;white-space:nowrap}'
+                            . '@keyframes rg-uss-reel-blur{0%{filter:blur(0)}10%{filter:blur(1px)}45%{filter:blur(.3px)}70%{filter:blur(0)}100%{filter:blur(0)}}'
+                            . '.rg-uss-reel.spinning{animation:rg-uss-reel-blur 4.9s linear}'
+                            . '@media(prefers-reduced-motion:reduce){.rg-uss-reel{transform:none!important;animation:none!important}}'
+                            . '</style>'
+                            . '<script>(function(){'
+                            . 'var reel=document.getElementById(' . json_encode($slotId) . ');if(!reel)return;'
+                            . 'var vp=reel.parentNode;'
+                            . 'if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;'
+                            . 'var words=(reel.getAttribute("data-slot-words")||"").split(",").filter(Boolean);if(words.length<2)return;'
+                            . 'var BY=" by ";'
+                            . 'function item(w){return "<span class=\'rg-uss-reel-item\'>"+w+BY+w+"</span>";}'
+                            . 'var H=0,busy=false,current=words[0],idx=0,rt;'
+                            . 'function measure(){reel.style.transition="none";reel.style.lineHeight="";vp.style.width="auto";vp.style.height="auto";reel.style.transform="translateY(0)";reel.innerHTML=words.map(item).join("");var nat=reel.children[0].getBoundingClientRect().height;H=Math.ceil(nat)+8;vp.style.width=(Math.ceil(vp.offsetWidth)+6)+"px";reel.style.lineHeight=H+"px";vp.style.height=H+"px";reel.innerHTML=item(current);reel.style.transform="translateY(0)";void reel.offsetHeight;}'
+                            . 'measure();'
+                            . 'if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){if(!busy)measure();});}'
+                            . 'window.addEventListener("load",function(){if(!busy)measure();});'
+                            . 'window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){if(!busy)measure();},180);});'
+                            . 'function rnd(){return words[Math.floor(Math.random()*words.length)];}'
+                            . 'function spin(){busy=true;idx=(idx+1)%words.length;var target=words[idx];var seq=[current];var n=38+Math.floor(Math.random()*10);for(var i=0;i<n;i++){seq.push(rnd());}seq.push(target);seq.push(target);reel.style.transition="none";reel.innerHTML=seq.map(item).join("");reel.style.transform="translateY(0)";void reel.offsetHeight;reel.classList.add("spinning");var dist=reel.lastElementChild.getBoundingClientRect().top-reel.firstElementChild.getBoundingClientRect().top;reel.style.transition="transform 4.9s cubic-bezier(.16,1,.3,1)";reel.style.transform="translateY(-"+dist+"px)";var landed=false;var done=function(e){if(e&&e.propertyName&&e.propertyName!=="transform")return;if(landed)return;landed=true;reel.removeEventListener("transitionend",done);reel.classList.remove("spinning");current=target;reel.style.transition="none";reel.innerHTML=item(current);reel.style.transform="translateY(0)";void reel.offsetHeight;busy=false;setTimeout(spin,2400);};reel.addEventListener("transitionend",done);setTimeout(done,5200);}'
+                            . 'setTimeout(spin,2000);'
+                            . '})();</script>';
+                    }
+                }
+
                 $titleHtml = $preText
                     . $separator
-                    . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
+                    . $accentSpan
                     . ($m[3] !== '' ? ' ' : '')
                     . $this->e(trim($m[3]));
             } else {
@@ -4423,7 +4903,15 @@ class BlockRenderer
         $statsValueColor = $hasBgImage ? 'text-white' : 'text-slate-900';
         $statsLabelColor = $hasBgImage ? 'text-white/80' : 'text-slate-600';
 
-        $out = '<section class="rg-uss ' . $bgClass . '" style="' . $sectionStyle . '">';
+        // Surface the editor's background alt/title as SEO/a11y hints on
+        // the hero (it's a CSS background, so there's no native <img> alt).
+        $bgA11y = '';
+        if ($hasBgImage) {
+            $bgAlt = trim((string) ($p['background_alt'] ?? ''));
+            if ($bgAlt !== '') $bgA11y .= ' role="img" aria-label="' . $this->e($bgAlt) . '"';
+            $bgA11y .= $this->titleAttr($p['background_title'] ?? '');
+        }
+        $out = '<section class="rg-uss ' . $bgClass . '" style="' . $sectionStyle . '"' . $bgA11y . '>';
         // Photo-mode dark overlay — enough to keep large titles readable
         // on any photo without muddying the image too much. Title block
         // gets a slight extra text-shadow for crispness.
@@ -4458,6 +4946,7 @@ class BlockRenderer
         $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
         if ($eyebrow !== '') $out .= '<div class="text-[13px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
         if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.5] md:leading-[1.4]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
+        if ($slotScript !== '') $out .= $slotScript;
         if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . $taglineColor . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
 
         // Search shell
@@ -4476,7 +4965,7 @@ class BlockRenderer
         $out .= '<svg class="rg-uss__pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
         $out .= '<input id="' . $boxId . '" type="search" class="rg-uss__input" placeholder="' . $placeholder . '" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' . $panelId . '">';
         $out .= '<button type="button" class="rg-uss__clear" aria-label="Clear" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>';
-        $out .= '<button type="button" class="rg-uss__submit" aria-label="Search">Search</button>';
+        $out .= '<button type="button" class="rg-uss__submit" aria-label="Search"><svg class="rg-uss__submit-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search</span></button>';
         // Alt CTA inside the shell, after Search. "or" sits as
         // plain text between Search and the red pill so the pill
         // reads as a clean "Create Your Adventure" CTA on its own.
@@ -4539,7 +5028,8 @@ class BlockRenderer
             . '.rg-uss__clear[hidden]{display:none!important}'
             . '.rg-uss__clear svg{width:.85rem;height:.85rem}'
             . '.rg-uss__clear:hover{background:#e2e8f0;color:#0f172a}'
-            . '.rg-uss__submit{flex:0 0 auto;background:var(--rg-acc);color:#fff;border:0;border-radius:999px;padding:.85rem 1.4rem;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s ease;letter-spacing:.01em}'
+            . '.rg-uss__submit{flex:0 0 auto;display:inline-flex;align-items:center;gap:.45rem;background:var(--rg-acc);color:#fff;border:0;border-radius:999px;padding:.85rem 1.4rem;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .18s ease;letter-spacing:.01em}'
+            . '.rg-uss__submit-ico{width:1.05em;height:1.05em;flex:0 0 auto}'
             . '@media(min-width:768px){.rg-uss__submit{padding:1rem 1.8rem;font-size:1rem}}'
             . '.rg-uss__submit:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(0,0,0,.25)}'
             . '.rg-uss__alt-or{flex:0 0 auto;margin:0 .4rem;font-size:.95rem;font-weight:600;color:#475569;white-space:nowrap}'
@@ -4547,7 +5037,7 @@ class BlockRenderer
             . '@media(max-width:639px){.rg-uss__alt-or{display:none}}'
             . '.rg-uss__alt{flex:0 0 auto;display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.4rem;font-size:.95rem;font-weight:700;color:#fff;background:#ef4444;border:0;cursor:pointer;border-radius:999px;transition:all .18s ease;white-space:nowrap;letter-spacing:.01em}'
             . '@media(min-width:768px){.rg-uss__alt{padding:1rem 1.6rem;font-size:1rem}}'
-            . '.rg-uss__alt:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 12px 24px -8px rgba(220,38,38,.5);background:#dc2626}'
+            . '.rg-uss__alt:hover{transform:translateY(-1px) scale(1.02);background:#dc2626}'
             . '.rg-uss__alt-arrow{width:1.15rem;height:1.15rem;flex-shrink:0;animation:rgUssArrowNudge 1.6s ease-in-out infinite}'
             . '@keyframes rgUssArrowNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}'
             . '@media(max-width:639px){.rg-uss__alt-text{display:none}.rg-uss__alt{padding:.85rem .85rem;margin-left:.15rem}}'
@@ -4652,11 +5142,15 @@ class BlockRenderer
                 $p['paragraphs'] = array_values(array_filter(preg_split('/\n\n+/', $t)));
             }
         }
-        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? 'Editorial')));
+        $ctaLabel = $this->e(trim((string) ($p['cta_label'] ?? '')));
+        $ctaUrl = trim((string) ($p['cta_url'] ?? ''));
         $paragraphs = $p['paragraphs'] ?? [];
         if (!is_array($paragraphs)) $paragraphs = [];
         $imgSrc = trim((string) ($p['image_src'] ?? ''));
         $imgAlt = $this->e((string) ($p['image_alt'] ?? ''));
+        $imgTitle = (string) ($p['image_title'] ?? '');
         $imgCaption = $this->e((string) ($p['image_caption'] ?? ''));
         $imgPosition = in_array($p['image_position'] ?? 'right', ['left', 'right', 'none'], true) ? $p['image_position'] : 'right';
         $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
@@ -4667,38 +5161,83 @@ class BlockRenderer
             $imgUrl = str_starts_with($imgSrc, 'http') || str_starts_with($imgSrc, '/') ? $imgSrc : '/storage/' . ltrim($imgSrc, '/');
         }
 
-        $prose = '<div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 [&_p]:m-0">';
+        $prose = '<div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 [&_p]:m-0 text-center">';
         foreach ($paragraphs as $para) {
             $para = trim((string) $para);
             if ($para === '') continue;
             $prose .= '<p>' . $this->e($para) . '</p>';
         }
+        if ($ctaLabel !== '') {
+            $href = $ctaUrl !== '' ? $ctaUrl : '#';
+            $prose .= '<div class="pt-2 md:pt-4"><a href="' . $this->e($href) . '" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 transition-colors no-underline">'
+                . $ctaLabel
+                . '<svg class="rg-cta-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a></div>';
+        }
         $prose .= '</div>';
 
-        $imgHtml = '';
-        if ($imgUrl !== '' && $imgPosition !== 'none') {
-            $imgHtml = '<figure class="m-0">'
-                . '<img src="' . $this->e($imgUrl) . '" alt="' . $imgAlt . '" loading="lazy" '
-                . 'class="w-full aspect-[4/5] lg:aspect-[3/4] object-cover rounded-2xl shadow-md">'
-                . ($imgCaption !== '' ? '<figcaption class="text-xs text-slate-400 mt-2">' . $imgCaption . '</figcaption>' : '')
-                . '</figure>';
+        // Image strip: prefer images[] (multi-column), else single image_src.
+        $images = $p['images'] ?? [];
+        if (is_string($images)) {
+            $it = trim($images);
+            $images = ($it !== '' && $it[0] === '[') ? (json_decode($it, true) ?: []) : array_filter(array_map('trim', preg_split('/\r?\n|,/', $it)));
+        }
+        if (!is_array($images)) $images = [];
+        $imgItems = [];
+        foreach ($images as $im) {
+            if (is_array($im)) { $s = (string) ($im['src'] ?? ''); $a = (string) ($im['alt'] ?? ''); $tt = (string) ($im['title'] ?? ''); } else { $s = (string) $im; $a = ''; $tt = ''; }
+            if ($s === '') continue;
+            $s = (str_starts_with($s, 'http') || str_starts_with($s, '/')) ? $s : '/storage/' . ltrim($s, '/');
+            $imgItems[] = ['src' => $s, 'alt' => $a !== '' ? $a : $imgAlt, 'title' => $tt !== '' ? $tt : $imgTitle];
+        }
+        if (empty($imgItems) && $imgUrl !== '') $imgItems[] = ['src' => $imgUrl, 'alt' => $imgAlt, 'title' => $imgTitle];
+
+        $imagesHtml = '';
+        if (count($imgItems) >= 3) {
+            // Static three-column staggered layout (the middle sits lower),
+            // but each slot gently crossfades between the images at random
+            // intervals. No sliding / carousel motion, just random fade.
+            $n = count($imgItems);
+            $cid = 'rg-tpf-' . substr(md5(json_encode($imgItems)), 0, 8);
+            $slots = '';
+            for ($s = 0; $s < 3; $s++) {
+                $offset = $s === 1 ? ' md:mt-[100px]' : '';
+                $layers = '';
+                foreach ($imgItems as $i => $im) {
+                    $on = $i === $s ? ' is-on' : '';
+                    $layers .= '<img src="' . $this->e($im['src']) . '" alt="' . $this->e($im['alt']) . '"' . $this->titleAttr($im['title'] ?? '') . ' loading="lazy" class="rg-tpf-img' . $on . '">';
+                }
+                $slots .= '<div class="rg-tpf-slot relative aspect-[3/4] rounded-2xl shadow-md overflow-hidden' . $offset . '" data-rg-tpf-slot>' . $layers . '</div>';
+            }
+            $imagesHtml = '<div id="' . $cid . '" class="grid grid-cols-3 gap-4 md:gap-6 mt-12 items-start" data-rg-tpf data-count="' . $n . '">' . $slots . '</div>';
+            $imagesHtml .= '<style>.rg-tpf-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.1s ease}.rg-tpf-img.is-on{opacity:1}</style>';
+            $imagesHtml .= '<script>(function(){if(window.__rgTpfInit)return;window.__rgTpfInit=1;if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;document.querySelectorAll("[data-rg-tpf]").forEach(function(c){var slots=[].slice.call(c.querySelectorAll("[data-rg-tpf-slot]"));var n=parseInt(c.getAttribute("data-count")||"0",10);if(!slots.length||n<2)return;var shown=slots.map(function(slot){var imgs=slot.querySelectorAll(".rg-tpf-img");for(var k=0;k<imgs.length;k++){if(imgs[k].classList.contains("is-on"))return k;}return 0;});function setSlot(si,idx){var imgs=slots[si].querySelectorAll(".rg-tpf-img");for(var k=0;k<imgs.length;k++){imgs[k].classList.toggle("is-on",k===idx);}shown[si]=idx;}function tick(){var s=Math.floor(Math.random()*slots.length);var others={};for(var j=0;j<slots.length;j++){if(j!==s)others[shown[j]]=1;}var cands=[];for(var im=0;im<n;im++){if(im!==shown[s]&&!others[im])cands.push(im);}if(cands.length){setSlot(s,cands[Math.floor(Math.random()*cands.length)]);}else{var t=s;if(slots.length>1){while(t===s)t=Math.floor(Math.random()*slots.length);}var a=shown[s],b=shown[t];setSlot(s,b);setSlot(t,a);}setTimeout(tick,1600+Math.random()*2400);}setTimeout(tick,800+Math.random()*1800);});})();</script>';
+        } elseif (!empty($imgItems)) {
+            $cols = max(1, min(count($imgItems), 3));
+            $mid = $cols >= 3 ? intdiv(count($imgItems), 2) : -1;
+            $imagesHtml = '<div class="grid grid-cols-' . $cols . ' gap-4 md:gap-6 mt-12 items-start">';
+            foreach ($imgItems as $idx => $im) {
+                $offset = ($idx === $mid) ? ' md:mt-[100px]' : '';
+                $imagesHtml .= '<img src="' . $this->e($im['src']) . '" alt="' . $this->e($im['alt']) . '"' . $this->titleAttr($im['title'] ?? '') . ' loading="lazy" class="w-full aspect-[3/4] object-cover rounded-2xl shadow-md' . $offset . '">';
+            }
+            $imagesHtml .= '</div>';
         }
 
-        $out = '<section class="py-16 md:py-20">';
+        // Bottom padding is overridable per block (default keeps py-16/20)
+        // so an instance can sit tighter against the section below it.
+        $padBottom = (string) ($p['pad_bottom'] ?? 'pb-16 md:pb-20');
+        // Optional faded background photo (white scrim layered over it so the
+        // text stays readable), matching the centered-hero treatment.
+        $bgImage = trim((string) ($p['background_image'] ?? ''));
+        $bgImageUrl = $bgImage !== '' ? ((str_starts_with($bgImage, 'http') || str_starts_with($bgImage, '/')) ? $bgImage : '/storage/' . ltrim($bgImage, '/')) : '';
+        $secStyle = $bgImageUrl !== '' ? ' style="background-image:linear-gradient(rgba(255,255,255,.82),rgba(255,255,255,.9)),url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center"' : '';
+        $out = '<section class="pt-16 md:pt-20 ' . $padBottom . '"' . $secStyle . '>';
         $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
-        $out .= '<div class="mb-3 flex items-center gap-3">';
-        $out .= '<span class="block h-[3px] w-12 ' . $accentBar . ' rounded-full"></span>';
-        $out .= '<span class="text-xs uppercase tracking-[0.2em] font-bold text-slate-500">Editorial</span>';
+        $out .= '<div class="text-center max-w-3xl mx-auto mb-10">';
+        $out .= '<span class="block text-xs uppercase tracking-[0.2em] font-bold text-slate-500 mb-3">' . $eyebrow . '</span>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">' . $heading . '</h2>';
         $out .= '</div>';
-        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight mb-8 max-w-3xl">' . $heading . '</h2>';
-
-        if ($imgHtml !== '' && $imgPosition === 'left') {
-            $out .= '<div class="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 lg:gap-12 items-start">' . $imgHtml . $prose . '</div>';
-        } elseif ($imgHtml !== '' && $imgPosition === 'right') {
-            $out .= '<div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12 items-start">' . $prose . $imgHtml . '</div>';
-        } else {
-            $out .= '<div class="max-w-3xl">' . $prose . '</div>';
-        }
+        $out .= $prose;
+        $out .= $imagesHtml;
         $out .= '</div></section>';
         return $out;
     }
@@ -4839,10 +5378,591 @@ class BlockRenderer
     }
 
     /**
-     * home_season_guide — 3 season cards with months + blurb + tip.
-     * Helps travelers plan when to come.
+     * home_press_logos — a quiet "As Seen On" press strip. Each logo
+     * renders as a grayscale image when an image path is given, or a
+     * serif text wordmark otherwise.
      *
-     * Payload: heading, subhead, seasons[] of { name, months, blurb, tip }
+     * Payload: eyebrow, logos[] of { name, image, url }
+     */
+    private function homePressLogos(array $p, array $context): string
+    {
+        if (isset($p['logos']) && is_string($p['logos'])) {
+            $t = trim($p['logos']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['logos'] = $d;
+            }
+        }
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? 'As Seen On')));
+        $logos = $p['logos'] ?? [];
+        if (!is_array($logos) || empty($logos)) return '';
+
+        $out = '<section class="rg-press py-10 md:py-12 bg-white border-y border-slate-100">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">';
+        if ($eyebrow !== '') $out .= '<p class="rg-press__eyebrow">' . $eyebrow . '</p>';
+        $out .= '<div class="rg-press__row">';
+        foreach ($logos as $logo) {
+            $lArr = $this->toArrayShapeSimple($logo);
+            $name = $this->e((string) ($lArr['name'] ?? ''));
+            $image = (string) ($lArr['image'] ?? '');
+            $url = trim((string) ($lArr['url'] ?? ''));
+            // Alt prefers an explicit image_alt, else the brand name.
+            $logoAlt = trim((string) ($lArr['image_alt'] ?? '')) !== '' ? $this->e((string) $lArr['image_alt']) : $name;
+            if ($name === '' && $image === '') continue;
+            if ($image !== '') {
+                $src = (str_starts_with($image, 'http') || str_starts_with($image, '/')) ? $image : '/storage/' . ltrim($image, '/');
+                $inner = '<img src="' . $this->e($src) . '" alt="' . $logoAlt . '"' . $this->titleAttr($lArr['image_title'] ?? '') . ' class="rg-press__img" loading="lazy">';
+            } else {
+                $inner = '<span class="rg-press__name">' . $name . '</span>';
+            }
+            if ($url !== '') {
+                $out .= '<a class="rg-press__item" href="' . $this->e($url) . '" target="_blank" rel="nofollow noopener">' . $inner . '</a>';
+            } else {
+                $out .= '<span class="rg-press__item">' . $inner . '</span>';
+            }
+        }
+        $out .= '</div></div>';
+
+        $out .= '<style>'
+            . '.rg-press__eyebrow{font-size:.7rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#94a3b8;margin:0 0 1.4rem}'
+            . '.rg-press__row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1.25rem 2.5rem}'
+            . '@media(min-width:768px){.rg-press__row{gap:1.5rem 3.25rem}}'
+            . '.rg-press__item{display:inline-flex;align-items:center;text-decoration:none}'
+            . '.rg-press__name{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.2rem;letter-spacing:.005em;color:#94a3b8;opacity:.8;transition:color .2s ease,opacity .2s ease}'
+            . '@media(min-width:768px){.rg-press__name{font-size:1.4rem}}'
+            . '.rg-press__item:hover .rg-press__name{color:#334155;opacity:1}'
+            . '.rg-press__img{height:1.55rem;width:auto;filter:grayscale(1);opacity:.7;transition:opacity .2s ease,filter .2s ease}'
+            . '@media(min-width:768px){.rg-press__img{height:1.85rem}}'
+            . '.rg-press__item:hover .rg-press__img{opacity:1;filter:grayscale(0)}'
+            . '</style>';
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * Heading effects applied after escaping (so the payload stays
+     * plain text and output is XSS-safe):
+     *   *word*      -> a Tahu brand-red highlight span
+     *   {{a|b|c}}   -> a rotating word (first shown; cycled by JS)
+     */
+    private function headingFx(string $raw): string
+    {
+        $h = $this->e(trim($raw));
+        $h = preg_replace('/\*([^*]+)\*/', '<span class="font-brand" style="color:#c0392b;font-weight:300;font-size:1.3em">$1</span>', $h);
+        $h = preg_replace('/~([^~]+)~/', '<span class="font-brand" style="display:inline-block;vertical-align:middle;color:#c0392b;font-weight:300;font-size:50px;line-height:1;margin:20px 0">$1</span>', $h);
+        $h = preg_replace_callback('/\{\{([^}]+)\}\}/', function ($m) {
+            $words = array_values(array_filter(array_map('trim', explode('|', $m[1]))));
+            if (empty($words)) return '';
+            return '<span class="rg-word-rotate font-brand" style="color:#c0392b;font-weight:300;font-size:1.3em" data-words="' . $m[1] . '">' . $words[0] . '</span>';
+        }, $h);
+        return $h;
+    }
+
+    /**
+     * Shared "showcase" surface used by the partner-perks and badge
+     * blocks: a soft aurora-gradient card with blurred brand-colour glows,
+     * a faded dot-grid texture, a hairline top sheen, and a floating
+     * verification pill. Emitted once per block (identical duplicates are
+     * harmless). Decorative layers sit at z-0; wrap content in z-[1].
+     */
+    private function showcaseStyle(): string
+    {
+        return '<style>'
+            . '.rg-showcase{position:relative;background:#f1f5f9;border:1px solid rgba(15,23,42,.08)}'
+            . '.rg-vbadge{position:absolute;top:1rem;right:1rem;z-index:2;display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .8rem .4rem .45rem;border-radius:9999px;background:#ffffff;border:1px solid rgba(15,23,42,.1);font-size:.72rem;font-weight:700;color:#0f172a;letter-spacing:.01em;white-space:nowrap}'
+            . '.rg-vbadge .rg-vchk{display:inline-flex;align-items:center;justify-content:center;width:1.4rem;height:1.4rem;border-radius:9999px;background:#059669;color:#fff}'
+            . '@media(min-width:768px){.rg-vbadge{top:1.25rem;right:1.25rem;font-size:.78rem}}'
+            . '</style>';
+    }
+
+    private function showcaseBadge(string $label): string
+    {
+        return '<span class="rg-vbadge"><span class="rg-vchk" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>' . $this->e($label) . '</span>';
+    }
+
+    /**
+     * home_partner_perks — "become a partner" benefits section: a
+     * centered header, a grid of perk cards (icon + title + body),
+     * and a CTA.
+     *
+     * Payload: eyebrow, heading, subhead, cta_label, cta_url,
+     *          perks[] of { icon, title, body }
+     */
+    private function homePartnerPerks(array $p, array $context): string
+    {
+        if (isset($p['perks']) && is_string($p['perks'])) {
+            $t = trim($p['perks']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['perks'] = $d;
+            }
+        }
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $ctaLabel = $this->e(trim((string) ($p['cta_label'] ?? '')));
+        $ctaUrl = trim((string) ($p['cta_url'] ?? ''));
+        $ctaDesc = $this->e(trim((string) ($p['cta_desc'] ?? '')));
+        $ctaNote = $this->e(trim((string) ($p['cta_note'] ?? '')));
+        $perks = $p['perks'] ?? [];
+        if (!is_array($perks)) $perks = [];
+        if (isset($p['reviews']) && is_string($p['reviews'])) {
+            $tr = trim($p['reviews']);
+            if ($tr !== '' && ($tr[0] === '[' || $tr[0] === '{')) {
+                $dr = json_decode($tr, true);
+                if (is_array($dr)) $p['reviews'] = $dr;
+            }
+        }
+        $reviews = is_array($p['reviews'] ?? null) ? $p['reviews'] : [];
+        if ($heading === '' && empty($perks)) return '';
+
+        // Wide icon set — keys + inner paths kept 1:1 with PERK_ICONS in
+        // builder.blade.php so the editor preview matches this output. A
+        // perk's `icon` may instead be an image URL (handled per-perk below).
+        $icons = [
+            'star' => '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>',
+            'check' => '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>',
+            'badgecheck' => '<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/>',
+            'trophy' => '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+            'award' => '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
+            'shield' => '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+            'trend' => '<path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/>',
+            'target' => '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+            'rocket' => '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+            'zap' => '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+            'heart' => '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+            'thumbsup' => '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+            'gift' => '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+            'tag' => '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.4"/>',
+            'percent' => '<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+            'money' => '<line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+            'globe' => '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+            'pin' => '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+            'users' => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+            'briefcase' => '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+            'search' => '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+            'sparkles' => '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+            'key' => '<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>',
+            'eye' => '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+        ];
+
+        $out = '<section class="pt-8 pb-16 md:pt-10 md:pb-20">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= $this->showcaseStyle();
+        $out .= '<div class="rg-showcase relative overflow-hidden rounded-3xl p-8 md:p-14">';
+        $out .= '<span class="rg-dots" aria-hidden="true"></span><span class="rg-sheen" aria-hidden="true"></span>';
+        $out .= $this->showcaseBadge('Free to list');
+        $out .= '<div class="relative z-[1]">';
+        $out .= '<div class="text-center max-w-2xl mx-auto mb-12">';
+        if ($eyebrow !== '') $out .= '<p class="mb-4"><span class="inline-flex items-center rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em]">' . $eyebrow . '</span></p>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+        $out .= '</div>';
+
+        if (!empty($perks)) {
+            $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">';
+            foreach ($perks as $pk) {
+                $pa = $this->toArrayShapeSimple($pk);
+                $title = $this->e((string) ($pa['title'] ?? ''));
+                if ($title === '') continue;
+                $body = $this->e((string) ($pa['body'] ?? ''));
+                $iconVal = trim((string) ($pa['icon'] ?? 'star'));
+                $iconIsImage = $iconVal !== '' && (str_starts_with($iconVal, 'http') || str_starts_with($iconVal, '/') || str_contains($iconVal, '/storage/') || preg_match('/\.(jpe?g|png|webp|gif|avif|svg)(\?|#|$)/i', $iconVal));
+                $out .= '<div class="group/perk relative rounded-2xl border border-slate-200 bg-white p-6 text-center transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50">';
+                if ($iconIsImage) {
+                    $iconSrc = (str_starts_with($iconVal, 'http') || str_starts_with($iconVal, '/')) ? $iconVal : '/storage/' . ltrim($iconVal, '/');
+                    $out .= '<div class="w-14 h-14 mx-auto mb-4 rounded-2xl overflow-hidden ring-1 ring-slate-200 bg-white flex items-center justify-center shadow-sm">';
+                    $out .= '<img src="' . $this->e($iconSrc) . '" alt="' . $title . '" class="w-full h-full object-cover" loading="lazy">';
+                    $out .= '</div>';
+                } else {
+                    $svg = $icons[$iconVal] ?? $icons['star'];
+                    $out .= '<div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-blue-600 text-white flex items-center justify-center">';
+                    $out .= '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $svg . '</svg>';
+                    $out .= '</div>';
+                }
+                $out .= '<h3 class="text-lg font-bold text-slate-900 mb-2">' . $title . '</h3>';
+                if ($body !== '') $out .= '<p class="text-sm text-slate-600 leading-relaxed">' . $body . '</p>';
+                $plink = trim((string) ($pa['url'] ?? ''));
+                if ($plink === '') $plink = $ctaUrl !== '' ? $ctaUrl : '#';
+                $out .= '<a href="' . $this->e($plink) . '" class="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-brand-600 hover:text-brand-700 no-underline">Learn more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>';
+                $out .= '</div>';
+            }
+            $out .= '</div>';
+        }
+
+        if ($ctaLabel !== '') {
+            $href = $ctaUrl !== '' ? $ctaUrl : '#';
+            $out .= '<div class="text-center mt-12 md:mt-14">';
+            if ($ctaDesc !== '') $out .= '<p class="text-base md:text-lg text-slate-700 font-medium max-w-xl mx-auto mb-5">' . $ctaDesc . '</p>';
+            $out .= '<a href="' . $this->e($href) . '" class="inline-flex items-center gap-2 px-7 py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 transition-colors no-underline">'
+                . $ctaLabel
+                . '<svg class="rg-cta-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>';
+            if ($ctaNote !== '') $out .= '<p class="text-sm font-semibold text-slate-500 mt-3">' . $ctaNote . '</p>';
+            $out .= '</div>';
+        }
+
+        if (!empty($reviews)) {
+            $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-12 md:mt-14 text-left">';
+            foreach ($reviews as $rv) {
+                $rva = $this->toArrayShapeSimple($rv);
+                $text = $this->e((string) ($rva['text'] ?? ''));
+                if ($text === '') continue;
+                $author = $this->e((string) ($rva['author'] ?? ''));
+                $role = $this->e((string) ($rva['role'] ?? ''));
+                $avatar = trim((string) ($rva['avatar'] ?? ''));
+                $avatarTitle = (string) ($rva['avatar_title'] ?? '');
+                $initial = ($rva['author'] ?? '') !== '' ? mb_strtoupper(mb_substr(strip_tags((string) $rva['author']), 0, 1)) : '?';
+                $out .= '<figure class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col">';
+                $out .= '<div class="flex gap-1 mb-3">';
+                for ($si = 0; $si < 5; $si++) {
+                    $out .= '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+                }
+                $out .= '</div>';
+                $out .= '<blockquote class="text-sm text-slate-700 leading-relaxed m-0 flex-1">' . $text . '</blockquote>';
+                $out .= '<figcaption class="mt-5 flex items-center gap-3">';
+                if ($avatar !== '') {
+                    $asrc = (str_starts_with($avatar, 'http') || str_starts_with($avatar, '/')) ? $avatar : '/storage/' . ltrim($avatar, '/');
+                    $out .= '<img src="' . $this->e($asrc) . '" alt="' . $author . '"' . $this->titleAttr($avatarTitle) . ' loading="lazy" class="w-10 h-10 rounded-full object-cover bg-slate-100 flex-shrink-0">';
+                } else {
+                    $out .= '<div class="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">' . $this->e($initial) . '</div>';
+                }
+                $out .= '<div>';
+                if ($author !== '') $out .= '<div class="text-sm font-bold text-slate-900">' . $author . '</div>';
+                if ($role !== '') $out .= '<div class="text-xs text-slate-500">' . $role . '</div>';
+                $out .= '</div></figcaption></figure>';
+            }
+            $out .= '</div>';
+        }
+
+        $out .= '</div></div>';
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * home_badge_explainer — a light grey box inviting owners to get
+     * the "We Highly Recommend" badge, with a CTA, plus owner reviews
+     * on the effect of the badge below it.
+     *
+     * Payload: eyebrow, heading, body, badge_image, badge_alt,
+     *          cta_label, cta_url, reviews[] of { text, author, role }
+     */
+    private function homeBadgeExplainer(array $p, array $context): string
+    {
+        if (isset($p['reviews']) && is_string($p['reviews'])) {
+            $t = trim($p['reviews']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['reviews'] = $d;
+            }
+        }
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $body = $this->e(trim((string) ($p['body'] ?? '')));
+        $ctaLabel = $this->e(trim((string) ($p['cta_label'] ?? '')));
+        $ctaUrl = trim((string) ($p['cta_url'] ?? ''));
+        $ctaDesc = $this->e(trim((string) ($p['cta_desc'] ?? '')));
+        $ctaNote = $this->e(trim((string) ($p['cta_note'] ?? '')));
+        $reviews = $p['reviews'] ?? [];
+        if (!is_array($reviews)) $reviews = [];
+        if ($heading === '' && $body === '' && empty($reviews)) return '';
+        $img = trim((string) ($p['badge_image'] ?? ''));
+        $alt = $this->e((string) ($p['badge_alt'] ?? $heading));
+        $src = $img !== '' ? ((str_starts_with($img, 'http') || str_starts_with($img, '/')) ? $img : '/storage/' . ltrim($img, '/')) : '';
+
+        // Slider images: prefer badge_images[] (each {src, alt} or a bare
+        // path), else fall back to the single badge_image. Each slide
+        // carries a 5-star ripple badge pinned to its lower-right corner.
+        $rawImgs = $p['badge_images'] ?? null;
+        if (is_string($rawImgs)) {
+            $ri = trim($rawImgs);
+            $rawImgs = ($ri !== '' && $ri[0] === '[') ? (json_decode($ri, true) ?: []) : array_filter(array_map('trim', preg_split('/\r?\n|,/', $ri)));
+        }
+        $slideImgs = [];
+        if (is_array($rawImgs)) {
+            foreach ($rawImgs as $im) {
+                if (is_array($im)) { $s = (string) ($im['src'] ?? ''); $a = (string) ($im['alt'] ?? ''); $tt = (string) ($im['title'] ?? ''); }
+                else { $s = (string) $im; $a = ''; $tt = ''; }
+                if ($s === '') continue;
+                $s = (str_starts_with($s, 'http') || str_starts_with($s, '/')) ? $s : '/storage/' . ltrim($s, '/');
+                $slideImgs[] = ['src' => $s, 'alt' => $a, 'title' => $tt];
+            }
+        }
+        if (empty($slideImgs) && $src !== '') $slideImgs[] = ['src' => $src, 'alt' => (string) ($p['badge_alt'] ?? ''), 'title' => (string) ($p['badge_title'] ?? '')];
+
+        // Star overlay removed by request — slides show the photo only.
+        $starsHtml = '';
+
+        $badgeStyle = '<style>'
+            . '.rg-badge-slide{position:relative;overflow:hidden;border-radius:.85rem}'
+            . '.rg-badge-slider{border-radius:.85rem}'
+            . '.rg-badge-slider .rg-badge-slide{aspect-ratio:16/9}'
+            . '.rg-badge-slider .rg-badge-slide img{width:100%;height:100%;object-fit:cover;display:block}'
+            . '.rg-badge-slider .splide__arrow{background:rgba(15,23,42,.65)}'
+            . '.rg-badge-slider .splide__arrow svg{fill:#fff}'
+            . '</style>';
+
+        $out = '<section class="pt-6 pb-6 md:pt-8 md:pb-8">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= $this->showcaseStyle();
+        $out .= '<div class="rg-showcase relative overflow-hidden rounded-3xl p-8 md:p-14">';
+        $out .= '<span class="rg-dots" aria-hidden="true"></span><span class="rg-sheen" aria-hidden="true"></span>';
+        $out .= $this->showcaseBadge('Highly recommended');
+        $out .= '<div class="relative z-[1] text-center">';
+        if ($eyebrow !== '') $out .= '<p class="mb-3"><span class="inline-flex items-center rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em]">' . $eyebrow . '</span></p>';
+        if ($heading !== '') $out .= '<h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-6">' . $heading . '</h2>';
+        if (!empty($slideImgs)) {
+            $out .= $badgeStyle;
+            if (count($slideImgs) > 1) {
+                $sliderId = 'rg-badge-' . substr(md5(json_encode($slideImgs)), 0, 8);
+                $cfg = '{&quot;type&quot;:&quot;fade&quot;,&quot;rewind&quot;:true,&quot;autoplay&quot;:true,&quot;interval&quot;:4000,&quot;speed&quot;:900,&quot;arrows&quot;:false,&quot;pagination&quot;:false,&quot;pauseOnHover&quot;:true}';
+                $out .= '<div id="' . $sliderId . '" class="rg-badge-slider splide w-full max-w-4xl mx-auto mb-8 rounded-xl overflow-hidden ring-1 ring-slate-900/10" aria-label="Recommended businesses" data-splide-config="' . $cfg . '">';
+                $out .= '<div class="splide__track"><ul class="splide__list">';
+                foreach ($slideImgs as $im) {
+                    $out .= '<li class="splide__slide"><div class="rg-badge-slide">'
+                        . '<img src="' . $this->e($im['src']) . '" alt="' . $this->e($im['alt']) . '"' . $this->titleAttr($im['title'] ?? '') . ' loading="lazy">'
+                        . $starsHtml . '</div></li>';
+                }
+                $out .= '</ul></div></div>' . $this->splideAutoMount($sliderId);
+            } else {
+                $im = $slideImgs[0];
+                $out .= '<div class="rg-badge-slide w-full max-w-4xl mx-auto mb-8 ring-1 ring-slate-900/10">'
+                    . '<img src="' . $this->e($im['src']) . '" alt="' . $this->e($im['alt']) . '"' . $this->titleAttr($im['title'] ?? '') . ' loading="lazy" class="w-full h-auto">'
+                    . $starsHtml . '</div>';
+            }
+        }
+        if ($body !== '') $out .= '<p class="text-base md:text-lg leading-relaxed text-slate-600 max-w-4xl mx-auto mb-6">' . $body . '</p>';
+        if ($ctaLabel !== '') {
+            $href = $ctaUrl !== '' ? $ctaUrl : '#';
+            if ($ctaDesc !== '') $out .= '<p class="text-base md:text-lg text-slate-700 font-medium max-w-2xl mx-auto mb-5">' . $ctaDesc . '</p>';
+            $out .= '<a href="' . $this->e($href) . '" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 transition-colors no-underline">'
+                . $ctaLabel
+                . '<svg class="rg-cta-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>';
+            if ($ctaNote !== '') $out .= '<p class="text-sm font-semibold text-slate-500 mt-3">' . $ctaNote . '</p>';
+        }
+
+        if (!empty($reviews)) {
+            $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 md:mt-12 text-left">';
+            foreach ($reviews as $r) {
+                $ra = $this->toArrayShapeSimple($r);
+                $text = $this->e((string) ($ra['text'] ?? ''));
+                if ($text === '') continue;
+                $author = $this->e((string) ($ra['author'] ?? ''));
+                $role = $this->e((string) ($ra['role'] ?? ''));
+                $avatar = trim((string) ($ra['avatar'] ?? ''));
+                $avatarTitle = (string) ($ra['avatar_title'] ?? '');
+                $initial = ($ra['author'] ?? '') !== '' ? mb_strtoupper(mb_substr(strip_tags((string) $ra['author']), 0, 1)) : '?';
+                $out .= '<figure class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col">';
+                $out .= '<div class="flex gap-1 mb-3">';
+                for ($i = 0; $i < 5; $i++) {
+                    $out .= '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+                }
+                $out .= '</div>';
+                $out .= '<blockquote class="text-sm text-slate-700 leading-relaxed m-0 flex-1">' . $text . '</blockquote>';
+                $out .= '<figcaption class="mt-5 flex items-center gap-3">';
+                if ($avatar !== '') {
+                    $asrc = (str_starts_with($avatar, 'http') || str_starts_with($avatar, '/')) ? $avatar : '/storage/' . ltrim($avatar, '/');
+                    $out .= '<img src="' . $this->e($asrc) . '" alt="' . $author . '"' . $this->titleAttr($avatarTitle) . ' loading="lazy" class="w-10 h-10 rounded-full object-cover bg-slate-100 flex-shrink-0">';
+                } else {
+                    $out .= '<div class="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">' . $this->e($initial) . '</div>';
+                }
+                $out .= '<div>';
+                if ($author !== '') $out .= '<div class="text-sm font-bold text-slate-900">' . $author . '</div>';
+                if ($role !== '') $out .= '<div class="text-xs text-slate-500">' . $role . '</div>';
+                $out .= '</div></figcaption></figure>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div></div>';
+
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /**
+     * home_alt_features — alternating left/right feature rows. Each row
+     * pairs an image with an eyebrow + heading + short body, flipping
+     * the image side on every other row.
+     *
+     * Payload: eyebrow, heading, subhead, features[] of
+     *          { eyebrow, heading, body, image, image_alt, accent }
+     */
+    private function homeAltFeatures(array $p, array $context): string
+    {
+        if (isset($p['features']) && is_string($p['features'])) {
+            $t = trim($p['features']);
+            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
+                $d = json_decode($t, true);
+                if (is_array($d)) $p['features'] = $d;
+            }
+        }
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $features = $p['features'] ?? [];
+        if (!is_array($features) || empty($features)) return '';
+        $accentRgb = [
+            'brand' => '41,128,185', 'blue' => '41,128,185', 'emerald' => '5,150,105',
+            'rose' => '192,57,43', 'amber' => '217,119,6', 'violet' => '124,58,237',
+            'teal' => '13,148,136', 'sky' => '14,165,233',
+        ];
+        $cycle = ['blue', 'rose', 'emerald', 'amber', 'violet', 'teal'];
+
+        $out = '<section class="rg-feat-sec py-16 md:py-24">';
+        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        if ($eyebrow !== '' || $heading !== '' || $subhead !== '') {
+            $out .= '<div class="mb-12 md:mb-16 text-center max-w-3xl mx-auto">';
+            if ($eyebrow !== '') $out .= '<p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-3">' . $eyebrow . '</p>';
+            if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
+            if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
+            $out .= '</div>';
+        }
+        $out .= '<div class="rg-feat">';
+        $sliderMounts = '';
+        foreach ($features as $idx => $f) {
+            $fa = $this->toArrayShapeSimple($f);
+            $hd = $this->e((string) ($fa['heading'] ?? ''));
+            if ($hd === '') continue;
+            $eb = $this->e((string) ($fa['eyebrow'] ?? ''));
+            $bd = $this->e((string) ($fa['body'] ?? ''));
+            $img = (string) ($fa['image'] ?? '');
+            $alt = $this->e((string) ($fa['image_alt'] ?? ($fa['heading'] ?? '')));
+            $acc = (string) ($fa['accent'] ?? $cycle[$idx % count($cycle)]);
+            $rgb = $accentRgb[$acc] ?? $accentRgb['blue'];
+            $src = '';
+            if ($img !== '') $src = (str_starts_with($img, 'http') || str_starts_with($img, '/')) ? $img : '/storage/' . ltrim($img, '/');
+
+            // Collect this row's images: prefer images[] (each {src,alt}
+            // or a bare path), else the single image. 2+ images render as
+            // a drag-to-advance crossfade (no arrows, no pagination).
+            $rowImgsRaw = $fa['images'] ?? null;
+            if (is_string($rowImgsRaw)) {
+                $rir = trim($rowImgsRaw);
+                $rowImgsRaw = ($rir !== '' && $rir[0] === '[') ? (json_decode($rir, true) ?: []) : array_filter(array_map('trim', preg_split('/\r?\n|,/', $rir)));
+            }
+            $faTitle = (string) ($fa['image_title'] ?? '');
+            $slides = [];
+            if (is_array($rowImgsRaw)) {
+                foreach ($rowImgsRaw as $im) {
+                    if (is_array($im)) { $is = (string) ($im['src'] ?? ''); $ia = (string) ($im['alt'] ?? ''); $it = (string) ($im['title'] ?? ''); }
+                    else { $is = (string) $im; $ia = ''; $it = ''; }
+                    if ($is === '') continue;
+                    $is = (str_starts_with($is, 'http') || str_starts_with($is, '/')) ? $is : '/storage/' . ltrim($is, '/');
+                    $slides[] = ['src' => $is, 'alt' => $ia !== '' ? $ia : (string) ($fa['image_alt'] ?? ($fa['heading'] ?? '')), 'title' => $it !== '' ? $it : $faTitle];
+                }
+            }
+            if (empty($slides) && $src !== '') $slides[] = ['src' => $src, 'alt' => (string) ($fa['image_alt'] ?? ($fa['heading'] ?? '')), 'title' => $faTitle];
+
+            $out .= '<div class="rg-feat__row">';
+            $out .= '<div class="rg-feat__media">';
+            if (count($slides) > 1) {
+                $sid = 'rg-feat-sl-' . $idx . '-' . substr(md5(json_encode($slides)), 0, 6);
+                $interval = 3200 + ($idx % 5) * 350;
+                $cfg = '{&quot;type&quot;:&quot;fade&quot;,&quot;rewind&quot;:true,&quot;autoplay&quot;:true,&quot;interval&quot;:' . $interval . ',&quot;speed&quot;:900,&quot;arrows&quot;:false,&quot;pagination&quot;:false,&quot;drag&quot;:false,&quot;pauseOnHover&quot;:false}';
+                $out .= '<div id="' . $sid . '" class="rg-feat__slider splide" data-splide-config="' . $cfg . '">';
+                $out .= '<div class="splide__track"><ul class="splide__list">';
+                foreach ($slides as $sl) {
+                    $out .= '<li class="splide__slide"><img src="' . $this->e($sl['src']) . '" alt="' . $this->e($sl['alt']) . '"' . $this->titleAttr($sl['title'] ?? '') . ' loading="lazy"></li>';
+                }
+                $out .= '</ul></div></div>';
+                $sliderMounts .= $this->featFadeMount($sid);
+            } elseif (!empty($slides)) {
+                $out .= '<img src="' . $this->e($slides[0]['src']) . '" alt="' . $this->e($slides[0]['alt']) . '"' . $this->titleAttr($slides[0]['title'] ?? '') . ' loading="lazy">';
+            }
+            $out .= '</div>';
+            $out .= '<div class="rg-feat__content">';
+            if ($eb !== '') $out .= '<p class="rg-feat__eyebrow" style="color:rgb(' . $rgb . ')">' . $eb . '</p>';
+            $out .= '<h3 class="rg-feat__title">' . $hd . '</h3>';
+            if ($bd !== '') $out .= '<p class="rg-feat__body">' . $bd . '</p>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+        $out .= '</div></div>';
+
+        $out .= '<style>'
+            . '.rg-feat{display:flex;flex-direction:column;gap:2.5rem}'
+            . '@media(min-width:768px){.rg-feat{gap:4rem}}'
+            . '.rg-feat__row{display:grid;grid-template-columns:1fr;gap:1.25rem;align-items:center}'
+            . '@media(min-width:768px){.rg-feat__row{grid-template-columns:1fr 1fr;gap:3.5rem}.rg-feat__row:nth-child(even) .rg-feat__media{order:2}.rg-feat__row:nth-child(even) .rg-feat__content{text-align:right}}'
+            . '.rg-feat__media{aspect-ratio:4/3;border-radius:1.1rem;overflow:hidden;background:#e2e8f0;box-shadow:0 18px 40px -20px rgba(15,23,42,.45);-webkit-user-select:none;user-select:none}'
+            . '.rg-feat__media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;-webkit-user-drag:none;user-select:none;-webkit-tap-highlight-color:transparent}'
+            . '.rg-feat__slider,.rg-feat__slider .splide__track,.rg-feat__slider .splide__list,.rg-feat__slider .splide__slide{height:100%}'
+            . '.rg-feat__slider{cursor:grab}.rg-feat__slider:active{cursor:grabbing}'
+            . '.rg-feat__row:hover .rg-feat__media img{transform:scale(1.04)}'
+            . '.rg-feat__eyebrow{font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:0 0 .6rem}'
+            . '.rg-feat__title{font-size:1.6rem;line-height:1.2;font-weight:800;color:#0f172a;letter-spacing:-.015em;margin:0 0 .8rem}'
+            . '@media(min-width:768px){.rg-feat__title{font-size:2rem}}'
+            . '.rg-feat__body{font-size:1rem;line-height:1.7;color:#475569;margin:0}'
+            . '@media(prefers-reduced-motion:reduce){.rg-feat__media img{transition:none}}'
+            . '</style>';
+        $out .= $sliderMounts;
+        $out .= '</section>';
+        return $out;
+    }
+
+    /**
+     * Mounts a crossfade (type:fade) Splide slider for a feature row and
+     * wires manual pointer-swipe to advance, since Splide's own drag is
+     * unavailable with the fade type. No arrows, no pagination.
+     */
+    private function featFadeMount(string $id): string
+    {
+        $j = json_encode($id);
+        return '<script>(function(){'
+            . 'function init(){'
+              . 'var el=document.getElementById(' . $j . ');'
+              . 'if(!el||el.dataset.splideMounted)return;'
+              . 'if(!window.Splide){return setTimeout(init,50);}'
+              . 'el.dataset.splideMounted=1;'
+              . 'var inst;try{inst=new Splide(el,JSON.parse(el.dataset.splideConfig.replace(/&quot;/g,String.fromCharCode(34)))).mount();}catch(e){console.error("Splide mount failed",e);return;}'
+              . 'var sx=0,sy=0,drag=false;'
+              . 'el.addEventListener("pointerdown",function(e){sx=e.clientX;sy=e.clientY;drag=true;});'
+              . 'el.addEventListener("pointerup",function(e){if(!drag)return;drag=false;var dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){inst.go(dx<0?">":"<");}});'
+              . 'el.addEventListener("pointercancel",function(){drag=false;});'
+              . 'el.addEventListener("dragstart",function(e){e.preventDefault();});'
+            . '}'
+            . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}'
+        . '})();</script>';
+    }
+
+    /**
+     * Builds a one-sentence detail for a mosaic image from its path:
+     * humanizes the filename and pairs it with a category phrase.
+     */
+    private function mosaicCaption(string $url): string
+    {
+        $path = parse_url($url, PHP_URL_PATH) ?: $url;
+        $parts = array_values(array_filter(explode('/', $path)));
+        $file = pathinfo((string) end($parts), PATHINFO_FILENAME);
+        $cat = $parts[count($parts) - 2] ?? '';
+        $slug = preg_replace('/[-_]?\d+$/', '', $file);
+        $name = ucwords(trim(str_replace(['-', '_'], ' ', (string) $slug)));
+        if ($name === '') $name = 'This';
+        $tpl = [
+            'destinations'   => '%s is one of the most-loved places to visit in the Philippines.',
+            'spots'          => '%s is a scenic spot worth adding to your itinerary.',
+            'landmarks'      => '%s is a landmark worth seeing up close.',
+            'adventures'     => '%s is a Philippine adventure made for the outdoors.',
+            'activities'     => '%s is a fun way to spend a day out here.',
+            'restaurants'    => '%s is a local favorite worth a table.',
+            'food-locations' => '%s is a tasty stop for hungry travelers.',
+            'foods'          => '%s is a Filipino dish worth trying at least once.',
+            'buys'           => '%s makes a great pasalubong to bring home.',
+            'cultures'       => '%s reflects the rich culture you can meet here.',
+            'fiestas'        => '%s is one of the colorful fiestas to experience.',
+        ];
+        return sprintf($tpl[$cat] ?? '%s is worth discovering in the Philippines.', $name);
+    }
+
+    /**
+     * home_season_guide — a single slider that shifts through the
+     * Philippine seasons. Each slide pairs a crossfading image set
+     * with a season name + headline + a row of activity chips. A
+     * shared CTA below the slider links to the full activities hub.
+     *
+     * Payload: eyebrow, heading, subhead, cta_label, cta_url,
+     *          seasons[] of { label, icon, accent, headline,
+     *          activities[], images[] }
      */
     private function homeSeasonGuide(array $p, array $context): string
     {
@@ -4853,50 +5973,230 @@ class BlockRenderer
                 if (is_array($d)) $p['seasons'] = $d;
             }
         }
-        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
         $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $ctaLabel = $this->e(trim((string) ($p['cta_label'] ?? '')));
+        $ctaUrl = trim((string) ($p['cta_url'] ?? ''));
         $seasons = $p['seasons'] ?? [];
         if (!is_array($seasons) || empty($seasons)) return '';
-        $palettes = [
-            ['accent' => 'amber', 'bg' => 'bg-amber-50', 'text' => 'text-amber-700', 'border' => 'border-amber-200', 'icon' => '☀️'],
-            ['accent' => 'brand', 'bg' => 'bg-blue-50', 'text' => 'text-blue-700', 'border' => 'border-blue-200', 'icon' => '🌧️'],
-            ['accent' => 'emerald', 'bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200', 'icon' => '🌤️'],
+        $accentRgb = [
+            'amber' => '217,119,6', 'blue' => '41,128,185', 'emerald' => '5,150,105',
+            'rose' => '192,57,43', 'violet' => '124,58,237', 'sky' => '14,165,233', 'teal' => '13,148,136',
         ];
+        $cycle = ['amber', 'blue', 'emerald', 'rose'];
+        $iconSvgs = [
+            'sun' => '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
+            'rain' => '<path d="M7 15a4 4 0 0 1-.6-7.95 5 5 0 0 1 9.7-.05A3.5 3.5 0 0 1 16 15z"/><path d="M8.5 18l-.7 1.8M12 18l-.7 1.8M15.5 18l-.7 1.8"/>',
+            'wind' => '<path d="M3 8h11a2.5 2.5 0 1 0-2.5-2.6"/><path d="M3 12h15a2.5 2.5 0 1 1-2.5 2.6"/><path d="M3 16h9a2.5 2.5 0 1 1-2.5 2.6"/>',
+            'party' => '<path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9z"/><circle cx="18.3" cy="15.5" r="1.2"/><circle cx="6" cy="17" r="1"/>',
+        ];
+        $cta2Label = $this->e(trim((string) ($p['cta2_label'] ?? '')));
+        $cta2Url = trim((string) ($p['cta2_url'] ?? ''));
 
-        $out = '<section class="py-16 md:py-20 bg-gradient-to-b from-white to-slate-50" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
+        $out = '<section class="rg-season-guide py-16 md:py-20 bg-gradient-to-b from-white to-slate-50" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
         $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
         $out .= '<div class="mb-10 text-center max-w-3xl mx-auto">';
+        if ($eyebrow !== '') $out .= '<p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-3">' . $eyebrow . '</p>';
         if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
         $out .= '</div>';
-        $out .= '<div class="grid md:grid-cols-3 gap-5">';
+
+        // Build the slides + dots.
+        $panes = '';
+        $dots = '';
+        $count = 0;
         foreach ($seasons as $idx => $s) {
             $sArr = $this->toArrayShapeSimple($s);
-            $name = $this->e((string) ($sArr['name'] ?? ''));
-            $months = $this->e((string) ($sArr['months'] ?? ''));
+            $label = $this->e((string) ($sArr['label'] ?? $sArr['months'] ?? ''));
             $headline = $this->e((string) ($sArr['headline'] ?? ''));
-            $blurb = $this->e((string) ($sArr['blurb'] ?? ''));
-            $tip = $this->e((string) ($sArr['tip'] ?? ''));
-            if ($name === '') continue;
-            $pal = $palettes[$idx % count($palettes)];
-            $out .= '<div class="rounded-2xl border ' . $pal['border'] . ' bg-white p-6 shadow-sm">';
-            $out .= '<div class="flex items-start justify-between mb-3">';
-            $out .= '<div>';
-            $out .= '<div class="text-2xl mb-1">' . $pal['icon'] . '</div>';
-            $out .= '<h3 class="text-xl font-extrabold text-slate-900">' . $name . '</h3>';
-            if ($months !== '') $out .= '<div class="text-xs font-bold uppercase tracking-wider ' . $pal['text'] . ' mt-1">' . $months . '</div>';
-            $out .= '</div></div>';
-            if ($headline !== '') $out .= '<p class="text-sm md:text-[0.95rem] font-bold text-slate-900 leading-snug mb-3">' . $headline . '</p>';
-            if ($blurb !== '') $out .= '<p class="text-sm text-slate-700 leading-relaxed mb-4">' . $blurb . '</p>';
-            if ($tip !== '') {
-                $out .= '<div class="' . $pal['bg'] . ' rounded-lg p-3 border-l-4 border-' . str_replace(['brand'], ['blue'], $pal['accent']) . '-400">';
-                $out .= '<div class="text-[10px] uppercase tracking-wider font-bold ' . $pal['text'] . ' mb-1">Tip</div>';
-                $out .= '<p class="text-sm text-slate-700 leading-snug m-0">' . $tip . '</p>';
-                $out .= '</div>';
+            if ($label === '' && $headline === '') continue;
+            $accName = (string) ($sArr['accent'] ?? $cycle[$count % count($cycle)]);
+            $rgb = $accentRgb[$accName] ?? $accentRgb['amber'];
+            $icon = trim((string) ($sArr['icon'] ?? ''));
+            $activities = $sArr['activities'] ?? [];
+            if (is_string($activities)) {
+                $av = trim($activities);
+                $activities = ($av !== '' && $av[0] === '[') ? (json_decode($av, true) ?: []) : array_filter(array_map('trim', preg_split('/\r?\n|,/', $av)));
+            }
+            if (!is_array($activities)) $activities = [];
+
+            // Crossfade image set: prefer images[], fall back to image.
+            $imagesRaw = $sArr['images'] ?? ($sArr['image'] ?? null);
+            if (is_string($imagesRaw)) {
+                $t2 = trim($imagesRaw);
+                $imagesRaw = ($t2 !== '' && $t2[0] === '[') ? json_decode($t2, true) : preg_split('/\s*,\s*/', $t2);
+            }
+            $slideUrls = [];
+            foreach ((is_array($imagesRaw) ? $imagesRaw : []) as $im) {
+                $im = trim((string) $im);
+                if ($im === '') continue;
+                $slideUrls[] = (str_starts_with($im, 'http') || str_starts_with($im, '/')) ? $im : '/storage/' . ltrim($im, '/');
+            }
+
+            // Background-image slides carry no native alt, so expose the
+            // editor's per-slide alt (fallback: headline/label) as an
+            // aria-label on the active slide for SEO / accessibility.
+            $slideAlt = trim((string) ($sArr['image_alt'] ?? ''));
+            if ($slideAlt === '') $slideAlt = trim((string) ($sArr['headline'] ?? $sArr['label'] ?? $sArr['months'] ?? ''));
+            $slideAltAttr = $slideAlt !== '' ? ' role="img" aria-label="' . $this->e($slideAlt) . '"' : '';
+            $slideAltAttr .= $this->titleAttr($sArr['image_title'] ?? '');
+
+            $media = '<div class="rg-season-media">';
+            foreach ($slideUrls as $si => $su) {
+                $a11y = $si === 0 ? $slideAltAttr : ' aria-hidden="true"';
+                $media .= '<span class="rg-season-slide' . ($si === 0 ? ' is-on' : '') . '"' . $a11y . ' style="background-image:url(\'' . $this->e($su) . '\')"></span>';
+            }
+            // Content overlays the image, anchored bottom-left over a
+            // dark scrim so it stays readable on any photo.
+            $media .= '<div class="rg-season-content">';
+            $tagIcon = ($icon !== '' && isset($iconSvgs[$icon]))
+                ? '<svg class="rg-season-tag-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' . $iconSvgs[$icon] . '</svg>'
+                : ($icon !== '' ? $this->e($icon) . ' ' : '');
+            if ($label !== '') $media .= '<span class="rg-season-tag" style="background:rgb(' . $rgb . ')">' . $tagIcon . $label . '</span>';
+            if ($headline !== '') $media .= '<h3 class="rg-season-title">' . $headline . '</h3>';
+            if (!empty($activities)) {
+                $media .= '<div class="rg-season-acts">';
+                foreach ($activities as $act) {
+                    $act = trim((string) $act);
+                    if ($act === '') continue;
+                    $media .= '<span class="rg-season-act">' . $this->e($act) . '</span>';
+                }
+                $media .= '</div>';
+            }
+            $media .= '</div>';
+            $media .= '</div>';
+
+            $panes .= '<article class="rg-season-pane" aria-roledescription="slide">' . $media . '</article>';
+            $dotLabel = $label !== '' ? $label : 'slide ' . ($count + 1);
+            $dots .= '<button type="button" class="rg-season-dot" data-i="' . $count . '" aria-label="Show ' . $dotLabel . '"></button>';
+            $count++;
+        }
+        if ($count === 0) return '';
+
+        $out .= '<div class="rg-season-slider" data-count="' . $count . '">';
+        $out .= '<div class="rg-season-viewport"><div class="rg-season-track">' . $panes . '</div></div>';
+        $out .= '</div>';
+
+        // Image mosaic — square tiles that randomly crossfade through a
+        // shared photo pool (no captions). Sits directly below the slider.
+        $mosaic = $p['mosaic'] ?? [];
+        if (is_string($mosaic)) {
+            $mt = trim($mosaic);
+            $mosaic = ($mt !== '' && $mt[0] === '[') ? (json_decode($mt, true) ?: []) : array_filter(array_map('trim', preg_split('/\r?\n|,/', $mt)));
+        }
+        $pool = [];
+        foreach ((is_array($mosaic) ? $mosaic : []) as $im) {
+            $im = trim((string) $im);
+            if ($im === '') continue;
+            $pool[] = (str_starts_with($im, 'http') || str_starts_with($im, '/')) ? $im : '/storage/' . ltrim($im, '/');
+        }
+        if (!empty($pool)) {
+            $poolObjs = array_map(fn ($u) => ['u' => $u, 'd' => $this->mosaicCaption($u)], array_values($pool));
+            $pc = count($poolObjs);
+            $out .= '<div class="rg-mosaic" data-pool="' . $this->e(json_encode($poolObjs)) . '">';
+            for ($mi = 0; $mi < 24; $mi++) {
+                $obj = $poolObjs[$mi % $pc];
+                $seed = $this->e($obj['u']);
+                $big = in_array($mi, [0, 4, 8, 12], true) ? ' rg-mosaic__tile--big' : '';
+                $out .= '<div class="rg-mosaic__tile' . $big . '" role="button" tabindex="0" aria-label="Expand photo for detail" data-cap="' . $this->e($obj['d']) . '">'
+                    . '<span class="rg-mosaic__layer is-on" style="background-image:url(\'' . $seed . '\')"></span>'
+                    . '<span class="rg-mosaic__layer"></span>'
+                    . '<span class="rg-mosaic__cap"></span>'
+                    . '</div>';
             }
             $out .= '</div>';
         }
-        $out .= '</div></div></section>';
+
+        // CTAs — moved below the mosaic, at the foot of the section.
+        if ($ctaUrl !== '' && $ctaLabel !== '') {
+            $arrow = '<svg class="rg-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>';
+            $search = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+            $out .= '<div class="rg-season-ctawrap">';
+            $out .= '<a href="' . $this->e($ctaUrl) . '" class="rg-season-cta">' . $search . $ctaLabel . '</a>';
+            if ($cta2Label !== '') {
+                $out .= '<span class="rg-season-or">or</span>';
+                $out .= '<a href="' . $this->e($cta2Url !== '' ? $cta2Url : '#') . '" class="rg-season-cta2">' . $cta2Label . $arrow . '</a>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div>';
+
+        $out .= '<style>'
+            . '.rg-mosaic{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;grid-auto-flow:dense;margin-top:.4rem}'
+            . '@media(min-width:640px){.rg-mosaic{grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.5rem}}'
+            . '@media(min-width:1024px){.rg-mosaic{grid-template-columns:repeat(6,1fr)}}'
+            . '.rg-mosaic__tile{position:relative;aspect-ratio:1;overflow:hidden;border-radius:.6rem;background:#0f172a;cursor:pointer;transition:transform .4s cubic-bezier(.34,1.45,.64,1),box-shadow .4s ease,opacity .3s ease}'
+            . '@media(min-width:640px){.rg-mosaic__tile--big{grid-column:span 2;grid-row:span 2}}'
+            . '.rg-mosaic__layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.1s ease}'
+            . '.rg-mosaic__layer.is-on{opacity:1}'
+            . '.rg-mosaic__tile.is-open{transform:scale(2);z-index:30;box-shadow:0 24px 60px -15px rgba(0,0,0,.65)}'
+            . '@media(min-width:640px){.rg-mosaic__tile--big.is-open{transform:scale(1.4)}}'
+            . '.rg-mosaic.is-zoomed .rg-mosaic__tile:not(.is-open){opacity:.5}'
+            . '.rg-mosaic__cap{position:absolute;left:0;bottom:0;width:100%;transform-origin:left bottom;z-index:4;padding:.5rem .65rem;font-size:.8rem;line-height:1.3;font-weight:600;color:#fff;background:linear-gradient(180deg,rgba(15,23,42,0),rgba(15,23,42,.92));opacity:0;transition:opacity .3s ease .12s;pointer-events:none}'
+            . '.rg-mosaic__tile.is-open .rg-mosaic__cap{opacity:1;width:200%;transform:scale(.5)}'
+            . '@media(min-width:640px){.rg-mosaic__tile--big.is-open .rg-mosaic__cap{width:140%;transform:scale(.7143)}}'
+            . '@media(prefers-reduced-motion:reduce){.rg-mosaic__layer,.rg-mosaic__tile{transition:none}}'
+            . '.rg-season-slider{position:relative}'
+            . '.rg-season-viewport{overflow:hidden;border-radius:1.25rem;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none}'
+            . '.rg-season-viewport:active{cursor:grabbing}'
+            . '.rg-season-track{display:flex;transition:transform .6s cubic-bezier(.4,0,.2,1)}'
+            . '.rg-season-pane{flex:0 0 100%;min-width:100%}'
+            . '.rg-season-media{position:relative;min-height:360px;background-color:#0f172a;overflow:hidden}'
+            . '@media(min-width:1025px){.rg-season-media{min-height:520px}}'
+            . '.rg-season-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease}'
+            . '.rg-season-slide.is-on{opacity:1}'
+            . '.rg-season-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,0) 0%,rgba(15,23,42,0) 42%,rgba(15,23,42,.45) 70%,rgba(15,23,42,.9) 100%);pointer-events:none;z-index:1}'
+            . '.rg-season-content{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:1.75rem;max-width:44rem}'
+            . '@media(min-width:768px){.rg-season-content{padding:2.5rem 2.75rem}}'
+            . '.rg-season-tag{display:inline-flex;align-items:center;gap:.4rem;padding:.36rem .85rem;border-radius:999px;color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;box-shadow:0 6px 16px -6px rgba(0,0,0,.6);margin-bottom:.85rem}'
+            . '.rg-season-tag-ic{width:.95rem;height:.95rem;flex-shrink:0}'
+            . '.rg-season-title{font-size:1.5rem;line-height:1.2;font-weight:800;color:#fff;letter-spacing:-.01em;margin:0;text-shadow:0 2px 14px rgba(0,0,0,.55)}'
+            . '@media(min-width:768px){.rg-season-title{font-size:2rem}}'
+            . '.rg-season-acts{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1rem;max-width:40rem}'
+            . '.rg-season-act{display:inline-flex;align-items:center;padding:.34rem .75rem;border-radius:999px;font-size:.76rem;font-weight:600;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-shadow:0 1px 6px rgba(0,0,0,.45)}'
+            . '@media(min-width:768px){.rg-season-act{font-size:.83rem;padding:.38rem .85rem}}'
+            . '.rg-season-ctawrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.7rem 1rem;margin-top:1.6rem}'
+            . '.rg-season-cta{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.7rem;border-radius:.7rem;background:#2980b9;color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;transition:transform .18s}'
+            . '.rg-season-cta:hover{transform:translateY(-2px)}'
+            . '.rg-season-cta svg{width:1rem;height:1rem;flex-shrink:0}'
+            . '.rg-season-or{font-weight:600;color:#64748b;font-size:.9rem}'
+            . '.rg-season-cta2{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.7rem;border-radius:.7rem;background:#c0392b;color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;transition:transform .18s,background .18s}'
+            . '.rg-season-cta2:hover{transform:translateY(-2px);background:#a93226}'
+            . '.rg-season-cta2 svg{width:1rem;height:1rem;flex-shrink:0}'
+            . '.rg-word-rotate{display:inline-block;transition:opacity .3s ease;min-width:2.2em;text-align:left}'
+            . '@media(prefers-reduced-motion:reduce){.rg-season-track,.rg-season-slide,.rg-season-cta,.rg-season-cta2,.rg-word-rotate{transition:none}}'
+            . '</style>';
+
+        // JS — the slider shifts between slides; each slide shows a
+        // single photo (no per-slide image crossfade).
+        $out .= '<script>(function(){'
+            . 'var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
+            . 'document.querySelectorAll(".rg-word-rotate").forEach(function(el){var w=(el.getAttribute("data-words")||"").split("|").map(function(s){return s.trim();}).filter(Boolean);if(w.length<2||reduce)return;var k=0;setInterval(function(){k=(k+1)%w.length;el.style.opacity="0";setTimeout(function(){el.textContent=w[k];el.style.opacity="1";},300);},2400);});'
+            . 'document.querySelectorAll(".rg-mosaic").forEach(function(m){var pool;try{pool=JSON.parse(m.getAttribute("data-pool")||"[]");}catch(e){pool=[];}var openTile=null;function closeOpen(){if(!openTile)return;openTile.classList.remove("is-open");if(openTile._play)openTile._play();openTile=null;m.classList.remove("is-zoomed");}'
+            . 'm.querySelectorAll(".rg-mosaic__tile").forEach(function(tile){var L=tile.querySelectorAll(".rg-mosaic__layer");var cap=tile.querySelector(".rg-mosaic__cap");var cur=0;var curCap=tile.getAttribute("data-cap")||"";'
+            . 'function tick(){var n=1-cur;var o=pool[Math.floor(Math.random()*pool.length)];if(o){curCap=o.d||curCap;L[n].style.backgroundImage="url(\'"+o.u+"\')";L[n].classList.add("is-on");L[cur].classList.remove("is-on");cur=n;}tile._t=setTimeout(tick,2500+Math.random()*4500);}'
+            . 'tile._stop=function(){if(tile._t){clearTimeout(tile._t);tile._t=null;}};tile._play=function(){if(reduce||pool.length<2)return;tile._stop();tile._t=setTimeout(tick,2500+Math.random()*4500);};'
+            . 'if(!reduce&&pool.length>1){tile._t=setTimeout(tick,Math.random()*4000);}'
+            . 'function toggle(){if(openTile===tile){closeOpen();return;}closeOpen();var r=tile.getBoundingClientRect(),mr=m.getBoundingClientRect();var cx=(r.left+r.width/2-mr.left)/mr.width,cy=(r.top+r.height/2-mr.top)/mr.height;tile.style.transformOrigin=(cx<.28?"left":(cx>.72?"right":"center"))+" "+(cy<.28?"top":(cy>.72?"bottom":"center"));if(cap)cap.textContent=curCap;tile._stop();tile.classList.add("is-open");m.classList.add("is-zoomed");openTile=tile;}'
+            . 'tile.addEventListener("click",toggle);tile.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}});});'
+            . 'document.addEventListener("click",function(e){if(openTile&&!openTile.contains(e.target))closeOpen();});document.addEventListener("keydown",function(e){if(e.key==="Escape")closeOpen();});});'
+            . 'document.querySelectorAll(".rg-season-slider").forEach(function(sl){var track=sl.querySelector(".rg-season-track");var panes=sl.querySelectorAll(".rg-season-pane");var n=panes.length;if(n<2)return;var i=0,timer=null;'
+            . 'function go(k){i=(k+n)%n;track.style.transform="translateX("+(-i*100)+"%)";}'
+            . 'function next(){go(i+1);}function prev(){go(i-1);}'
+            . 'function play(){if(reduce)return;stop();timer=setInterval(next,7000);}function stop(){if(timer){clearInterval(timer);timer=null;}}'
+            . 'sl.addEventListener("mouseenter",stop);sl.addEventListener("mouseleave",play);'
+            . 'var vp=sl.querySelector(".rg-season-viewport")||sl;var sx=0,sy=0,drag=false,moved=false;'
+            . 'vp.addEventListener("pointerdown",function(e){if(e.pointerType==="mouse"&&e.button!==0)return;sx=e.clientX;sy=e.clientY;drag=true;moved=false;stop();track.style.transition="none";try{vp.setPointerCapture(e.pointerId);}catch(_){}});'
+            . 'vp.addEventListener("pointermove",function(e){if(!drag)return;var dx=e.clientX-sx,dy=e.clientY-sy;if(moved||Math.abs(dx)>Math.abs(dy)){moved=true;track.style.transform="translateX(calc("+(-i*100)+"% + "+dx+"px))";}});'
+            . 'function endDrag(e){if(!drag)return;drag=false;track.style.transition="";var dx=e.clientX-sx,dy=e.clientY-sy;if(moved&&Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){dx<0?next():prev();}else{go(i);}play();}'
+            . 'vp.addEventListener("pointerup",endDrag);vp.addEventListener("pointercancel",endDrag);'
+            . 'vp.addEventListener("dragstart",function(e){e.preventDefault();});'
+            . 'go(0);play();'
+            . '});'
+            . '})();</script>';
+
+        $out .= '</section>';
         return $out;
     }
 
@@ -4916,13 +6216,17 @@ class BlockRenderer
                 if (is_array($d)) $p['reviews'] = $d;
             }
         }
-        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
         $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
         $reviews = $p['reviews'] ?? [];
         if (!is_array($reviews) || empty($reviews)) return '';
 
+        // Flush: drop the inner max-w-6xl/padding wrapper so the block spans
+        // the page container width (used on /destinations to match the other
+        // sections). Homepage leaves this off.
+        $flush = !empty($p['flush']);
         $out = '<section class="py-16 md:py-20">';
-        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        if (!$flush) $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
         $out .= '<div class="mb-10 text-center max-w-3xl mx-auto">';
         if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
@@ -4963,7 +6267,9 @@ class BlockRenderer
             $out .= '</div></figcaption>';
             $out .= '</figure>';
         }
-        $out .= '</div></div></section>';
+        $out .= '</div>';
+        if (!$flush) $out .= '</div>';
+        $out .= '</section>';
         return $out;
     }
 
@@ -5005,12 +6311,12 @@ class BlockRenderer
         }
 
         $out = '<section class="py-16 md:py-20 bg-slate-50" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">';
-        $out .= '<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">';
         $out .= '<div class="mb-10 text-center">';
         if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
         $out .= '</div>';
-        $out .= '<div class="space-y-3">';
+        $out .= '<div class="grid md:grid-cols-2 gap-3 items-start">';
         foreach ($faqs as $f) {
             $fArr = $this->toArrayShapeSimple($f);
             $q = $this->e(trim((string) ($fArr['question'] ?? '')));
@@ -5086,27 +6392,85 @@ class BlockRenderer
     }
 
     /**
-     * home_how_it_works — trust block. Three pillars in a row,
-     * each with emoji icon + bold title + short body. Anchors
-     * editorial credibility for first-time visitors.
+     * Wide named-icon set (inner SVG paths), shared with the partner-perks
+     * icon picker. Keys mirror PERK_ICONS in builder.blade.php.
+     *
+     * @return array<string,string>
+     */
+    private function wideIconSvgs(): array
+    {
+        return [
+            'star' => '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>',
+            'check' => '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>',
+            'badgecheck' => '<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/>',
+            'trophy' => '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+            'award' => '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
+            'shield' => '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+            'trend' => '<path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/>',
+            'target' => '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+            'rocket' => '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+            'zap' => '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+            'heart' => '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+            'thumbsup' => '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+            'gift' => '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+            'tag' => '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.4"/>',
+            'percent' => '<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+            'money' => '<line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+            'globe' => '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+            'pin' => '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+            'users' => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+            'briefcase' => '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+            'search' => '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+            'sparkles' => '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+            'key' => '<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>',
+            'eye' => '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+        ];
+    }
+
+    /**
+     * Render an icon glyph for a tile. The value may be an uploaded image
+     * URL (rendered as <img>), a named icon key (rendered as inline SVG),
+     * or a plain emoji / character (rendered as text).
+     */
+    private function iconGlyph(string $iconVal, string $alt = '', string $imgClass = 'w-7 h-7 object-contain', string $svgAttrs = 'width="22" height="22"'): string
+    {
+        $iconVal = trim($iconVal);
+        if ($iconVal === '') return '';
+        $isImg = str_starts_with($iconVal, 'http') || str_starts_with($iconVal, '/') || str_contains($iconVal, '/storage/') || preg_match('/\.(jpe?g|png|webp|gif|avif|svg)(\?|#|$)/i', $iconVal);
+        if ($isImg) {
+            $src = (str_starts_with($iconVal, 'http') || str_starts_with($iconVal, '/')) ? $iconVal : '/storage/' . ltrim($iconVal, '/');
+            return '<img src="' . $this->e($src) . '" alt="' . $this->e($alt) . '" class="' . $imgClass . '" loading="lazy">';
+        }
+        $map = $this->wideIconSvgs();
+        if (isset($map[$iconVal])) {
+            return '<svg ' . $svgAttrs . ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $map[$iconVal] . '</svg>';
+        }
+        return '<span aria-hidden="true">' . $this->e($iconVal) . '</span>';
+    }
+
+    /**
+     * home_how_it_works — "how the site works" explainer. Default layout is
+     * an expandable accordion (collapsed by default except the first, so it
+     * reads light, not cognitive overload). layout=pillars keeps the legacy
+     * 3-card grid. Each item's icon may be a named icon, an uploaded image,
+     * or an emoji.
      *
      * Payload:
-     *   heading, subhead
-     *   pillars[] of { icon, title, body }
+     *   eyebrow, heading, subhead, layout (accordion|pillars)
+     *   pillars[] (alias: items / steps) of { icon, title, body }
      */
     private function homeHowItWorks(array $p, array $context): string
     {
-        if (isset($p['pillars']) && is_string($p['pillars'])) {
-            $t = trim($p['pillars']);
-            if ($t !== '' && ($t[0] === '[' || $t[0] === '{')) {
-                $d = json_decode($t, true);
-                if (is_array($d)) $p['pillars'] = $d;
-            }
+        $items = $p['pillars'] ?? $p['items'] ?? $p['steps'] ?? [];
+        if (is_string($items)) {
+            $t = trim($items);
+            $items = ($t !== '' && ($t[0] === '[' || $t[0] === '{')) ? (json_decode($t, true) ?: []) : [];
         }
-        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        if (!is_array($items) || empty($items)) return '';
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
         $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
-        $pillars = $p['pillars'] ?? [];
-        if (!is_array($pillars) || empty($pillars)) return '';
+        $layout = ($p['layout'] ?? 'accordion') === 'pillars' ? 'pillars' : 'accordion';
 
         $palettes = [
             ['bg' => 'bg-blue-50',    'fg' => 'text-blue-700',    'ring' => 'ring-blue-100'],
@@ -5117,27 +6481,58 @@ class BlockRenderer
         ];
 
         $out = '<section class="py-16 md:py-20 bg-white">';
-        $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="' . ($layout === 'accordion' ? 'max-w-3xl' : 'max-w-6xl') . ' mx-auto px-4 sm:px-6 lg:px-8">';
         $out .= '<div class="mb-10 text-center max-w-3xl mx-auto">';
+        if ($eyebrow !== '') $out .= '<p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500 mb-3">' . $eyebrow . '</p>';
         if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight tracking-[-0.01em] mb-3">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600 leading-relaxed">' . $subhead . '</p>';
         $out .= '</div>';
-        $cols = count($pillars) === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
-        $out .= '<div class="grid ' . $cols . ' gap-5 md:gap-6">';
-        foreach ($pillars as $idx => $pi) {
-            $pArr = $this->toArrayShapeSimple($pi);
-            $title = $this->e((string) ($pArr['title'] ?? ''));
-            $body = $this->e((string) ($pArr['body'] ?? ''));
-            $icon = (string) ($pArr['icon'] ?? '✨');
-            if ($title === '') continue;
-            $pal = $palettes[$idx % count($palettes)];
-            $out .= '<div class="rounded-2xl bg-white border border-slate-200 p-7 shadow-sm hover:shadow-md transition-shadow flex flex-col">';
-            $out .= '<div class="w-14 h-14 rounded-2xl ' . $pal['bg'] . ' ' . $pal['fg'] . ' flex items-center justify-center text-3xl mb-5 ring-4 ' . $pal['ring'] . '">' . $icon . '</div>';
-            $out .= '<h3 class="text-lg font-bold text-slate-900 leading-tight mb-2">' . $title . '</h3>';
-            if ($body !== '') $out .= '<p class="text-sm text-slate-600 leading-relaxed m-0">' . $body . '</p>';
+
+        if ($layout === 'pillars') {
+            $cols = count($items) === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
+            $out .= '<div class="grid ' . $cols . ' gap-5 md:gap-6">';
+            foreach ($items as $idx => $pi) {
+                $pArr = $this->toArrayShapeSimple($pi);
+                $title = $this->e((string) ($pArr['title'] ?? ''));
+                if ($title === '') continue;
+                $body = $this->e((string) ($pArr['body'] ?? ''));
+                $icon = (string) ($pArr['icon'] ?? '✨');
+                $pal = $palettes[$idx % count($palettes)];
+                $out .= '<div class="rounded-2xl bg-white border border-slate-200 p-7 shadow-sm hover:shadow-md transition-shadow flex flex-col">';
+                $out .= '<div class="w-14 h-14 rounded-2xl ' . $pal['bg'] . ' ' . $pal['fg'] . ' flex items-center justify-center text-3xl mb-5 ring-4 ' . $pal['ring'] . ' overflow-hidden">' . $this->iconGlyph($icon, $title, 'w-8 h-8 object-contain', 'width="28" height="28"') . '</div>';
+                $out .= '<h3 class="text-lg font-bold text-slate-900 leading-tight mb-2">' . $title . '</h3>';
+                if ($body !== '') $out .= '<p class="text-sm text-slate-600 leading-relaxed m-0">' . $body . '</p>';
+                $out .= '</div>';
+            }
+            $out .= '</div>';
+        } else {
+            $out .= '<div class="space-y-3">';
+            $n = 0;
+            foreach ($items as $it) {
+                $ia = $this->toArrayShapeSimple($it);
+                $title = $this->e((string) ($ia['title'] ?? ''));
+                if ($title === '') continue;
+                $body = $this->e((string) ($ia['body'] ?? ''));
+                $icon = (string) ($ia['icon'] ?? '');
+                $pal = $palettes[$n % count($palettes)];
+                $open = $n === 0 ? ' open' : '';
+                $glyph = $icon !== ''
+                    ? $this->iconGlyph($icon, $title, 'w-7 h-7 object-contain', 'width="22" height="22"')
+                    : '<span class="font-extrabold">' . ($n + 1) . '</span>';
+                $out .= '<details' . $open . ' class="group rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition-shadow">';
+                $out .= '<summary class="flex items-center gap-4 cursor-pointer list-none">';
+                $out .= '<span class="flex-shrink-0 w-12 h-12 rounded-xl ' . $pal['bg'] . ' ' . $pal['fg'] . ' ring-4 ' . $pal['ring'] . ' flex items-center justify-center text-xl overflow-hidden">' . $glyph . '</span>';
+                $out .= '<span class="flex-1 text-base md:text-lg font-bold text-slate-900 leading-snug">' . $title . '</span>';
+                $out .= '<svg class="flex-shrink-0 text-slate-400 group-open:rotate-180 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+                $out .= '</summary>';
+                if ($body !== '') $out .= '<div class="mt-3 pl-16 pr-2 text-slate-600 leading-relaxed">' . $body . '</div>';
+                $out .= '</details>';
+                $n++;
+            }
             $out .= '</div>';
         }
-        $out .= '</div></div></section>';
+
+        $out .= '</div></section>';
         return $out;
     }
 
@@ -5145,8 +6540,11 @@ class BlockRenderer
      * home_category_accordion — horizontal image-strip accordion.
      * Six vertical image cards in a row; clicking one expands its
      * width (desktop) or height (tablet/mobile) while the others
-     * shrink. The inner content (kicker + title + description +
-     * CTA) fades in 0.4s after the size transition starts.
+     * shrink. The image tiles keep their full size; the active
+     * item's content (title + description + CTA) fades in directly
+     * BELOW its own image, left-aligned to the expanded card and
+     * never overlaying the photo. No kicker/eyebrow pill is
+     * rendered.
      *
      * Pattern follows the classic "vertical accordion card"
      * (Stripe / Apple style):
@@ -5156,11 +6554,16 @@ class BlockRenderer
      *                        via height transition (500px).
      *   - Mobile   (≤480px):  same as tablet but expand to 380px.
      *
+     * Collapsed cards show only the category icon; the expanded card
+     * shows the icon before its title (in the content below), and its
+     * image crossfades through items[].images[] while it is open.
+     *
      * Payload:
      *   eyebrow, heading, subhead
      *   items[] of {
      *     label, eyebrow, description, cta_label, url,
-     *     image (path), image_alt, accent (brand|amber|emerald|
+     *     image (path, fallback), images[] (paths, crossfaded when
+     *     the card is open), image_alt, accent (brand|amber|emerald|
      *     rose|violet|teal|sky)
      *   }
      */
@@ -5174,16 +6577,18 @@ class BlockRenderer
             }
         }
         $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
-        $heading = $this->e(trim((string) ($p['heading'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
         $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
         $items = $p['items'] ?? [];
+        $accCta2Label = $this->e(trim((string) ($p['cta2_label'] ?? '')));
+        $accCta2Url = trim((string) ($p['cta2_url'] ?? ''));
         if (!is_array($items) || empty($items)) return '';
 
         $accentRgb = [
-            'brand'   => '37,99,235',
+            'brand'   => '41,128,185',
             'amber'   => '217,119,6',
             'emerald' => '5,150,105',
-            'rose'    => '225,29,72',
+            'rose'    => '192,57,43',
             'violet'  => '124,58,237',
             'teal'    => '13,148,136',
             'sky'     => '14,165,233',
@@ -5193,14 +6598,17 @@ class BlockRenderer
         // Keyed by label so the payload doesn't need to ship them.
         $iconPaths = [
             'Where to Go'      => '<path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/>',
-            'Where to Eat'     => '<path d="M3 11h18M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M6 11v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6"/>',
+            // Fork + spoon (cutlery)
+            'Where to Eat'     => '<path d="M4.5 2v7"/><path d="M8 2v7"/><path d="M11.5 2v7"/><path d="M4.5 9h7"/><path d="M8 9v13"/><path d="M17 2c-1.7 0-3 2-3 4.5S15.3 11 17 11s3-2 3-4.5S18.7 2 17 2z"/><path d="M17 11v11"/>',
             'What to Eat'      => '<path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M9 7V4M12 7V4M15 7V4"/>',
-            'What to Do'       => '<polygon points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9 12 2"/>',
+            // Sea (waves)
+            'What to Do'       => '<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 1.3 0 1.9-.5 2.5-1"/>',
             'What to Buy'      => '<path d="M5 8h14l-1.5 12.5a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5L5 8z"/><path d="M9 8V5a3 3 0 0 1 6 0v3"/>',
-            'Cultures to Meet' => '<path d="M5 9c0-3 2.5-5 6-5s6 2 6 5c0 3-1.5 6-6 6S5 12 5 9z"/><path d="M9 19l3 3 3-3"/>',
+            // Single person
+            'Cultures to Meet' => '<circle cx="12" cy="8" r="4"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/>',
         ];
 
-        $out = '<section class="rg-cat-acc py-16 md:py-24" style="background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)" aria-label="' . ($heading !== '' ? $heading : 'Explore the Philippines') . '">';
+        $out = '<section class="rg-cat-acc py-16 md:py-24" style="background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%)" aria-label="' . ($heading !== '' ? strip_tags($heading) : 'Explore the Philippines') . '">';
         $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">';
 
         if ($eyebrow !== '' || $heading !== '' || $subhead !== '') {
@@ -5217,7 +6625,6 @@ class BlockRenderer
             $label = (string) ($arr['label'] ?? '');
             if ($label === '') continue;
             $labelEsc = $this->e($label);
-            $kicker = $this->e((string) ($arr['eyebrow'] ?? ''));
             $desc = $this->e((string) ($arr['description'] ?? ''));
             $ctaLabel = $this->e((string) ($arr['cta_label'] ?? 'Open'));
             $url = $this->e((string) ($arr['url'] ?? '#'));
@@ -5228,38 +6635,61 @@ class BlockRenderer
             $rgb = $accentRgb[$accent];
             $iconSvg = $iconPaths[$label] ?? '<circle cx="12" cy="12" r="9"/>';
 
-            $imgUrl = '';
-            if ($image !== '') {
-                $imgUrl = (str_starts_with($image, 'http') || str_starts_with($image, '/'))
-                    ? $image
-                    : '/storage/' . ltrim($image, '/');
+            // Image set for the crossfade. Prefer items[].images[]; fall
+            // back to the single image. Only the EXPANDED card cycles
+            // through the slides (slideshow JS); collapsed cards rest on
+            // the first one.
+            $imagesRaw = $arr['images'] ?? null;
+            if (is_string($imagesRaw)) {
+                $t2 = trim($imagesRaw);
+                $imagesRaw = ($t2 !== '' && $t2[0] === '[') ? json_decode($t2, true) : preg_split('/\s*,\s*/', $t2);
+            }
+            $slideUrls = [];
+            foreach ((is_array($imagesRaw) ? $imagesRaw : []) as $im) {
+                $im = trim((string) $im);
+                if ($im === '') continue;
+                $slideUrls[] = (str_starts_with($im, 'http') || str_starts_with($im, '/')) ? $im : '/storage/' . ltrim($im, '/');
+            }
+            if (empty($slideUrls) && $image !== '') {
+                $slideUrls[] = (str_starts_with($image, 'http') || str_starts_with($image, '/')) ? $image : '/storage/' . ltrim($image, '/');
             }
             $isFirst = $idx === 0;
             $cardClass = 'rg-cat-acc__card' . ($isFirst ? ' expanded' : '');
-            $innerClass = 'rg-cat-acc__inner' . ($isFirst ? ' active' : '');
-            $cardStyle = '--acc-rgb:' . $rgb;
-            if ($imgUrl !== '') {
-                $cardStyle .= ';background-image:url(\'' . $this->e($imgUrl) . '\')';
-            }
 
-            $out .= '<div class="' . $cardClass . '" style="' . $cardStyle . '" role="button" tabindex="0" aria-label="' . $labelEsc . '">';
-            // Always-visible label (icon + title) — fades out when card is expanded
+            // Card = image tile (fixed size) + content column directly
+            // below it. --acc-rgb lives on the card so the CTA inside the
+            // content column inherits the accent. The content sits under
+            // the expanded image (its own width), never over the photo.
+            $out .= '<div class="' . $cardClass . '" style="--acc-rgb:' . $rgb . '" role="button" tabindex="0" aria-label="' . $labelEsc . '">';
+            $out .= '<div class="rg-cat-acc__media">';
+            foreach ($slideUrls as $si => $su) {
+                $slideTitle = $si === 0 ? $this->titleAttr($arr['image_title'] ?? '') : '';
+                $out .= '<span class="rg-cat-acc__slide' . ($si === 0 ? ' is-on' : '') . '"' . $slideTitle . ' style="background-image:url(\'' . $this->e($su) . '\')"></span>';
+            }
+            // Collapsed state shows only the icon (no title text).
             $out .= '<div class="rg-cat-acc__cardlabel">';
             $out .= '<div class="rg-cat-acc__cardicon" aria-hidden="true">';
             $out .= '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' . $iconSvg . '</svg>';
             $out .= '</div>';
-            $out .= '<span class="rg-cat-acc__cardtitle">' . $labelEsc . '</span>';
+            $out .= '</div>';
             $out .= '</div>';
 
-            // Inner content — fades in when card is expanded
-            $out .= '<div class="' . $innerClass . '">';
+            // Content — fades in below the image when the card is expanded.
+            $out .= '<div class="rg-cat-acc__inner">';
             $out .= '<div class="rg-cat-acc__innerbox">';
-            if ($kicker !== '') $out .= '<span class="rg-cat-acc__kicker">' . $kicker . '</span>';
-            $out .= '<h3 class="rg-cat-acc__heading">' . $labelEsc . '</h3>';
+            $out .= '<h3 class="rg-cat-acc__heading">'
+                . '<span class="rg-cat-acc__headicon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' . $iconSvg . '</svg></span>'
+                . '<span>' . $labelEsc . '</span></h3>';
             if ($desc !== '') $out .= '<p class="rg-cat-acc__desc">' . $desc . '</p>';
-            $out .= '<a href="' . $url . '" class="rg-cat-acc__cta">' . $ctaLabel
-                . '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
-                . '</a>';
+            $accArrow = '<svg class="rg-cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>';
+            $accSearch = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+            $out .= '<div class="rg-cat-acc__ctas">';
+            $out .= '<a href="' . $url . '" class="rg-cat-acc__cta">' . $accSearch . $ctaLabel . '</a>';
+            if ($accCta2Label !== '') {
+                $out .= '<span class="rg-cat-acc__or">or</span>';
+                $out .= '<a href="' . $this->e($accCta2Url !== '' ? $accCta2Url : '#') . '" class="rg-cat-acc__cta2">' . $accCta2Label . $accArrow . '</a>';
+            }
+            $out .= '</div>';
             $out .= '</div></div>';
             $out .= '</div>';
         }
@@ -5269,68 +6699,82 @@ class BlockRenderer
         // desktop ≥1025px) that collapses to a vertical accordion
         // (height transition) below 1025px.
         $out .= '<style>'
-            . '.rg-cat-acc__row{display:flex;flex-direction:row;gap:.5rem;height:520px;border-radius:1rem;overflow:hidden}'
-            . '.rg-cat-acc__card{flex:1;position:relative;background-size:cover;background-position:center;background-color:#0f172a;cursor:pointer;transition:flex .5s cubic-bezier(.4,0,.2,1),height .5s cubic-bezier(.4,0,.2,1);overflow:hidden;min-width:0}'
-            . '.rg-cat-acc__card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.08) 0%,rgba(15,23,42,.55) 65%,rgba(15,23,42,.85) 100%);pointer-events:none;z-index:1;transition:opacity .35s ease}'
-            . '.rg-cat-acc__card.expanded::before{opacity:0}'
-            . '.rg-cat-acc__card:focus-visible{outline:3px solid rgb(var(--acc-rgb));outline-offset:-3px}'
+            . '.rg-cat-acc__row{display:flex;flex-direction:row;align-items:flex-start;gap:.5rem}'
+            . '.rg-cat-acc__card{flex:1;min-width:0;cursor:pointer;display:flex;flex-direction:column;transition:flex .5s cubic-bezier(.4,0,.2,1)}'
             . '@media(min-width:1025px){.rg-cat-acc__card.expanded{flex:3.5}}'
-            // Always-visible card label (icon + title at bottom)
+            // Image tile — fixed size; the photo is never covered.
+            . '.rg-cat-acc__media{position:relative;height:520px;background-color:#0f172a;border-radius:1rem;overflow:hidden}'
+            // Crossfading image layers (only the expanded card cycles).
+            . '.rg-cat-acc__slide{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.1s ease}'
+            . '.rg-cat-acc__slide.is-on{opacity:1}'
+            . '.rg-cat-acc__media::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.08) 0%,rgba(15,23,42,.55) 65%,rgba(15,23,42,.85) 100%);pointer-events:none;z-index:1;transition:opacity .35s ease}'
+            . '.rg-cat-acc__card.expanded .rg-cat-acc__media::before{opacity:0}'
+            . '.rg-cat-acc__card:focus-visible .rg-cat-acc__media{outline:3px solid rgb(var(--acc-rgb));outline-offset:-3px}'
+            // Always-visible card label (icon + title at bottom of image)
             . '.rg-cat-acc__cardlabel{position:absolute;left:1.25rem;right:1.25rem;bottom:1.25rem;z-index:2;color:#fff;display:flex;flex-direction:column;gap:.55rem;transition:opacity .25s ease,transform .35s cubic-bezier(.22,1,.36,1)}'
             . '.rg-cat-acc__card.expanded .rg-cat-acc__cardlabel{opacity:0;transform:translateY(.5rem);pointer-events:none}'
-            . '.rg-cat-acc__cardicon{width:2.4rem;height:2.4rem;border-radius:.55rem;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;color:#fff;border:1px solid rgba(255,255,255,.22)}'
+            . '.rg-cat-acc__cardicon{width:2.4rem;height:2.4rem;border-radius:.55rem;background:rgb(var(--acc-rgb));display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 14px -4px rgba(0,0,0,.5)}'
             . '.rg-cat-acc__cardtitle{font-size:1rem;font-weight:800;letter-spacing:-.01em;text-shadow:0 2px 10px rgba(0,0,0,.65)}'
             . '@media(min-width:1025px){.rg-cat-acc__cardtitle{font-size:1.1rem}}'
-            // Inner content panel — right column (60%) with white
-            // bg + dark editorial text. Image stays visible on the
-            // left 40% of the expanded card.
-            . '.rg-cat-acc__inner{position:absolute;top:0;right:0;bottom:0;width:60%;z-index:2;display:flex;align-items:center;padding:1.5rem;background:#fff;color:#0f172a;opacity:0;transform:translateX(20px);transition:opacity 0s,transform 0s;pointer-events:none;box-shadow:-12px 0 28px -10px rgba(15,23,42,.18)}'
-            . '.rg-cat-acc__inner.active{opacity:1;transform:translateX(0);transition:opacity .5s .4s,transform .55s .4s cubic-bezier(.22,1,.36,1)}'
-            . '@media(min-width:1025px){.rg-cat-acc__inner{width:58%;padding:2.25rem 2.5rem}}'
-            . '.rg-cat-acc__innerbox{flex:1;max-width:48ch}'
-            . '.rg-cat-acc__kicker{display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:rgb(var(--acc-rgb));padding:.3rem .75rem;border-radius:999px;margin-bottom:.9rem;box-shadow:0 4px 12px -2px rgba(var(--acc-rgb),.45)}'
-            . '.rg-cat-acc__rule-accent{display:block;width:2.5rem;height:3px;border-radius:2px;background:rgb(var(--acc-rgb));margin-bottom:1rem}'
-            . '.rg-cat-acc__heading{font-size:1.5rem;font-weight:800;color:#0f172a;margin:0 0 .85rem;letter-spacing:-.02em;line-height:1.2}'
-            . '@media(min-width:1025px){.rg-cat-acc__heading{font-size:2rem}}'
-            . '.rg-cat-acc__desc{font-size:.9rem;line-height:1.7;margin:0 0 1.25rem;color:#475569}'
-            . '@media(min-width:1025px){.rg-cat-acc__desc{font-size:.95rem}}'
-            . '.rg-cat-acc__cta{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.3rem;background:rgb(var(--acc-rgb));color:#fff;border-radius:.6rem;font-weight:700;font-size:.85rem;letter-spacing:.01em;text-decoration:none;box-shadow:0 8px 22px -6px rgba(var(--acc-rgb),.65);transition:transform .18s ease,box-shadow .18s ease}'
-            . '.rg-cat-acc__cta:hover{transform:translateX(4px);box-shadow:0 10px 26px -4px rgba(var(--acc-rgb),.75)}'
+            // Content — sits directly BELOW the expanded image, left-aligned
+            // to it and spanning the expanded card width. Collapsed cards
+            // keep it at height:0 so every image tile stays the same size.
+            // It fades in after the card finishes widening.
+            . '.rg-cat-acc__inner{max-height:0;overflow:hidden;opacity:0;pointer-events:none}'
+            // Fixed-height content reserve: every expanded card occupies
+            // the SAME vertical space regardless of description length, so
+            // switching the active item never changes the section height
+            // (no layout shift of the content below). overflow:hidden
+            // (from the base rule) + the 3-line clamp on .desc keep any
+            // longer copy from spilling past the reserve.
+            . '.rg-cat-acc__card.expanded .rg-cat-acc__inner{max-height:none;height:190px;box-sizing:border-box;opacity:1;pointer-events:auto;padding:1.25rem .25rem 0;overflow:visible;transition:opacity .45s .3s}'
+            . '.rg-cat-acc__innerbox{max-width:60ch}'
+            . '.rg-cat-acc__heading{display:flex;align-items:center;gap:.55rem;font-size:1.4rem;font-weight:800;color:#0f172a;margin:0 0 .5rem;letter-spacing:-.02em;line-height:1.2}'
+            . '.rg-cat-acc__headicon{display:inline-flex;align-items:center;justify-content:center;width:2.4rem;height:2.4rem;border-radius:.55rem;background:rgb(var(--acc-rgb));color:#fff;flex-shrink:0;box-shadow:0 6px 16px -6px rgba(var(--acc-rgb),.6)}'
+            . '.rg-cat-acc__headicon svg{width:1.4rem;height:1.4rem}'
+            . '@media(min-width:1025px){.rg-cat-acc__heading{font-size:1.8rem}.rg-cat-acc__headicon{width:2.7rem;height:2.7rem}.rg-cat-acc__headicon svg{width:1.6rem;height:1.6rem}}'
+            . '.rg-cat-acc__desc{font-size:.95rem;line-height:1.6;margin:0 0 1.15rem;color:#475569;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}'
+            . '@media(min-width:1025px){.rg-cat-acc__desc{font-size:1.02rem}.rg-cat-acc__card.expanded .rg-cat-acc__inner{height:200px}}'
+            . '.rg-cat-acc__ctas{display:flex;flex-wrap:nowrap;align-items:center;gap:.6rem .9rem;width:max-content;max-width:none}'
+            . '.rg-cat-acc__cta{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.3rem;background:rgb(var(--acc-rgb));color:#fff;border-radius:.6rem;font-weight:700;font-size:.85rem;letter-spacing:.01em;text-decoration:none;transition:transform .18s ease}'
+            . '.rg-cat-acc__or{font-weight:600;color:#64748b;font-size:.85rem}'
+            . '.rg-cat-acc__cta2{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.3rem;background:#c0392b;color:#fff;border-radius:.6rem;font-weight:700;font-size:.85rem;letter-spacing:.01em;text-decoration:none;transition:transform .18s ease,background .18s ease}'
+            . '.rg-cat-acc__cta2:hover{transform:translateX(4px);background:#a93226}'
+            . '.rg-cat-acc__cta2 svg{width:.9rem;height:.9rem;flex-shrink:0}'
+            . '.rg-cat-acc__cta:hover{transform:translateX(4px)}'
             . '.rg-cat-acc__cta svg{width:.9rem;height:.9rem;flex-shrink:0}'
-            // Tablet (≤1024px): vertical stack, height-based expand.
-            // Inner panel keeps 2-column layout: image visible on
-            // left ~40%, content panel on right ~60%.
+            // Tablet (≤1024px): vertical stack. Collapsed = short image
+            // strip; expanded = full image + content below it.
             . '@media(max-width:1024px){'
-            . '.rg-cat-acc__row{flex-direction:column;height:auto;gap:.4rem;border-radius:1rem;overflow:hidden}'
-            . '.rg-cat-acc__card{flex:none;width:100%;height:110px;transition:height .5s cubic-bezier(.4,0,.2,1)}'
-            . '.rg-cat-acc__card.expanded{height:480px}'
+            . '.rg-cat-acc__row{flex-direction:column;gap:.4rem}'
+            . '.rg-cat-acc__card{flex:none;width:100%}'
+            . '.rg-cat-acc__media{height:110px;transition:height .5s cubic-bezier(.4,0,.2,1)}'
+            . '.rg-cat-acc__card.expanded .rg-cat-acc__media{height:360px}'
             . '.rg-cat-acc__cardlabel{flex-direction:row;align-items:center;gap:.85rem;bottom:auto;top:50%;transform:translateY(-50%);left:1.25rem;right:1.25rem}'
             . '.rg-cat-acc__card.expanded .rg-cat-acc__cardlabel{transform:translateY(-50%) translateY(.5rem)}'
             . '.rg-cat-acc__cardicon{width:2.2rem;height:2.2rem}'
             . '.rg-cat-acc__cardtitle{font-size:1rem}'
-            . '.rg-cat-acc__inner{width:60%;padding:1.5rem 1.75rem}'
             . '}'
-            // Mobile (≤480px): same stack but content column larger
-            // (65%) so heading + description aren't cramped. Image
-            // column stays at 35% — still visually present.
+            // Mobile (≤480px): shorter expanded image, full-width CTA.
             . '@media(max-width:480px){'
-            . '.rg-cat-acc__card.expanded{height:420px}'
-            . '.rg-cat-acc__inner{width:65%;padding:1.25rem 1.25rem}'
-            . '.rg-cat-acc__heading{font-size:1.35rem}'
-            . '.rg-cat-acc__desc{font-size:.85rem;line-height:1.6;margin-bottom:1rem}'
-            . '.rg-cat-acc__kicker{font-size:.6rem;padding:.25rem .6rem;margin-bottom:.7rem}'
-            . '.rg-cat-acc__cta{padding:.6rem 1rem;font-size:.8rem}'
+            . '.rg-cat-acc__card.expanded .rg-cat-acc__media{height:300px}'
+            . '.rg-cat-acc__heading{font-size:1.3rem;margin-bottom:.4rem}'
+            . '.rg-cat-acc__desc{font-size:.9rem;margin-bottom:.95rem}'
+            . '.rg-cat-acc__ctas{flex-direction:column;align-items:stretch;width:auto}'
+            . '.rg-cat-acc__cta,.rg-cat-acc__cta2{width:100%;justify-content:center}'
+            . '.rg-cat-acc__or{text-align:center}'
+            . '.rg-cat-acc__card.expanded .rg-cat-acc__inner{height:205px}'
             . '}'
             // Reduced motion
             . '@media(prefers-reduced-motion:reduce){'
-            . '.rg-cat-acc__card,.rg-cat-acc__cardlabel,.rg-cat-acc__inner,.rg-cat-acc__cta{transition:none!important}'
+            . '.rg-cat-acc__card,.rg-cat-acc__media,.rg-cat-acc__slide,.rg-cat-acc__cardlabel,.rg-cat-acc__inner,.rg-cat-acc__cta{transition:none!important}'
             . '}'
             . '</style>';
 
         // JS — click/keyboard expands the chosen card and collapses
         // siblings; links inside the card bubble normally so the
         // CTA still navigates.
-        $out .= '<script>(function(){var rows=document.querySelectorAll(".rg-cat-acc__row");rows.forEach(function(row){var cards=row.querySelectorAll(".rg-cat-acc__card");var expand=function(card){cards.forEach(function(c){var inner=c.querySelector(".rg-cat-acc__inner");if(c===card){c.classList.add("expanded");if(inner)inner.classList.add("active")}else{c.classList.remove("expanded");if(inner)inner.classList.remove("active")}})};cards.forEach(function(card){card.addEventListener("click",function(e){if(e.target.closest("a"))return;expand(card)});card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){if(e.target.closest("a"))return;e.preventDefault();expand(card)}})})})})();</script>';
+        $out .= '<script>(function(){var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var rows=document.querySelectorAll(".rg-cat-acc__row");rows.forEach(function(row){var cards=row.querySelectorAll(".rg-cat-acc__card");function sl(card){return card.querySelectorAll(".rg-cat-acc__slide");}function stop(card){if(card._rgT){clearInterval(card._rgT);card._rgT=null;}sl(card).forEach(function(el,i){el.classList.toggle("is-on",i===0);});}function start(card){if(reduce||card._rgT)return;var s=sl(card);if(s.length<2)return;var cur=0;s.forEach(function(el,i){el.classList.toggle("is-on",i===0);});card._rgT=setInterval(function(){s[cur].classList.remove("is-on");cur=(cur+1)%s.length;s[cur].classList.add("is-on");},3000);}var expand=function(card){cards.forEach(function(c){if(c===card){c.classList.add("expanded");start(c);}else{c.classList.remove("expanded");stop(c);}})};cards.forEach(function(card){card.addEventListener("click",function(e){if(e.target.closest("a"))return;expand(card)});card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){if(e.target.closest("a"))return;e.preventDefault();expand(card)}})});var init=row.querySelector(".rg-cat-acc__card.expanded");if(init)start(init);})})();</script>';
 
         $out .= '</section>';
         return $out;
@@ -5426,32 +6870,100 @@ class BlockRenderer
         $accent = in_array($p['accent'] ?? 'brand', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['accent'] : 'brand';
         $accentText = ['brand' => 'text-blue-700', 'amber' => 'text-amber-700', 'emerald' => 'text-emerald-700', 'rose' => 'text-rose-700', 'violet' => 'text-violet-700', 'teal' => 'text-teal-700'][$accent];
 
+        // Opt-in "site hero" treatment (matches the destinations / food-trip
+        // heroes): centered, a faded full-bleed background photo, the accent
+        // in the Tahu brush script on its own larger line, and Title Case.
+        // When none of these payload flags are set the hero renders exactly
+        // as before, so the other hub pages are untouched.
+        $centered = !empty($p['centered']);
+        $cap = !empty($p['title_case']);
+        $bgImage = trim((string) ($p['background_image'] ?? ''));
+        $bgImageUrl = $bgImage !== '' ? ((str_starts_with($bgImage, 'http') || str_starts_with($bgImage, '/')) ? $bgImage : '/storage/' . ltrim($bgImage, '/')) : '';
+
+        // Optional location search (opt-in via payload `search`). Reuses the
+        // destinations typeahead over the hub's location-tagged searchIndex,
+        // configured per vertical. Type a place → the hub's items for it.
+        $searchHtml = '';
+        if (!empty($p['search']) && !empty($context['searchIndex'])) {
+            $cfg = [
+                'foods' => [
+                    'search_placeholder' => 'Find food by place — try Cebu, BGC, or Iloilo',
+                    'search_tabs' => [['value' => 'all', 'label' => 'All'], ['value' => 'restaurant', 'label' => 'Restaurants'], ['value' => 'guide', 'label' => 'Food guides'], ['value' => 'dish', 'label' => 'Dishes']],
+                    'search_chips' => ['Cebu', 'BGC', 'Tagaytay', 'Iloilo', 'Davao', 'Baguio'],
+                    'search_labels_json' => '{"dish":"Local dishes","restaurant":"Restaurants","guide":"Food guides"}',
+                    'search_empty_hint' => 'Try a city or island — Cebu, Iloilo, Davao, Baguio.',
+                ],
+                'activities' => [
+                    'search_placeholder' => 'Find things to do by place — try Palawan, Cebu, or Baguio',
+                    'search_chips' => ['Palawan', 'Cebu', 'Boracay', 'Baguio', 'La Union', 'Davao'],
+                    'search_labels_json' => '{"activity":"Things to do"}',
+                    'search_empty_hint' => 'Try a place — Palawan, Cebu, Baguio, La Union.',
+                ],
+                'buys' => [
+                    'search_placeholder' => 'Find pasalubong by place — try Cebu, Iloilo, or Baguio',
+                    'search_chips' => ['Cebu', 'Iloilo', 'Baguio', 'Davao', 'Pampanga', 'Ilocos'],
+                    'search_labels_json' => '{"buy":"What to buy"}',
+                    'search_empty_hint' => 'Try a place — Cebu, Iloilo, Baguio, Davao.',
+                ],
+                'cultures' => [
+                    'search_placeholder' => 'Find peoples by place — try Cordillera, Mindanao, or Palawan',
+                    'search_chips' => ['Cordillera', 'Cebu', 'Mindanao', 'Palawan', 'Ilocos', 'Bicol'],
+                    'search_labels_json' => '{"culture":"Peoples & cultures"}',
+                    'search_empty_hint' => 'Try a region or island — Cordillera, Visayas, Mindanao.',
+                ],
+            ][(string) ($context['hub_slug'] ?? '')] ?? null;
+            if ($cfg) {
+                if (!isset($cfg['search_tabs'])) $cfg['search_tabs'] = [];
+                $searchHtml = $this->renderTypeaheadInline($cfg, $context, $accent);
+            }
+        }
+
         $titleHtml = '';
         if ($title !== '') {
             if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
-                $titleHtml = $this->e(trim($m[1]))
-                    . ($m[1] !== '' ? ' ' : '')
-                    . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
-                    . ($m[3] !== '' ? ' ' : '')
-                    . $this->e(trim($m[3]));
+                if ($centered) {
+                    // Tahu brush accent on its own, larger line.
+                    $tahu = '<span class="font-brand" style="color:#c0392b;font-weight:400;font-size:1.6em;line-height:1.05;display:inline-block;margin-top:.1em">';
+                    $titleHtml = $this->e(trim($m[1]))
+                        . ($m[1] !== '' ? '<br>' : '')
+                        . $tahu . $this->e(trim($m[2])) . '</span>'
+                        . ($m[3] !== '' ? ' ' : '') . $this->e(trim($m[3]));
+                } else {
+                    $titleHtml = $this->e(trim($m[1]))
+                        . ($m[1] !== '' ? ' ' : '')
+                        . '<span class="' . $accentText . '">' . $this->e(trim($m[2])) . '</span>'
+                        . ($m[3] !== '' ? ' ' : '')
+                        . $this->e(trim($m[3]));
+                }
             } else {
                 $titleHtml = $this->e($title);
             }
         }
 
-        $out = '<header class="rg-hub-hero mb-10">';
-        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold ' . $accentText . ' mb-3">' . $eyebrow . '</div>';
-        if ($titleHtml !== '') $out .= '<h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-6 max-w-4xl">' . $titleHtml . '</h1>';
+        $h1cls = 'text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.1] mb-6 max-w-4xl' . ($cap ? ' capitalize' : '') . ($centered ? ' mx-auto' : '');
+        $paraCls = 'space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 max-w-3xl [&_p]:m-0' . ($centered ? ' mx-auto' : '');
+
+        $inner = '';
+        if ($eyebrow !== '') $inner .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold ' . $accentText . ' mb-3">' . $eyebrow . '</div>';
+        if ($titleHtml !== '') $inner .= '<h1 class="' . $h1cls . '">' . $titleHtml . '</h1>';
         if (!empty($paragraphs)) {
-            $out .= '<div class="space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 max-w-3xl [&_p]:m-0">';
+            $inner .= '<div class="' . $paraCls . '">';
             foreach ($paragraphs as $para) {
                 $p2 = trim((string) $para);
                 if ($p2 === '') continue;
-                $out .= '<p>' . $this->e($p2) . '</p>';
+                $inner .= '<p>' . $this->e($p2) . '</p>';
             }
-            $out .= '</div>';
+            $inner .= '</div>';
         }
-        $out .= '</header>';
+        $inner .= $searchHtml;
+
+        if ($bgImageUrl !== '') {
+            $style = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;background-image:linear-gradient(rgba(255,255,255,.84),rgba(255,255,255,.92)),url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
+            $out = '<header class="rg-hub-hero -mt-8" style="' . $style . '">'
+                . '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20' . ($centered ? ' text-center' : '') . '">' . $inner . '</div></header>';
+        } else {
+            $out = '<header class="rg-hub-hero mb-10' . ($centered ? ' text-center' : '') . '">' . $inner . '</header>';
+        }
         return $out;
     }
 
@@ -5498,6 +7010,102 @@ class BlockRenderer
      * category by category_key from $context['categories'] (which
      * the hub controllers pass to BlockRenderer).
      */
+    /**
+     * Reusable themed section divider for the hub pages: two rules that fade
+     * toward a small centered emblem that animates. One motif per hub, each
+     * with its own colour: bowl (foods/amber, rising steam), compass
+     * (activities/emerald, spinning needle), bag (buys/violet, gentle bob),
+     * sun (cultures/teal, slow-turning Philippine sun). CSS + keyframes are
+     * emitted once per request via a static guard.
+     */
+    private function hubDivider(string $motif): string
+    {
+        static $emitted = false;
+        $motif = in_array($motif, ['bowl', 'compass', 'bag', 'sun', 'zigzag'], true) ? $motif : 'bowl';
+        $c = ['bowl' => 'rgb(217,119,6)', 'compass' => 'rgb(5,150,105)', 'bag' => 'rgb(124,58,237)', 'sun' => 'rgb(13,148,136)', 'zigzag' => 'rgb(13,148,136)'][$motif];
+        $out = '';
+        if (!$emitted) {
+            $emitted = true;
+            $out .= '<style>'
+                . '.rg-hubdiv{display:flex;align-items:center;justify-content:center;width:240px;max-width:75%;margin:0 auto 1.6rem}'
+                . '.rg-hubdiv .rl{height:2px;flex:1;border-radius:2px}'
+                . '.rg-hubdiv svg{width:30px;height:30px;flex:0 0 auto;margin:0 10px;overflow:visible}'
+                . '.rg-hubdiv .rg-st{transform-origin:center bottom;animation:rgSteam 2.6s ease-in-out infinite}'
+                . '.rg-hubdiv .rg-st2{animation-delay:.55s}.rg-hubdiv .rg-st3{animation-delay:1.1s}'
+                . '.rg-hubdiv .rg-spin{transform-origin:12px 12px;animation:rgSpin 9s linear infinite}'
+                . '.rg-hubdiv .rg-sun{transform-origin:12px 12px;animation:rgSpin 24s linear infinite}'
+                . '.rg-hubdiv .rg-bob{transform-origin:center;animation:rgBob 2.8s ease-in-out infinite}'
+                . '@keyframes rgSteam{0%{opacity:0;transform:translateY(2px) scaleY(.6)}35%{opacity:.85}100%{opacity:0;transform:translateY(-4px) scaleY(1.15)}}'
+                . '@keyframes rgSpin{to{transform:rotate(360deg)}}'
+                . '@keyframes rgBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}'
+                . '.rg-zz{width:240px;max-width:75%;height:14px;margin:0 auto 1.6rem;overflow:hidden}'
+                . '.rg-zz i{display:block;height:100%;background-repeat:repeat-x;background-position-y:center;background-size:28px 14px;animation:rgZz 3.2s linear infinite}'
+                . '@keyframes rgZz{from{background-position-x:0}to{background-position-x:28px}}'
+                . '@media(prefers-reduced-motion:reduce){.rg-hubdiv .rg-st,.rg-hubdiv .rg-spin,.rg-hubdiv .rg-sun,.rg-hubdiv .rg-bob,.rg-zz i{animation:none}}'
+                . '</style>';
+        }
+        // Tribal zigzag: a drifting diamond-chain band (two mirrored zigzags).
+        if ($motif === 'zigzag') {
+            $zzSvg = "<svg xmlns='http://www.w3.org/2000/svg' width='28' height='14' viewBox='0 0 28 14'><path d='M0 7 L7 1 L14 7 L21 1 L28 7 M0 7 L7 13 L14 7 L21 13 L28 7' fill='none' stroke='%s' stroke-width='1.6' stroke-linejoin='round'/></svg>";
+            $zzUri = 'data:image/svg+xml,' . rawurlencode(sprintf($zzSvg, $c));
+            return $out . '<div class="rg-zz" aria-hidden="true"><i style="background-image:url(\'' . $zzUri . '\')"></i></div>';
+        }
+        if ($motif === 'bowl') {
+            $emblem = '<path class="rg-st rg-st1" d="M9 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/><path class="rg-st rg-st2" d="M12 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/><path class="rg-st rg-st3" d="M15 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/><path d="M3 11h18"/><path d="M5 11a7 7 0 0 0 14 0Z" fill="' . $c . '" stroke="none"/>';
+        } elseif ($motif === 'compass') {
+            $emblem = '<circle cx="12" cy="12" r="8.5"/><g class="rg-spin"><path d="M12 5.5l2.2 6.5L12 18.5 9.8 12z" fill="' . $c . '" stroke="none"/></g><circle cx="12" cy="12" r="1.1" fill="' . $c . '" stroke="none"/>';
+        } elseif ($motif === 'bag') {
+            $emblem = '<g class="rg-bob"><path d="M5.5 8h13l-1.1 12.2a1.5 1.5 0 0 1-1.5 1.3H8.1a1.5 1.5 0 0 1-1.5-1.3z" fill="' . $c . '" stroke="none"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></g>';
+        } else {
+            $rays = '<line x1="12" y1="4" x2="12" y2="6.5"/><line x1="17.66" y1="6.34" x2="15.9" y2="8.1"/><line x1="20" y1="12" x2="17.5" y2="12"/><line x1="17.66" y1="17.66" x2="15.9" y2="15.9"/><line x1="12" y1="20" x2="12" y2="17.5"/><line x1="6.34" y1="17.66" x2="8.1" y2="15.9"/><line x1="4" y1="12" x2="6.5" y2="12"/><line x1="6.34" y1="6.34" x2="8.1" y2="8.1"/>';
+            $emblem = '<g class="rg-sun"><circle cx="12" cy="12" r="3.4" fill="' . $c . '" stroke="none"/>' . $rays . '</g>';
+        }
+        $out .= '<div class="rg-hubdiv" aria-hidden="true">'
+            . '<span class="rl" style="background:linear-gradient(90deg,transparent,' . $c . ')"></span>'
+            . '<svg viewBox="0 0 24 24" fill="none" stroke="' . $c . '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' . $emblem . '</svg>'
+            . '<span class="rl" style="background:linear-gradient(90deg,' . $c . ',transparent)"></span>'
+            . '</div>';
+        return $out;
+    }
+
+    /**
+     * One hub item card. When $imageCards is true it renders a photo card
+     * (4:3 image on top, name + note below); the image is the item's first
+     * `images[]` entry, falling back to a gradient + the category emoji when
+     * the item has no photo yet. Otherwise it renders the compact text card.
+     */
+    private function hubItemCard(array $item, bool $imageCards, string $urlPrefix, string $fallbackIcon): string
+    {
+        $slug = (string) ($item['slug'] ?? '');
+        $name = $this->e((string) ($item['name'] ?? ''));
+        $note = $this->e((string) ($item['note'] ?? $item['description'] ?? ''));
+        if ($slug === '' || $name === '') return '';
+        $href = $urlPrefix !== '' ? $this->e($urlPrefix . '/' . $slug) : '#';
+
+        if (!$imageCards) {
+            $c = '<a href="' . $href . '" class="block rounded-xl border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-md transition-all">'
+                . '<div class="font-bold text-slate-900 text-sm mb-1">' . $name . '</div>';
+            if ($note !== '') $c .= '<div class="text-xs text-slate-500 line-clamp-3 leading-snug">' . $note . '</div>';
+            return $c . '</a>';
+        }
+
+        $img = '';
+        $imgs = $item['images'] ?? [];
+        if (is_array($imgs) && count($imgs)) $img = (string) $imgs[0];
+        elseif (is_string($item['image'] ?? '') && ($item['image'] ?? '') !== '') $img = (string) $item['image'];
+
+        $c = '<a href="' . $href . '" class="group/ic block rounded-xl border border-slate-200 bg-white overflow-hidden hover:border-slate-300 hover:shadow-md transition-all">';
+        $c .= '<div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">';
+        if ($img !== '') {
+            $c .= '<img src="' . $this->e($img) . '" alt="' . $name . '" loading="lazy" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/ic:scale-105">';
+        } else {
+            $c .= '<div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-4xl select-none" aria-hidden="true">' . ($fallbackIcon !== '' ? $fallbackIcon : '🍽') . '</div>';
+        }
+        $c .= '</div><div class="p-3"><div class="font-bold text-slate-900 text-sm mb-0.5">' . $name . '</div>';
+        if ($note !== '') $c .= '<div class="text-xs text-slate-500 line-clamp-2 leading-snug">' . $note . '</div>';
+        return $c . '</div></a>';
+    }
+
     private function hubCategoryGrid(array $p, array $context): string
     {
         $key = (string) ($p['category_key'] ?? '');
@@ -5519,6 +7127,7 @@ class BlockRenderer
             6 => 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
         ][$perRow];
         $asAccordion = !isset($p['as_accordion']) || (bool) $p['as_accordion'];
+        $imageCards = !empty($p['image_cards']);
 
         $label = $this->e(trim((string) ($match['label'] ?? '')));
         $icon = trim((string) ($match['icon'] ?? ''));
@@ -5540,21 +7149,14 @@ class BlockRenderer
             if (!empty($items)) {
                 $out .= '<div class="grid ' . $gridClass . ' gap-3">';
                 foreach ($items as $item) {
-                    $slug = (string) ($item['slug'] ?? '');
-                    $name = $this->e((string) ($item['name'] ?? ''));
-                    $note = $this->e((string) ($item['note'] ?? $item['description'] ?? ''));
-                    if ($slug === '' || $name === '') continue;
-                    $href = $urlPrefix !== '' ? $urlPrefix . '/' . $slug : '#';
-                    $out .= '<a href="' . $this->e($href) . '" class="block rounded-xl border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-md transition-all">';
-                    $out .= '<div class="font-bold text-slate-900 text-sm mb-1">' . $name . '</div>';
-                    if ($note !== '') $out .= '<div class="text-xs text-slate-500 line-clamp-3 leading-snug">' . $note . '</div>';
-                    $out .= '</a>';
+                    $out .= $this->hubItemCard((array) $item, $imageCards, $urlPrefix, $icon);
                 }
                 $out .= '</div>';
             }
             $out .= '</div></details>';
         } else {
-            $out = '<section class="rg-hub-category my-12" id="cat-' . $this->e($key) . '">';
+            $out = !empty($p['divider']) ? $this->hubDivider((string) $p['divider']) : '';
+            $out .= '<section class="rg-hub-category my-12" id="cat-' . $this->e($key) . '">';
             $out .= '<div class="mb-6">';
             if ($icon !== '') $out .= '<div class="text-3xl mb-2" aria-hidden="true">' . $icon . '</div>';
             if ($label !== '') $out .= '<h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">' . $label . '</h2>';
@@ -5562,15 +7164,7 @@ class BlockRenderer
             $out .= '</div>';
             $out .= '<div class="grid ' . $gridClass . ' gap-3">';
             foreach ($items as $item) {
-                $slug = (string) ($item['slug'] ?? '');
-                $name = $this->e((string) ($item['name'] ?? ''));
-                $note = $this->e((string) ($item['note'] ?? $item['description'] ?? ''));
-                if ($slug === '' || $name === '') continue;
-                $href = $urlPrefix !== '' ? $urlPrefix . '/' . $slug : '#';
-                $out .= '<a href="' . $this->e($href) . '" class="block rounded-xl border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-md transition-all">'
-                    . '<div class="font-bold text-slate-900 text-sm mb-1">' . $name . '</div>';
-                if ($note !== '') $out .= '<div class="text-xs text-slate-500 line-clamp-3 leading-snug">' . $note . '</div>';
-                $out .= '</a>';
+                $out .= $this->hubItemCard((array) $item, $imageCards, $urlPrefix, $icon);
             }
             $out .= '</div></section>';
         }
@@ -5604,7 +7198,7 @@ class BlockRenderer
             'teal' => 'bg-teal-100 hover:bg-teal-200 text-teal-900',
         ];
 
-        $out = '<section class="rg-hub-footer mt-12 pt-10 border-t border-slate-200">';
+        $out = '<section class="rg-hub-footer mt-12">';
         if ($heading !== '') $out .= '<h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($body !== '') $out .= '<p class="text-slate-700 leading-relaxed max-w-3xl mb-5">' . $body . '</p>';
         if (!empty($links)) {

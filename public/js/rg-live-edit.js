@@ -22,6 +22,60 @@
     var cfg = window.__rgLiveEdit;
     document.body.classList.add('rg-live-edit-on');
 
+    // ── Scroll persistence across Live-Editor reloads ───────────────
+    // The mother admin reloads this iframe (iframe.src = iframe.src)
+    // after every save / delete / reorder. A full reload resets scroll
+    // to the top, which is jarring mid-edit. We stash the scroll
+    // position on unload and restore it on the next load — same-origin
+    // sessionStorage survives the reload. The restore is gated on a
+    // freshness window so a cold reopen of the page still starts at the
+    // top; an edit-triggered reload (which happens within seconds) keeps
+    // the admin exactly where they were.
+    (function () {
+        var KEY = 'rgLiveScroll:' + (cfg.slug || cfg.pageId || 'page');
+        var FRESH_MS = 20000;
+        try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
+
+        function save() {
+            try {
+                var y = window.scrollY || document.documentElement.scrollTop || 0;
+                sessionStorage.setItem(KEY, JSON.stringify({ y: y, ts: Date.now() }));
+            } catch (e) {}
+        }
+        // pagehide fires when the parent reassigns iframe.src; beforeunload
+        // is the belt-and-braces fallback for older engines.
+        window.addEventListener('pagehide', save);
+        window.addEventListener('beforeunload', save);
+
+        // Decide whether to restore ONCE, now (right after the reload, so
+        // the saved timestamp is only seconds old). Applying it later than
+        // the freshness check keeps late layout shifts from re-gating it.
+        var targetY = null;
+        try {
+            var raw = sessionStorage.getItem(KEY);
+            if (raw) {
+                var d = JSON.parse(raw);
+                if (d && typeof d.y === 'number' && d.y > 0 && (Date.now() - (d.ts || 0) <= FRESH_MS)) {
+                    targetY = d.y;
+                }
+            }
+        } catch (e) {}
+
+        if (targetY != null) {
+            var apply = function () { try { window.scrollTo(0, targetY); } catch (e) {} };
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', apply);
+            } else {
+                apply();
+            }
+            window.addEventListener('load', apply);
+            // Re-apply after early layout settles (lazy images, web-font
+            // swap) so the target line stays put without waiting on load.
+            setTimeout(apply, 250);
+            setTimeout(apply, 800);
+        }
+    })();
+
     // Top-left banner that says "LIVE EDIT" so the admin can see
     // at a glance that they're in the editing mode.
     var banner = document.createElement('div');

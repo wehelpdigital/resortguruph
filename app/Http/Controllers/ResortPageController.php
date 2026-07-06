@@ -15,7 +15,7 @@ class ResortPageController extends Controller
         $jsonld = $schema->emit($schema->lodgingBusiness($resort))
             . $schema->emit($schema->breadcrumb([
                 ['name' => 'Home', 'url' => url('/')],
-                ['name' => 'Properties', 'url' => url('/destinations')],
+                ['name' => 'Properties', 'url' => route('destinations.index')],
                 ['name' => $resort->name, 'url' => url('/listing/' . $resort->slug)],
             ]));
 

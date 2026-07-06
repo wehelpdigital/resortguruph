@@ -21,9 +21,11 @@ class BuysController extends Controller
 
     public function index()
     {
-        $blockView = $this->renderHubBlocks('buys', ['categories' => $this->categories()]); if ($blockView) return $blockView; return view('buys.index', [
-            'categories' => $this->categories(),
-        ]);
+        $cats = $this->categories();
+        $svc = app(\App\Services\HubLocationSearch::class);
+        $blockView = $this->renderHubBlocks('buys', ['categories' => $cats, 'searchIndex' => $svc->build('buys', $cats), 'featured' => $svc->featured('buys', $cats), 'hubTags' => $svc->tags('buys', $cats)]);
+        if ($blockView) return $blockView;
+        return view('buys.index', ['categories' => $cats]);
     }
 
     private function categories(): array

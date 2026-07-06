@@ -134,7 +134,7 @@
             Most of these are best bought from the source. Bohol calamay tastes different from Manila grocery shelves. Sagada arabica roasted yesterday beats any chain coffee. Burnay jars from the kiln in Vigan are half the price of the Manila reseller. Sort the trip around the destination first, then add a pasalubong stop on the way out.
         </p>
         <div class="flex flex-wrap gap-2 text-sm">
-            <a href="{{ url('/destinations') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
+            <a href="{{ route('destinations.index') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
                 Destinations by region
             </a>
             <a href="{{ route('foods.index') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-900 font-semibold">

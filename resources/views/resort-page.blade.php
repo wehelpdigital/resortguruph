@@ -68,7 +68,7 @@
             <nav class="text-xs sm:text-sm text-white/85 mb-4 flex items-center gap-1.5 flex-wrap">
                 <a href="{{ url('/') }}" class="hover:text-white transition-colors">Home</a>
                 <span class="text-white/60">/</span>
-                <a href="{{ url('/destinations') }}" class="hover:text-white transition-colors">Destinations</a>
+                <a href="{{ route('destinations.index') }}" class="hover:text-white transition-colors">Destinations</a>
                 <span class="text-white/60">/</span>
                 <span class="text-white">{{ $resort->name }}</span>
             </nav>
@@ -267,7 +267,7 @@
 
 {{-- Bottom return CTA — proper button instead of text link --}}
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-12 text-center">
-    <a href="{{ url('/destinations') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition-colors">
+    <a href="{{ route('destinations.index') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         Browse more destinations
     </a>

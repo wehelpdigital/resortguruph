@@ -19,7 +19,7 @@
                 ownerType: 'static_page'
             };
         </script>
-        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=1"></script>
+        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=2"></script>
     @endpush
 @endif
 

@@ -2,7 +2,7 @@
 
 @section('title') All Destinations Across the Philippines | {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} @endsection
 @section('meta_description') Browse every resort, hotel, and beach destination we cover across the Philippines, organized by region. From Batangas weekend pools to Palawan island hops. @endsection
-@section('canonical') {{ url('/destinations') }} @endsection
+@section('canonical') {{ route('destinations.index') }} @endsection
 
 @section('jsonld')
 <script type="application/ld+json">
@@ -11,7 +11,7 @@
     '@type' => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
-        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Destinations', 'item' => url('/destinations')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Destinations', 'item' => route('destinations.index')],
     ]
 ]) !!}
 </script>
@@ -21,7 +21,7 @@
     '@type' => 'CollectionPage',
     'name' => 'All Destinations',
     'description' => 'Browse resort and hotel destinations across the Philippines',
-    'url' => url('/destinations'),
+    'url' => route('destinations.index'),
 ]) !!}
 </script>
 @endsection

@@ -23,8 +23,11 @@ use Illuminate\Support\Facades\Route;
 
 // ============ PUBLIC ============
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/destinations', [DestinationsController::class, 'index'])->name('destinations.index');
-Route::get('/destinations/{cluster}', [DestinationsController::class, 'cluster'])->name('destinations.cluster')->where('cluster', '[a-z0-9-]+');
+Route::get('/tourist-spots-destinations-philippines', [DestinationsController::class, 'index'])->name('destinations.index');
+Route::get('/tourist-spots-destinations-philippines/{cluster}', [DestinationsController::class, 'cluster'])->name('destinations.cluster')->where('cluster', '[a-z0-9-]+');
+// Old /destinations URLs 301-redirect to the keyword-rich path so inbound links keep working.
+Route::get('/destinations', fn() => redirect()->route('destinations.index', [], 301));
+Route::get('/destinations/{cluster}', fn($cluster) => redirect()->route('destinations.cluster', ['cluster' => $cluster], 301))->where('cluster', '[a-z0-9-]+');
 Route::get('/food-trip', [FoodTripController::class, 'index'])->name('food-trip.index');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
@@ -38,13 +41,21 @@ Route::get('/contact', [StaticPageController::class, 'contact'])->name('contact'
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 // Static pages (about/terms/privacy) — handled via single route
-Route::get('/about', fn() => app(StaticPageController::class)->show('about'))->name('about');
+Route::get('/about-tourist-guide-ph', fn() => app(StaticPageController::class)->show('about'))->name('about');
+Route::redirect('/about', '/about-tourist-guide-ph', 301);
 Route::get('/terms', fn() => app(StaticPageController::class)->show('terms'))->name('terms');
 Route::get('/privacy', fn() => app(StaticPageController::class)->show('privacy'))->name('privacy');
 
+// Global nav typeahead search suggestions (JSON).
+Route::get('/search-suggest', [\App\Http\Controllers\SearchController::class, 'suggest'])->name('search.suggest');
+
 // Sitemap / robots
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap', [SitemapController::class, 'page'])->name('sitemap.page');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+
+// About the logo (static, custom layout)
+Route::view('/about-the-logo', 'about-logo')->name('about.logo');
 
 // ============ AUTH (owner guard) ============
 Route::middleware('guest')->group(function () {

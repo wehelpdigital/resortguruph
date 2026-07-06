@@ -22,9 +22,11 @@ class FoodsController extends Controller
 
     public function index()
     {
-        $blockView = $this->renderHubBlocks('foods', ['categories' => $this->categories()]); if ($blockView) return $blockView; return view('foods.index', [
-            'categories' => $this->categories(),
-        ]);
+        $cats = $this->categories();
+        $svc = app(\App\Services\HubLocationSearch::class);
+        $blockView = $this->renderHubBlocks('foods', ['categories' => $cats, 'searchIndex' => $svc->build('foods', $cats), 'featured' => $svc->featured('foods', $cats), 'hubTags' => $svc->tags('foods', $cats)]);
+        if ($blockView) return $blockView;
+        return view('foods.index', ['categories' => $cats]);
     }
 
     private function categories(): array

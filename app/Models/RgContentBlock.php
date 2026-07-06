@@ -79,6 +79,11 @@ class RgContentBlock extends Model
         //   dest_region_clusters — Sticky "Jump to region" pill nav
         //                          + cluster grids of keyword cards.
         'dest_hero_search', 'dest_featured_slider', 'dest_region_clusters',
+        // Destination CLUSTER page (/destinations/{cluster}) blocks. One shared
+        // `destination-cluster` template renders for every region, with that
+        // region's data injected as context by DestinationsController@cluster.
+        'destcluster_hero', 'destcluster_whats_in', 'destcluster_featured_spots',
+        'destcluster_testimonials', 'destcluster_explore_regions', 'destcluster_hashtags',
         // Homepage custom block types — each reads live data from
         // HomeController context (featuredKeywords / regions /
         // featuredResorts / latestPosts / stats).
@@ -101,6 +106,12 @@ class RgContentBlock extends Model
         'home_unified_search',
         // 4-card editorial-values grid (mission, principles, etc.).
         'home_values_grid',
+        // Newer homepage blocks added after the initial build.
+        'home_press_logos', 'home_category_accordion', 'home_alt_features',
+        'home_badge_explainer', 'home_partner_perks', 'home_keyword_hashtags',
+        // "How the site works" explainer — expandable accordion (default)
+        // or a legacy 3-pillar grid via the layout field.
+        'home_how_it_works',
         // Hub-page block types (foods/activities/buys/cultures).
         // Each reads category data from $context['categories'].
         'hub_hero', 'hub_category_nav', 'hub_category_grid', 'hub_footer_rail',

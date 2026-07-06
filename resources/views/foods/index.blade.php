@@ -139,7 +139,7 @@
             Filipino food is the country's strongest argument for visiting more than one province. Pinakbet tastes different in Ilocos. Lechon in Cebu hits a different note. Adobo is a different dish in every household. Use this page as the menu, then check the destination guides for the area, the restaurant directory for where to eat it, and time your trip so a regional fiesta lands on your dates.
         </p>
         <div class="flex flex-wrap gap-2 text-sm">
-            <a href="{{ url('/destinations') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
+            <a href="{{ route('destinations.index') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold">
                 Destinations by region
             </a>
             <a href="{{ url('/food-trip') }}" class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold">

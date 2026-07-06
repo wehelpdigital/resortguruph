@@ -22,9 +22,11 @@ class CulturesController extends Controller
 
     public function index()
     {
-        $blockView = $this->renderHubBlocks('cultures', ['categories' => $this->categories()]); if ($blockView) return $blockView; return view('cultures.index', [
-            'categories' => $this->categories(),
-        ]);
+        $cats = $this->categories();
+        $svc = app(\App\Services\HubLocationSearch::class);
+        $blockView = $this->renderHubBlocks('cultures', ['categories' => $cats, 'searchIndex' => $svc->build('cultures', $cats), 'featured' => $svc->featured('cultures', $cats)]);
+        if ($blockView) return $blockView;
+        return view('cultures.index', ['categories' => $cats]);
     }
 
     private function categories(): array

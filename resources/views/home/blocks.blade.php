@@ -22,11 +22,16 @@
                 ownerType: 'static_page'
             };
         </script>
-        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=1"></script>
+        <script defer src="{{ asset('js/rg-live-edit.js') }}?v=2"></script>
     @endpush
 @endif
 
 @section('content')
+{{-- Align the homepage section containers (max-w-6xl) with the header
+     nav, which uses max-w-7xl (80rem). Same padding + same max-width
+     means the content edges line up with the navigation edges. Scoped
+     to .page-home so other pages keep their max-w-6xl content width. --}}
+<style>.page-home .max-w-6xl{max-width:80rem}.page-home section h1,.page-home section h2{text-transform:capitalize}</style>
 <div class="page-home">
     {!! $renderedBlocks !!}
 </div>

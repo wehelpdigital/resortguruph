@@ -31,7 +31,9 @@ use Illuminate\Support\Facades\Schema;
  */
 class UnifiedSearchIndex
 {
-    private const CACHE_TTL = 3600;
+    private const CACHE_TTL = 600;
+
+    private ?array $keywordImageMap = null;
 
     public function build(): array
     {
@@ -49,14 +51,81 @@ class UnifiedSearchIndex
     }
 
     /**
+     * Host-relative /storage URL so search thumbnails load on whatever
+     * host the site is viewed from (matching how the rest of the site
+     * references media), not the absolute APP_URL that asset() would emit.
+     */
+    private function mediaUrl(string $path): string
+    {
+        return '/storage/' . ltrim($path, '/');
+    }
+
+    /**
+     * Map of keyword_id => representative image URL, taken from the first
+     * published tourist spot (then a restaurant) attached to that keyword.
+     * Lets destination + region results borrow a real photo instead of a
+     * flat icon. Memoized for the build.
+     */
+    private function keywordImages(): array
+    {
+        if ($this->keywordImageMap !== null) {
+            return $this->keywordImageMap;
+        }
+        $map = [];
+        if (Schema::hasTable('rg_tourist_spots')) {
+            $spots = RgTouristSpot::query()
+                ->where('status', 'published')
+                ->whereNotNull('keyword_id')
+                ->with('media')
+                ->get();
+            foreach ($spots as $s) {
+                if (!isset($map[$s->keyword_id]) && $s->media) {
+                    $map[$s->keyword_id] = $this->mediaUrl($s->media->path);
+                }
+            }
+        }
+        if (Schema::hasTable('rg_restaurant_listings') && Schema::hasTable('rg_restaurants')) {
+            $rows = DB::table('rg_restaurant_listings')
+                ->join('rg_restaurants', 'rg_restaurant_listings.restaurant_id', '=', 'rg_restaurants.id')
+                ->where('rg_restaurants.status', 'published')
+                ->whereNotNull('rg_restaurants.hero_path')
+                ->select('rg_restaurant_listings.keyword_id', 'rg_restaurants.hero_path')
+                ->get();
+            foreach ($rows as $r) {
+                if ($r->keyword_id !== null && !isset($map[$r->keyword_id]) && $r->hero_path) {
+                    $map[$r->keyword_id] = $this->mediaUrl($r->hero_path);
+                }
+            }
+        }
+        return $this->keywordImageMap = $map;
+    }
+
+    /**
      * Row-count fingerprint so the cache invalidates when content
      * is added/removed without needing a manual flush.
      */
     private function fingerprint(): string
     {
+        // Count + latest updated_at per source table (incl. rg_media, where
+        // tourist-spot photos live) so the cache invalidates not just when
+        // rows are added/removed but whenever an item — including its image —
+        // is edited in the backend. Keeps search thumbnails in sync with edits.
+        $tables = [
+            'rg_keywords', 'rg_resorts', 'rg_restaurants',
+            'rg_tourist_spots', 'rg_blog_posts', 'rg_media',
+        ];
         $parts = [];
-        foreach (['rg_keywords', 'rg_resorts', 'rg_restaurants', 'rg_tourist_spots', 'rg_blog_posts'] as $table) {
-            $parts[] = Schema::hasTable($table) ? (int) DB::table($table)->count() : 0;
+        foreach ($tables as $table) {
+            if (!Schema::hasTable($table)) {
+                $parts[] = '-';
+                continue;
+            }
+            if (Schema::hasColumn($table, 'updated_at')) {
+                $row = DB::table($table)->selectRaw('COUNT(*) AS c, MAX(updated_at) AS u')->first();
+                $parts[] = ((int) ($row->c ?? 0)) . ':' . ((string) ($row->u ?? ''));
+            } else {
+                $parts[] = (string) DB::table($table)->count();
+            }
         }
         return md5(implode('|', $parts));
     }
@@ -70,18 +139,26 @@ class UnifiedSearchIndex
             ->get()
             ->groupBy('cluster_tag');
 
+        $kwImg = $this->keywordImages();
         $items = [];
         foreach ($clusters as $slug => $meta) {
             $count = isset($byCluster[$slug]) ? $byCluster[$slug]->count() : 0;
             if ($count === 0) continue;
+            $img = null;
+            foreach ($byCluster[$slug] as $kw) {
+                if (!empty($kwImg[$kw->id])) {
+                    $img = $kwImg[$kw->id];
+                    break;
+                }
+            }
             $items[] = [
                 'type' => 'region',
                 'label' => (string) $meta['name'],
                 'sub' => $count . ' destinations and food pages',
-                'url' => url('/destinations#cluster-' . $slug),
+                'url' => route('destinations.index') . '#cluster-' . $slug,
                 'haystack' => mb_strtolower($meta['name'] . ' ' . ($meta['tagline'] ?? '')),
                 'volume' => 0,
-                'image' => null,
+                'image' => $img,
             ];
         }
         return $items;
@@ -97,6 +174,16 @@ class UnifiedSearchIndex
             ->limit(800)
             ->get(['id', 'phrase', 'slug', 'category', 'cluster_tag', 'search_volume_monthly']);
 
+        $kwImg = $this->keywordImages();
+        // Cluster-level fallback: first available keyword image per cluster,
+        // so a destination without its own attached spot still shows a real
+        // photo from the same region instead of a flat icon.
+        $clusterImg = [];
+        foreach ($keywords as $kw) {
+            if (!isset($clusterImg[$kw->cluster_tag]) && !empty($kwImg[$kw->id])) {
+                $clusterImg[$kw->cluster_tag] = $kwImg[$kw->id];
+            }
+        }
         $items = [];
         foreach ($keywords as $kw) {
             $clusterName = $clusters[$kw->cluster_tag]['name'] ?? ucfirst($kw->cluster_tag);
@@ -107,7 +194,7 @@ class UnifiedSearchIndex
                 'url' => url('/' . $kw->slug),
                 'haystack' => mb_strtolower($kw->phrase . ' ' . $clusterName),
                 'volume' => (int) $kw->search_volume_monthly,
-                'image' => null,
+                'image' => $kwImg[$kw->id] ?? ($clusterImg[$kw->cluster_tag] ?? null),
             ];
         }
         return $items;
@@ -131,7 +218,7 @@ class UnifiedSearchIndex
                 'url' => url('/listing/' . $r->slug),
                 'haystack' => mb_strtolower($r->name . ' ' . $loc . ' ' . ($r->tagline ?? '')),
                 'volume' => 0,
-                'image' => $r->hero_path ? asset('storage/' . $r->hero_path) : null,
+                'image' => $r->hero_path ? $this->mediaUrl($r->hero_path) : null,
             ];
         }
         return $items;
@@ -168,7 +255,7 @@ class UnifiedSearchIndex
                 'url' => $url,
                 'haystack' => mb_strtolower(($r->name ?? '') . ' ' . ($r->city ?? '') . ' ' . ($r->cuisine ?? '')),
                 'volume' => 0,
-                'image' => $r->hero_path ? asset('storage/' . $r->hero_path) : null,
+                'image' => $r->hero_path ? $this->mediaUrl($r->hero_path) : null,
             ];
         }
         return $items;
@@ -185,7 +272,7 @@ class UnifiedSearchIndex
             ->get();
         $items = [];
         foreach ($rows as $s) {
-            $url = $s->keyword ? url('/' . $s->keyword->slug) : url('/destinations');
+            $url = $s->keyword ? url('/' . $s->keyword->slug) : route('destinations.index');
             $loc = $s->location ?: ($s->region_label ?? '');
             $items[] = [
                 'type' => 'spot',
@@ -194,7 +281,7 @@ class UnifiedSearchIndex
                 'url' => $url,
                 'haystack' => mb_strtolower(($s->name ?? '') . ' ' . $loc . ' ' . ($s->region_label ?? '')),
                 'volume' => 0,
-                'image' => $s->media ? asset('storage/' . $s->media->path) : null,
+                'image' => $s->media ? $this->mediaUrl($s->media->path) : null,
             ];
         }
         return $items;
@@ -217,7 +304,7 @@ class UnifiedSearchIndex
                 'url' => url('/blog/' . $p->slug),
                 'haystack' => mb_strtolower($p->title . ' ' . ($p->excerpt ?? '')),
                 'volume' => 0,
-                'image' => $p->cover_path ? asset('storage/' . $p->cover_path) : null,
+                'image' => $p->cover_path ? $this->mediaUrl($p->cover_path) : null,
             ];
         }
         return $items;
