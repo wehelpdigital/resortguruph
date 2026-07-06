@@ -1,2 +1,8 @@
 *
 !.gitignore
+
+# Track uploaded media library so it ships with the repo
+!rg-media/
+!rg-media/**
+!rg-blocks/
+!rg-blocks/**
