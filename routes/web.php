@@ -29,6 +29,15 @@ Route::get('/tourist-spots-destinations-philippines/{cluster}', [DestinationsCon
 Route::get('/destinations', fn() => redirect()->route('destinations.index', [], 301));
 Route::get('/destinations/{cluster}', fn($cluster) => redirect()->route('destinations.cluster', ['cluster' => $cluster], 301))->where('cluster', '[a-z0-9-]+');
 Route::get('/food-trip', [FoodTripController::class, 'index'])->name('food-trip.index');
+
+// ============ MARKETING / LANDING PAGES ============
+// Two sales pages linked from the header CTAs: a traveler-facing
+// "plan your trip for free" page and a business-facing partner page
+// (the Partner Directory entry point). Must sit BEFORE the catch-all.
+Route::view('/create-your-adventure', 'landing.create-adventure')->name('create-your-adventure');
+Route::get('/become-a-partner', [\App\Http\Controllers\PartnerPageController::class, 'index'])->name('become-a-partner');
+Route::get('/partner-directory', [\App\Http\Controllers\PartnerDirectoryController::class, 'index'])->name('partner-directory');
+
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('/blog/{post:slug}/comment', [BlogController::class, 'storeComment'])

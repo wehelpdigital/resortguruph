@@ -149,6 +149,11 @@ class BlockRenderer
             'hub_category_nav' => $this->hubCategoryNav($p, $context),
             'hub_category_grid' => $this->hubCategoryGrid($p, $context),
             'hub_footer_rail' => $this->hubFooterRail($p, $context),
+            'partner_hero' => $this->partnerHero($p, $context),
+            'partner_audience' => $this->partnerAudience($p, $context),
+            'partner_steps' => $this->partnerSteps($p, $context),
+            'partner_badge' => $this->partnerBadge($p, $context),
+            'partner_perks' => $this->partnerPerks($p, $context),
             'home_editorial_intro' => $this->homeEditorialIntro($p, $context),
             'home_experience_grid' => $this->homeExperienceGrid($p, $context),
             'home_hub_links' => $this->homeHubLinks($p, $context),
@@ -4043,26 +4048,47 @@ class BlockRenderer
         // drifting wave with a rocking sailboat. Colour follows the accent.
         // Emitted once.
         if ($iconSet === 'food') {
+            // "Where to eat" divider: a car driving past a single restaurant.
+            // The (filled) storefront slides across the band from right to left
+            // while the bobbing, spinning-wheeled car holds the centre, so the
+            // car reads as passing the store once per loop, over a fading road
+            // rule. Colour follows the block accent. Emitted once per block.
             $out .= '<style>'
-                . '.rg-fooddiv{display:flex;align-items:center;justify-content:center;width:240px;max-width:75%;margin:0 auto 1.6rem}'
-                . '.rg-fooddiv::before,.rg-fooddiv::after{content:"";height:2px;flex:1;border-radius:2px}'
-                . '.rg-fooddiv::before{background:linear-gradient(90deg,transparent,' . $waveColor . ')}'
-                . '.rg-fooddiv::after{background:linear-gradient(90deg,' . $waveColor . ',transparent)}'
-                . '.rg-fooddiv svg{width:30px;height:30px;flex:0 0 auto;margin:0 10px;overflow:visible}'
-                . '.rg-fooddiv .rg-st{transform-origin:center bottom;animation:rgSteam 2.6s ease-in-out infinite}'
-                . '.rg-fooddiv .rg-st2{animation-delay:.55s}'
-                . '.rg-fooddiv .rg-st3{animation-delay:1.1s}'
-                . '@keyframes rgSteam{0%{opacity:0;transform:translateY(2px) scaleY(.6)}35%{opacity:.85}100%{opacity:0;transform:translateY(-4px) scaleY(1.15)}}'
-                . '@media(prefers-reduced-motion:reduce){.rg-fooddiv .rg-st{animation:none;opacity:.7}}'
+                . '.rg-cardiv{position:relative;width:240px;max-width:75%;height:40px;margin:0 auto 1.6rem;overflow:hidden}'
+                . '.rg-cardiv__store{position:absolute;left:0;bottom:4px;width:42px;height:30px;animation:rgPass 5.5s linear infinite}'
+                . '.rg-cardiv__road{position:absolute;left:0;right:0;bottom:5px;height:2px;border-radius:2px}'
+                . '.rg-cardiv__car{position:absolute;left:50%;bottom:4px;width:34px;height:20px;margin-left:-17px;transform-origin:50% 90%;animation:rgCarBob 1.6s ease-in-out infinite}'
+                . '.rg-cardiv__car .rg-wheel{transform-box:fill-box;transform-origin:center;animation:rgWheel 1.2s linear infinite}'
+                . '@keyframes rgPass{from{transform:translateX(240px)}to{transform:translateX(-46px)}}'
+                . '@keyframes rgCarBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}'
+                . '@keyframes rgWheel{to{transform:rotate(360deg)}}'
+                . '@media(prefers-reduced-motion:reduce){.rg-cardiv__store,.rg-cardiv__car,.rg-cardiv__car .rg-wheel{animation:none}}'
                 . '</style>';
-            $divider = '<div class="rg-fooddiv" aria-hidden="true">'
-                . '<svg viewBox="0 0 24 24" fill="none" stroke="' . $waveColor . '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
-                . '<path class="rg-st rg-st1" d="M9 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/>'
-                . '<path class="rg-st rg-st2" d="M12 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/>'
-                . '<path class="rg-st rg-st3" d="M15 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/>'
-                . '<path d="M3 11h18"/>'
-                . '<path d="M5 11a7 7 0 0 0 14 0Z" fill="' . $waveColor . '" stroke="none"/>'
-                . '</svg></div>';
+            $store = '<svg viewBox="0 0 44 32" style="width:100%;height:100%">'
+                . '<rect x="15" y="1.5" width="14" height="3.5" rx="1" fill="' . $waveColor . '"/>'
+                . '<rect x="21" y="5" width="2" height="2" fill="' . $waveColor . '"/>'
+                . '<rect x="5" y="13" width="34" height="17" fill="' . $waveColor . '"/>'
+                . '<path d="M2 8 H42 V13 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 Z" fill="' . $waveColor . '"/>'
+                . '<rect x="17.5" y="20" width="9" height="10" fill="#fff"/>'
+                . '<rect x="8" y="17" width="6.5" height="6" fill="#fff"/>'
+                . '<rect x="29.5" y="17" width="6.5" height="6" fill="#fff"/>'
+                . '</svg>';
+            $car = '<svg viewBox="0 0 34 20" fill="none" style="width:100%;height:100%">'
+                . '<g fill="' . $waveColor . '">'
+                . '<rect x="2" y="11" width="30" height="5.4" rx="2.6"/>'
+                . '<path d="M9 11.4 L12.6 6.6 Q13 6.2 13.6 6.2 L20.8 6.2 Q21.6 6.2 22 6.8 L25 11.4 Z"/>'
+                . '</g>'
+                . '<path d="M13.6 10.6 L15.8 7.5 L18.3 7.5 L18.3 10.6 Z" fill="#fff"/>'
+                . '<path d="M19.5 10.6 L19.5 7.5 L20.9 7.5 L23 10.6 Z" fill="#fff"/>'
+                . '<g class="rg-wheel"><circle cx="9.5" cy="16.2" r="3" fill="' . $waveColor . '"/><circle cx="9.5" cy="16.2" r="1.2" fill="#fff"/><path d="M9.5 14.4 V18 M7.7 16.2 H11.3" stroke="#fff" stroke-width=".7"/></g>'
+                . '<g class="rg-wheel"><circle cx="24.5" cy="16.2" r="3" fill="' . $waveColor . '"/><circle cx="24.5" cy="16.2" r="1.2" fill="#fff"/><path d="M24.5 14.4 V18 M22.7 16.2 H26.3" stroke="#fff" stroke-width=".7"/></g>'
+                . '<circle cx="31.3" cy="13" r=".8" fill="' . $waveColor . '"/>'
+                . '</svg>';
+            $divider = '<div class="rg-cardiv" aria-hidden="true">'
+                . '<div class="rg-cardiv__road" style="background:linear-gradient(90deg,transparent,' . $waveColor . ' 12%,' . $waveColor . ' 88%,transparent)"></div>'
+                . '<div class="rg-cardiv__store">' . $store . '</div>'
+                . '<div class="rg-cardiv__car">' . $car . '</div>'
+                . '</div>';
         } else {
             $waveTile = "<svg xmlns='http://www.w3.org/2000/svg' width='36' height='14' viewBox='0 0 36 14'><path d='M0 7 Q9 1 18 7 T36 7' fill='none' stroke='%s' stroke-width='2' stroke-linecap='round'/></svg>";
             $waveFront = 'data:image/svg+xml,' . rawurlencode(sprintf($waveTile, $waveColor));
@@ -7021,8 +7047,8 @@ class BlockRenderer
     private function hubDivider(string $motif): string
     {
         static $emitted = false;
-        $motif = in_array($motif, ['bowl', 'compass', 'bag', 'sun', 'zigzag'], true) ? $motif : 'bowl';
-        $c = ['bowl' => 'rgb(217,119,6)', 'compass' => 'rgb(5,150,105)', 'bag' => 'rgb(124,58,237)', 'sun' => 'rgb(13,148,136)', 'zigzag' => 'rgb(13,148,136)'][$motif];
+        $motif = in_array($motif, ['bowl', 'compass', 'diver', 'bag', 'sun', 'zigzag'], true) ? $motif : 'bowl';
+        $c = ['bowl' => 'rgb(217,119,6)', 'compass' => 'rgb(5,150,105)', 'diver' => 'rgb(5,150,105)', 'bag' => 'rgb(124,58,237)', 'sun' => 'rgb(13,148,136)', 'zigzag' => 'rgb(13,148,136)'][$motif];
         $out = '';
         if (!$emitted) {
             $emitted = true;
@@ -7035,27 +7061,67 @@ class BlockRenderer
                 . '.rg-hubdiv .rg-spin{transform-origin:12px 12px;animation:rgSpin 9s linear infinite}'
                 . '.rg-hubdiv .rg-sun{transform-origin:12px 12px;animation:rgSpin 24s linear infinite}'
                 . '.rg-hubdiv .rg-bob{transform-origin:center;animation:rgBob 2.8s ease-in-out infinite}'
+                . '.rg-hubdiv .rg-drop{transform-box:fill-box;transform-origin:center;animation:rgDrop 2.4s ease-in infinite}'
+                . '.rg-hubdiv .rg-drop2{animation-delay:.8s}.rg-hubdiv .rg-drop3{animation-delay:1.6s}'
+                . '.rg-hubdiv .rg-bub{transform-box:fill-box;transform-origin:center;animation:rgBubble 2.8s ease-in-out infinite}'
+                . '.rg-hubdiv .rg-bub2{animation-delay:.7s}.rg-hubdiv .rg-bub3{animation-delay:1.4s}'
                 . '@keyframes rgSteam{0%{opacity:0;transform:translateY(2px) scaleY(.6)}35%{opacity:.85}100%{opacity:0;transform:translateY(-4px) scaleY(1.15)}}'
                 . '@keyframes rgSpin{to{transform:rotate(360deg)}}'
                 . '@keyframes rgBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}'
+                . '@keyframes rgDrop{0%{opacity:0;transform:translateY(-17px) scale(.55)}10%{opacity:1;transform:translateY(-14px) scale(1)}62%{opacity:1;transform:translateY(-1px) scale(.9)}78%,100%{opacity:0;transform:translateY(1.5px) scale(.4)}}'
+                . '@keyframes rgBubble{0%{opacity:0;transform:translateY(1px) scale(.5)}30%{opacity:.9}100%{opacity:0;transform:translateY(-5px) scale(1)}}'
                 . '.rg-zz{width:240px;max-width:75%;height:14px;margin:0 auto 1.6rem;overflow:hidden}'
                 . '.rg-zz i{display:block;height:100%;background-repeat:repeat-x;background-position-y:center;background-size:28px 14px;animation:rgZz 3.2s linear infinite}'
                 . '@keyframes rgZz{from{background-position-x:0}to{background-position-x:28px}}'
-                . '@media(prefers-reduced-motion:reduce){.rg-hubdiv .rg-st,.rg-hubdiv .rg-spin,.rg-hubdiv .rg-sun,.rg-hubdiv .rg-bob,.rg-zz i{animation:none}}'
+                . '@media(prefers-reduced-motion:reduce){.rg-hubdiv .rg-st,.rg-hubdiv .rg-spin,.rg-hubdiv .rg-sun,.rg-hubdiv .rg-bob,.rg-hubdiv .rg-drop,.rg-hubdiv .rg-bub,.rg-zz i{animation:none}.rg-hubdiv .rg-drop{opacity:0}}'
                 . '</style>';
         }
-        // Tribal zigzag: a drifting diamond-chain band (two mirrored zigzags).
+        // Tribal zigzag: a drifting diamond-chain band (two mirrored zigzags)
+        // with a tribal dot set in the centre of each diamond. The dots ride
+        // the same scrolling tile, so they drift along with the pattern.
         if ($motif === 'zigzag') {
-            $zzSvg = "<svg xmlns='http://www.w3.org/2000/svg' width='28' height='14' viewBox='0 0 28 14'><path d='M0 7 L7 1 L14 7 L21 1 L28 7 M0 7 L7 13 L14 7 L21 13 L28 7' fill='none' stroke='%s' stroke-width='1.6' stroke-linejoin='round'/></svg>";
-            $zzUri = 'data:image/svg+xml,' . rawurlencode(sprintf($zzSvg, $c));
+            $zzSvg = "<svg xmlns='http://www.w3.org/2000/svg' width='28' height='14' viewBox='0 0 28 14'><path d='M0 7 L7 1 L14 7 L21 1 L28 7 M0 7 L7 13 L14 7 L21 13 L28 7' fill='none' stroke='%s' stroke-width='1.6' stroke-linejoin='round'/><circle cx='7' cy='7' r='1.5' fill='%s'/><circle cx='21' cy='7' r='1.5' fill='%s'/></svg>";
+            $zzUri = 'data:image/svg+xml,' . rawurlencode(sprintf($zzSvg, $c, $c, $c));
             return $out . '<div class="rg-zz" aria-hidden="true"><i style="background-image:url(\'' . $zzUri . '\')"></i></div>';
         }
         if ($motif === 'bowl') {
             $emblem = '<path class="rg-st rg-st1" d="M9 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/><path class="rg-st rg-st2" d="M12 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/><path class="rg-st rg-st3" d="M15 8.5c-.7-.9-.7-1.7 0-2.6s.7-1.7 0-2.6"/><path d="M3 11h18"/><path d="M5 11a7 7 0 0 0 14 0Z" fill="' . $c . '" stroke="none"/>';
         } elseif ($motif === 'compass') {
             $emblem = '<circle cx="12" cy="12" r="8.5"/><g class="rg-spin"><path d="M12 5.5l2.2 6.5L12 18.5 9.8 12z" fill="' . $c . '" stroke="none"/></g><circle cx="12" cy="12" r="1.1" fill="' . $c . '" stroke="none"/>';
+        } elseif ($motif === 'diver') {
+            // Scuba diver silhouette gliding just above the sea floor, tilted
+            // head-down toward it (a dive), fins kicked out to the left, one
+            // arm reaching down, bubbles rising from the regulator. The seabed
+            // rule + two coral fronds are static; the diver gives a gentle body
+            // sway (rg-bob, nested inside the static dive-tilt rotation so the
+            // animated transform does not clobber it) and the bubbles rise (rg-bub).
+            $seabed = '<path d="M2 20.6 Q7 19 12 20 T22 19.4"/>'
+                . '<path d="M18.4 19.6 q-1 -1.4 .2 -2.4"/>'
+                . '<path d="M19.2 19.6 q.5 -1 .1 -2"/>';
+            $bubbles = '<circle class="rg-bub rg-bub1" cx="18.2" cy="8.6" r=".8" fill="' . $c . '" stroke="none"/>'
+                . '<circle class="rg-bub rg-bub2" cx="19.1" cy="6.9" r=".6" fill="' . $c . '" stroke="none"/>'
+                . '<circle class="rg-bub rg-bub3" cx="19.7" cy="5.5" r=".45" fill="' . $c . '" stroke="none"/>';
+            $diver = '<g transform="rotate(10 12 11)"><g class="rg-bob">'
+                . '<rect x="9.6" y="7.7" width="3" height="1.9" rx=".9" fill="' . $c . '" stroke="none"/>'
+                . '<ellipse cx="12" cy="11" rx="3.7" ry="1.95" fill="' . $c . '" stroke="none"/>'
+                . '<circle cx="16.3" cy="11" r="2" fill="' . $c . '" stroke="none"/>'
+                . '<path d="M17.6 11.9 l1 .5" stroke-width="1.3"/>'
+                . '<path d="M14.4 12.2 Q13.6 14.6 12.4 16.2" stroke-width="1.7"/>'
+                . '<path d="M8.7 10.3 L5 9.2"/>'
+                . '<path d="M8.9 11.9 L5.2 12.8"/>'
+                . '<path d="M5 9.2 L2.2 7.9 L2.9 10.4 Z" fill="' . $c . '" stroke="none"/>'
+                . '<path d="M5.2 12.8 L2.4 14.1 L3.1 11.6 Z" fill="' . $c . '" stroke="none"/>'
+                . '</g></g>';
+            $emblem = $seabed . $bubbles . $diver;
         } elseif ($motif === 'bag') {
-            $emblem = '<g class="rg-bob"><path d="M5.5 8h13l-1.1 12.2a1.5 1.5 0 0 1-1.5 1.3H8.1a1.5 1.5 0 0 1-1.5-1.3z" fill="' . $c . '" stroke="none"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></g>';
+            // Objects rendered first so the bag body (drawn after) occludes each
+            // one as it crosses the mouth at y~8 — reads as "dropping into the bag".
+            $drops = '<g fill="' . $c . '" stroke="none">'
+                . '<circle class="rg-drop rg-drop1" cx="12" cy="8.5" r="1.5"/>'
+                . '<circle class="rg-drop rg-drop2" cx="9.4" cy="8.6" r="1.15"/>'
+                . '<circle class="rg-drop rg-drop3" cx="14.6" cy="8.6" r="1.15"/>'
+                . '</g>';
+            $emblem = $drops . '<g class="rg-bob"><path d="M5.5 8h13l-1.1 12.2a1.5 1.5 0 0 1-1.5 1.3H8.1a1.5 1.5 0 0 1-1.5-1.3z" fill="' . $c . '" stroke="none"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></g>';
         } else {
             $rays = '<line x1="12" y1="4" x2="12" y2="6.5"/><line x1="17.66" y1="6.34" x2="15.9" y2="8.1"/><line x1="20" y1="12" x2="17.5" y2="12"/><line x1="17.66" y1="17.66" x2="15.9" y2="15.9"/><line x1="12" y1="20" x2="12" y2="17.5"/><line x1="6.34" y1="17.66" x2="8.1" y2="15.9"/><line x1="4" y1="12" x2="6.5" y2="12"/><line x1="6.34" y1="6.34" x2="8.1" y2="8.1"/>';
             $emblem = '<g class="rg-sun"><circle cx="12" cy="12" r="3.4" fill="' . $c . '" stroke="none"/>' . $rays . '</g>';
@@ -7198,7 +7264,9 @@ class BlockRenderer
             'teal' => 'bg-teal-100 hover:bg-teal-200 text-teal-900',
         ];
 
-        $out = '<section class="rg-hub-footer mt-12">';
+        // Tinted, rounded panel so the closing rail reads as its own block,
+        // creating a clear division from the #Tags section that precedes it.
+        $out = '<section class="rg-hub-footer mt-12 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-8 sm:px-8 sm:py-9">';
         if ($heading !== '') $out .= '<h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($body !== '') $out .= '<p class="text-slate-700 leading-relaxed max-w-3xl mb-5">' . $body . '</p>';
         if (!empty($links)) {
@@ -7214,6 +7282,238 @@ class BlockRenderer
             $out .= '</div>';
         }
         $out .= '</section>';
+        return $out;
+    }
+
+    /* ============================================================
+     * Partner-program blocks (the /become-a-partner page). Each is
+     * self-contained from its own payload (no controller context),
+     * so the whole page is editable in the mother-app block builder.
+     * Design ported 1:1 from the original become-partner landing view.
+     * ============================================================ */
+
+    /** Resolve a media path/URL for a partner block image slot. */
+    private function partnerImg(string $path): string
+    {
+        $path = trim($path);
+        if ($path === '') return '';
+        return (str_starts_with($path, 'http') || str_starts_with($path, '/')) ? $path : '/storage/' . ltrim($path, '/');
+    }
+
+    /**
+     * partner_hero — split hero: eyebrow chip, title with a
+     * {{accent}}…{{/accent}} brush line, subhead, two CTAs, trust
+     * points, and an image with a floating verified-badge card.
+     */
+    private function partnerHero(array $p, array $context): string
+    {
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $title = trim((string) ($p['title'] ?? ''));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $cpLabel = $this->e(trim((string) ($p['cta_primary_label'] ?? '')));
+        $cpUrl = $this->e(trim((string) ($p['cta_primary_url'] ?? '#')) ?: '#');
+        $csLabel = $this->e(trim((string) ($p['cta_secondary_label'] ?? '')));
+        $csUrl = $this->e(trim((string) ($p['cta_secondary_url'] ?? '#')) ?: '#');
+        $img = $this->partnerImg((string) ($p['image'] ?? ''));
+        $imgAlt = $this->e(trim((string) ($p['image_alt'] ?? '')));
+        $badgeTitle = $this->e(trim((string) ($p['badge_title'] ?? '')));
+        $badgeSub = $this->e(trim((string) ($p['badge_subtitle'] ?? '')));
+        $trust = $p['trust_points'] ?? [];
+        if (is_string($trust)) $trust = array_filter(array_map('trim', explode("\n", $trust)));
+        if (!is_array($trust)) $trust = [];
+
+        $titleHtml = '';
+        if (preg_match('/(.*?)\{\{accent\}\}(.+?)\{\{\/accent\}\}(.*)/s', $title, $m)) {
+            $titleHtml = $this->e(trim($m[1])) . ($m[1] !== '' ? '<br>' : '')
+                . '<span class="font-brand" style="color:#c0392b;font-weight:400;font-size:1.5em;line-height:1;display:inline-block;margin-top:.12em">' . $this->e(trim($m[2])) . '</span>'
+                . ($m[3] !== '' ? ' ' . $this->e(trim($m[3])) : '');
+        } else {
+            $titleHtml = $this->e($title);
+        }
+
+        $out = '<section class="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-emerald-50">';
+        $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20"><div class="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">';
+        $out .= '<div>';
+        if ($eyebrow !== '') {
+            $out .= '<div class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-bold text-brand-700 bg-white/70 border border-brand-100 rounded-full px-3 py-1.5 mb-5">'
+                . '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>' . $eyebrow . '</div>';
+        }
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-5xl lg:text-[3.4rem] font-extrabold text-slate-900 leading-[1.05] mb-5">' . $titleHtml . '</h1>';
+        if ($subhead !== '') $out .= '<p class="text-lg text-slate-600 leading-relaxed max-w-xl mb-7">' . $subhead . '</p>';
+        if ($cpLabel !== '' || $csLabel !== '') {
+            $out .= '<div class="flex flex-wrap gap-3">';
+            if ($cpLabel !== '') $out .= '<a href="' . $cpUrl . '" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand-600 text-white font-bold text-base hover:bg-brand-700 shadow-lg shadow-brand-600/20 transition">' . $cpLabel . '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>';
+            if ($csLabel !== '') $out .= '<a href="' . $csUrl . '" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-slate-800 font-bold text-base border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition">' . $csLabel . '</a>';
+            $out .= '</div>';
+        }
+        if (!empty($trust)) {
+            $out .= '<div class="flex flex-wrap items-center gap-x-5 gap-y-2 mt-6 text-sm text-slate-500 font-medium">';
+            foreach ($trust as $tp) {
+                $tp = $this->e(trim((string) $tp));
+                if ($tp === '') continue;
+                $out .= '<span class="inline-flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' . $tp . '</span>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div>';
+        $out .= '<div class="relative"><div class="absolute -inset-4 bg-gradient-to-tr from-brand-200/40 to-emerald-200/40 rounded-[2rem] blur-2xl" aria-hidden="true"></div>';
+        $out .= $img !== '' ? '<img src="' . $this->e($img) . '" alt="' . $imgAlt . '" class="relative w-full rounded-3xl shadow-2xl ring-1 ring-black/5 object-cover">' : '<div class="relative w-full aspect-[2/1] rounded-3xl bg-slate-100 ring-1 ring-black/5"></div>';
+        if ($badgeTitle !== '' || $badgeSub !== '') {
+            $out .= '<div class="hidden sm:flex absolute -bottom-5 -left-5 items-center gap-3 bg-white rounded-2xl shadow-xl ring-1 ring-black/5 px-4 py-3">'
+                . '<div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div><div class="leading-tight">';
+            if ($badgeTitle !== '') $out .= '<div class="text-sm font-bold text-slate-900">' . $badgeTitle . '</div>';
+            if ($badgeSub !== '') $out .= '<div class="text-xs text-slate-500">' . $badgeSub . '</div>';
+            $out .= '</div></div>';
+        }
+        $out .= '</div></div></div></section>';
+        return $out;
+    }
+
+    /** partner_audience — "who can join" icon-card grid. */
+    private function partnerAudience(array $p, array $context): string
+    {
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $items = $p['items'] ?? [];
+        if (is_string($items)) { $d = json_decode($items, true); $items = is_array($d) ? $d : []; }
+        if (!is_array($items)) $items = [];
+
+        $out = '<section class="py-16 md:py-24 bg-white"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="max-w-2xl mb-10 md:mb-12">';
+        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-700 mb-3">' . $eyebrow . '</div>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight mb-3">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-lg text-slate-600">' . $subhead . '</p>';
+        $out .= '</div>';
+        if (!empty($items)) {
+            $out .= '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">';
+            foreach ($items as $it) {
+                $it = $this->toArrayShapeSimple($it);
+                $icon = $this->e(trim((string) ($it['icon'] ?? '')));
+                $title = $this->e(trim((string) ($it['title'] ?? '')));
+                $subtitle = $this->e(trim((string) ($it['subtitle'] ?? '')));
+                if ($title === '') continue;
+                $out .= '<div class="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 hover:border-brand-300 hover:shadow-md transition">'
+                    . '<div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 group-hover:bg-brand-600 group-hover:text-white transition-colors"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="' . $icon . '"/></svg></div>'
+                    . '<div class="min-w-0"><div class="font-bold text-slate-900 leading-tight">' . $title . '</div>';
+                if ($subtitle !== '') $out .= '<div class="text-sm text-slate-500 mt-0.5">' . $subtitle . '</div>';
+                $out .= '</div></div>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /** partner_steps — numbered 1-2-3 funnel cards. */
+    private function partnerSteps(array $p, array $context): string
+    {
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $steps = $p['steps'] ?? [];
+        if (is_string($steps)) { $d = json_decode($steps, true); $steps = is_array($d) ? $d : []; }
+        if (!is_array($steps)) $steps = [];
+        $colorMap = ['brand' => 'bg-brand-600', 'amber' => 'bg-amber-500', 'emerald' => 'bg-emerald-600', 'rose' => 'bg-rose-600', 'violet' => 'bg-violet-600', 'teal' => 'bg-teal-600'];
+
+        $out = '<section class="py-16 md:py-24 bg-slate-50 border-y border-slate-100"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="text-center max-w-2xl mx-auto mb-12">';
+        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-700 mb-3">' . $eyebrow . '</div>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">' . $heading . '</h2>';
+        $out .= '</div>';
+        if (!empty($steps)) {
+            $out .= '<div class="grid md:grid-cols-3 gap-6">';
+            foreach ($steps as $s) {
+                $s = $this->toArrayShapeSimple($s);
+                $num = $this->e(trim((string) ($s['number'] ?? '')));
+                $bg = $colorMap[(string) ($s['color'] ?? 'brand')] ?? $colorMap['brand'];
+                $title = $this->e(trim((string) ($s['title'] ?? '')));
+                $body = $this->e(trim((string) ($s['body'] ?? '')));
+                $out .= '<div class="relative rounded-2xl bg-white border border-slate-200 p-7 shadow-sm">'
+                    . '<div class="w-12 h-12 rounded-full ' . $bg . ' text-white flex items-center justify-center text-xl font-extrabold mb-5 shadow-md">' . $num . '</div>';
+                if ($title !== '') $out .= '<h3 class="text-xl font-bold text-slate-900 mb-2">' . $title . '</h3>';
+                if ($body !== '') $out .= '<p class="text-slate-600 leading-relaxed">' . $body . '</p>';
+                $out .= '</div>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /** partner_badge — image + heading + body + checklist (image side selectable). */
+    private function partnerBadge(array $p, array $context): string
+    {
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $eyeColor = in_array($p['eyebrow_color'] ?? 'amber', ['brand', 'amber', 'emerald', 'rose', 'violet', 'teal'], true) ? $p['eyebrow_color'] : 'amber';
+        $eyeClass = ['brand' => 'text-brand-700', 'amber' => 'text-amber-700', 'emerald' => 'text-emerald-700', 'rose' => 'text-rose-700', 'violet' => 'text-violet-700', 'teal' => 'text-teal-700'][$eyeColor];
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $body = $this->e(trim((string) ($p['body'] ?? '')));
+        $img = $this->partnerImg((string) ($p['image'] ?? ''));
+        $imgAlt = $this->e(trim((string) ($p['image_alt'] ?? '')));
+        $side = ($p['image_side'] ?? 'left') === 'right' ? 'right' : 'left';
+        $points = $p['points'] ?? [];
+        if (is_string($points)) $points = array_filter(array_map('trim', explode("\n", $points)));
+        if (!is_array($points)) $points = [];
+
+        $imgOrderCls = $side === 'left' ? ' order-2 lg:order-1' : '';
+        $txtOrderCls = $side === 'left' ? ' order-1 lg:order-2' : '';
+        $imgCol = '<div class="relative' . $imgOrderCls . '"><div class="absolute -inset-3 bg-gradient-to-br from-amber-200/40 to-brand-200/40 rounded-[2rem] blur-2xl" aria-hidden="true"></div>'
+            . ($img !== '' ? '<img src="' . $this->e($img) . '" alt="' . $imgAlt . '" class="relative w-full rounded-3xl shadow-xl ring-1 ring-black/5 object-cover">' : '<div class="relative w-full aspect-[2/1] rounded-3xl bg-slate-100 ring-1 ring-black/5"></div>')
+            . '</div>';
+        $txtCol = '<div class="' . ltrim($txtOrderCls) . '">';
+        if ($eyebrow !== '') $txtCol .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold ' . $eyeClass . ' mb-3">' . $eyebrow . '</div>';
+        if ($heading !== '') $txtCol .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight mb-4">' . $heading . '</h2>';
+        if ($body !== '') $txtCol .= '<p class="text-lg text-slate-600 leading-relaxed mb-6">' . $body . '</p>';
+        if (!empty($points)) {
+            $txtCol .= '<ul class="space-y-3">';
+            foreach ($points as $pt) {
+                $pt = $this->e(trim((string) $pt));
+                if ($pt === '') continue;
+                $txtCol .= '<li class="flex items-start gap-3 text-slate-700"><svg class="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg><span>' . $pt . '</span></li>';
+            }
+            $txtCol .= '</ul>';
+        }
+        $txtCol .= '</div>';
+
+        $out = '<section class="py-16 md:py-24 bg-white overflow-hidden"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">' . ($side === 'left' ? ($imgCol . $txtCol) : ($txtCol . $imgCol)) . '</div>';
+        $out .= '</div></section>';
+        return $out;
+    }
+
+    /** partner_perks — 3-up perk cards (icon tile + title + body). */
+    private function partnerPerks(array $p, array $context): string
+    {
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? '')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? ''));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? '')));
+        $perks = $p['perks'] ?? [];
+        if (is_string($perks)) { $d = json_decode($perks, true); $perks = is_array($d) ? $d : []; }
+        if (!is_array($perks)) $perks = [];
+
+        $out = '<section class="py-16 md:py-24 bg-slate-50 border-y border-slate-100"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">';
+        $out .= '<div class="text-center max-w-2xl mx-auto mb-12">';
+        if ($eyebrow !== '') $out .= '<div class="text-[11px] uppercase tracking-[0.2em] font-bold text-brand-700 mb-3">' . $eyebrow . '</div>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">' . $heading . '</h2>';
+        if ($subhead !== '') $out .= '<p class="text-lg text-slate-600 mt-3">' . $subhead . '</p>';
+        $out .= '</div>';
+        if (!empty($perks)) {
+            $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">';
+            foreach ($perks as $pk) {
+                $pk = $this->toArrayShapeSimple($pk);
+                $icon = $this->e(trim((string) ($pk['icon'] ?? '')));
+                $title = $this->e(trim((string) ($pk['title'] ?? '')));
+                $body = $this->e(trim((string) ($pk['body'] ?? '')));
+                if ($title === '') continue;
+                $out .= '<div class="rounded-2xl bg-white border border-slate-200 p-6 hover:shadow-md transition">'
+                    . '<div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="' . $icon . '"/></svg></div>'
+                    . '<h3 class="text-lg font-bold text-slate-900 mb-1.5">' . $title . '</h3>';
+                if ($body !== '') $out .= '<p class="text-slate-600 leading-relaxed text-[15px]">' . $body . '</p>';
+                $out .= '</div>';
+            }
+            $out .= '</div>';
+        }
+        $out .= '</div></section>';
         return $out;
     }
 }

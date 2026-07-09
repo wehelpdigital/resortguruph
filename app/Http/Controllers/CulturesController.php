@@ -24,7 +24,7 @@ class CulturesController extends Controller
     {
         $cats = $this->categories();
         $svc = app(\App\Services\HubLocationSearch::class);
-        $blockView = $this->renderHubBlocks('cultures', ['categories' => $cats, 'searchIndex' => $svc->build('cultures', $cats), 'featured' => $svc->featured('cultures', $cats)]);
+        $blockView = $this->renderHubBlocks('cultures', ['categories' => $cats, 'searchIndex' => $svc->build('cultures', $cats), 'featured' => $svc->featured('cultures', $cats), 'hubTags' => $svc->tags('cultures', $cats)]);
         if ($blockView) return $blockView;
         return view('cultures.index', ['categories' => $cats]);
     }

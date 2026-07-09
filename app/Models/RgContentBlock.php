@@ -115,6 +115,9 @@ class RgContentBlock extends Model
         // Hub-page block types (foods/activities/buys/cultures).
         // Each reads category data from $context['categories'].
         'hub_hero', 'hub_category_nav', 'hub_category_grid', 'hub_footer_rail',
+        // Partner-program blocks (the /become-a-partner page). Self-contained
+        // from payload; the page is fully block-driven + builder-editable.
+        'partner_hero', 'partner_audience', 'partner_steps', 'partner_badge', 'partner_perks',
         // Page-header content elements migrated out of rg_seo_pages
         // columns into blocks so the admin can reorder / remove / add
         // them like any other content. subtitle_intro replaces the

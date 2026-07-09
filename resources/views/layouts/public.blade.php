@@ -694,8 +694,8 @@
                 <a href="{{ route('dashboard.index') }}" class="px-3 py-1.5 rounded-md bg-brand-600 text-white hover:bg-brand-700 whitespace-nowrap">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="hover:text-brand-600">Sign in</a>
-                <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition whitespace-nowrap">Create Your Adventure for Free<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
-                <a href="{{ route('register') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-600 text-white font-bold hover:bg-brand-700 transition whitespace-nowrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Become a Partner</a>
+                <a href="{{ route('create-your-adventure') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition whitespace-nowrap">Create Your Adventure for Free<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+                <a href="{{ route('become-a-partner') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-600 text-white font-bold hover:bg-brand-700 transition whitespace-nowrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Become a Partner</a>
             @endauth
         </nav>
         <button class="lg:hidden shrink-0" onclick="document.getElementById('mobileNav').classList.toggle('hidden')" aria-label="Menu">
@@ -754,6 +754,15 @@
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/></svg>
                 Cultures to Meet
             </a>
+
+            {{-- Partner Directory — same size and a flat fill like the other
+                 section pills on this line; links to the public directory. --}}
+            <a href="{{ route('partner-directory') }}"
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shrink-0 transition
+                      {{ request()->is('partner-directory') ? 'bg-brand-700 text-white ring-2 ring-brand-400 ring-offset-2 ring-offset-slate-50 shadow-md' : 'bg-brand-600 text-white hover:bg-brand-700' }}">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 9h16 M9 9v11"/></svg>
+                Partner Directory
+            </a>
         </div>
     </div>
 
@@ -766,8 +775,8 @@
                 <a href="{{ route('dashboard.index') }}" class="block text-brand-600">Dashboard</a>
             @else
                 <a href="{{ route('login') }}" class="block">Sign in</a>
-                <a href="{{ route('home') }}" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition">Create Your Adventure for Free<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
-                <a href="{{ route('register') }}" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 rounded-full bg-brand-600 text-white font-bold hover:bg-brand-700 transition"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Become a Partner</a>
+                <a href="{{ route('create-your-adventure') }}" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 rounded-full bg-red-500 text-white font-bold hover:bg-red-600 transition">Create Your Adventure for Free<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+                <a href="{{ route('become-a-partner') }}" class="flex items-center justify-center gap-1.5 text-center px-4 py-2.5 rounded-full bg-brand-600 text-white font-bold hover:bg-brand-700 transition"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Become a Partner</a>
             @endauth
         </div>
     </div>
