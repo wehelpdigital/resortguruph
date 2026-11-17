@@ -59,6 +59,12 @@ class CloudSyncDb extends Command
             DB::connection($target)->getPdo();
         } catch (\Throwable $e) {
             $this->error('Cannot connect to target: ' . $e->getMessage());
+            if (preg_match('/certificate|ssl|tls/i', $e->getMessage())) {
+                $this->line('TLS hint: set CLOUD_DB_SSL_CA to the CA file from the Cloud dashboard, or CLOUD_DB_SSL_VERIFY=false to skip certificate verification (traffic stays encrypted).');
+            }
+            if (preg_match('/timed out|refused|getaddrinfo|No such host/i', $e->getMessage())) {
+                $this->line('Network hint: enable the public endpoint on the Cloud database and copy its host (…public.db.laravel.cloud).');
+            }
             return self::FAILURE;
         }
 
