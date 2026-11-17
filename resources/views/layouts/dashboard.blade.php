@@ -8,16 +8,26 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
     <script>
-        tailwind.config = { theme: { extend: { colors: { brand: { 50: '#eef4ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }, fontFamily: { sans: ['Inter', 'system-ui'] } } } }
+        tailwind.config = { theme: { extend: { colors: { brand: { 50: '#eef6fb', 100: '#d6eaf5', 200: '#afd5ec', 300: '#7bb9de', 400: '#4499cc', 500: '#217db6', 600: '#13669c', 700: '#11527f', 800: '#13466a', 900: '#153b59' } }, fontFamily: { sans: ['Inter', 'system-ui'], display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui'] } } } }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        h1, h2, h3 { font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif; letter-spacing: -0.01em; }
+        /* Phones: the sidebar becomes an off-canvas panel. */
+        @media (max-width: 767px) {
+            #dashSidebar { display: flex; transform: translateX(-100%); transition: transform .25s ease; z-index: 50; }
+            #dashSidebar.is-open { transform: translateX(0); box-shadow: 20px 0 40px -20px rgba(0,0,0,.5); }
+        }
+        #dashBackdrop { transition: opacity .25s ease; }
+    </style>
     @stack('head')
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased">
 
 <div class="min-h-screen flex">
-    <aside class="w-64 bg-slate-900 text-slate-300 hidden md:flex flex-col fixed inset-y-0">
+    <div id="dashBackdrop" class="fixed inset-0 bg-slate-900/50 z-40 opacity-0 pointer-events-none md:hidden" onclick="rgDashNav(false)"></div>
+    <aside id="dashSidebar" class="w-64 bg-[#0b1b2b] text-slate-300 hidden md:flex flex-col fixed inset-y-0 overflow-y-auto">
         <div class="p-5 border-b border-slate-800">
             <a href="{{ route('home') }}" class="text-white font-bold flex items-center gap-2">🏖️ {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</a>
         </div>
@@ -48,8 +58,13 @@
 
     <div class="flex-1 md:ml-64">
         <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
-            <div class="px-4 md:px-8 h-14 flex items-center justify-between">
-                <h1 class="font-semibold text-slate-800">@yield('heading', 'Dashboard')</h1>
+            <div class="px-4 md:px-8 h-14 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 min-w-0">
+                    <button type="button" class="md:hidden -ml-1.5 inline-flex items-center justify-center w-10 h-10 rounded-lg hover:bg-slate-100" onclick="rgDashNav(true)" aria-label="Open menu" aria-controls="dashSidebar">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                    </button>
+                    <h1 class="font-semibold text-slate-800 truncate">@yield('heading', 'Dashboard')</h1>
+                </div>
                 <div class="text-sm text-slate-600">
                     Hi, <strong>{{ auth()->user()->name }}</strong>
                 </div>
@@ -65,6 +80,16 @@
     </div>
 </div>
 
+<script>
+function rgDashNav(open) {
+    var sb = document.getElementById('dashSidebar'), bd = document.getElementById('dashBackdrop');
+    if (!sb || !bd) return;
+    sb.classList.toggle('is-open', open);
+    bd.style.opacity = open ? '1' : '0';
+    bd.style.pointerEvents = open ? 'auto' : 'none';
+}
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') rgDashNav(false); });
+</script>
 @stack('scripts')
 </body>
 </html>

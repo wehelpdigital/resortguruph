@@ -4146,7 +4146,7 @@ class BlockRenderer
                 $out .= '<span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 whitespace-nowrap">' . number_format($count) . ' ' . $countLabel . ($count === 1 ? '' : 's') . '</span>';
             }
             $out .= '</div>';
-            $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">';
+            $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">';
             foreach ($keywords as $k) {
                 $kArr = $this->toArrayShapeSimple($k);
                 $rawPhrase = (string) ($kArr['phrase'] ?? '');
@@ -4155,7 +4155,7 @@ class BlockRenderer
                 $volume = (int) ($kArr['search_volume_monthly'] ?? 0);
                 if ($phrase === '' || $slug === '') continue;
                 $out .= '<a href="' . $this->e(url($slug)) . '" '
-                    . 'class="group flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-white transition hover:-translate-y-0.5 ' . $cardHoverMap . '">'
+                    . 'class="group flex min-w-0 items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-white transition hover:-translate-y-0.5 ' . $cardHoverMap . '">'
                     . '<span class="flex h-10 w-10 flex-none items-center justify-center rounded-lg ' . $iconWrapMap . '">' . ($iconSet === 'food' ? $this->foodSpotIcon($rawPhrase) : $this->destSpotIcon($rawPhrase)) . '</span>'
                     . '<span class="min-w-0 flex-1">'
                     . '<span class="block font-semibold text-slate-900 ' . $titleHoverMap . ' capitalize truncate">' . $phrase . '</span>';
@@ -4756,6 +4756,12 @@ class BlockRenderer
         if ($curveColor === '' || !preg_match('/^#[0-9a-fA-F]{3,8}$/', $curveColor)) {
             $curveColor = $accentHex;
         }
+        // On the immersive (dark) hero the accent phrase needs a light
+        // color; decided here because the title markup is built next.
+        $hasHeroMedia = trim((string) ($p['background_image'] ?? '')) !== '' || trim((string) ($p['background_video'] ?? '')) !== '';
+        if ($hasHeroMedia && ($p['hero_style'] ?? 'immersive') !== 'light') {
+            $accentText = 'text-[#ffd166]';
+        }
 
         // Title with {{accent}}...{{/accent}} support, optional
         // line-break before the accent span, and optional curved
@@ -4912,6 +4918,23 @@ class BlockRenderer
         }
         $hasBgVideo = $bgVideoId !== '';
 
+        // Immersive mode (default whenever there's a photo or video): the
+        // media shows through a dark ocean scrim and the copy turns white.
+        // hero_style = "light" restores the old faded-watermark look.
+        $immersive = ($hasBgImage || $hasBgVideo) && ($p['hero_style'] ?? 'immersive') !== 'light';
+        // Poster shown under the video while YouTube loads, and instead of
+        // the video on phones (no autoplay iframe = far less data + no
+        // YouTube chrome flashing up on mobile Safari).
+        $poster = trim((string) ($p['background_poster'] ?? ''));
+        if ($poster !== '' && !str_starts_with($poster, 'http') && !str_starts_with($poster, '/')) {
+            $poster = '/storage/' . ltrim($poster, '/');
+        }
+        $posterDesktop = $poster !== '' ? $poster : '/images/hero-palawan-1600.webp';
+        $posterMobile = $poster !== '' ? $poster : '/images/hero-palawan-960.webp';
+        if ($immersive) {
+            $accentText = 'text-[#ffd166]';
+        }
+
         // No overflow:hidden on the section itself — .rg-uss-video
         // already clips the oversized iframe internally, and
         // overflow:hidden here would also clip the typeahead panel
@@ -4923,11 +4946,12 @@ class BlockRenderer
         // Text color flips to white only for photo backgrounds. The
         // video uses a light white scrim that fades the footage but
         // keeps slate-900 text readable through it.
-        $titleColor = $hasBgImage ? 'text-white' : 'text-slate-900';
-        $taglineColor = $hasBgImage ? 'text-white/90' : 'text-slate-600';
-        $eyebrowColor = $hasBgImage ? 'text-white/85' : $accentText;
-        $statsValueColor = $hasBgImage ? 'text-white' : 'text-slate-900';
-        $statsLabelColor = $hasBgImage ? 'text-white/80' : 'text-slate-600';
+        $onDark = $hasBgImage || $immersive;
+        $titleColor = $onDark ? 'text-white' : 'text-slate-900';
+        $taglineColor = $onDark ? 'text-white/90' : 'text-slate-600';
+        $eyebrowColor = $onDark ? 'text-white/85' : $accentText;
+        $statsValueColor = $onDark ? 'text-white' : 'text-slate-900';
+        $statsLabelColor = $onDark ? 'text-white/80' : 'text-slate-600';
 
         // Surface the editor's background alt/title as SEO/a11y hints on
         // the hero (it's a CSS background, so there's no native <img> alt).
@@ -4937,19 +4961,46 @@ class BlockRenderer
             if ($bgAlt !== '') $bgA11y .= ' role="img" aria-label="' . $this->e($bgAlt) . '"';
             $bgA11y .= $this->titleAttr($p['background_title'] ?? '');
         }
-        $out = '<section class="rg-uss ' . $bgClass . '" style="' . $sectionStyle . '"' . $bgA11y . '>';
+        $out = '<section class="rg-uss ' . ($immersive ? 'rg-uss--immersive' : $bgClass) . '" style="' . $sectionStyle . '"' . $bgA11y . '>';
         // Photo-mode dark overlay — enough to keep large titles readable
         // on any photo without muddying the image too much. Title block
         // gets a slight extra text-shadow for crispness.
         if ($hasBgImage) {
             $out .= '<div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,rgba(15,23,42,0.55) 0%,rgba(15,23,42,0.35) 30%,rgba(15,23,42,0.55) 100%)"></div>';
         }
+        if ($hasBgVideo && $immersive) {
+            $ytStart = max(0, (int) ($p['video_start_seconds'] ?? 10));
+            $ytSrc = 'https://www.youtube.com/embed/' . $bgVideoId
+                . '?autoplay=1&mute=1&loop=1&playlist=' . $bgVideoId
+                . '&controls=0&showinfo=0&modestbranding=1&rel=0'
+                . '&playsinline=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1'
+                . '&start=' . $ytStart;
+            $heroId = 'rg-uss-hero-' . substr(md5($bgVideoId . $title), 0, 6);
+            $out .= '<div class="rg-uss-video" id="' . $heroId . '" aria-hidden="true">'
+                . '<iframe data-src="' . $this->e($ytSrc) . '" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture"'
+                . ' referrerpolicy="strict-origin-when-cross-origin" title="" tabindex="-1"></iframe>'
+                . '<div class="rg-uss-poster" style="--poster-d:url(\'' . $this->e($posterDesktop) . '\');--poster-m:url(\'' . $this->e($posterMobile) . '\')"></div>'
+                . '</div>';
+            $out .= '<div class="rg-uss-scrim" aria-hidden="true"></div>';
+            // Load the video only on wider screens with motion allowed and
+            // no data saver; reveal it once YouTube reports "playing" so
+            // its loading spinner / play button never shows.
+            $out .= '<script>(function(){var w=document.getElementById(' . json_encode($heroId) . ');if(!w)return;'
+                . 'var f=w.querySelector("iframe"),p=w.querySelector(".rg-uss-poster");'
+                . 'var mm=window.matchMedia||function(){return{matches:false}};'
+                . 'if(!mm("(min-width: 768px)").matches||mm("(prefers-reduced-motion: reduce)").matches||(navigator.connection&&navigator.connection.saveData))return;'
+                . 'f.src=f.getAttribute("data-src")+"&origin="+encodeURIComponent(location.origin);'
+                . 'f.addEventListener("load",function(){try{f.contentWindow.postMessage(JSON.stringify({event:"listening",id:1,channel:"widget"}),"*")}catch(e){}});'
+                . 'window.addEventListener("message",function(e){if(!/(^|\.)youtube(-nocookie)?\.com$/.test((e.origin||"").replace(/^https?:\/\//,"")))return;var d;try{d=typeof e.data==="string"?JSON.parse(e.data):e.data}catch(x){return}if(!d)return;'
+                . 'var st=d.event==="onStateChange"?d.info:(d.info&&d.info.playerState);if(st===1){p.classList.add("is-hidden")}});'
+                . '})();</script>';
+        }
         // Video-mode background — muted, looped, no controls,
         // pointer-events disabled. The iframe is over-sized so that
         // its 16:9 aspect covers any section aspect ratio. A heavy
         // white scrim above it fades the video so the slate-900 text
         // remains crisp and the page still reads as a clean hero.
-        if ($hasBgVideo) {
+        if ($hasBgVideo && !$immersive) {
             $ytStart = max(0, (int) ($p['video_start_seconds'] ?? 10));
             $ytSrc = 'https://www.youtube.com/embed/' . $bgVideoId
                 . '?autoplay=1&mute=1&loop=1&playlist=' . $bgVideoId
@@ -4969,11 +5020,11 @@ class BlockRenderer
             // autoplay has actually started.
             $out .= '<div class="rg-uss-video-init" aria-hidden="true"></div>';
         }
-        $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
-        if ($eyebrow !== '') $out .= '<div class="text-[13px] uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-4">' . $eyebrow . '</div>';
-        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-4 leading-[1.5] md:leading-[1.4]"' . ($hasBgImage ? ' style="text-shadow:0 2px 16px rgba(0,0,0,0.45)"' : '') . '>' . $titleHtml . '</h1>';
+        $out .= '<div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 ' . ($immersive ? 'pt-16 pb-14 sm:pt-20 sm:pb-16 md:pt-28 md:pb-24 lg:pt-32 lg:pb-28' : 'py-16 md:py-24') . ' text-center">';
+        if ($eyebrow !== '') $out .= '<div class="' . ($immersive ? 'inline-flex items-center gap-2 rounded-full bg-white/10 ring-1 ring-white/25 backdrop-blur px-3.5 py-1.5 text-[11px] sm:text-xs ' : 'text-[13px] ') . 'uppercase tracking-[0.22em] font-bold ' . $eyebrowColor . ' mb-5">' . $eyebrow . '</div>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-[2.35rem] sm:text-5xl md:text-6xl font-extrabold tracking-tight ' . $titleColor . ' mb-5 leading-[1.5] md:leading-[1.4]"' . ($onDark ? ' style="text-shadow:0 2px 24px rgba(7,18,29,0.45)"' : '') . '>' . $titleHtml . '</h1>';
         if ($slotScript !== '') $out .= $slotScript;
-        if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . $taglineColor . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
+        if ($tagline !== '') $out .= '<p class="text-base sm:text-lg md:text-xl leading-relaxed ' . $taglineColor . ' max-w-2xl mx-auto mb-8 md:mb-10"' . ($onDark ? ' style="text-shadow:0 1px 12px rgba(7,18,29,0.5)"' : '') . '>' . $tagline . '</p>';
 
         // Search shell
         $out .= '<div class="rg-uss-search" data-rg-search>';
@@ -5097,6 +5148,33 @@ class BlockRenderer
             . '.rg-uss-video-init{position:absolute;inset:0;background:#ffffff;pointer-events:none;z-index:2;animation:rg-uss-video-init-out 1.5s ease-out forwards}'
             . '@keyframes rg-uss-video-init-out{0%,40%{opacity:1}100%{opacity:0}}'
             . '@media(prefers-reduced-motion:reduce){.rg-uss-video-init{animation-duration:.3s}}'
+            // ---- Immersive variant ----
+            . '.rg-uss--immersive{background:#0c2438;isolation:isolate}'
+            . '.rg-uss-poster{position:absolute;inset:0;background-image:var(--poster-m);background-size:cover;background-position:center 60%;transition:opacity 1.2s ease;z-index:1}'
+            . '@media(min-width:768px){.rg-uss-poster{background-image:var(--poster-d)}}'
+            . '.rg-uss-poster.is-hidden{opacity:0}'
+            . '.rg-uss--immersive .rg-uss-video iframe{opacity:1}'
+            . '.rg-uss-scrim{position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(120% 80% at 50% 45%,rgba(7,18,29,.25) 0%,rgba(7,18,29,.55) 100%),linear-gradient(180deg,rgba(7,18,29,.55) 0%,rgba(12,36,56,.25) 35%,rgba(12,36,56,.35) 65%,rgba(7,18,29,.75) 100%)}'
+            . '.rg-uss--immersive .rg-uss-search{--rg-acc:#ef5b3a}'
+            . '.rg-uss--immersive .rg-uss__tabs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;margin-left:-1rem;margin-right:-1rem;padding:0 1rem .15rem}'
+            . '.rg-uss--immersive .rg-uss__tabs::-webkit-scrollbar{display:none}'
+            . '@media(min-width:768px){.rg-uss--immersive .rg-uss__tabs{flex-wrap:wrap;justify-content:center;overflow:visible;margin:0 0 1.1rem;padding:0}}'
+            . '.rg-uss--immersive .rg-uss__tab{flex-shrink:0;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff}'
+            . '.rg-uss--immersive .rg-uss__tab:hover{border-color:rgba(255,255,255,.6);color:#fff;background:rgba(255,255,255,.2)}'
+            . '.rg-uss--immersive .rg-uss__tab.is-active{background:#fff;border-color:#fff;color:#0b1b2b;box-shadow:0 8px 20px -8px rgba(0,0,0,.45)}'
+            . '.rg-uss--immersive .rg-uss__shell{border:0;box-shadow:0 24px 60px -18px rgba(0,0,0,.55),0 0 0 6px rgba(255,255,255,.12)}'
+            . '.rg-uss--immersive .rg-uss__shell:focus-within{box-shadow:0 24px 60px -18px rgba(0,0,0,.55),0 0 0 6px rgba(255,209,102,.45)}'
+            . '.rg-uss--immersive .rg-uss__submit{background:#13669c}'
+            . '.rg-uss--immersive .rg-uss__submit:hover{background:#11527f}'
+            . '.rg-uss--immersive .rg-uss__alt{background:#ef5b3a}'
+            . '.rg-uss--immersive .rg-uss__alt:hover{background:#d9432a}'
+            . '@media(max-width:639px){.rg-uss--immersive .rg-uss__alt{display:none}.rg-uss--immersive .rg-uss__submit span{display:none}.rg-uss--immersive .rg-uss__submit{padding:.85rem}}'
+            . '.rg-uss--immersive .rg-uss__chips{color:rgba(255,255,255,.75);flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;margin-left:-1rem;margin-right:-1rem;padding:0 1rem}'
+            . '.rg-uss--immersive .rg-uss__chips::-webkit-scrollbar{display:none}'
+            . '@media(min-width:768px){.rg-uss--immersive .rg-uss__chips{flex-wrap:wrap;justify-content:center;overflow:visible;margin:1.1rem 0 0;padding:0}}'
+            . '.rg-uss--immersive .rg-uss__chips>span{flex-shrink:0}'
+            . '.rg-uss--immersive .rg-uss__chip{flex-shrink:0;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff}'
+            . '.rg-uss--immersive .rg-uss__chip:hover{background:#fff;border-color:#fff;color:#0b1b2b}'
             . '</style>';
 
         // JSON index + JS
@@ -5435,9 +5513,16 @@ class BlockRenderer
             // Alt prefers an explicit image_alt, else the brand name.
             $logoAlt = trim((string) ($lArr['image_alt'] ?? '')) !== '' ? $this->e((string) $lArr['image_alt']) : $name;
             if ($name === '' && $image === '') continue;
+            // logo.clearbit.com was shut down, so those URLs only ever 404.
+            // Render the wordmark instead of a broken-image icon.
+            if ($image !== '' && $name !== '' && str_contains($image, 'logo.clearbit.com')) {
+                $image = '';
+            }
             if ($image !== '') {
                 $src = (str_starts_with($image, 'http') || str_starts_with($image, '/')) ? $image : '/storage/' . ltrim($image, '/');
-                $inner = '<img src="' . $this->e($src) . '" alt="' . $logoAlt . '"' . $this->titleAttr($lArr['image_title'] ?? '') . ' class="rg-press__img" loading="lazy">';
+                $inner = '<img src="' . $this->e($src) . '" alt="' . $logoAlt . '"' . $this->titleAttr($lArr['image_title'] ?? '') . ' class="rg-press__img" loading="lazy"'
+                    . ($name !== '' ? ' onerror="this.hidden=true;this.nextElementSibling.hidden=false"' : '') . '>'
+                    . ($name !== '' ? '<span class="rg-press__name" hidden>' . $name . '</span>' : '');
             } else {
                 $inner = '<span class="rg-press__name">' . $name . '</span>';
             }

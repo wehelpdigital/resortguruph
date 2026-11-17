@@ -37,7 +37,26 @@ php artisan view:clear
 
 # List routes
 php artisan route:list
+
+# Publish to production (Laravel Cloud) from a local machine
+php artisan rg:cloud-sync-db        # mirror every rg_* table from the shared DB into the Cloud DB
+php artisan rg:cloud-sync-media     # upload storage/app/public (rg-media, rg-blocks) to the Cloud bucket
 ```
+
+## Production (Laravel Cloud)
+
+- Live at https://resortguruph-production-vsv3ln.laravel.cloud, auto-deploys from `main`. Cloud runs migrations on deploy.
+- Cloud has its **own** MySQL database, separate from the shared `onmartph_axis` DB the btc-check admin edits. Admin edits only reach production after `php artisan rg:cloud-sync-db` (needs `CLOUD_DB_*` in local `.env`, public endpoint enabled, TLS on by default).
+- The media library is committed under `storage/app/public` and ships with each deploy; composer's `post-install-cmd` creates the `public/storage` symlink. `/storage/{path}` falls back to `StorageFileController` (streams the local file, else redirects to the bucket).
+- Runtime uploads (owner dashboard) go to `config('filesystems.media_disk')`: the Cloud bucket in production (auto-detected from `LARAVEL_CLOUD_DISK_CONFIG`), the `public` disk locally.
+- Framework tables (sessions, cache, jobs) come from the guarded `2026_11_18_000000_create_framework_tables_if_missing` migration.
+
+## Design system (public site)
+
+- Tokens, header, drawer, footer live in `resources/views/layouts/partials/public-{theme,header,footer}.blade.php`.
+- Colors: `brand`/`blue` = ocean blue, `coral` = primary CTA, `sun` = highlight, `ink` = dark surfaces. Headings use Plus Jakarta Sans, body Inter, the Tahu script stays for brand accents.
+- `--rg-header-h` (set by JS) drives sticky sub-navs and anchor offsets; don't hardcode header heights.
+- Homepage hero (`home_unified_search`) is "immersive" when it has a background video/image; set payload `hero_style: "light"` for the old faded look. Phones get the poster image instead of the YouTube iframe.
 
 ## Where things live
 
