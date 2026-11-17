@@ -44,7 +44,7 @@ class GoldPointsController extends Controller
             'screenshot' => 'required|image|max:5120',
         ]);
 
-        $screenshotPath = $request->file('screenshot')->store('gp-topups', 'public');
+        $screenshotPath = $request->file('screenshot')->store('gp-topups', config('filesystems.media_disk'));
 
         $topup = RgGpTopup::create([
             'owner_id' => Auth::id(),

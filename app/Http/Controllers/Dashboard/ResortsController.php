@@ -81,7 +81,7 @@ class ResortsController extends Controller
     {
         $this->authorize($resort);
         $request->validate(['file' => 'required|image|max:10240']);
-        $path = $request->file('file')->store('resort-media/' . $resort->id, 'public');
+        $path = $request->file('file')->store('resort-media/' . $resort->id, config('filesystems.media_disk'));
         $sort = (int) RgResortMedia::where('resort_id', $resort->id)->max('sort_order') + 1;
         $m = RgResortMedia::create([
             'resort_id' => $resort->id,
@@ -89,14 +89,14 @@ class ResortsController extends Controller
             'path' => $path,
             'sort_order' => $sort,
         ]);
-        return response()->json(['ok' => true, 'id' => $m->id, 'url' => Storage::url($path)]);
+        return response()->json(['ok' => true, 'id' => $m->id, 'url' => asset('storage/' . $path)]);
     }
 
     public function deleteMedia(RgResort $resort, RgResortMedia $media)
     {
         $this->authorize($resort);
         if ($media->resort_id !== $resort->id) abort(404);
-        Storage::disk('public')->delete($media->path);
+        Storage::disk(config('filesystems.media_disk'))->delete($media->path);
         $media->delete();
         return response()->json(['ok' => true]);
     }
@@ -159,10 +159,10 @@ class ResortsController extends Controller
     private function handleUploads(Request $request, RgResort $resort): void
     {
         if ($request->hasFile('logo')) {
-            $resort->update(['logo_path' => $request->file('logo')->store('resort-logos', 'public')]);
+            $resort->update(['logo_path' => $request->file('logo')->store('resort-logos', config('filesystems.media_disk'))]);
         }
         if ($request->hasFile('hero')) {
-            $resort->update(['hero_path' => $request->file('hero')->store('resort-heros', 'public')]);
+            $resort->update(['hero_path' => $request->file('hero')->store('resort-heros', config('filesystems.media_disk'))]);
         }
     }
 }

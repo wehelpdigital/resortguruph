@@ -99,6 +99,36 @@ return [
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 
+        // Laravel Cloud production database, reached over its public
+        // endpoint. Only used locally by `php artisan rg:cloud-sync-db`,
+        // which copies the shared onmartph_axis rg_* data into it. Fill the
+        // CLOUD_DB_* keys in your local .env; never needed on Cloud itself.
+        'cloud' => [
+            'driver' => env('CLOUD_DB_CONNECTION', 'mysql'),
+            'url' => env('CLOUD_DB_URL'),
+            'host' => env('CLOUD_DB_HOST'),
+            'port' => env('CLOUD_DB_PORT', '3306'),
+            'database' => env('CLOUD_DB_DATABASE'),
+            'username' => env('CLOUD_DB_USERNAME'),
+            'password' => env('CLOUD_DB_PASSWORD', ''),
+            'unix_socket' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            // Cloud's public endpoint refuses non-TLS clients ("SSL is
+            // required"). Any CA bundle turns TLS on; we default to the one
+            // PHP's openssl/curl already use. CLOUD_DB_SSL_VERIFY=false skips
+            // certificate verification if the bundle doesn't cover it.
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('CLOUD_DB_SSL_CA')
+                    ?: (ini_get('openssl.cafile') ?: (ini_get('curl.cainfo') ?: null)),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT) => env('CLOUD_DB_SSL_VERIFY', true),
+            ], fn ($v) => $v !== null && $v !== '') : [],
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
