@@ -70,6 +70,17 @@
     @media (min-width: 768px) { .pk-pull > .rg-hero-dark:first-child > div:first-child { padding-top: 5rem; padding-bottom: 5.5rem; } }
     .pk-pull > .rg-hero-dark:first-child h1 { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; letter-spacing: -0.03em; }
 
+    .pk-hero--xl .pk-hero__inner { min-height: 34rem; }
+    @media (min-width: 1024px) { .pk-hero--xl .pk-hero__inner { min-height: min(46rem, calc(100vh - 2rem)); padding-bottom: 5.5rem; } }
+    .pk-hero__thumbs { display: none; }
+    @media (min-width: 900px) {
+        .pk-hero__thumbs { display: flex; gap: .5rem; position: absolute; right: 2rem; bottom: 3.4rem; }
+        .pk-hero__thumbs button { width: 4.6rem; height: 3.2rem; border-radius: .7rem; overflow: hidden; opacity: .62; box-shadow: 0 0 0 2px rgba(255, 255, 255, .25); transition: opacity .25s ease, box-shadow .25s ease, transform .25s ease; }
+        .pk-hero__thumbs button img { width: 100%; height: 100%; object-fit: cover; }
+        .pk-hero__thumbs button:hover { opacity: .9; }
+        .pk-hero__thumbs button.is-on { opacity: 1; box-shadow: 0 0 0 2px #fff; transform: translateY(-2px); }
+    }
+
     /* ---------- in-page navigation ---------- */
     .pk-jump { position: sticky; top: var(--rg-header-h, 64px); z-index: 30; background: rgba(255, 255, 255, .94); -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid #e8edf3; }
     .pk-jump__row { display: flex; gap: .4rem; overflow-x: auto; padding: .6rem 1rem; scrollbar-width: none; }

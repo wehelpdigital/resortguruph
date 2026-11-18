@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Verified listing seal">
+  <defs>
+    <linearGradient id="vsOuter" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd877"/><stop offset=".55" stop-color="#f5a524"/><stop offset="1" stop-color="#d97706"/></linearGradient>
+    <linearGradient id="vsInner" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a7fc1"/><stop offset="1" stop-color="#0b1b2b"/></linearGradient>
+    <radialGradient id="vsShine" cx=".35" cy=".25" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  </defs>
+  <polygon points="60,2 66.79,8.44 75.01,3.98 79.9,11.96 89,9.77 91.66,18.75 101.01,18.99 101.25,28.34 110.23,31 108.04,40.1 116.02,44.99 111.56,53.21 118,60 111.56,66.79 116.02,75.01 108.04,79.9 110.23,89 101.25,91.66 101.01,101.01 91.66,101.25 89,110.23 79.9,108.04 75.01,116.02 66.79,111.56 60,118 53.21,111.56 44.99,116.02 40.1,108.04 31,110.23 28.34,101.25 18.99,101.01 18.75,91.66 9.77,89 11.96,79.9 3.98,75.01 8.44,66.79 2,60 8.44,53.21 3.98,44.99 11.96,40.1 9.77,31 18.75,28.34 18.99,18.99 28.34,18.75 31,9.77 40.1,11.96 44.99,3.98 53.21,8.44" fill="url(#vsOuter)"/>
+  <circle cx="60" cy="60" r="44" fill="url(#vsInner)"/>
+  <circle cx="60" cy="60" r="38.5" fill="none" stroke="#ffc74a" stroke-width="1.6" stroke-dasharray="2.2 3.2" opacity=".9"/>
+  <circle cx="60" cy="60" r="44" fill="url(#vsShine)"/>
+  <path d="M43.5 61.5l10.5 10.5 22.5-24" fill="none" stroke="#fff" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M60 22.5l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" fill="#ffc74a"/>
+</svg>

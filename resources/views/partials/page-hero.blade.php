@@ -5,7 +5,7 @@
        kicker, title, lede                                      text
        chips   [['icon' => star|pin|calendar|clock|user|book|tag|sun|chat, 'text' => '', 'sun' => bool]]
        actions [['label','url','style' => coral|glass|white]]
-       size    lg|md|sm        center  bool
+       size    lg|md|sm|xl     center  bool     thumbs  bool (photo thumbnails instead of dots)
        kickerAttrs / titleAttrs  raw attribute strings (live editor hooks)
        extra                    extra HTML under the actions --}}
 @php
@@ -93,11 +93,19 @@
             </p>
         @endforeach
         @if(count($slides) > 1)
-            <div class="pk-hero__dots">
-                @foreach(array_slice($slides, 0, 6) as $i => $s)
-                    <button type="button" data-pk-dot class="{{ $i ? '' : 'is-on' }}" aria-label="Photo {{ $i + 1 }}"></button>
-                @endforeach
-            </div>
+            @if(!empty($thumbs))
+                <div class="pk-hero__thumbs">
+                    @foreach(array_slice($slides, 0, 6) as $i => $s)
+                        <button type="button" data-pk-dot class="{{ $i ? '' : 'is-on' }}" aria-label="Show photo {{ $i + 1 }}{{ !empty($s['title']) ? ': ' . $s['title'] : '' }}"><img src="{{ $src($s['src']) }}" alt="" loading="lazy"></button>
+                    @endforeach
+                </div>
+            @else
+                <div class="pk-hero__dots">
+                    @foreach(array_slice($slides, 0, 6) as $i => $s)
+                        <button type="button" data-pk-dot class="{{ $i ? '' : 'is-on' }}" aria-label="Photo {{ $i + 1 }}"></button>
+                    @endforeach
+                </div>
+            @endif
         @endif
     @endunless
 </section>

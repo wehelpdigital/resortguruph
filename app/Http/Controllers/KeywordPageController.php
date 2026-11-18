@@ -60,22 +60,8 @@ class KeywordPageController extends Controller
         // content stream. The live editor keeps every block in the stream.
         $hero = $this->heroData($allBlocks);
         $blocks = $liveEdit ? $allBlocks : $allBlocks->reject(fn($b) => in_array($b->block_type, self::HERO_BLOCKS, true))->values();
-        // First render with minimal context (listing_slot etc. only need
-        // keyword_id). Re-rendered later if any block needs the food /
-        // adventure listings collections — see comment near $restaurantListings.
-        $renderedBlocks = $renderer->renderBlocks($blocks, [
-            'keyword_id' => $keyword->id,
-            'keyword' => $keyword,
-            'page' => $page,
-            'live_edit' => $liveEdit,
-        ]);
-        // Listings band, restaurant recs band, adventures band, and
-        // reviews band all need data that we don't pull until further
-        // down. Track them so the second render pass kicks in.
-        $needsListingBlockCtx = $blocks->contains(fn($b) => in_array($b->block_type, [
-            'listing_block', 'we_recommend_band',
-            'restaurant_recs_band', 'adventures_band', 'reviews_band',
-        ], true));
+        // Blocks are rendered once at the end of this method, when the
+        // listings / reviews context the bands need has been loaded.
 
         $faqs = $renderer->extractFaqs('seo_page', $page->id);
         if (empty($faqs) && $page->faq_json) {
@@ -215,43 +201,50 @@ class KeywordPageController extends Controller
                 ->filter(fn($l) => $l->adventure)
                 ->values();
 
-        // If a listing_block exists in the page's content blocks, re-render
-        // now that we have the listings + galleries to feed it. The earlier
-        // pass output only handled non-context-aware blocks; this pass
-        // replaces the full string.
-        if ($needsListingBlockCtx) {
-            // areaForCta — used to be computed inside keyword-page.blade.php
-            // for the food-page CTA. Mirrored here so the
-            // we_recommend_band block can pass it to the listings partial.
-            $areaForCta = null;
-            if (($keyword->category ?? null) === 'food') {
-                $stripped = preg_replace(
-                    '/^(affordable|best|top(?:\s+10)?|famous|fast\s+food|fine(?:\s+dining)?|floating|good\s+taste|hotel|michelin\s+star|new|overlooking|seafood|steak|sushi|filipino|japanese|korean|chinese|italian|mexican|spanish|mediterranean|24\s+hours?|buffet)\s+/i',
-                    '', $keyword->phrase
-                );
-                if (preg_match('/(?:restaurant|to\s+eat)\s+(?:in|at|near)\s+(.+)$/i', $stripped, $m)) {
-                    $areaForCta = trim(preg_replace('/\s+(philippines|with\s+view)$/i', '', $m[1]));
-                } elseif (preg_match('/^where\s+to\s+eat\s+(.+)$/i', $stripped, $m)) {
-                    $areaForCta = trim($m[1]);
-                }
-                if ($areaForCta) {
-                    $areaForCta = ucwords(strtolower($areaForCta));
-                }
+        // areaForCta: the food-page location used by the listings band CTA.
+        $areaForCta = null;
+        if (($keyword->category ?? null) === 'food') {
+            $stripped = preg_replace(
+                '/^(affordable|best|top(?:\s+10)?|famous|fast\s+food|fine(?:\s+dining)?|floating|good\s+taste|hotel|michelin\s+star|new|overlooking|seafood|steak|sushi|filipino|japanese|korean|chinese|italian|mexican|spanish|mediterranean|24\s+hours?|buffet)\s+/i',
+                '', $keyword->phrase
+            );
+            if (preg_match('/(?:restaurant|to\s+eat)\s+(?:in|at|near)\s+(.+)$/i', $stripped, $m)) {
+                $areaForCta = trim(preg_replace('/\s+(philippines|with\s+view)$/i', '', $m[1]));
+            } elseif (preg_match('/^where\s+to\s+eat\s+(.+)$/i', $stripped, $m)) {
+                $areaForCta = trim($m[1]);
             }
-
-            $renderedBlocks = $renderer->renderBlocks($blocks, [
-                'keyword_id' => $keyword->id,
-                'keyword' => $keyword,
-                'page' => $page,
-                'listings' => collect($listings->items()),
-                'restaurantListings' => $restaurantListings,
-                'adventureListings' => $adventureListings,
-                'reviews' => $reviews,
-                'listingGalleries' => $listingGalleries ?? [],
-                'areaForCta' => $areaForCta,
-                'live_edit' => $liveEdit,
-            ]);
+            if ($areaForCta) {
+                $areaForCta = ucwords(strtolower($areaForCta));
+            }
         }
+
+        $blockCtx = [
+            'keyword_id' => $keyword->id,
+            'keyword' => $keyword,
+            'page' => $page,
+            'listings' => collect($listings->items()),
+            'restaurantListings' => $restaurantListings,
+            'adventureListings' => $adventureListings,
+            'reviews' => $reviews,
+            'listingGalleries' => $listingGalleries ?? [],
+            'listingRatings' => $listingRatings ?? [],
+            'listingReviews' => $listingReviews ?? [],
+            'areaForCta' => $areaForCta,
+            'live_edit' => $liveEdit,
+        ];
+
+        // Designed guide layout (keyword-guide.blade.php): blocks are placed in
+        // their own sections. The live editor and rg_settings.guide_layout =
+        // classic keep the single block stream (keyword-page.blade.php).
+        if (!$liveEdit && \App\Models\RgSetting::get('guide_layout', 'designed') !== 'classic') {
+            $parts = $renderer->renderEach($allBlocks->reject(fn ($b) => $b->block_type === 'social_share')->values(), $blockCtx, self::GUIDE_DATA_ONLY);
+            return view('keyword-guide', compact(
+                'keyword', 'page', 'listings', 'faqs', 'cluster', 'related', 'parts',
+                'jsonld', 'reviews', 'restaurantListings', 'hero'
+            ));
+        }
+
+        $renderedBlocks = $renderer->renderBlocks($blocks, $blockCtx);
 
         return view('keyword-page', compact(
             'keyword', 'page', 'listings', 'listingGalleries', 'listingRatings', 'listingReviews',
@@ -263,6 +256,9 @@ class KeywordPageController extends Controller
 
     /** Blocks the page hero takes over from the content stream. */
     private const HERO_BLOCKS = ['hero_slider', 'subtitle_intro', 'social_share'];
+
+    /** Blocks keyword-guide.blade.php draws from their payload (no block HTML needed). */
+    private const GUIDE_DATA_ONLY = ['hero_slider', 'subtitle_intro', 'tldr_card', 'wwww_card', 'editor_rating', 'facts_list', 'quick_facts', 'attractions', 'how_to_get_to', 'map_embed', 'faq', 'author', 'local_tip'];
 
     /** Photos, intro line and rating for the page hero, read from the page's blocks. */
     private function heroData($blocks): array

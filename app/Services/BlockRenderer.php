@@ -16,6 +16,25 @@ class BlockRenderer
         return $this->renderBlocks($blocks, $context);
     }
 
+    /**
+     * Render blocks one by one for layouts that place them in their own
+     * sections (keyword-guide.blade.php). Types listed in $dataOnly are
+     * returned with their payload but no HTML (the view draws them itself).
+     */
+    public function renderEach(Collection $blocks, array $context = [], array $dataOnly = []): array
+    {
+        $out = [];
+        foreach ($blocks as $block) {
+            $out[] = [
+                'id' => (int) $block->id,
+                'type' => (string) $block->block_type,
+                'payload' => $block->payload ?? [],
+                'html' => in_array($block->block_type, $dataOnly, true) ? '' : $this->renderBlock($block, $context),
+            ];
+        }
+        return $out;
+    }
+
     public function renderBlocks(Collection $blocks, array $context = []): string
     {
         $out = '';
@@ -386,9 +405,35 @@ class BlockRenderer
         };
     }
 
+    /**
+     * Seeded custom HTML still carries placehold.co images ("?text=Spot name").
+     * Show the real tourist-spot photo when one with that name exists,
+     * otherwise the local placeholder.
+     */
+    private function swapPlaceholderImages(string $html): string
+    {
+        if (!str_contains($html, 'placehold.co')) return $html;
+        static $photos = null;
+        if ($photos === null) {
+            $photos = [];
+            if (\Illuminate\Support\Facades\Schema::hasTable('rg_tourist_spots')) {
+                foreach (\Illuminate\Support\Facades\DB::table('rg_tourist_spots as s')->join('rg_media as m', 'm.id', '=', 's.media_id')
+                    ->where('s.status', 'published')->get(['s.name', 'm.path']) as $r) {
+                    $photos[mb_strtolower(trim($r->name))] = '/storage/' . ltrim($r->path, '/');
+                }
+            }
+        }
+        return preg_replace_callback('~https?://placehold\.co/[^"\'\s>]*~i', function ($m) use ($photos) {
+            $name = '';
+            if (preg_match('~[?&]text=([^&]+)~', html_entity_decode($m[0]), $t)) $name = urldecode(str_replace('+', ' ', $t[1]));
+            $key = mb_strtolower(trim(preg_replace('/\s*\(.*\)\s*$/', '', $name)));
+            return $photos[$key] ?? $photos[mb_strtolower(trim($name))] ?? '/images/placeholder-stay.svg';
+        }, $html) ?? $html;
+    }
+
     private function customHtml(array $p): string
     {
-        $html = (string) ($p['html'] ?? '');
+        $html = $this->swapPlaceholderImages((string) ($p['html'] ?? ''));
 
         // Pattern detection: the seeder ships a "Tourist spots in X"
         // section as a custom_html block — a heading + an intro
@@ -795,6 +840,12 @@ class BlockRenderer
      * Icon set for the quick_facts strip. Adding a new icon: add an `if`
      * branch here and add the slug to the builder's icon select.
      */
+    /** Public access to the quick-facts icon set (used by keyword-guide.blade.php). */
+    public function factIcon(string $icon): string
+    {
+        return $this->quickFactIconSvg($icon);
+    }
+
     private function quickFactIconSvg(string $icon): string
     {
         $base = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7">';
@@ -2520,6 +2571,8 @@ class BlockRenderer
             return view('partials.listings-rows', [
                 'listings' => $rows,
                 'listingGalleries' => $galleries,
+                'listingRatings' => $isFood ? [] : ($context['listingRatings'] ?? []),
+                'listingReviews' => $isFood ? [] : ($context['listingReviews'] ?? []),
                 'area' => $area,
                 'keyword' => $keyword,
             ])->render();

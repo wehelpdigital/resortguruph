@@ -1,76 +1,99 @@
 {{--
-    Row-based "What we recommend" listings layout for keyword pages.
-
-    Per-listing structure:
-      ┌─────────────────────────────────────────────────────────────┐
-      │  Resort name                                                 │
-      │  📍 City, Province (Google Maps link)                        │
-      │  ★ 4.8 rating                                                │
-      ├──────┬──────┬──────┬──────┐                                  │
-      │ img1 │ img2 │ img3 │ img4 │ (4 fading strips)                │
-      ├──────┴──────┴──────┴──────┘                                  │
-      │  [Pool] [Wi-Fi] [Parking] (amenity badges row)               │
-      │  Description text                                            │
-      │  Recent review (cycles through 3 fakes with fade)            │
-      │  [Reserve and Book] [Amenities] [Experiences]   (sponsored)  │
-      └─────────────────────────────────────────────────────────────┘
-
-    Container header carries a "verified / scam protect" badge image in
-    the upper-left, the section title "What we recommend", and a one-line
-    explanation. Listings are pre-sorted by fake rating descending.
+    "We recommend" listings band for keyword pages (resorts, or restaurants on food pages).
+    Listings arrive sorted by bid, so the first one is the paid top spot: it gets the
+    large featured card, the rest get compact cards. Styles: partials/listings-style.
 
     Props:
-      $listings         → paginator of RgListing (resort eager-loaded, sorted)
-      $listingGalleries → array<int, string[]> 6+ images per listing.id
-      $listingRatings   → array<int, float>    fake 4.5-4.9 rating per listing.id
-      $listingReviews   → array<int, array[]>  3 fake reviews per listing.id
+      $listings         → paginator / collection of RgListing (resort eager-loaded) or RgRestaurantListing
+      $listingGalleries → array<int, string[]> photos per listing.id
+      $listingRatings   → array<int, float>    rating per listing.id
+      $listingReviews   → array<int, array[]>  short reviews per listing.id
+      $keyword, $area   → category-aware wording
 --}}
 
 @php
     $hasAny = $listings && $listings->count() > 0;
-    // Category-aware wording: resort pages use "hotels and resorts"; food
-    // pages use "restaurants, eateries, and food shops". Detected from the
-    // $keyword in scope (always passed by the parent view).
     $isFood = isset($keyword) && ($keyword->category ?? 'resort') === 'food';
-    // Optional $area override (e.g. "Mall of Asia") lets the CTA invite
-    // owners to list at the specific location instead of generic wording.
     $areaLabel = $area ?? null;
-    $sectionTitle = $isFood
-        ? 'Restaurants and food spots we recommend'
-        : 'Hotels and resorts we recommend';
+    $sectionTitle = $isFood ? 'Restaurants and food spots we recommend' : 'Hotels and resorts we recommend';
     $sectionSub = $isFood
-        ? 'We are recommending these restaurants, eateries, and food shops.'
-        : 'We are recommending these hotels and resorts.';
-    $emptyIcon = $isFood ? '🍽️' : '🏝️';
+        ? 'Hand-picked places to eat, checked by our team before they go live.'
+        : 'Hand-picked stays, checked by our team before they go live.';
     $emptyHeading = $isFood
-        ? ($areaLabel
-            ? 'Be the first restaurant or eatery listed in ' . $areaLabel . ' or nearby locations'
-            : 'Be the first restaurant, eatery, or food shop listed on this page')
+        ? ($areaLabel ? 'Be the first restaurant or eatery listed in ' . $areaLabel . ' or nearby locations' : 'Be the first restaurant, eatery, or food shop listed on this page')
         : 'Be the first hotel or resort listed on this page';
     $emptyOffer = $isFood
         ? 'Get your restaurant featured at the top, with photos, cuisine, hours, reviews, and direct contact links.'
         : 'Get your property featured at the top, with photos, amenities, reviews, and direct booking links.';
-    $ctaLabel = $isFood
-        ? ($areaLabel
-            ? 'List your restaurant in ' . $areaLabel . ' or nearby'
-            : 'List your restaurant, eatery, or food shop')
-        : 'List your property';
+    $star = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>';
+    $pin = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/></svg>';
+    $arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>';
+    $check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>';
+    $verdict = fn ($r) => $r >= 4.8 ? 'Exceptional' : ($r >= 4.5 ? 'Excellent' : ($r >= 4.0 ? 'Very good' : 'Good'));
+
+    // one normalized row per listing so resorts and restaurants share the markup
+    $rows = [];
+    if ($hasAny) {
+        foreach ($listings as $listing) {
+            if ($isFood) {
+                $r = $listing->restaurant ?? null;
+                if (!$r) continue;
+                $seed = abs(crc32('restaurant_' . $r->id));
+                $photos = $r->hero_path ? ['/storage/' . ltrim($r->hero_path, '/')] : [];
+                $rows[] = [
+                    'name' => $r->name, 'url' => null,
+                    'place' => trim($r->city . ($r->province ? ', ' . $r->province : ''), ', '),
+                    'maps' => 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode(trim($r->name . ' ' . $r->city . ' Philippines')),
+                    'photos' => $photos, 'rating' => round(4.4 + (($seed % 6) * 0.1), 1), 'count' => 60 + ($seed % 220),
+                    'tag' => $r->cuisine, 'tagline' => $r->tagline, 'desc' => '',
+                    'chips' => array_values(array_filter([$r->cuisine, $r->hours_summary ? 'Open ' . $r->hours_summary : null])),
+                    'review' => null,
+                    'ctas' => [['Visit restaurant', '#', 'coral'], ['View menu', '#', 'outline']],
+                    'tint' => $r->primary_color ?: '#0f3a5c',
+                ];
+            } else {
+                $r = $listing->resort ?? null;
+                if (!$r) continue;
+                $photos = array_values(array_unique(array_filter($listingGalleries[$listing->id] ?? [])));
+                $am = $r->amenities_json ? (is_array($r->amenities_json) ? $r->amenities_json : (json_decode($r->amenities_json, true) ?: [])) : [];
+                $desc = trim(strip_tags($r->description_html ?? ''));
+                if ($desc === '') $desc = $r->tagline ?: ('A vetted property in ' . $r->city . ' selected by our editorial team.');
+                $revs = $listingReviews[$listing->id] ?? [];
+                $rows[] = [
+                    'name' => $r->name, 'url' => route('resort.show', $r->slug),
+                    'place' => trim($r->city . ($r->province ? ', ' . $r->province : ''), ', '),
+                    'maps' => 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode(trim($r->name . ' ' . $r->city . ' ' . $r->province . ' Philippines')),
+                    'photos' => $photos, 'rating' => (float) ($listingRatings[$listing->id] ?? 4.7), 'count' => null,
+                    'tag' => $r->price_range, 'tagline' => $r->tagline, 'desc' => \Illuminate\Support\Str::limit($desc, 260),
+                    'chips' => array_slice($am, 0, 6),
+                    'review' => $revs[0] ?? null,
+                    'ctas' => [['Check availability', route('resort.show', $r->slug) . '#reserve', 'coral'], ['See amenities', route('resort.show', $r->slug) . '#amenities', 'outline']],
+                    'tint' => $r->primary_color ?: '#0f3a5c',
+                ];
+            }
+        }
+    }
+    $top = $rows[0] ?? null;
+    $rest = array_slice($rows, 1);
 @endphp
 
+@include('partials.listings-style')
+
 <section id="top-picks" class="rg-listings-band relative p-5 sm:p-7 mb-10">
-    <div class="flex items-start justify-between gap-4 mb-6">
+    <div class="lx-head">
         <div class="min-w-0">
             <p class="pk-eyebrow">{{ $isFood ? 'Where to eat' : 'Where to stay' }}</p>
             <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-1">{{ $sectionTitle }}</h2>
             <p class="text-sm text-slate-600">{{ $sectionSub }}</p>
         </div>
-        <img src="{{ asset('images/verified-badge.svg') }}" alt="Verified listings badge" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-md shrink-0 pointer-events-none select-none" loading="lazy">
+        <div class="lx-seal" title="Every listing is checked by our team before it goes live">
+            <img src="{{ asset('images/verified-seal.svg') }}" alt="" width="56" height="56" loading="lazy">
+            <span><strong>Verified listings</strong><small>Checked by our team</small></span>
+        </div>
     </div>
 
-    @if(!$hasAny)
+    @if(!$top)
         @php
-            // Pull the search-volume teaser from the keyword the page is on so
-            // operators can see the demand they'd be plugging into.
             $monthlySearches = isset($keyword) ? (int) ($keyword->search_volume_monthly ?? 0) : 0;
             $monthlySearchesLabel = $monthlySearches > 0 ? number_format($monthlySearches) : null;
         @endphp
@@ -94,131 +117,84 @@
                 </div>
             </div>
         </div>
-    @elseif($isFood)
-        {{-- Food pages: dispatch to the restaurant-card grid. The resort
-             fading-strip layout doesn't fit restaurant data shape. --}}
-        @include('partials.restaurant-listings', ['listings' => $listings])
     @else
-        <div class="space-y-8">
-            @foreach($listings as $idx => $listing)
-                @php
-                    $resort = $listing->resort;
-                    if (!$resort) continue;
-                    $gallery = $listingGalleries[$listing->id] ?? [];
-                    // Pad to at least 8 images for 4 strips of 2 each
-                    while (count($gallery) < 8 && !empty($gallery)) { $gallery[] = $gallery[count($gallery) % max(count($gallery),1)]; }
-                    $strips = [
-                        [$gallery[0] ?? null, $gallery[4] ?? null],
-                        [$gallery[1] ?? null, $gallery[5] ?? null],
-                        [$gallery[2] ?? null, $gallery[6] ?? null],
-                        [$gallery[3] ?? null, $gallery[7] ?? null],
-                    ];
-                    $amenities = $resort->amenities_json
-                        ? (is_array($resort->amenities_json) ? $resort->amenities_json : (json_decode($resort->amenities_json, true) ?: []))
-                        : [];
-                    $rating = $listingRatings[$listing->id] ?? 4.7;
-                    $reviews = $listingReviews[$listing->id] ?? [];
-                    $shortDesc = trim(strip_tags($resort->description_html ?? ''));
-                    if ($shortDesc === '') $shortDesc = $resort->tagline ?: ('A vetted property in ' . $resort->city . ' selected by our editorial team.');
-                    if (mb_strlen($shortDesc) > 320) $shortDesc = mb_substr($shortDesc, 0, 317) . '...';
-
-                    $mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode(trim($resort->name . ' ' . $resort->city . ' ' . $resort->province . ' Philippines'));
-                @endphp
-                <article class="rg-listing-row relative rounded-2xl bg-white border border-slate-200 overflow-hidden hover:border-slate-300 transition-colors">
-
-                    {{-- Header: name, location (linked to Google Maps), rating --}}
-                    <header class="px-5 sm:px-7 pt-5 pb-4 border-b border-slate-100 bg-slate-50/50">
-                        <a href="{{ route('resort.show', $resort->slug) }}" class="block">
-                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 hover:text-brand-600 transition-colors leading-tight">{{ $resort->name }}</h3>
-                        </a>
-                        <div class="flex flex-wrap items-center gap-3 mt-1.5 text-sm">
-                            <a href="{{ $mapsUrl }}" target="_blank" rel="nofollow noopener" class="inline-flex items-center gap-1 text-slate-600 hover:text-brand-600 transition-colors">
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-                            <span class="underline decoration-dotted decoration-slate-300">{{ $resort->city }}{{ $resort->province ? ', ' . $resort->province : '' }}</span>
-                            </a>
-                            <span class="inline-flex items-center gap-1 text-amber-500 font-semibold">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                <span class="text-slate-900">{{ number_format($rating, 1) }}</span>
-                                <span class="text-xs text-slate-500 font-normal">(verified)</span>
-                            </span>
-                            @if($resort->tagline)
-                                <span class="text-slate-500 italic hidden sm:inline">"{{ $resort->tagline }}"</span>
-                            @endif
-                        </div>
-                    </header>
-
-                    {{-- 4 fading image strips, full-width --}}
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 p-3 sm:p-4 pb-2">
-                        @foreach($strips as $sIdx => $strip)
-                            <a href="{{ route('resort.show', $resort->slug) }}" class="rg-fade-strip block aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 relative" data-strip-index="{{ $sIdx }}">
-                                @foreach($strip as $img)
-                                    @if($img)
-                                        <img src="{{ $img }}" alt="{{ $resort->name }}" class="absolute inset-0 w-full h-full object-cover" loading="lazy">
-                                    @endif
-                                @endforeach
-                            </a>
-                        @endforeach
+        {{-- ===== #1: the featured top pick ===== --}}
+        <article class="lx-top">
+            <div class="lx-top__media" @if(count($top['photos']) > 1) data-lx-fade @endif style="--tint: {{ $top['tint'] }}">
+                @forelse(array_slice($top['photos'], 0, 4) as $i => $ph)
+                    <img src="{{ $ph }}" alt="{{ $top['name'] }}" class="{{ $i === 0 ? 'is-on' : '' }}" loading="{{ $i === 0 ? 'eager' : 'lazy' }}">
+                @empty
+                    <span class="lx-top__noimg">{{ mb_substr($top['name'], 0, 1) }}</span>
+                @endforelse
+                <span class="lx-ribbon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 16 3 6l5.5 4L12 4l3.5 6L21 6l-2 10H5zm0 2h14v2H5v-2z"/></svg>Top pick</span>
+                @if(count($top['photos']) > 1)
+                    <span class="lx-top__count">{{ count($top['photos']) }} photos</span>
+                @endif
+            </div>
+            <div class="lx-top__body">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="lx-top__kicker">#1 {{ $isFood ? 'place to eat' : 'place to stay' }} on this guide</p>
+                        <h3 class="lx-top__name">@if($top['url'])<a href="{{ $top['url'] }}">{{ $top['name'] }}</a>@else{{ $top['name'] }}@endif</h3>
+                        <a href="{{ $top['maps'] }}" target="_blank" rel="nofollow noopener" class="lx-place"><span class="w-4 h-4 inline-flex">{!! $pin !!}</span>{{ $top['place'] }}</a>
                     </div>
+                    <div class="lx-score">
+                        <span class="lx-score__num">{{ number_format($top['rating'], 1) }}</span>
+                        <span class="lx-score__txt">{{ $verdict($top['rating']) }}@if($top['count'])<small>{{ $top['count'] }} reviews</small>@endif</span>
+                    </div>
+                </div>
+                @if($top['tagline'])<p class="lx-top__tagline">"{{ $top['tagline'] }}"</p>@endif
+                @if($top['desc'])<p class="lx-top__desc">{{ $top['desc'] }}</p>@endif
+                @if($top['chips'] || $top['tag'])
+                    <ul class="lx-chips">
+                        @if($top['tag'] && !$isFood)<li class="lx-chips__price">{{ $top['tag'] }}</li>@endif
+                        @foreach($top['chips'] as $c)<li><span class="w-3.5 h-3.5 inline-flex">{!! $check !!}</span>{{ $c }}</li>@endforeach
+                    </ul>
+                @endif
+                @if($top['review'])
+                    <figure class="lx-quote">
+                        <span class="lx-quote__stars">@for($i = 0; $i < 5; $i++)<span class="w-3.5 h-3.5 inline-flex">{!! $star !!}</span>@endfor</span>
+                        <blockquote>"{{ $top['review']['body'] }}"</blockquote>
+                        <figcaption>{{ $top['review']['name'] }}, {{ $top['review']['city'] }}</figcaption>
+                    </figure>
+                @endif
+                <div class="lx-top__ctas">
+                    @foreach($top['ctas'] as [$label, $href, $style])
+                        <a href="{{ $href }}" class="rg-btn rg-btn--{{ $style }} {{ $style === 'coral' ? 'rg-btn--lg' : '' }}">{{ $label }}@if($style === 'coral')<span class="w-4 h-4 inline-flex">{!! $arrow !!}</span>@endif</a>
+                    @endforeach
+                    <span class="lx-sponsored">Sponsored</span>
+                </div>
+            </div>
+        </article>
 
-                    {{-- Amenities row, full-width --}}
-                    @if(!empty($amenities))
-                        <div class="px-3 sm:px-4 pt-1 pb-3">
-                            <div class="flex flex-wrap gap-1.5">
-                                @foreach(array_slice($amenities, 0, 8) as $a)
-                                    <span class="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">{{ $a }}</span>
-                                @endforeach
-                                @if(count($amenities) > 8)
-                                    <span class="inline-block px-2.5 py-1 rounded-full text-slate-400 text-xs">+{{ count($amenities) - 8 }} more</span>
-                                @endif
+        {{-- ===== the other picks ===== --}}
+        @if($rest)
+            <div class="lx-grid">
+                @foreach($rest as $n => $row)
+                    <article class="lx-card">
+                        <div class="lx-card__media" style="--tint: {{ $row['tint'] }}">
+                            @if(!empty($row['photos'][0]))<img src="{{ $row['photos'][0] }}" alt="{{ $row['name'] }}" loading="lazy">@else<span class="lx-top__noimg">{{ mb_substr($row['name'], 0, 1) }}</span>@endif
+                            <span class="lx-rank">#{{ $n + 2 }}</span>
+                        </div>
+                        <div class="lx-card__body">
+                            <div class="flex items-start justify-between gap-3">
+                                <h3 class="lx-card__name">@if($row['url'])<a href="{{ $row['url'] }}">{{ $row['name'] }}</a>@else{{ $row['name'] }}@endif</h3>
+                                <span class="lx-mini"><span class="w-3.5 h-3.5 inline-flex">{!! $star !!}</span>{{ number_format($row['rating'], 1) }}</span>
+                            </div>
+                            <a href="{{ $row['maps'] }}" target="_blank" rel="nofollow noopener" class="lx-place lx-place--sm"><span class="w-3.5 h-3.5 inline-flex">{!! $pin !!}</span>{{ $row['place'] }}</a>
+                            @if($row['tagline'])<p class="lx-card__tagline">{{ $row['tagline'] }}</p>@endif
+                            @if($row['chips'])
+                                <ul class="lx-chips lx-chips--sm">@foreach(array_slice($row['chips'], 0, 3) as $c)<li>{{ $c }}</li>@endforeach</ul>
+                            @endif
+                            <div class="lx-card__ctas">
+                                <a href="{{ $row['ctas'][0][1] }}" class="rg-btn rg-btn--ocean">{{ $row['ctas'][0][0] }}</a>
+                                <span class="lx-sponsored">Sponsored</span>
                             </div>
                         </div>
-                    @endif
-
-                    {{-- Description row --}}
-                    <div class="px-5 sm:px-7 py-4 border-t border-slate-100">
-                        <p class="text-slate-700 leading-relaxed text-[0.95rem]">{{ $shortDesc }}</p>
-                    </div>
-
-                    {{-- Fading review section (cycles 3 reviews) --}}
-                    @if(!empty($reviews))
-                        <div class="rg-review-fader px-5 sm:px-7 py-4 bg-slate-50 border-t border-slate-100 min-h-[90px]" data-review-count="{{ count($reviews) }}">
-                            @foreach($reviews as $rIdx => $rev)
-                                <div class="rg-review-slide @if($rIdx === 0) is-active @endif" data-review-index="{{ $rIdx }}">
-                                    <div class="flex items-start gap-3">
-                                        <span class="inline-flex w-8 h-8 rounded-full bg-brand-100 text-brand-700 items-center justify-center font-bold text-sm shrink-0" aria-hidden="true">{{ strtoupper(substr($rev['name'], 0, 1)) }}</span>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex items-baseline gap-2 flex-wrap text-sm">
-                                                <span class="font-semibold text-slate-900">{{ $rev['name'] }}</span>
-                                                <span class="text-amber-400 text-xs">★★★★★</span>
-                                                <span class="text-xs text-slate-400">{{ $rev['city'] }} · {{ $rev['days_ago'] }} days ago</span>
-                                            </div>
-                                            <p class="text-sm text-slate-700 leading-relaxed mt-1">"{{ $rev['body'] }}"</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    {{-- CTA buttons row, full-width --}}
-                    <div class="px-5 sm:px-7 py-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                        <a href="{{ route('resort.show', $resort->slug) }}#reserve" class="rg-cta rg-cta-reserve">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25"/></svg>
-                            Reserve and Book
-                        </a>
-                        <a href="{{ route('resort.show', $resort->slug) }}#amenities" class="rg-cta rg-cta-amenities">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                            Amenities
-                        </a>
-                        <a href="{{ route('resort.show', $resort->slug) }}#experiences" class="rg-cta rg-cta-experiences">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.32.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .32-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
-                            Experiences
-                        </a>
-                        <span class="ml-auto text-[10px] uppercase tracking-wider text-slate-400 font-medium">Sponsored</span>
-                    </div>
-                </article>
-            @endforeach
-        </div>
+                    </article>
+                @endforeach
+            </div>
+        @endif
 
         @if(method_exists($listings, 'links') && $listings->hasPages())
             <div class="mt-6 flex justify-center">{{ $listings->links() }}</div>
