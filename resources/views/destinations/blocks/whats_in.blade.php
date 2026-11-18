@@ -1,7 +1,7 @@
 {{-- destcluster_whats_in: centered "What's In {region}?" heading + intro +
      keyword photo cards. Context: $meta, $keywords, $kwImages, $spots.
      Payload $p: heading_prefix, show_intro. --}}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div id="whats-in" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" style="scroll-margin-top:calc(var(--rg-header-h,76px) + 1rem)">
     <div class="text-center mb-6">
         <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900">{{ $p['heading_prefix'] ?? "What's In" }} <span class="font-brand font-normal" style="color:#c0392b;font-size:1.3em;line-height:1">{{ $meta['name'] }}</span>?</h2>
     </div>

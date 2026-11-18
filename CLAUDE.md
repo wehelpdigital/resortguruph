@@ -64,6 +64,10 @@ php artisan rg:cloud-sync-media     # upload storage/app/public (rg-media, rg-bl
 - `--rg-header-h` (set by JS) drives sticky sub-navs and anchor offsets; don't hardcode header heights.
 - Header (`public-header.blade.php`): one row with mega menus (Destinations / Food / Things to Do / Blog / For Business), a search overlay (`/` key or the search button) and the mobile drawer. Menu data comes from `App\Services\HomeShowcase` (cached). A page can make the header transparent over its hero with `@section('header_overlay', '1')` and pull the hero up by `var(--rg-header-h)` (see `home/showcase.blade.php`).
 - Homepage is the hand-built `home/showcase.blade.php` (data: `HomeShowcase`); `rg_settings.home_layout = blocks` switches back to the block-builder homepage.
+- Sub pages share the **page kit** (`layouts/partials/page-kit.blade.php`, CSS + small JS): `partials/page-hero.blade.php` (photo hero under the transparent header, crossfade when given several slides, breadcrumbs, kicker, chips, actions; sets `header_overlay` itself), `partials/page-aside.blade.php` (sticky "On this page" TOC built from the main column's h2s, plan card, share, business card; desktop >= 1280px) and the `pk-jump` chip bar for smaller screens. Mark the content column with `data-pk-main`.
+- Guide content (`.pk-guide`: keyword pages, blog posts, fiestas) is restyled by the page kit with `!important` rules because seeded `custom_html` blocks inject per-page CSS (`.page-{slug} h2/p`). Keep the `page-{slug}` class on the article, not on wrappers that hold the aside.
+- Admin HTML inside the two-column layouts goes through `App\Support\PageKit::balance()` so stray closing tags cannot push the sidebar out of the grid.
+- Block-rendered heroes (`hub_hero`, `dest_hero_search`, `home_hero_centered` with a photo) slide under the header via `PageKit::leadsWithDarkHero()` + the `pk-pull` wrapper class.
 - Homepage hero (`home_unified_search`) is "immersive" when it has a background video/image; set payload `hero_style: "light"` for the old faded look. Phones get the poster image instead of the YouTube iframe.
 
 ## Where things live

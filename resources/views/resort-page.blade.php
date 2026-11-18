@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title') {{ $resort->name }} — {{ $resort->city }}, {{ $resort->province }} | Tourist Guide Ph @endsection
+@section('title') {{ $resort->name }}, {{ $resort->city }}, {{ $resort->province }} | Tourist Guide Ph @endsection
 @section('meta_description') {{ $resort->tagline ?: ($resort->name . ' in ' . $resort->city . ', ' . $resort->province) }} @endsection
 
 @push('head')
@@ -11,42 +11,11 @@
     .brand-secondary { background-color: {{ $resort->secondary_color }} !important; }
     .brand-secondary-text { color: {{ $resort->secondary_color }} !important; }
     .brand-primary-ring { box-shadow: 0 0 0 3px {{ $resort->primary_color }}33; }
-    /* Cinematic hero — taller than the old h-96, with the title
-       overlaid on the bottom of the photo. Photo gets a soft top
-       gradient for the nav bar legibility and a stronger bottom
-       gradient for the title text. */
-    .rg-resort-hero {
-        position: relative;
-        height: 65vh;
-        min-height: 28rem;
-        max-height: 38rem;
-        background: linear-gradient(180deg, {{ $resort->primary_color }} 0%, {{ $resort->secondary_color ?: '#0f172a' }} 100%);
-        overflow: hidden;
-    }
-    .rg-resort-hero img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .rg-resort-hero__scrim {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 55%, rgba(0,0,0,0.75) 100%);
-        pointer-events: none;
-    }
-    .rg-resort-hero__content {
-        position: absolute;
-        left: 0; right: 0; bottom: 0;
-        padding: 2.5rem 1rem 2.5rem;
-        color: #fff;
-    }
     /* Sticky sidebar — sits below the nav (top-24) on desktop so
        the contact + CTA card stays visible while scrolling the
        long detail column. */
     @media (min-width: 1024px) {
-        .rg-resort-sidebar { position: sticky; top: 5.5rem; }
+        .rg-resort-sidebar { position: sticky; top: calc(var(--rg-header-h, 76px) + 1.5rem); }
     }
 </style>
 @endpush
@@ -56,67 +25,37 @@
 @endsection
 
 @section('content')
-{{-- Cinematic full-bleed hero with title overlaid --}}
-<section class="rg-resort-hero" style="margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw">
-    @if($resort->hero_path)
-        <img src="{{ asset('storage/' . $resort->hero_path) }}" alt="{{ $resort->name }}" loading="eager">
-    @endif
-    <div class="rg-resort-hero__scrim"></div>
+@php
+    $slides = [];
+    if ($resort->hero_path) $slides[] = ['src' => '/storage/' . ltrim($resort->hero_path, '/')];
+    foreach ($resort->media->take(5) as $m) $slides[] = ['src' => '/storage/' . ltrim($m->path, '/'), 'title' => $m->caption];
+    $where = trim($resort->city . ($resort->province ? ', ' . $resort->province : ''), ', ');
+    $actions = [];
+    if ($resort->phone) $actions[] = ['label' => 'Call to book', 'url' => 'tel:' . $resort->phone, 'style' => 'coral'];
+    elseif ($resort->email) $actions[] = ['label' => 'Email to book', 'url' => 'mailto:' . $resort->email, 'style' => 'coral'];
+    if ($resort->lat && $resort->lng) $actions[] = ['label' => 'Get directions', 'url' => 'https://www.google.com/maps/dir/?api=1&destination=' . $resort->lat . ',' . $resort->lng, 'style' => 'glass', 'attrs' => 'target="_blank" rel="noopener"'];
+@endphp
+@include('partials.page-hero', [
+    'slides' => $slides,
+    'size' => 'md',
+    'crumbs' => [['Home', url('/')], ['Destinations', route('destinations.index')], [$resort->name, null]],
+    'kicker' => $resort->price_range ? 'Stay · ' . $resort->price_range : 'Featured stay',
+    'title' => $resort->name,
+    'lede' => $resort->tagline,
+    'chips' => [
+        ['icon' => 'pin', 'text' => $where],
+        ['icon' => 'users', 'text' => $resort->capacity ? 'Up to ' . $resort->capacity . ' guests' : ''],
+        ['icon' => 'peso', 'sun' => true, 'text' => $resort->price_range ?: ''],
+    ],
+    'actions' => $actions,
+])
 
-    <div class="rg-resort-hero__content">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav class="text-xs sm:text-sm text-white/85 mb-4 flex items-center gap-1.5 flex-wrap">
-                <a href="{{ url('/') }}" class="hover:text-white transition-colors">Home</a>
-                <span class="text-white/60">/</span>
-                <a href="{{ route('destinations.index') }}" class="hover:text-white transition-colors">Destinations</a>
-                <span class="text-white/60">/</span>
-                <span class="text-white">{{ $resort->name }}</span>
-            </nav>
-
-            <div class="flex flex-col sm:flex-row sm:items-end gap-5">
-                @if($resort->logo_path)
-                    <img src="{{ asset('storage/' . $resort->logo_path) }}" alt="" class="w-20 h-20 rounded-xl object-cover bg-white/10 ring-2 ring-white/30 shadow-lg flex-shrink-0">
-                @endif
-                <div class="flex-1 min-w-0">
-                    @if($resort->price_range)
-                        <span class="inline-block px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-bold uppercase tracking-wider text-white mb-3">{{ $resort->price_range }}</span>
-                    @endif
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-[-0.015em] text-white mb-3 max-w-3xl" style="text-shadow:0 2px 16px rgba(0,0,0,0.4)">{{ $resort->name }}</h1>
-                    <div class="flex items-center gap-2 text-white/95 text-base sm:text-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-                        <span>{{ $resort->city }}, {{ $resort->province }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{{-- Tagline strip — sits just under the hero with a thin accent rule above --}}
-@if($resort->tagline)
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
-        <div class="flex items-start gap-4">
-            <span class="block w-1 brand-primary self-stretch rounded-full mt-1 flex-shrink-0" style="min-height:3rem"></span>
-            <p class="text-xl md:text-2xl text-slate-700 font-serif italic leading-snug max-w-3xl">{{ $resort->tagline }}</p>
-        </div>
-    </div>
-@endif
-
-{{-- Quick-action chip row (capacity + social share + back to destinations) --}}
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-    <div class="flex flex-wrap items-center gap-3">
-        @if($resort->capacity)
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 text-sm font-semibold">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87m6-9.13a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm6 4a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
-                Capacity {{ $resort->capacity }}
-            </span>
-        @endif
-        @include('partials.social-share', ['url' => url()->current(), 'title' => $resort->name . ' — Tourist Guide Ph', 'align' => 'start'])
-    </div>
+    @include('partials.social-share', ['url' => url()->current(), 'title' => $resort->name . ' | Tourist Guide Ph', 'align' => 'start'])
 </div>
 
 {{-- Main two-column layout: detail column left, sticky CTA sidebar right --}}
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 grid lg:grid-cols-3 gap-10">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid lg:grid-cols-3 gap-10">
     <div class="lg:col-span-2 space-y-12">
         @if($resort->description_html)
             <section>
@@ -124,8 +63,8 @@
                     <span class="block h-[3px] w-10 brand-primary rounded-full"></span>
                     <span class="text-xs uppercase tracking-[0.18em] font-bold brand-primary-text">Overview</span>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-5">About {{ $resort->name }}</h2>
-                <div class="prose prose-lg prose-slate max-w-none leading-relaxed">{!! $resort->description_html !!}</div>
+                <h2 class="pk-h2 !text-2xl md:!text-3xl mb-5">About {{ $resort->name }}</h2>
+                <div class="prose prose-lg prose-slate max-w-none leading-relaxed">{!! \App\Support\PageKit::balance($resort->description_html) !!}</div>
             </section>
         @endif
 
@@ -135,10 +74,10 @@
                     <span class="block h-[3px] w-10 brand-primary rounded-full"></span>
                     <span class="text-xs uppercase tracking-[0.18em] font-bold brand-primary-text">What's included</span>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-6">Amenities</h2>
+                <h2 class="pk-h2 !text-2xl md:!text-3xl mb-6">Amenities</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     @foreach($resort->amenities as $a)
-                        <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-colors">
                             <svg class="w-5 h-5 brand-primary-text flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
                             <span class="text-sm font-medium text-slate-800">{{ $a }}</span>
                         </div>
@@ -153,7 +92,7 @@
                     <span class="block h-[3px] w-10 brand-primary rounded-full"></span>
                     <span class="text-xs uppercase tracking-[0.18em] font-bold brand-primary-text">See the property</span>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-6">Gallery</h2>
+                <h2 class="pk-h2 !text-2xl md:!text-3xl mb-6">Gallery</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                     @foreach($resort->media as $idx => $m)
                         <a href="{{ asset('storage/' . $m->path) }}" target="_blank" rel="noopener" class="block group relative aspect-square rounded-xl overflow-hidden bg-slate-200 {{ $idx === 0 ? 'md:col-span-2 md:row-span-2 md:aspect-square' : '' }}">
@@ -174,7 +113,7 @@
                     <span class="text-xs uppercase tracking-[0.18em] font-bold brand-primary-text">Finding the place</span>
                 </div>
                 <div class="flex items-center justify-between flex-wrap gap-3 mb-5">
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900">Location</h2>
+                    <h2 class="pk-h2 !text-2xl md:!text-3xl">Location</h2>
                     <a href="https://www.google.com/maps/dir/?api=1&destination={{ $resort->lat }},{{ $resort->lng }}" target="_blank" rel="noopener" class="text-sm font-semibold brand-primary-text inline-flex items-center gap-1.5 hover:underline">
                         Get directions
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0-7 7m7-7H3"/></svg>
@@ -265,11 +204,18 @@
     </aside>
 </div>
 
-{{-- Bottom return CTA — proper button instead of text link --}}
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-12 text-center">
-    <a href="{{ route('destinations.index') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        Browse more destinations
-    </a>
-</div>
+{{-- Keep exploring --}}
+<section class="pk-wrap mt-16 mb-16">
+    <div class="rounded-[1.75rem] bg-sand-100 border border-sand-200 p-7 sm:p-10 flex flex-col md:flex-row md:items-center gap-6">
+        <div class="flex-1">
+            <p class="pk-eyebrow">Still deciding?</p>
+            <h2 class="pk-h2 !text-2xl sm:!text-3xl">Compare more stays in {{ $resort->city ?: 'the Philippines' }}</h2>
+            <p class="mt-2 text-slate-600">Browse honest destination guides with the resorts, hotels and food spots travelers actually recommend.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('destinations.index') }}" class="rg-btn rg-btn--coral rg-btn--lg">Browse destinations</a>
+            <a href="{{ url('/create-your-adventure') }}" class="rg-btn rg-btn--outline rg-btn--lg">Plan my trip</a>
+        </div>
+    </div>
+</section>
 @endsection

@@ -1,94 +1,103 @@
 @extends('layouts.public')
 
-@section('title', $fiesta->meta_title ?: ($fiesta->name . ' — ' . ($fiesta->city_or_town ?? '') . ' · Tourist Guide Ph'))
-@section('meta')
-    <meta name="description" content="{{ $fiesta->meta_description ?: $fiesta->summary }}">
-    <link rel="canonical" href="{{ route('fiestas.show', $fiesta->slug) }}">
-    @if($fiesta->og_image_path ?: $fiesta->cover_image_path)
-        <meta property="og:image" content="{{ url($fiesta->og_image_path ?: $fiesta->coverUrl()) }}">
-    @endif
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="{{ $fiesta->h1 ?: $fiesta->name }}">
-    <meta property="og:description" content="{{ $fiesta->summary }}">
-    <meta property="og:url" content="{{ route('fiestas.show', $fiesta->slug) }}">
-@endsection
+@php
+    $place = trim(($fiesta->city_or_town ?? '') . ($fiesta->province ? (($fiesta->city_or_town ? ', ' : '') . $fiesta->province) : ''));
+@endphp
+@section('title', $fiesta->meta_title ?: ($fiesta->name . ($fiesta->city_or_town ? ' in ' . $fiesta->city_or_town : '') . ' | Tourist Guide Ph'))
+@section('meta_description'){{ $fiesta->meta_description ?: $fiesta->summary }}@endsection
+@section('canonical'){{ route('fiestas.show', $fiesta->slug) }}@endsection
+@if($fiesta->og_image_path ?: $fiesta->cover_image_path)
+    @section('og_image'){{ url($fiesta->og_image_path ? '/storage/' . ltrim($fiesta->og_image_path, '/') : $fiesta->coverUrl()) }}@endsection
+@endif
 
 @section('content')
-<article class="page-fiesta-{{ $fiesta->slug }} max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+@include('partials.page-hero', [
+    'slides' => $fiesta->cover_image_path ? [['src' => $fiesta->coverUrl()]] : [],
+    'crumbs' => [['Home', url('/')], ['Festivals', route('fiestas.index')], [$fiesta->name, null]],
+    'kicker' => $fiesta->regionLabel() . ($place ? ' · ' . $place : ''),
+    'title' => $fiesta->h1 ?: $fiesta->name,
+    'lede' => $fiesta->summary,
+    'chips' => [
+        ['icon' => 'calendar', 'sun' => true, 'text' => $fiesta->date_label ?: $fiesta->monthLabel()],
+        ['icon' => 'pin', 'text' => $place],
+    ],
+    'actions' => [
+        ['label' => 'Plan my trip', 'url' => url('/create-your-adventure'), 'style' => 'coral'],
+        ['label' => 'All festivals', 'url' => route('fiestas.index'), 'style' => 'glass'],
+    ],
+])
 
-    {{-- Modern breadcrumb (slate-300 separators, emerald hover) --}}
-    <nav class="text-sm text-slate-500 mb-8 flex items-center gap-1.5 flex-wrap">
-        <a href="/" class="hover:text-emerald-700 transition-colors">Home</a>
-        <span class="text-slate-300 mx-0.5">/</span>
-        <a href="{{ route('fiestas.index') }}" class="hover:text-emerald-700 transition-colors">Fiestas</a>
-        <span class="text-slate-300 mx-0.5">/</span>
-        <span class="text-slate-700 font-medium">{{ $fiesta->name }}</span>
-    </nav>
+<nav class="pk-jump pk-jump--auto" data-pk-toc-box aria-label="Jump to a section"><div class="pk-jump__row max-w-7xl mx-auto" data-pk-toc></div></nav>
 
-    {{-- Page header — editorial typography matching the rest of the site --}}
-    <header class="mb-8">
-        <div class="text-[11px] uppercase tracking-[0.2em] font-bold text-emerald-700 mb-3">
-            {{ $fiesta->regionLabel() }}
-            @if($fiesta->city_or_town)
-                · {{ $fiesta->city_or_town }}@if($fiesta->province), {{ $fiesta->province }}@endif
-            @endif
-        </div>
-        <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-slate-900 leading-[1.05] tracking-[-0.018em] mb-4">
-            {{ $fiesta->h1 ?: $fiesta->name }}
-        </h1>
-        @if($fiesta->date_label)
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 text-amber-900 text-sm font-semibold mb-4">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>
-                </svg>
-                {{ $fiesta->date_label }}
+<div class="pk-wrap pt-10 pb-16 lg:pt-14">
+    <div class="pk-grid pk-grid--narrow">
+        <article class="pk-main pk-guide page-fiesta-{{ $fiesta->slug }}" data-pk-main>
+            <div class="prose prose-slate prose-lg max-w-none text-slate-700 leading-relaxed rg-fiesta-prose">
+                @php $fiestaHtml = ''; foreach ($blocks as $block) { $fiestaHtml .= $renderer->renderBlock($block, ['fiesta' => $fiesta]); } @endphp
+                {!! \App\Support\PageKit::balance($fiestaHtml) !!}
             </div>
-        @endif
-        @if($fiesta->summary)
-            <p class="text-lg sm:text-xl text-slate-700 leading-relaxed max-w-3xl">
-                {{ $fiesta->summary }}
-            </p>
-        @endif
-    </header>
-
-    {{-- Cover image --}}
-    @if($fiesta->cover_image_path)
-        <figure class="rounded-2xl overflow-hidden bg-slate-100 mb-10">
-            <img src="{{ $fiesta->coverUrl() }}"
-                 alt="{{ $fiesta->name }}"
-                 class="w-full h-auto block">
-        </figure>
-    @endif
-
-    {{-- Content blocks --}}
-    <div class="prose prose-slate max-w-none text-slate-700 leading-relaxed">
-        @foreach($blocks as $block)
-            {!! $renderer->renderBlock($block, ['fiesta' => $fiesta]) !!}
-        @endforeach
+            <div class="xl:hidden">
+                @include('partials.social-share', ['url' => route('fiestas.show', $fiesta->slug), 'title' => $fiesta->name])
+            </div>
+        </article>
+        @include('partials.page-aside', ['shareTitle' => $fiesta->name, 'shareUrl' => route('fiestas.show', $fiesta->slug)])
     </div>
+</div>
 
-    {{-- JSON-LD --}}
-    @php
-        $ld = [
-            '@context' => 'https://schema.org',
-            '@type' => 'Event',
-            'name' => $fiesta->name,
-            'description' => $fiesta->summary,
-            'url' => route('fiestas.show', $fiesta->slug),
-            'location' => [
-                '@type' => 'Place',
-                'name' => trim(($fiesta->city_or_town ?? '') . ($fiesta->province ? (', ' . $fiesta->province) : '')) . ', Philippines',
-                'address' => [
-                    '@type' => 'PostalAddress',
-                    'addressLocality' => $fiesta->city_or_town,
-                    'addressRegion' => $fiesta->province,
-                    'addressCountry' => 'PH',
-                ],
+@if(!empty($more) && $more->isNotEmpty())
+<section class="relative overflow-hidden bg-ink-900 text-white py-16 md:py-20 isolate">
+    <div class="absolute -right-40 -top-40 w-[34rem] h-[34rem] rounded-full -z-10" style="background: radial-gradient(circle, rgba(239,91,58,.32), transparent 65%)"></div>
+    <div class="pk-wrap">
+        <div class="flex items-end justify-between gap-4 mb-8 flex-wrap">
+            <div>
+                <p class="pk-eyebrow !text-sun-300">Keep celebrating</p>
+                <h2 class="pk-h2 !text-white">More festivals to plan around</h2>
+            </div>
+            <a href="{{ route('fiestas.index') }}" class="rg-btn rg-btn--glass">Festival calendar</a>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+            @foreach($more as $f)
+                <a href="{{ route('fiestas.show', $f->slug) }}" class="group block rounded-[1.25rem] overflow-hidden bg-white/5 border border-white/10 hover:bg-white/10 transition">
+                    <span class="block aspect-[4/3] overflow-hidden"><img src="{{ $f->coverUrl() }}" alt="{{ $f->name }}" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-105"></span>
+                    <span class="block p-4">
+                        <span class="block text-[.7rem] font-bold uppercase tracking-wider text-sun-300">{{ $f->monthLabel() }}</span>
+                        <span class="block mt-1 font-display font-extrabold leading-snug">{{ preg_replace('/\s*\(.*\)$/', '', $f->name) }}</span>
+                        <span class="block mt-1 text-xs text-white/65">{{ trim(($f->city_or_town ?: '') . ($f->province ? ', ' . $f->province : ''), ', ') }}</span>
+                    </span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+@php
+    $ld = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Event',
+        'name' => $fiesta->name,
+        'description' => $fiesta->summary,
+        'url' => route('fiestas.show', $fiesta->slug),
+        'location' => [
+            '@type' => 'Place',
+            'name' => trim(($fiesta->city_or_town ?? '') . ($fiesta->province ? (', ' . $fiesta->province) : '')) . ', Philippines',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => $fiesta->city_or_town,
+                'addressRegion' => $fiesta->province,
+                'addressCountry' => 'PH',
             ],
-        ];
-        if ($fiesta->cover_image_path) $ld['image'] = url($fiesta->coverUrl());
-    @endphp
-    <script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        ],
+    ];
+    if ($fiesta->cover_image_path) $ld['image'] = url($fiesta->coverUrl());
+@endphp
+<script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 
-</article>
+@push('head')
+<style>
+    .rg-fiesta-prose > *:first-child { margin-top: 0; }
+    .rg-fiesta-prose h2 { font-weight: 800; letter-spacing: -0.02em; color: #0b1b2b; }
+    .rg-fiesta-prose p { line-height: 1.8; }
+</style>
+@endpush
 @endsection

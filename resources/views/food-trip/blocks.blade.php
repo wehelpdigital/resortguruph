@@ -39,7 +39,9 @@
 @endif
 
 @section('content')
-<article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 page-food-trip">
+@php $pullHero = \App\Support\PageKit::leadsWithDarkHero($renderedBlocks ?? ''); @endphp
+@if($pullHero) @section('header_overlay', '1') @endif
+<article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 page-food-trip {{ $pullHero ? 'pk-pull' : '' }}">
     {!! $renderedBlocks !!}
 </article>
 @endsection

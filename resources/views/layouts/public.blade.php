@@ -214,9 +214,9 @@
            read as a warning state). Keep just the rounded corners and a
            gentle inset shadow so the band still pops out of the white body. */
         .rg-listings-band {
-            background: linear-gradient(180deg, #fefce8 0%, #fff7ed 100%);
-            border-radius: 1rem;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+            background: linear-gradient(160deg, #fbf6ee 0%, #fff3ef 100%);
+            border: 1px solid #f0e4cf;
+            border-radius: 1.5rem;
         }
 
         /* 4-strip fade animation on each listing row. Each strip cycles
@@ -600,6 +600,7 @@
     </style>
 
     @include('layouts.partials.public-theme')
+    @include('layouts.partials.page-kit')
 
     @stack('head')
     @yield('jsonld')

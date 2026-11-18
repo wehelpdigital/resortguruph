@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title') Contact — {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} @endsection
+@section('title') Contact | {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }} @endsection
 @section('meta_description') Get in touch with Tourist Guide PH. Email us at contact@touristguide.ph or follow along on social media. @endsection
 
 @section('content')
@@ -18,20 +18,16 @@
     ];
 @endphp
 
+@php $intro = \App\Support\PageKit::intro('contact-page'); @endphp
+@include('partials.page-hero', [
+    'slides' => $intro['image'] ? [['src' => $intro['image']]] : [],
+    'size' => 'sm',
+    'crumbs' => [['Home', url('/')], ['Contact', null]],
+    'kicker' => $intro['eyebrow'] ?: 'Contact Us',
+    'title' => $intro['heading'] ?: 'Get in Touch',
+    'lede' => $intro['lede'] ?: 'Questions, partnership ideas, or a place we should add? We would love to hear from you.',
+])
 <div class="page-contact">
-    @if($hasBlocks)
-        {{-- Editorial hero from the contact-page static page. --}}
-        {!! $renderedBlocks !!}
-    @else
-        <section class="py-14 md:py-20">
-            <div class="mx-auto max-w-2xl px-4 text-center">
-                <p class="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-brand-600">Contact Us</p>
-                <h1 class="mb-4 text-4xl font-extrabold text-slate-900 md:text-5xl">Get in Touch</h1>
-                <p class="text-lg text-slate-600">Questions, partnership ideas, or a place we should add? We would love to hear from you.</p>
-            </div>
-        </section>
-    @endif
-
     <section class="mx-auto max-w-2xl px-4 pt-12 pb-16 md:pt-16 md:pb-24">
         {{-- Email card --}}
         <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm md:p-10">

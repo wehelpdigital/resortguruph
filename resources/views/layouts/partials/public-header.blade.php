@@ -175,9 +175,9 @@
                 {!! $svg($ico['search']) !!}<span class="hidden xl:inline">Search</span><kbd class="hidden xl:inline-flex">/</kbd>
             </button>
             @auth
-                <a href="{{ route('dashboard.index') }}" class="rg-nav hidden lg:inline-flex">Dashboard</a>
+                <a href="{{ route('dashboard.index') }}" class="rg-nav rg-hdr__signin hidden lg:inline-flex">Dashboard</a>
             @else
-                <a href="{{ route('login') }}" class="rg-nav hidden lg:inline-flex">Sign in</a>
+                <a href="{{ route('login') }}" class="rg-nav rg-hdr__signin hidden lg:inline-flex">Sign in</a>
             @endauth
             <a href="{{ route('create-your-adventure') }}" class="rg-btn rg-btn--coral hidden sm:inline-flex">Plan your trip{!! $arrow !!}</a>
             <button type="button" class="rg-iconbtn rg-hdr__menu lg:hidden" data-rg-drawer-open="menu" aria-label="Open menu" aria-controls="rgDrawer" aria-expanded="false">

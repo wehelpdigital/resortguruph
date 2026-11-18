@@ -124,6 +124,10 @@
     .rg-hdr__logo--dark { display: none; }
     .rg-nav { position: relative; display: inline-flex; align-items: center; gap: .3rem; height: 2.6rem; padding: 0 .85rem; border-radius: 999px; font-size: .95rem; font-weight: 600; color: #1e293b; white-space: nowrap; transition: background-color .18s ease, color .18s ease; }
     .rg-nav:hover, .rg-mm.is-open > .rg-nav { background: #f1f5f9; color: #0b1b2b; }
+    /* keep the one-row header inside 1024-1439px screens */
+    @media (min-width: 1024px) and (max-width: 1439px) { .rg-nav { padding: 0 .6rem; } }
+    @media (min-width: 1024px) and (max-width: 1151px) { .rg-hdr__signin { display: none !important; } }
+    @media (min-width: 1024px) and (max-width: 1279px) { .rg-nav { padding: 0 .48rem; font-size: .88rem; } .rg-hdr .rg-btn--coral > svg { display: none; } .rg-hdr .rg-btn { padding-left: .95rem; padding-right: .95rem; } }
     .rg-nav.is-active { color: var(--rg-ocean); }
     .rg-nav.is-active::after { content: ""; position: absolute; left: 50%; bottom: .2rem; width: 1.1rem; height: 3px; margin-left: -.55rem; border-radius: 3px; background: var(--rg-coral); }
     .rg-nav__chev { width: .95rem; height: .95rem; opacity: .6; transition: transform .2s ease; }

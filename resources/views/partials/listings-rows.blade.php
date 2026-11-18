@@ -36,8 +36,8 @@
     // owners to list at the specific location instead of generic wording.
     $areaLabel = $area ?? null;
     $sectionTitle = $isFood
-        ? 'Restaurants, Eateries & Food Destinations We Recommend'
-        : 'Hotels and Resorts that We Recommend';
+        ? 'Restaurants and food spots we recommend'
+        : 'Hotels and resorts we recommend';
     $sectionSub = $isFood
         ? 'We are recommending these restaurants, eateries, and food shops.'
         : 'We are recommending these hotels and resorts.';
@@ -57,16 +57,14 @@
         : 'List your property';
 @endphp
 
-<section class="rg-listings-band relative px-4 sm:px-6 lg:px-8 pt-6 pb-8 mb-10">
-
-    {{-- Verified / scam-protect badge, upper-right of container (placeholder
-         circle image). Absolutely positioned so it doesn't push the heading.
-         top: 1.5rem keeps it tucked inside the corner instead of overhanging. --}}
-    <img src="{{ asset('images/verified-badge.svg') }}" alt="Verified and scam-protect badge" class="absolute right-3 sm:right-6 w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-md pointer-events-none select-none" style="top: 1.5rem;" loading="lazy">
-
-    <div class="mb-6 pr-20 sm:pr-24">
-        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-1">{{ $sectionTitle }}</h2>
-        <p class="text-sm text-slate-600">{{ $sectionSub }}</p>
+<section id="top-picks" class="rg-listings-band relative p-5 sm:p-7 mb-10">
+    <div class="flex items-start justify-between gap-4 mb-6">
+        <div class="min-w-0">
+            <p class="pk-eyebrow">{{ $isFood ? 'Where to eat' : 'Where to stay' }}</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-1">{{ $sectionTitle }}</h2>
+            <p class="text-sm text-slate-600">{{ $sectionSub }}</p>
+        </div>
+        <img src="{{ asset('images/verified-badge.svg') }}" alt="Verified listings badge" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-md shrink-0 pointer-events-none select-none" loading="lazy">
     </div>
 
     @if(!$hasAny)
@@ -76,27 +74,24 @@
             $monthlySearches = isset($keyword) ? (int) ($keyword->search_volume_monthly ?? 0) : 0;
             $monthlySearchesLabel = $monthlySearches > 0 ? number_format($monthlySearches) : null;
         @endphp
-        <div class="rounded-2xl bg-white border border-slate-200 p-6 sm:p-8 text-center">
-            <div class="text-3xl mb-3">{{ $emptyIcon }}</div>
-            <p class="text-slate-900 font-bold text-lg mb-1">{{ $emptyHeading }}</p>
-            @if($monthlySearchesLabel)
-                <p class="text-sm text-slate-600 mb-1">
-                    <strong class="text-brand-700">{{ $monthlySearchesLabel }}</strong> Filipinos search for
-                    <strong>{{ $keyword->phrase ?? '' }}</strong> every month on Google.
+        <div class="rounded-[1.25rem] bg-white border border-sand-200 p-5 sm:p-7 flex gap-4 sm:gap-5 items-start">
+            <span class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-coral-50 text-coral-500 flex items-center justify-center shrink-0">
+                @if($isFood)
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+                @else
+                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>
+                @endif
+            </span>
+            <div class="flex-1 min-w-0">
+                <p class="font-display text-ink-900 font-extrabold text-lg leading-snug">{{ $emptyHeading }}</p>
+                <p class="text-sm text-slate-600 mt-1.5 leading-relaxed">
+                    @if($monthlySearchesLabel)<strong class="text-ink-900">{{ $monthlySearchesLabel }}</strong> people search for <strong>{{ $keyword->phrase ?? '' }}</strong> every month. @endif
+                    {{ $emptyOffer }} <strong class="text-emerald-700">Start with a low minimum bid.</strong>
                 </p>
-            @endif
-            <p class="text-sm text-slate-600 mb-5">
-                {{ $emptyOffer }}
-                <strong class="text-emerald-700">Start with a low minimum bid.</strong>
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-3">
-                <a href="{{ route('register') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-brand-600 text-white font-semibold hover:bg-brand-700">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                    {{ $ctaLabel }}
-                </a>
-                <a href="{{ route('about') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50">
-                    How it works
-                </a>
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <a href="{{ route('register') }}" class="rg-btn rg-btn--coral">{{ $isFood ? 'List your restaurant' : 'List your property' }}</a>
+                    <a href="{{ route('become-a-partner') }}" class="rg-btn rg-btn--outline">How it works</a>
+                </div>
             </div>
         </div>
     @elseif($isFood)

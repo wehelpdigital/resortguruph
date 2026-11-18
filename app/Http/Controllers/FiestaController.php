@@ -58,10 +58,19 @@ class FiestaController extends Controller
 
         $blocks = RgContentBlock::forOwner('fiesta', $fiesta->id);
 
+        // "More festivals" band: same month first, then same region.
+        $more = RgFiesta::query()->where('is_published', 1)->where('id', '<>', $fiesta->id)
+            ->whereNotNull('cover_image_path')
+            ->where(fn ($q) => $q->where('month', $fiesta->month)->orWhere('region_cluster', $fiesta->region_cluster))
+            ->orderByRaw('month = ? desc', [(int) $fiesta->month])
+            ->orderByDesc('pageviews_30d')
+            ->limit(4)->get();
+
         return view('fiestas.show', [
             'fiesta' => $fiesta,
             'blocks' => $blocks,
             'renderer' => app(BlockRenderer::class),
+            'more' => $more,
         ]);
     }
 

@@ -285,35 +285,35 @@ class BlockRenderer
 
     private function faq(array $p): string
     {
-        $items = $p['items'] ?? [];
+        $items = array_values(array_filter($p['items'] ?? [], fn ($i) => !empty($i['question'])));
         if (!$items) return '';
         $headingText = $p['heading'] ?? 'Frequently Asked Questions';
-        $out = '<div class="my-8 space-y-3">';
-        $out .= '<h2 class="text-2xl font-bold text-slate-900 mb-4">' . $this->e($headingText) . '</h2>';
-        foreach ($items as $item) {
-            if (empty($item['question'])) continue;
-            $out .= '<details class="bg-white border border-slate-200 rounded-lg p-4 group">';
-            $out .= '<summary class="font-semibold text-slate-900 cursor-pointer flex items-center justify-between">' . $this->e($item['question']) . '<span class="text-slate-400 group-open:rotate-180 transition">▾</span></summary>';
-            $out .= '<div class="mt-2 text-slate-600 leading-relaxed">' . nl2br($this->e($item['answer'] ?? '')) . '</div>';
-            $out .= '</details>';
+        $out = '<section class="rg-faq not-prose my-12">';
+        $out .= '<p class="pk-eyebrow">Good to know</p>';
+        $out .= '<h2 class="text-2xl font-bold text-slate-900 mb-5">' . $this->e($headingText) . '</h2>';
+        $out .= '<div class="rg-faq__list">';
+        foreach ($items as $i => $item) {
+            $out .= '<details class="rg-faq__item"' . ($i === 0 ? ' open' : '') . '>'
+                . '<summary><span>' . $this->e($item['question']) . '</span><span class="rg-faq__icon" aria-hidden="true"></span></summary>'
+                . '<div class="rg-faq__answer">' . nl2br($this->e($item['answer'] ?? '')) . '</div>'
+                . '</details>';
         }
-        $out .= '</div>';
-        return $out;
+        return $out . '</div></section>';
     }
 
     private function cta(array $p): string
     {
+        $headline = trim((string) ($p['headline'] ?? ''));
+        $text = trim((string) ($p['text'] ?? ''));
         $style = $p['style'] ?? 'primary';
-        $btnClass = match ($style) {
-            'secondary' => 'bg-slate-700 hover:bg-slate-800 text-white',
-            'outline' => 'border-2 border-brand-600 text-brand-600 hover:bg-brand-50',
-            default => 'bg-brand-600 hover:bg-brand-700 text-white',
-        };
-        return '<div class="my-8 p-8 rounded-2xl bg-gradient-to-br from-brand-50 to-amber-50 text-center">'
-            . ($p['headline'] ? '<h3 class="text-2xl font-bold text-slate-900 mb-2">' . $this->e($p['headline']) . '</h3>' : '')
-            . ($p['text'] ? '<p class="text-slate-700 mb-5">' . $this->e($p['text']) . '</p>' : '')
-            . '<a href="' . $this->e($p['button_url'] ?? '#') . '" class="inline-block px-6 py-3 rounded-lg font-semibold ' . $btnClass . '">' . $this->e($p['button_text'] ?? 'Click') . '</a>'
-            . '</div>';
+        $btn = $style === 'outline' ? 'rg-btn rg-btn--glass rg-btn--lg' : 'rg-btn rg-btn--coral rg-btn--lg';
+        return '<section class="rg-cta not-prose my-10">'
+            . '<div class="min-w-0">'
+            . ($headline !== '' ? '<p class="rg-cta__title">' . $this->e($headline) . '</p>' : '')
+            . ($text !== '' ? '<p class="rg-cta__text">' . $this->e($text) . '</p>' : '')
+            . '</div>'
+            . '<a href="' . $this->e($p['button_url'] ?? '#') . '" class="' . $btn . ' shrink-0">' . $this->e($p['button_text'] ?? 'Learn more') . '</a>'
+            . '</section>';
     }
 
     private function twoColumn(array $p): string
@@ -763,45 +763,32 @@ class BlockRenderer
     {
         $cards = $p['cards'] ?? [];
         if (!$cards) return '';
-
-        $palettes = [
-            'blue'    => ['bg' => '#eaf2f8', 'br' => '#a9cce3', 'fg' => '#2471a3', 'sm' => '#1a5276'],
-            'emerald' => ['bg' => '#ecfdf5', 'br' => '#a7f3d0', 'fg' => '#047857', 'sm' => '#064e3b'],
-            'rose'    => ['bg' => '#f9ebea', 'br' => '#f2d7d5', 'fg' => '#c0392b', 'sm' => '#7b241c'],
-            'amber'   => ['bg' => '#fffbeb', 'br' => '#fcd34d', 'fg' => '#b45309', 'sm' => '#78350f'],
-            'violet'  => ['bg' => '#f5f3ff', 'br' => '#ddd6fe', 'fg' => '#6d28d9', 'sm' => '#4c1d95'],
-            'slate'   => ['bg' => '#f8fafc', 'br' => '#cbd5e1', 'fg' => '#334155', 'sm' => '#0f172a'],
-        ];
-
-        $count = count($cards);
-        $gridCols = match (true) {
-            $count >= 4 => 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
-            $count === 3 => 'grid-cols-1 md:grid-cols-3',
-            $count === 2 => 'grid-cols-1 md:grid-cols-2',
-            default => 'grid-cols-1',
-        };
-
         $out = '';
         if (!empty($p['heading'])) {
-            $out .= '<h2 class="text-2xl font-bold text-slate-900 mt-8 mb-3">'
-                . $this->e($p['heading']) . '</h2>';
+            $out .= '<h2 class="text-2xl font-bold text-slate-900 mt-10 mb-4">' . $this->e($p['heading']) . '</h2>';
         }
-        $out .= '<div class="not-prose my-8 grid ' . $gridCols . ' gap-3">';
+        $count = count($cards);
+        $cols = $count === 3 ? 'sm:grid-cols-3' : ($count >= 2 ? 'sm:grid-cols-2' : '');
+        $out .= '<div class="not-prose my-8 grid grid-cols-1 ' . $cols . ' gap-3">';
         foreach ($cards as $card) {
-            $pal = $palettes[$card['color'] ?? 'blue'] ?? $palettes['blue'];
-            $svg = $this->quickFactIconSvg($card['icon'] ?? 'info');
-            $out .= '<div class="rounded-lg p-4 text-center"'
-                . ' style="background:' . $pal['bg'] . ';border:1px solid ' . $pal['br'] . '">'
-                . '<div class="flex justify-center mb-2" style="color:' . $pal['fg'] . '">' . $svg . '</div>'
-                . '<div class="text-2xl font-bold" style="color:' . $pal['fg'] . '">'
-                . $this->e($card['big'] ?? '') . '</div>'
-                . '<div class="text-[10px] uppercase tracking-wide font-bold" style="color:' . $pal['sm'] . '">'
-                . $this->e($card['label'] ?? '') . '</div>'
-                . '<div class="text-xs text-slate-600 mt-1">' . $this->e($card['detail'] ?? '') . '</div>'
+            $c = $this->toneHex($card['color'] ?? 'blue');
+            $out .= '<div class="rg-fact" style="--c:' . $c . '">'
+                . '<span class="rg-fact__ico">' . $this->quickFactIconSvg($card['icon'] ?? 'info') . '</span>'
+                . '<p class="rg-fact__label">' . $this->e($card['label'] ?? '') . '</p>'
+                . '<p class="rg-fact__big">' . $this->e($card['big'] ?? '') . '</p>'
+                . (!empty($card['detail']) ? '<p class="rg-fact__detail">' . $this->e($card['detail']) . '</p>' : '')
                 . '</div>';
         }
-        $out .= '</div>';
-        return $out;
+        return $out . '</div>';
+    }
+
+    /** Accent hex for the palette names the builder offers. */
+    private function toneHex(string $name): string
+    {
+        return [
+            'blue' => '#13669c', 'emerald' => '#059669', 'rose' => '#e0462a', 'amber' => '#d97706',
+            'violet' => '#7c3aed', 'slate' => '#334155',
+        ][$name] ?? '#13669c';
     }
 
     /**
@@ -830,51 +817,39 @@ class BlockRenderer
      */
     private function editorRating(array $p): string
     {
-        $overall = (float) ($p['overall'] ?? 4.0);
-        $overall = max(0, min(5, $overall));
+        $overall = max(0, min(5, (float) ($p['overall'] ?? 4.0)));
         $criteria = $p['criteria'] ?? [];
-        $title = $p['title'] ?? 'Resort Guru Editor Rating';
-        $summary = $p['summary'] ?? '';
+        $title = trim(str_replace(['Resort Guru ', 'Resort Guru'], '', (string) ($p['title'] ?? ''))) ?: 'Editor rating';
+        $summary = trim((string) ($p['summary'] ?? ''));
+        $verdict = $overall >= 4.6 ? 'Outstanding' : ($overall >= 4.2 ? 'Excellent' : ($overall >= 3.8 ? 'Very good' : ($overall >= 3.2 ? 'Good' : 'Fair')));
 
         $stars = '';
         for ($i = 1; $i <= 5; $i++) {
-            $fillPct = max(0, min(1, $overall - ($i - 1))) * 100;
-            $stars .= '<span class="relative inline-block w-7 h-7" aria-hidden="true">'
-                . '<svg viewBox="0 0 24 24" class="absolute inset-0 w-full h-full" fill="#e2e8f0"><path d="M12 2l2.4 6.6L21 9.7l-5 4.6L17.4 21 12 17.6 6.6 21 8 14.3 3 9.7l6.6-1.1z"/></svg>'
-                . '<span class="absolute inset-0 overflow-hidden" style="width:' . $fillPct . '%">'
-                . '<svg viewBox="0 0 24 24" class="absolute inset-0 w-7 h-7" fill="#f59e0b"><path d="M12 2l2.4 6.6L21 9.7l-5 4.6L17.4 21 12 17.6 6.6 21 8 14.3 3 9.7l6.6-1.1z"/></svg>'
-                . '</span></span>';
+            $fill = max(0, min(1, $overall - ($i - 1))) * 100;
+            $stars .= '<span class="rg-rating__star" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>'
+                . '<span style="width:' . $fill . '%"><svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg></span></span>';
         }
 
-        $criteriaHtml = '';
+        $rows = '';
         foreach ($criteria as $c) {
             $score = (float) ($c['score'] ?? 0);
             $pct = max(0, min(100, ($score / 5) * 100));
-            $criteriaHtml .= '<div class="flex items-center gap-3 text-sm">'
-                . '<div class="w-24 font-semibold text-slate-700">' . $this->e($c['name'] ?? '') . '</div>'
-                . '<div class="flex-1 h-2 rounded-full bg-slate-200 overflow-hidden">'
-                . '<div class="h-full" style="width:' . $pct . '%;background:#f59e0b"></div></div>'
-                . '<div class="w-10 text-right font-bold text-slate-700 tabular-nums">'
-                . number_format($score, 1) . '</div></div>';
+            $rows .= '<div class="rg-rating__row"><span class="rg-rating__name">' . $this->e($c['name'] ?? '') . '</span>'
+                . '<span class="rg-rating__bar"><span style="width:' . $pct . '%"></span></span>'
+                . '<span class="rg-rating__num">' . number_format($score, 1) . '</span></div>';
         }
 
-        $summaryHtml = $summary !== ''
-            ? '<p class="text-sm text-slate-600 mt-5 leading-relaxed border-t border-slate-100 pt-4">'
-                . $this->e($summary) . '</p>'
-            : '';
-
-        return '<div class="not-prose my-8 p-6 rounded-2xl bg-white border border-slate-200">'
-            . '<div class="flex items-start justify-between gap-4 mb-5 flex-wrap">'
-            . '<div class="min-w-0">'
-            . '<div class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-500 mb-1">'
-            . $this->e($title) . '</div>'
-            . '<div class="flex items-center gap-2"><div class="flex">' . $stars . '</div>'
-            . '<div class="text-3xl font-extrabold text-slate-900 tabular-nums">'
-            . number_format($overall, 1) . '</div>'
-            . '<div class="text-sm text-slate-500 self-end pb-1">/ 5.0</div></div></div></div>'
-            . ($criteriaHtml ? '<div class="space-y-2 mt-2">' . $criteriaHtml . '</div>' : '')
-            . $summaryHtml
-            . '</div>';
+        return '<section class="rg-rating not-prose my-8" data-toc="Our rating">'
+            . '<div class="rg-rating__score">'
+            . '<p class="rg-rating__label">' . $this->e($title) . '</p>'
+            . '<p class="rg-rating__big">' . number_format($overall, 1) . '<span>/5</span></p>'
+            . '<div class="rg-rating__stars" role="img" aria-label="' . number_format($overall, 1) . ' out of 5">' . $stars . '</div>'
+            . '<p class="rg-rating__verdict">' . $verdict . '</p>'
+            . '</div>'
+            . '<div class="rg-rating__body">'
+            . ($rows !== '' ? '<div class="rg-rating__rows">' . $rows . '</div>' : '')
+            . ($summary !== '' ? '<p class="rg-rating__summary">' . $this->e($summary) . '</p>' : '')
+            . '</div></section>';
     }
 
     /**
@@ -1838,27 +1813,18 @@ class BlockRenderer
         $color = $p['color'] ?? 'amber';
 
         if ($color === 'dark') {
-            return '<div class="not-prose my-10 px-6 py-6 rounded-xl" style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);color:#f1f5f9">'
-                . '<div class="text-4xl leading-none mb-2" style="color:#fbbf24">&ldquo;</div>'
-                . '<p class="text-lg md:text-xl italic leading-relaxed m-0">' . $this->e($body) . '</p>'
-                . '<p class="text-xs uppercase tracking-wide mt-3 m-0" style="color:#fbbf24">' . $eyebrow . '</p>'
-                . '</div>';
+            return '<aside class="rg-quote not-prose my-10">'
+                . '<span class="rg-quote__mark" aria-hidden="true">&ldquo;</span>'
+                . '<p class="rg-quote__text">' . $this->e($body) . '</p>'
+                . '<p class="rg-quote__by">' . $eyebrow . '</p>'
+                . '</aside>';
         }
-
-        $palettes = [
-            'amber'   => ['bg' => '#fef3c7', 'br' => '#f59e0b', 'eb' => '#92400e', 'ic' => '#b45309', 'icbg' => '#fde68a', 'emoji' => '💡'],
-            'emerald' => ['bg' => '#ecfdf5', 'br' => '#10b981', 'eb' => '#065f46', 'ic' => '#047857', 'icbg' => '#a7f3d0', 'emoji' => '🌿'],
-            'blue'    => ['bg' => '#eaf2f8', 'br' => '#3498db', 'eb' => '#1a5276', 'ic' => '#2471a3', 'icbg' => '#a9cce3', 'emoji' => '🧭'],
-            'rose'    => ['bg' => '#f9ebea', 'br' => '#e74c3c', 'eb' => '#7b241c', 'ic' => '#c0392b', 'icbg' => '#f2d7d5', 'emoji' => '⚠️'],
-        ];
-        $pal = $palettes[$color] ?? $palettes['amber'];
-        return '<aside class="not-prose my-8 p-5 rounded-2xl border-l-4" style="background:' . $pal['bg'] . ';border-color:' . $pal['br'] . '">'
-            . '<div class="flex items-start gap-3">'
-            . '<div class="flex-none w-10 h-10 rounded-full flex items-center justify-center text-xl" style="background:' . $pal['icbg'] . ';color:' . $pal['ic'] . '">' . $pal['emoji'] . '</div>'
-            . '<div class="min-w-0">'
-            . '<div class="text-[10px] uppercase tracking-wide font-bold mb-1" style="color:' . $pal['eb'] . '">' . $eyebrow . '</div>'
-            . '<p class="text-slate-700 leading-relaxed m-0">' . $this->e($body) . '</p>'
-            . '</div></div></aside>';
+        $c = ['amber' => '#d97706', 'emerald' => '#059669', 'blue' => '#13669c', 'rose' => '#e0462a'][$color] ?? '#d97706';
+        return '<aside class="rg-tip not-prose my-8" style="--c:' . $c . '">'
+            . '<span class="rg-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>'
+            . '<div class="min-w-0"><p class="rg-tip__eyebrow">' . $eyebrow . '</p>'
+            . '<p class="rg-tip__text">' . $this->e($body) . '</p></div>'
+            . '</aside>';
     }
 
     /**
@@ -2395,20 +2361,11 @@ class BlockRenderer
         $anchor = trim($p['anchor'] ?? '');
         if ($heading === '' && $subtitle === '') return '';
 
-        $idAttr = $anchor !== ''
-            ? ' id="' . $this->e(preg_replace('~[^a-z0-9-]+~i', '-', $anchor)) . '"'
-            : '';
-
-        $out = '<section class="not-prose my-8 mt-10 mb-2"' . $idAttr . '>';
-        if ($heading !== '') {
-            $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">'
-                . $heading . '</h2>';
-        }
-        if ($subtitle !== '') {
-            $out .= '<p class="text-sm text-slate-500 mt-1">' . $subtitle . '</p>';
-        }
-        $out .= '</section>';
-        return $out;
+        $idAttr = $anchor !== '' ? ' id="' . $this->e(preg_replace('~[^a-z0-9-]+~i', '-', $anchor)) . '"' : '';
+        $out = '<section class="rg-sechead not-prose mt-14 mb-4"' . $idAttr . '>';
+        if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">' . $heading . '</h2>';
+        if ($subtitle !== '') $out .= '<p class="rg-sechead__sub">' . $subtitle . '</p>';
+        return $out . '</section>';
     }
 
     /**
@@ -2434,51 +2391,43 @@ class BlockRenderer
      * (one per line, prefixed `-` or `*` or unicode `•`). Renders as a
      * native <details> so it works without Alpine/HTMX.
      */
+    /** TL;DR + WWWW cards for blog posts (partials/summary-blocks). */
+    public function summaryCards(?string $tldr, $wwww): string
+    {
+        if (is_string($wwww)) $wwww = json_decode($wwww, true);
+        // older posts were saved with escaped quotes (White Beach\'s)
+        $unescape = fn ($v) => is_string($v) ? str_replace(['\\\'', '\\"'], ["'", '"'], $v) : $v;
+        $wwww = is_array($wwww) ? array_map($unescape, $wwww) : [];
+        return $this->tldrCard(['body' => (string) $unescape((string) $tldr)]) . $this->wwwwCard($wwww);
+    }
+
     private function tldrCard(array $p): string
     {
         $body = trim((string) ($p['body'] ?? ''));
         if ($body === '') return '';
 
         $eyebrow = $this->e(trim($p['eyebrow'] ?? 'The short version'));
-        $caption = $this->e(trim($p['caption'] ?? 'Tap to read the key takeaways before you scroll'));
 
-        // Split into bullets if the body contains list-style lines, else
-        // render as a single paragraph. Mirrors summary-blocks.blade.php
-        // behavior for backwards compatibility with migrated data.
-        $lines = preg_split('/\r?\n/', $body);
+        // Bullet lines ("- ", "* ", "• ") become a checklist, else one paragraph.
         $bullets = [];
-        foreach ($lines as $line) {
+        foreach (preg_split('/\r?\n/', $body) as $line) {
             if (preg_match('/^\s*[-*\x{2022}]\s+(.+)$/u', $line, $m)) {
                 $bullets[] = trim($m[1]);
             }
         }
 
-        $out = '<details class="rg-accordion rg-accordion-tldr not-prose my-4 rounded-xl border border-slate-200 bg-white overflow-hidden">';
-        $out .= '<summary class="rg-accordion-head flex items-center gap-3 px-5 sm:px-6 py-4 cursor-pointer select-none">';
-        $out .= '<span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-brand-50 text-brand-600 shrink-0" aria-hidden="true">';
-        $out .= '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
-        $out .= '</span>';
-        $out .= '<span class="flex-1 min-w-0">';
-        $out .= '<span class="block text-[0.7rem] uppercase tracking-[0.18em] text-brand-700 font-bold">' . $eyebrow . '</span>';
-        $out .= '<span class="block text-sm text-slate-600">' . $caption . '</span>';
-        $out .= '</span>';
-        $out .= '<svg class="rg-accordion-chevron w-5 h-5 text-slate-400 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
-        $out .= '</summary>';
-        $out .= '<div class="rg-accordion-body"><div class="rg-accordion-body-inner px-5 sm:px-6 pb-5 pt-1 border-t border-slate-100">';
+        $out = '<section class="rg-tldr not-prose my-6" data-toc="The short version">';
+        $out .= '<p class="rg-tldr__eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>' . $eyebrow . '</p>';
         if (count($bullets) >= 2) {
-            $out .= '<ul class="text-slate-700 text-[0.95rem] leading-relaxed space-y-2 mt-4">';
+            $out .= '<ul class="rg-tldr__list">';
             foreach ($bullets as $b) {
-                $out .= '<li class="flex items-start gap-2.5">';
-                $out .= '<svg class="w-4 h-4 mt-1 text-brand-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75 10 18l9.75-12"/></svg>';
-                $out .= '<span>' . $this->e($b) . '</span>';
-                $out .= '</li>';
+                $out .= '<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>' . $this->e($b) . '</span></li>';
             }
             $out .= '</ul>';
         } else {
-            $out .= '<p class="text-slate-700 leading-relaxed text-[0.95rem] mt-4">' . $this->e($body) . '</p>';
+            $out .= '<p class="rg-tldr__text">' . $this->e($body) . '</p>';
         }
-        $out .= '</div></div></details>';
-        return $out;
+        return $out . '</section>';
     }
 
     /**
@@ -2489,70 +2438,26 @@ class BlockRenderer
      */
     private function wwwwCard(array $p): string
     {
-        $why = trim((string) ($p['why'] ?? ''));
-        $when = trim((string) ($p['when'] ?? ''));
-        $where = trim((string) ($p['where'] ?? ''));
-        $whom = trim((string) ($p['whom'] ?? ''));
-        if ($why === '' && $when === '' && $where === '' && $whom === '') return '';
+        $rows = [
+            ['Why go', trim((string) ($p['why'] ?? '')), '#ef5b3a', '<path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/>'],
+            ['When to go', trim((string) ($p['when'] ?? '')), '#13669c', '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>'],
+            ['Where to go', trim((string) ($p['where'] ?? '')), '#059669', '<path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/>'],
+            ['Who it suits', trim((string) ($p['whom'] ?? '')), '#7c3aed', '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>'],
+        ];
+        $rows = array_values(array_filter($rows, fn ($r) => $r[1] !== ''));
+        if (!$rows) return '';
 
         $eyebrow = $this->e(trim($p['eyebrow'] ?? 'At a glance'));
-        $caption = $this->e(trim($p['caption'] ?? 'Why, when, where, and who this guide is for'));
-
-        // Matched 1:1 to summary-blocks.blade.php colors + icons so a
-        // migrated page renders identically to its pre-migration form.
-        $rows = [
-            'why' => [
-                'label' => 'Why go', 'body' => $why,
-                'tone_bg' => 'bg-orange-50', 'tone_fg' => 'text-orange-600',
-                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.32.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .32-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>',
-            ],
-            'when' => [
-                'label' => 'When to go', 'body' => $when,
-                'tone_bg' => 'bg-cyan-50', 'tone_fg' => 'text-cyan-700',
-                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>',
-            ],
-            'where' => [
-                'label' => 'Where to go', 'body' => $where,
-                'tone_bg' => 'bg-emerald-50', 'tone_fg' => 'text-emerald-700',
-                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>',
-            ],
-            'whom' => [
-                'label' => 'Whom to go with', 'body' => $whom,
-                'tone_bg' => 'bg-fuchsia-50', 'tone_fg' => 'text-fuchsia-700',
-                'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 0 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>',
-            ],
-        ];
-        $active = array_filter($rows, fn ($r) => $r['body'] !== '');
-
-        $out = '<details class="rg-accordion rg-accordion-wwww not-prose my-4 rounded-xl border border-slate-200 bg-white overflow-hidden">';
-        $out .= '<summary class="rg-accordion-head flex items-center gap-3 px-5 sm:px-6 py-4 cursor-pointer select-none">';
-        $out .= '<span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden="true">';
-        $out .= '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>';
-        $out .= '</span>';
-        $out .= '<span class="flex-1 min-w-0">';
-        $out .= '<span class="block text-[0.7rem] uppercase tracking-[0.18em] text-emerald-700 font-bold">' . $eyebrow . '</span>';
-        $out .= '<span class="block text-sm text-slate-600">' . $caption . '</span>';
-        $out .= '</span>';
-        $out .= '<svg class="rg-accordion-chevron w-5 h-5 text-slate-400 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
-        $out .= '</summary>';
-        $out .= '<div class="rg-accordion-body"><div class="rg-accordion-body-inner border-t border-slate-100">';
-        $count = 0;
-        $total = count($active);
-        foreach ($active as $row) {
-            $count++;
-            $borderCls = $count < $total ? 'border-b border-slate-100' : '';
-            $out .= '<div class="flex items-start gap-4 px-5 sm:px-6 py-4 ' . $borderCls . '">';
-            $out .= '<span class="w-9 h-9 inline-flex items-center justify-center rounded-full ' . $row['tone_bg'] . ' ' . $row['tone_fg'] . ' shrink-0" aria-hidden="true">';
-            $out .= '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">' . $row['icon'] . '</svg>';
-            $out .= '</span>';
-            $out .= '<div class="flex-1 min-w-0">';
-            $out .= '<div class="text-[0.7rem] uppercase tracking-[0.18em] text-slate-500 font-bold mb-1">' . $this->e($row['label']) . '</div>';
-            $out .= '<p class="text-slate-700 text-[0.95rem] leading-relaxed">' . $this->e($row['body']) . '</p>';
-            $out .= '</div>';
-            $out .= '</div>';
+        $out = '<section class="rg-glance not-prose my-6" data-toc="At a glance">';
+        $out .= '<p class="rg-glance__eyebrow">' . $eyebrow . '</p>';
+        $out .= '<div class="rg-glance__grid' . (count($rows) === 1 ? ' rg-glance__grid--one' : '') . '">';
+        foreach ($rows as [$label, $body, $color, $icon]) {
+            $out .= '<div class="rg-glance__tile" style="--c:' . $color . '">'
+                . '<span class="rg-glance__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $icon . '</svg></span>'
+                . '<div class="min-w-0"><p class="rg-glance__label">' . $this->e($label) . '</p>'
+                . '<p class="rg-glance__text">' . $this->e($body) . '</p></div></div>';
         }
-        $out .= '</div></div></details>';
-        return $out;
+        return $out . '</div></section>';
     }
 
     /**
@@ -2616,6 +2521,7 @@ class BlockRenderer
                 'listings' => $rows,
                 'listingGalleries' => $galleries,
                 'area' => $area,
+                'keyword' => $keyword,
             ])->render();
         } catch (\Throwable $e) {
             return '';
@@ -3068,56 +2974,25 @@ class BlockRenderer
     {
         $cards = $p['cards'] ?? [];
         if (!$cards) return '';
-
-        $palettes = [
-            'blue'    => ['bg' => '#eaf2f8', 'br' => '#a9cce3', 'fg' => '#2471a3', 'sm' => '#1a5276'],
-            'emerald' => ['bg' => '#ecfdf5', 'br' => '#a7f3d0', 'fg' => '#047857', 'sm' => '#064e3b'],
-            'rose'    => ['bg' => '#f9ebea', 'br' => '#f2d7d5', 'fg' => '#c0392b', 'sm' => '#7b241c'],
-            'amber'   => ['bg' => '#fffbeb', 'br' => '#fcd34d', 'fg' => '#b45309', 'sm' => '#78350f'],
-            'violet'  => ['bg' => '#f5f3ff', 'br' => '#ddd6fe', 'fg' => '#6d28d9', 'sm' => '#4c1d95'],
-            'slate'   => ['bg' => '#f8fafc', 'br' => '#cbd5e1', 'fg' => '#334155', 'sm' => '#0f172a'],
-        ];
-
         $out = '';
         if (!empty($p['heading'])) {
-            $out .= '<h2 class="text-2xl font-bold text-slate-900 mt-8 mb-3">'
-                . $this->e($p['heading']) . '</h2>';
+            $out .= '<h2 class="text-2xl font-bold text-slate-900 mt-10 mb-4">' . $this->e($p['heading']) . '</h2>';
         }
-
-        $out .= '<div class="not-prose my-8 rounded-2xl border border-slate-200 bg-white overflow-hidden">';
-        $out .= '<ul class="divide-y divide-slate-100 m-0 list-none p-0">';
-
+        $out .= '<div class="not-prose my-8 grid grid-cols-1 sm:grid-cols-2 gap-3">';
         foreach ($cards as $card) {
-            $pal = $palettes[$card['color'] ?? 'blue'] ?? $palettes['blue'];
-            $svg = $this->quickFactIconSvg($card['icon'] ?? 'info');
+            $c = $this->toneHex($card['color'] ?? 'blue');
             $label = $this->e($card['label'] ?? '');
             $big = $this->e($card['big'] ?? '');
             $detail = $this->e($card['detail'] ?? '');
-
-            // Each row: gradient icon disc on the left + uppercase
-            // eyebrow stacked over the big-text headline on the right,
-            // with the optional detail wrapping below.
-            $out .= '<li class="flex items-start gap-4 p-5 sm:p-6">';
-            $out .= '<div class="flex-none w-12 h-12 rounded-xl flex items-center justify-center"'
-                . ' style="background:' . $pal['bg'] . ';border:1px solid ' . $pal['br'] . ';color:' . $pal['fg'] . '">'
-                . $svg . '</div>';
-            $out .= '<div class="flex-1 min-w-0">';
-            if ($label !== '') {
-                $out .= '<div class="text-[10px] uppercase tracking-[0.15em] font-bold mb-1"'
-                    . ' style="color:' . $pal['sm'] . '">' . $label . '</div>';
-            }
-            if ($big !== '') {
-                $out .= '<div class="text-base sm:text-lg font-bold text-slate-900 leading-snug">'
-                    . $big . '</div>';
-            }
-            if ($detail !== '') {
-                $out .= '<p class="text-sm text-slate-600 leading-relaxed mt-1 m-0">' . $detail . '</p>';
-            }
-            $out .= '</div></li>';
+            $out .= '<div class="rg-fact rg-fact--row" style="--c:' . $c . '">'
+                . '<span class="rg-fact__ico">' . $this->quickFactIconSvg($card['icon'] ?? 'info') . '</span>'
+                . '<div class="min-w-0">'
+                . ($label !== '' ? '<p class="rg-fact__label">' . $label . '</p>' : '')
+                . ($big !== '' ? '<p class="rg-fact__big">' . $big . '</p>' : '')
+                . ($detail !== '' ? '<p class="rg-fact__detail">' . $detail . '</p>' : '')
+                . '</div></div>';
         }
-
-        $out .= '</ul></div>';
-        return $out;
+        return $out . '</div>';
     }
 
     /**
@@ -3211,51 +3086,33 @@ class BlockRenderer
      */
     private function foodsToTry(array $p): string
     {
-        $items = $p['items'] ?? [];
+        $items = array_values(array_filter($p['items'] ?? [], fn ($i) => trim((string) ($i['name'] ?? '')) !== ''));
         if (!$items) return '';
         $heading = $this->e($p['heading'] ?? 'Foods to try');
         $intro = $this->e($p['intro'] ?? '');
 
-        $out = '<section class="not-prose my-10">';
+        $out = '<section class="rg-foods not-prose my-12">';
+        $out .= '<p class="pk-eyebrow">Eat like a local</p>';
         $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
-        if ($intro !== '') {
-            $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $intro . '</p>';
-        }
-
-        $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">';
-        foreach ($items as $item) {
-            $name = trim((string) ($item['name'] ?? ''));
-            if ($name === '') continue;
+        if ($intro !== '') $out .= '<p class="rg-foods__intro">' . $intro . '</p>';
+        $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">';
+        foreach ($items as $n => $item) {
+            $name = $this->e(trim((string) $item['name']));
             $where = $this->e($item['where'] ?? '');
             $blurb = $this->e($item['blurb'] ?? '');
             $img = trim((string) ($item['image'] ?? ''));
-
-            $hero = $img !== ''
-                ? '<div class="aspect-[16/10] overflow-hidden bg-slate-100">'
-                    . '<img src="' . $this->e($this->normalizeMediaUrl($img)) . '" alt="' . $this->e($name)
-                    . '" class="w-full h-full object-cover" loading="lazy">'
-                    . '</div>'
-                : '<div class="aspect-[16/10] flex items-center justify-center bg-gradient-to-br from-amber-50 to-rose-50">'
-                    . '<svg class="w-10 h-10 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
-                    . '<path d="M3 11h18M6 11V8a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v3M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/>'
-                    . '</svg>'
-                    . '</div>';
-
-            $out .= '<div class="rounded-xl border border-slate-200 bg-white overflow-hidden flex flex-col">'
-                . $hero
-                . '<div class="p-4 flex-1 flex flex-col">'
-                . '<h3 class="font-bold text-slate-900 text-lg leading-tight mb-1">' . $this->e($name) . '</h3>'
-                . ($where !== ''
-                    ? '<div class="text-[11px] uppercase tracking-wider font-bold text-amber-700 mb-2">'
-                        . 'Where: ' . $where . '</div>'
-                    : '')
-                . ($blurb !== ''
-                    ? '<p class="text-sm text-slate-600 leading-relaxed m-0">' . $blurb . '</p>'
-                    : '')
-                . '</div></div>';
+            $out .= '<article class="rg-food' . ($img === '' ? ' rg-food--text' : '') . '">';
+            if ($img !== '') {
+                $out .= '<span class="rg-food__img"><img src="' . $this->e($this->normalizeMediaUrl($img)) . '" alt="' . $name . '" loading="lazy"></span>';
+            }
+            $out .= '<div class="rg-food__body">'
+                . ($img === '' ? '<span class="rg-food__num">' . str_pad((string) ($n + 1), 2, '0', STR_PAD_LEFT) . '</span>' : '')
+                . '<h3 class="rg-food__name">' . $name . '</h3>'
+                . ($where !== '' ? '<p class="rg-food__where"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/></svg>' . $where . '</p>' : '')
+                . ($blurb !== '' ? '<p class="rg-food__blurb">' . $blurb . '</p>' : '')
+                . '</div></article>';
         }
-        $out .= '</div></section>';
-        return $out;
+        return $out . '</div></section>';
     }
 
     /* ============================================================
@@ -4047,132 +3904,87 @@ class BlockRenderer
             'violet' => 'group-hover:text-violet-600',
         ][$accent];
 
-        $out = '<section class="rg-dest-clusters my-10">';
+        $out = '<section class="rg-dest-clusters my-12">';
 
-        // Short, centered animated divider shown between regions. Food pages
-        // get a steaming bowl flanked by fading rules; destination pages get a
-        // drifting wave with a rocking sailboat. Colour follows the accent.
-        // Emitted once.
-        if ($iconSet === 'food') {
-            // "Where to eat" divider: a car driving past a single restaurant.
-            // The (filled) storefront slides across the band from right to left
-            // while the bobbing, spinning-wheeled car holds the centre, so the
-            // car reads as passing the store once per loop, over a fading road
-            // rule. Colour follows the block accent. Emitted once per block.
-            $out .= '<style>'
-                . '.rg-cardiv{position:relative;width:240px;max-width:75%;height:40px;margin:0 auto 1.6rem;overflow:hidden}'
-                . '.rg-cardiv__store{position:absolute;left:0;bottom:4px;width:42px;height:30px;animation:rgPass 5.5s linear infinite}'
-                . '.rg-cardiv__road{position:absolute;left:0;right:0;bottom:5px;height:2px;border-radius:2px}'
-                . '.rg-cardiv__car{position:absolute;left:50%;bottom:4px;width:34px;height:20px;margin-left:-17px;transform-origin:50% 90%;animation:rgCarBob 1.6s ease-in-out infinite}'
-                . '.rg-cardiv__car .rg-wheel{transform-box:fill-box;transform-origin:center;animation:rgWheel 1.2s linear infinite}'
-                . '@keyframes rgPass{from{transform:translateX(240px)}to{transform:translateX(-46px)}}'
-                . '@keyframes rgCarBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}'
-                . '@keyframes rgWheel{to{transform:rotate(360deg)}}'
-                . '@media(prefers-reduced-motion:reduce){.rg-cardiv__store,.rg-cardiv__car,.rg-cardiv__car .rg-wheel{animation:none}}'
-                . '</style>';
-            $store = '<svg viewBox="0 0 44 32" style="width:100%;height:100%">'
-                . '<rect x="15" y="1.5" width="14" height="3.5" rx="1" fill="' . $waveColor . '"/>'
-                . '<rect x="21" y="5" width="2" height="2" fill="' . $waveColor . '"/>'
-                . '<rect x="5" y="13" width="34" height="17" fill="' . $waveColor . '"/>'
-                . '<path d="M2 8 H42 V13 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 q-3.3 3 -6.66 0 Z" fill="' . $waveColor . '"/>'
-                . '<rect x="17.5" y="20" width="9" height="10" fill="#fff"/>'
-                . '<rect x="8" y="17" width="6.5" height="6" fill="#fff"/>'
-                . '<rect x="29.5" y="17" width="6.5" height="6" fill="#fff"/>'
-                . '</svg>';
-            $car = '<svg viewBox="0 0 34 20" fill="none" style="width:100%;height:100%">'
-                . '<g fill="' . $waveColor . '">'
-                . '<rect x="2" y="11" width="30" height="5.4" rx="2.6"/>'
-                . '<path d="M9 11.4 L12.6 6.6 Q13 6.2 13.6 6.2 L20.8 6.2 Q21.6 6.2 22 6.8 L25 11.4 Z"/>'
-                . '</g>'
-                . '<path d="M13.6 10.6 L15.8 7.5 L18.3 7.5 L18.3 10.6 Z" fill="#fff"/>'
-                . '<path d="M19.5 10.6 L19.5 7.5 L20.9 7.5 L23 10.6 Z" fill="#fff"/>'
-                . '<g class="rg-wheel"><circle cx="9.5" cy="16.2" r="3" fill="' . $waveColor . '"/><circle cx="9.5" cy="16.2" r="1.2" fill="#fff"/><path d="M9.5 14.4 V18 M7.7 16.2 H11.3" stroke="#fff" stroke-width=".7"/></g>'
-                . '<g class="rg-wheel"><circle cx="24.5" cy="16.2" r="3" fill="' . $waveColor . '"/><circle cx="24.5" cy="16.2" r="1.2" fill="#fff"/><path d="M24.5 14.4 V18 M22.7 16.2 H26.3" stroke="#fff" stroke-width=".7"/></g>'
-                . '<circle cx="31.3" cy="13" r=".8" fill="' . $waveColor . '"/>'
-                . '</svg>';
-            $divider = '<div class="rg-cardiv" aria-hidden="true">'
-                . '<div class="rg-cardiv__road" style="background:linear-gradient(90deg,transparent,' . $waveColor . ' 12%,' . $waveColor . ' 88%,transparent)"></div>'
-                . '<div class="rg-cardiv__store">' . $store . '</div>'
-                . '<div class="rg-cardiv__car">' . $car . '</div>'
-                . '</div>';
-        } else {
-            $waveTile = "<svg xmlns='http://www.w3.org/2000/svg' width='36' height='14' viewBox='0 0 36 14'><path d='M0 7 Q9 1 18 7 T36 7' fill='none' stroke='%s' stroke-width='2' stroke-linecap='round'/></svg>";
-            $waveFront = 'data:image/svg+xml,' . rawurlencode(sprintf($waveTile, $waveColor));
-            $boatSvg = '<svg class="rg-seadiv__boat" viewBox="0 0 24 24" fill="' . $waveColor . '" aria-hidden="true"><path d="M11.4 3h1.2v12.5h-1.2z"/><path d="M13 4c2.9 2 4.7 5.1 5.3 9.6H13z"/><path d="M11 6.4 6.6 13.6H11z"/><path d="M3.4 15.6h17.2l-1.7 3.4a2 2 0 0 1-1.8 1.1H6.9a2 2 0 0 1-1.8-1.1z"/></svg>';
-            $out .= '<style>'
-                . '.rg-seadiv{position:relative;width:220px;max-width:70%;height:40px;margin:0 auto 1.5rem}'
-                . '.rg-seadiv__w{position:absolute;left:0;right:0;bottom:0;height:14px;overflow:hidden}'
-                . '.rg-seadiv__w i{position:absolute;inset:0;background-repeat:repeat-x;background-position-y:center;background-size:36px 14px;opacity:.9;background-image:url("' . $waveFront . '");animation:rgSea 5s linear infinite}'
-                . '.rg-seadiv__boat{position:absolute;left:50%;bottom:2px;width:26px;height:26px;margin-left:-13px;transform-origin:50% 90%;animation:rgBoat 3.6s ease-in-out infinite}'
-                . '@keyframes rgSea{from{background-position-x:0}to{background-position-x:36px}}'
-                . '@keyframes rgBoat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-3px) rotate(6deg)}}'
-                . '@media(prefers-reduced-motion:reduce){.rg-seadiv__w i,.rg-seadiv__boat{animation:none}}'
-                . '</style>';
-            $divider = '<div class="rg-seadiv" aria-hidden="true"><div class="rg-seadiv__w"><i></i></div>' . $boatSvg . '</div>';
-        }
-
-        // Sticky pill nav (Jump to ...)
+        // Sticky "jump to" row (same look as the page-kit jump bar).
         if ($stickyNav) {
-            $out .= '<nav class="rg-dest-clusters__nav sticky top-32 z-10 bg-white/90 backdrop-blur border-y border-slate-200 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 mb-8">';
-            $out .= '<div class="flex flex-wrap items-center gap-2 text-sm">';
-            $out .= '<span class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mr-1">' . $jumpLabel . '</span>';
+            $out .= '<nav class="rg-dest-clusters__nav pk-jump -mx-4 sm:-mx-6 lg:-mx-8 mb-10" aria-label="' . $jumpLabel . '"><div class="pk-jump__row">';
             foreach ($clusterArr as $g) {
                 $arr = $this->toArrayShapeSimple($g);
                 $name = $this->e((string) ($arr['name'] ?? ''));
                 $tag = (string) ($arr['cluster_tag'] ?? $arr['slug'] ?? $name);
                 if ($name === '') continue;
-                $slug = $this->e(\Illuminate\Support\Str::slug($tag));
-                $out .= '<a href="#cluster-' . $slug . '" '
-                    . 'class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white ' . $pillHoverMap . ' font-semibold text-slate-700 transition">' . $name . '</a>';
+                $out .= '<a href="#cluster-' . $this->e(\Illuminate\Support\Str::slug($tag)) . '">' . $name . '</a>';
             }
             $out .= '</div></nav>';
         }
 
-        // Section heading
         if ($heading !== '') {
-            $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">' . $heading . '</h2>';
+            $out .= '<p class="pk-eyebrow">' . ($iconSet === 'food' ? 'Food guides by area' : 'Every corner covered') . '</p>';
+            $out .= '<h2 class="pk-h2 mb-10">' . $heading . '</h2>';
         }
 
-        // Cluster sections
-        $ri = 0;
+        $isRegions = $source !== 'groups';
+        $chev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 flex-none text-slate-300 transition group-hover:text-coral-500 group-hover:translate-x-0.5" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>';
         foreach ($clusterArr as $g) {
             $arr = $this->toArrayShapeSimple($g);
             $name = $this->e((string) ($arr['name'] ?? ''));
             $tag = (string) ($arr['cluster_tag'] ?? $arr['slug'] ?? $name);
-            $clusterSlug = $this->e(\Illuminate\Support\Str::slug($tag));
+            $clusterSlug = \Illuminate\Support\Str::slug($tag);
             $count = (int) ($arr['count'] ?? 0);
-            $keywords = $arr['keywords'] ?? [];
+            $kwList = $arr['keywords'] ?? [];
+            if (is_object($kwList) && method_exists($kwList, 'all')) $kwList = $kwList->all();
+            $keywords = array_values(array_filter(array_map(fn ($k) => $this->toArrayShapeSimple($k), (array) $kwList), fn ($k) => !empty($k['phrase']) && !empty($k['slug'])));
+            if (!$keywords) continue;
 
-            $out .= '<section id="cluster-' . $clusterSlug . '" class="mb-12 scroll-mt-48">';
-            if ($ri++ > 0) $out .= $divider;
-            $out .= '<div class="flex items-center gap-3 mb-5">';
-            if ($name !== '') $out .= '<h3 class="text-xl md:text-2xl font-bold text-slate-900 flex-1 min-w-0">' . $name . '</h3>';
+            // top three by search volume get a "Popular" tag
+            $vols = array_map(fn ($k) => (int) ($k['search_volume_monthly'] ?? 0), $keywords);
+            arsort($vols);
+            $popular = array_slice(array_keys(array_filter($vols)), 0, 3);
+
+            $thumb = $isRegions && is_file(storage_path('app/public/rg-media/landmarks/' . $clusterSlug . '.jpg')) ? '/storage/rg-media/landmarks/' . $clusterSlug . '.jpg' : null;
+            $regionUrl = null;
+            if ($isRegions) {
+                try { $regionUrl = route('destinations.cluster', $tag); } catch (\Throwable $e) { $regionUrl = null; }
+            }
+
+            $out .= '<section id="cluster-' . $this->e($clusterSlug) . '" class="rg-region mb-14 last:mb-0" style="scroll-margin-top:calc(var(--rg-header-h,76px) + 4.5rem)">';
+            $out .= '<div class="flex items-center gap-4 mb-5">';
+            if ($thumb) $out .= '<img src="' . $this->e($thumb) . '" alt="' . $name . '" loading="lazy" class="w-14 h-14 rounded-2xl object-cover shrink-0">';
+            $out .= '<div class="min-w-0 flex-1">';
+            $out .= '<h3 class="font-display text-xl md:text-2xl font-extrabold text-ink-900 leading-tight">' . $name . '</h3>';
             if ($count > 0) {
-                $countLabel = $source === 'groups' ? 'restaurant guide' : 'destination';
-                $out .= '<span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 whitespace-nowrap">' . number_format($count) . ' ' . $countLabel . ($count === 1 ? '' : 's') . '</span>';
+                $countLabel = $source === 'groups' ? 'food guide' : 'travel guide';
+                $out .= '<p class="text-sm text-slate-500 mt-0.5">' . number_format($count) . ' ' . $countLabel . ($count === 1 ? '' : 's') . '</p>';
             }
             $out .= '</div>';
+            if ($regionUrl) $out .= '<a href="' . $this->e($regionUrl) . '" class="rg-btn rg-btn--outline hidden sm:inline-flex shrink-0">Explore ' . $name . '</a>';
+            $out .= '</div>';
+
             $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">';
-            foreach ($keywords as $k) {
-                $kArr = $this->toArrayShapeSimple($k);
-                $rawPhrase = (string) ($kArr['phrase'] ?? '');
-                $phrase = $this->e($rawPhrase);
-                $slug = (string) ($kArr['slug'] ?? '');
-                $volume = (int) ($kArr['search_volume_monthly'] ?? 0);
-                if ($phrase === '' || $slug === '') continue;
-                $out .= '<a href="' . $this->e(url($slug)) . '" '
-                    . 'class="group flex min-w-0 items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-white transition hover:-translate-y-0.5 ' . $cardHoverMap . '">'
-                    . '<span class="flex h-10 w-10 flex-none items-center justify-center rounded-lg ' . $iconWrapMap . '">' . ($iconSet === 'food' ? $this->foodSpotIcon($rawPhrase) : $this->destSpotIcon($rawPhrase)) . '</span>'
+            foreach (array_slice($keywords, 0, 9, true) as $i => $k) {
+                $rawPhrase = (string) $k['phrase'];
+                $out .= '<a href="' . $this->e(url($k['slug'])) . '" class="group flex min-w-0 items-center gap-3 p-3 rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg">'
+                    . '<span class="flex h-11 w-11 flex-none items-center justify-center rounded-xl ' . $iconWrapMap . '">' . ($iconSet === 'food' ? $this->foodSpotIcon($rawPhrase) : $this->destSpotIcon($rawPhrase)) . '</span>'
                     . '<span class="min-w-0 flex-1">'
-                    . '<span class="block font-semibold text-slate-900 ' . $titleHoverMap . ' capitalize truncate">' . $phrase . '</span>';
-                if ($showVolume && $volume > 0) {
-                    $out .= '<span class="block text-xs text-slate-500 mt-0.5">' . number_format($volume) . ' people checks on this every month</span>';
-                }
-                $out .= '</span>'
-                    . '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 flex-none text-slate-300 transition ' . $arrowHoverMap . ' group-hover:translate-x-0.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
-                    . '</a>';
+                    . '<span class="block font-semibold text-ink-900 capitalize truncate group-hover:text-brand-700">' . $this->e($rawPhrase) . '</span>'
+                    . '<span class="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">' . ($iconSet === 'food' ? 'Food guide' : 'Travel guide')
+                    . (in_array($i, $popular, true) ? '<span class="inline-flex items-center rounded-full bg-coral-50 text-coral-600 font-bold px-1.5 py-px text-[10px] uppercase tracking-wide">Popular</span>' : '')
+                    . '</span></span>' . $chev . '</a>';
             }
-            $out .= '</div></section>';
+            $out .= '</div>';
+
+            $rest = array_slice($keywords, 9);
+            if ($rest) {
+                $out .= '<details class="rg-region__more mt-4"><summary class="inline-flex items-center gap-2 cursor-pointer rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-ink-900">'
+                    . 'Show all ' . number_format(count($keywords)) . ' guides <svg class="w-4 h-4 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>'
+                    . '<div class="mt-4 flex flex-wrap gap-2">';
+                foreach ($rest as $k) {
+                    $out .= '<a href="' . $this->e(url($k['slug'])) . '" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 capitalize hover:border-brand-300 hover:text-brand-700">' . $this->e((string) $k['phrase']) . '</a>';
+                }
+                $out .= '</div></details>';
+            }
+            $out .= '</section>';
         }
 
         $out .= '</section>';
@@ -4256,33 +4068,37 @@ class BlockRenderer
         $bgImage = trim((string) ($p['background_image'] ?? ''));
         $bgImageUrl = $bgImage !== '' ? ((str_starts_with($bgImage, 'http') || str_starts_with($bgImage, '/')) ? $bgImage : '/storage/' . ltrim($bgImage, '/')) : '';
         $secStyle = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw';
+        // Photo heroes are immersive (dark scrim, white type) like the rest of
+        // the site; payload hero_style = "light" keeps the old faded look.
+        $dark = $bgImageUrl !== '' && ($p['hero_style'] ?? 'immersive') !== 'light';
         if ($bgImageUrl !== '') {
-            $secStyle .= ';background-image:linear-gradient(rgba(255,255,255,.82),rgba(255,255,255,.9)),url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
+            $scrim = $dark ? 'linear-gradient(180deg,rgba(7,18,29,.6) 0%,rgba(12,36,56,.45) 45%,rgba(7,18,29,.78) 100%)' : 'linear-gradient(rgba(255,255,255,.82),rgba(255,255,255,.9))';
+            $secStyle .= ';background-image:' . $scrim . ',url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
         }
-        $out = '<section class="rg-home-hero ' . ($bgImageUrl !== '' ? '' : $bgClass) . '" style="' . $secStyle . '">';
+        $out = '<section class="rg-home-hero ' . ($bgImageUrl !== '' ? '' : $bgClass) . ($dark ? ' rg-hero-dark' : '') . '" style="' . $secStyle . '">';
         $out .= '<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">';
-        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-5 leading-[1.12]">' . $titleHtml . '</h1>';
-        if ($tagline !== '') $out .= '<p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
+        if ($titleHtml !== '') $out .= '<h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-5 leading-[1.08]">' . $titleHtml . '</h1>';
+        if ($tagline !== '') $out .= '<p class="text-lg md:text-xl ' . ($dark ? 'text-white/85' : 'text-slate-600') . ' max-w-2xl mx-auto mb-8">' . $tagline . '</p>';
         if (!empty($pCta['label']) || !empty($sCta['label'])) {
             $out .= '<div class="flex flex-wrap items-center justify-center gap-3">';
             if (!empty($pCta['label'])) {
-                $out .= '<a href="' . $this->e($pCta['url'] ?? '#') . '" class="px-6 py-3 rounded-md ' . $accentBg . ' text-white font-semibold transition">' . $this->e($pCta['label']) . '</a>';
+                $out .= '<a href="' . $this->e($pCta['url'] ?? '#') . '" class="' . ($dark ? 'rg-btn rg-btn--coral rg-btn--lg' : 'px-6 py-3 rounded-md ' . $accentBg . ' text-white font-semibold transition') . '">' . $this->e($pCta['label']) . '</a>';
             }
             if (!empty($sCta['label'])) {
-                $out .= '<a href="' . $this->e($sCta['url'] ?? '#') . '" class="px-6 py-3 rounded-md bg-white border border-slate-300 font-semibold hover:bg-slate-50 transition">' . $this->e($sCta['label']) . '</a>';
+                $out .= '<a href="' . $this->e($sCta['url'] ?? '#') . '" class="' . ($dark ? 'rg-btn rg-btn--glass rg-btn--lg' : 'px-6 py-3 rounded-md bg-white border border-slate-300 font-semibold hover:bg-slate-50 transition') . '">' . $this->e($sCta['label']) . '</a>';
             }
             $out .= '</div>';
         }
 
         $stats = $p['stats'] ?? [];
         if (is_array($stats) && !empty($stats)) {
-            $out .= '<div class="mt-10 flex flex-wrap justify-center gap-8 text-sm text-slate-600">';
+            $out .= '<div class="mt-10 flex flex-wrap justify-center gap-8 text-sm ' . ($dark ? 'text-white/75' : 'text-slate-600') . '">';
             foreach ($stats as $s) {
                 $label = $this->e((string) ($s['label'] ?? ''));
                 $value = $this->resolveStatValueSimple($s, (string) ($s['value_source'] ?? 'literal'), $context);
                 if ($value === null && !empty($s['value'])) $value = (string) $s['value'];
                 if ($value === null) continue;
-                $out .= '<div><strong class="text-2xl text-slate-900 block">' . $this->e($value) . '</strong> ' . $label . '</div>';
+                $out .= '<div><strong class="text-2xl ' . ($dark ? 'text-white' : 'text-slate-900') . ' block">' . $this->e($value) . '</strong> ' . $label . '</div>';
             }
             $out .= '</div>';
         }
@@ -7585,7 +7401,7 @@ class BlockRenderer
             $titleHtml = $this->e($title);
         }
 
-        $out = '<section class="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-emerald-50">';
+        $out = '<section class="relative overflow-hidden" style="background:linear-gradient(120deg,#eef6fb 0%,#fdfbf7 55%,#fff3ef 100%)">';
         $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20"><div class="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">';
         $out .= '<div>';
         if ($eyebrow !== '') {
@@ -7596,7 +7412,7 @@ class BlockRenderer
         if ($subhead !== '') $out .= '<p class="text-lg text-slate-600 leading-relaxed max-w-xl mb-7">' . $subhead . '</p>';
         if ($cpLabel !== '' || $csLabel !== '') {
             $out .= '<div class="flex flex-wrap gap-3">';
-            if ($cpLabel !== '') $out .= '<a href="' . $cpUrl . '" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand-600 text-white font-bold text-base hover:bg-brand-700 shadow-lg shadow-brand-600/20 transition">' . $cpLabel . '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>';
+            if ($cpLabel !== '') $out .= '<a href="' . $cpUrl . '" class="rg-btn rg-btn--coral rg-btn--lg">' . $cpLabel . '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>';
             if ($csLabel !== '') $out .= '<a href="' . $csUrl . '" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white text-slate-800 font-bold text-base border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition">' . $csLabel . '</a>';
             $out .= '</div>';
         }

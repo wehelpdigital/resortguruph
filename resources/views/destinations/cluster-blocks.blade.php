@@ -82,6 +82,8 @@
 @endif
 
 @section('content')
+@php $pullHero = \App\Support\PageKit::leadsWithDarkHero($renderedBlocks ?? ''); @endphp
+@if($pullHero) @section('header_overlay', '1') @endif
 <div class="page-{{ $page->slug }}">
     {!! $renderedBlocks !!}
 </div>

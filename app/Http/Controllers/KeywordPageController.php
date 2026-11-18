@@ -53,8 +53,13 @@ class KeywordPageController extends Controller
         // the iframe-side JS can find.
         $liveEdit = LiveEditToken::valid($page->slug, $request->query('_lt'));
 
-        $blocks = RgContentBlock::forOwner('seo_page', $page->id);
-        $hasListingSlot = $blocks->contains(fn($b) => $b->block_type === 'listing_slot');
+        $allBlocks = RgContentBlock::forOwner('seo_page', $page->id);
+        $hasListingSlot = $allBlocks->contains(fn($b) => $b->block_type === 'listing_slot');
+        // The page hero (keyword-page.blade.php) shows the hero_slider photos,
+        // the subtitle intro and share buttons, so those blocks leave the
+        // content stream. The live editor keeps every block in the stream.
+        $hero = $this->heroData($allBlocks);
+        $blocks = $liveEdit ? $allBlocks : $allBlocks->reject(fn($b) => in_array($b->block_type, self::HERO_BLOCKS, true))->values();
         // First render with minimal context (listing_slot etc. only need
         // keyword_id). Re-rendered later if any block needs the food /
         // adventure listings collections — see comment near $restaurantListings.
@@ -252,8 +257,38 @@ class KeywordPageController extends Controller
             'keyword', 'page', 'listings', 'listingGalleries', 'listingRatings', 'listingReviews',
             'faqs', 'cluster', 'related',
             'renderedBlocks', 'hasListingSlot', 'siblingPages', 'jsonld', 'author', 'reviews',
-            'restaurantListings', 'adventureListings', 'liveEdit'
+            'restaurantListings', 'adventureListings', 'liveEdit', 'hero'
         ));
+    }
+
+    /** Blocks the page hero takes over from the content stream. */
+    private const HERO_BLOCKS = ['hero_slider', 'subtitle_intro', 'social_share'];
+
+    /** Photos, intro line and rating for the page hero, read from the page's blocks. */
+    private function heroData($blocks): array
+    {
+        $slides = [];
+        $lede = '';
+        $rating = null;
+        foreach ($blocks as $b) {
+            $p = $b->payload ?? [];
+            if ($b->block_type === 'hero_slider' && !$slides) {
+                foreach ($p['images'] ?? [] as $img) {
+                    if (empty($img['src'])) continue;
+                    $slides[] = [
+                        'src' => $img['src'],
+                        'title' => $img['caption_title'] ?? '',
+                        'caption' => $img['caption'] ?? '',
+                        'credit_url' => $img['credit_url'] ?? '',
+                    ];
+                }
+            } elseif ($b->block_type === 'subtitle_intro' && $lede === '') {
+                $lede = trim((string) ($p['text'] ?? ''));
+            } elseif ($b->block_type === 'editor_rating' && $rating === null && isset($p['overall'])) {
+                $rating = round((float) $p['overall'], 1);
+            }
+        }
+        return ['slides' => $slides, 'lede' => $lede, 'rating' => $rating];
     }
 
     /**

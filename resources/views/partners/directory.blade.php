@@ -118,14 +118,14 @@
         </div>
 
         {{-- Results grid: photo thumbnail + name + location --}}
-        <div id="partnerGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div id="partnerGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($partners as $p)
                 @php
                     $m = $typeMeta[$p->type] ?? $typeMeta['other'];
                     $g = $grad[$m['color']] ?? $grad['slate'];
                     $hay = \Illuminate\Support\Str::lower($p->name . ' ' . $p->city . ' ' . $p->region . ' ' . $m['label'] . ' ' . $p->tagline);
                 @endphp
-                <article class="partner-card group flex items-center gap-4 rounded-2xl bg-white border border-slate-200 p-3.5 hover:border-slate-300 hover:shadow-md transition"
+                <article class="partner-card group flex items-center gap-4 min-w-0 rounded-2xl bg-white border border-slate-200 p-3.5 hover:border-slate-300 hover:shadow-md transition"
                          data-type="{{ $p->type }}" data-region="{{ $p->region }}"
                          data-search="{{ $hay }}"
                          @if($loop->index >= 24) style="display:none" @endif>
