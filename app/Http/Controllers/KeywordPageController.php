@@ -30,13 +30,17 @@ class KeywordPageController extends Controller
         if (!$page->is_published) abort(404);
         $keyword = RgKeyword::find($page->keyword_id);
         if (!$keyword) abort(404);
+        // Local only: ?preview_listings=1 also shows expired listings, so the
+        // listings design can be checked without editing listing data.
+        $previewListings = app()->isLocal() && $request->boolean('preview_listings');
 
         $listingsPerPage = (int) RgSetting::get('listings_per_page_default', 10);
 
         $listings = RgListing::query()
             ->where('keyword_id', $keyword->id)
             ->where('status', 'active')
-            ->where(function ($q) {
+            ->where(function ($q) use ($previewListings) {
+                if ($previewListings) return;
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
             ->with(['resort' => fn($q) => $q->where('status', 'published')])
@@ -170,7 +174,8 @@ class KeywordPageController extends Controller
         $restaurantListings = RgRestaurantListing::query()
             ->where('keyword_id', $keyword->id)
             ->where('status', 'active')
-            ->where(function ($q) {
+            ->where(function ($q) use ($previewListings) {
+                if ($previewListings) return;
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
             ->with(['restaurant' => fn($q) => $q->where('status', 'published')])
@@ -190,7 +195,8 @@ class KeywordPageController extends Controller
             : RgAdventureListing::query()
                 ->where('keyword_id', $keyword->id)
                 ->where('status', 'active')
-                ->where(function ($q) {
+                ->where(function ($q) use ($previewListings) {
+                    if ($previewListings) return;
                     $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
                 })
                 ->with(['adventure' => fn($q) => $q->where('status', 'published')])
