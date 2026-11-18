@@ -88,9 +88,14 @@
     $hasPicks = $isFood ? ($restaurantListings ?? collect())->isNotEmpty() : $listings->count() > 0;
 
     // ---------- section nav ----------
+    // With real picks, the recommendations sit right under the hero; the
+    // "be the first to list" box (no picks) stays below the overview.
+    $stayFirst = $hasPicks && $stayHtml !== '';
+    $stayLabel = $stayHtml !== '' ? ($isFood ? 'Where to eat' : 'Where to stay') : null;
     $nav = array_filter([
+        'stay-top' => $stayFirst ? $stayLabel : null,
         'overview' => 'Overview',
-        'stay' => $stayHtml !== '' ? ($isFood ? 'Where to eat' : 'Where to stay') : null,
+        'stay' => $stayFirst ? null : $stayLabel,
         'todo' => ($attrItems || $advHtml !== '') ? 'Things to do' : null,
         'guide' => $streamHtml !== '' ? 'The guide' : null,
         'food' => (!$isFood && $foodHtml !== '') ? 'Food' : ($isFood && $foodHtml !== '' ? 'Dishes' : null),
@@ -137,7 +142,7 @@
         ['icon' => 'calendar', 'text' => $page->updated_at ? 'Updated ' . $page->updated_at->format('M Y') : ''],
     ],
     'actions' => [
-        $hasPicks ? ['label' => $isFood ? 'See where to eat' : 'See where to stay', 'url' => '#stay', 'style' => 'coral']
+        $hasPicks ? ['label' => $isFood ? 'See where to eat' : 'See where to stay', 'url' => '#stay-top', 'style' => 'coral']
                   : ['label' => 'Start with the overview', 'url' => '#overview', 'style' => 'coral'],
         ['label' => 'Plan my trip', 'url' => url('/create-your-adventure'), 'style' => 'glass'],
     ],
@@ -151,6 +156,13 @@
         @endforeach
     </div>
 </nav>
+
+{{-- ============ WHERE TO STAY / EAT (top, when there are picks) ============ --}}
+@if($stayFirst)
+<section id="stay-top" class="gx-sec gx-stay gx-stay--top py-10 md:py-14">
+    <div class="pk-wrap gx-blocks">{!! $stayHtml !!}</div>
+</section>
+@endif
 
 {{-- ============ OVERVIEW ============ --}}
 <section id="overview" class="gx-sec py-14 md:py-20">
@@ -181,12 +193,6 @@
                 </div>
             @endif
 
-            @foreach($tips as $t)
-                <aside class="gx-tip">
-                    <span class="gx-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
-                    <div><p class="gx-tip__eyebrow">{{ $t['eyebrow'] ?? 'Local tip' }}</p><p class="gx-tip__text">{{ $t['body'] }}</p></div>
-                </aside>
-            @endforeach
         </div>
 
         <div class="space-y-4 lg:sticky lg:top-[calc(var(--rg-header-h,76px)+4.5rem)]">
@@ -215,26 +221,44 @@
                     @if(!empty($rating['summary']))<p class="gx-score__summary">{{ $rating['summary'] }}</p>@endif
                 </div>
             @endif
-            @if($facts)
-                <div class="grid gap-3 {{ count($facts) > 2 ? 'sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2' : '' }}">
+            @foreach($tips as $t)
+                <aside class="gx-tip !mt-0">
+                    <span class="gx-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
+                    <div><p class="gx-tip__eyebrow">{{ $t['eyebrow'] ?? 'Local tip' }}</p><p class="gx-tip__text">{{ $t['body'] }}</p></div>
+                </aside>
+            @endforeach
+        </div>
+    </div>
+
+    @if($facts)
+        <div class="pk-wrap mt-12 md:mt-14">
+            <div class="gx-facts">
+                <div class="gx-facts__head">
+                    <div>
+                        <p class="pk-eyebrow !mb-1">Before you go</p>
+                        <h3 class="font-display font-extrabold text-ink-900 text-xl sm:text-2xl tracking-tight">Key facts for {{ $place }}</h3>
+                    </div>
+                    @if($getting || $map)<a href="#getting-there" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-coral-600 hover:text-coral-700">How to get there <span class="w-4 h-4 inline-flex">{!! $arrow !!}</span></a>@endif
+                </div>
+                <div class="gx-facts__grid {{ count($facts) % 2 ? 'gx-facts__grid--odd' : '' }} {{ count($facts) === 3 ? 'gx-facts__grid--three' : '' }}">
                     @foreach($facts as $card)
-                        <div class="rg-fact rg-fact--row" style="--c:{{ $toneHex($card['color'] ?? 'blue') }}">
-                            <span class="rg-fact__ico">{!! app(\App\Services\BlockRenderer::class)->factIcon($card['icon'] ?? 'info') !!}</span>
+                        <div class="gx-fact" style="--c:{{ $toneHex($card['color'] ?? 'blue') }}">
+                            <span class="gx-fact__ico">{!! app(\App\Services\BlockRenderer::class)->factIcon($card['icon'] ?? 'info') !!}</span>
                             <div class="min-w-0">
-                                @if(!empty($card['label']))<p class="rg-fact__label">{{ $card['label'] }}</p>@endif
-                                @if(!empty($card['big']))<p class="rg-fact__big">{{ $card['big'] }}</p>@endif
-                                @if(!empty($card['detail']))<p class="rg-fact__detail">{{ $card['detail'] }}</p>@endif
+                                @if(!empty($card['label']))<p class="gx-fact__label">{{ $card['label'] }}</p>@endif
+                                @if(!empty($card['big']))<p class="gx-fact__big">{{ $card['big'] }}</p>@endif
+                                @if(!empty($card['detail']))<p class="gx-fact__detail">{{ $card['detail'] }}</p>@endif
                             </div>
                         </div>
                     @endforeach
                 </div>
-            @endif
+            </div>
         </div>
-    </div>
+    @endif
 </section>
 
-{{-- ============ WHERE TO STAY / EAT ============ --}}
-@if($stayHtml !== '')
+{{-- ============ WHERE TO STAY / EAT (no picks yet: owner invite) ============ --}}
+@if($stayHtml !== '' && !$stayFirst)
 <section id="stay" class="gx-sec gx-stay bg-sand-100 py-14 md:py-20">
     <div class="pk-wrap gx-blocks">{!! $stayHtml !!}</div>
 </section>
@@ -523,6 +547,20 @@
     .gx-score__summary { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, .12); font-size: .92rem; line-height: 1.6; color: rgba(255, 255, 255, .78); }
 
     .gx-stay .rg-listings-band { background: #fff; border-color: #efe3cc; }
+    .gx-stay--top { background: linear-gradient(180deg, #fbf6ee 0%, #fdfbf7 70%, #fff 100%); }
+    .gx-stay--top .rg-listings-band { margin-bottom: 0; box-shadow: 0 40px 80px -50px rgba(11, 27, 43, .45); }
+
+    .gx-facts { border-radius: 1.5rem; border: 1px solid #e3e9f0; background: #fff; overflow: hidden; box-shadow: 0 30px 60px -48px rgba(11, 27, 43, .5); }
+    .gx-facts__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; padding: 1.3rem 1.5rem 1.15rem; border-bottom: 1px solid #eef2f6; background: linear-gradient(180deg, #fbfcfe, #fff); }
+    .gx-facts__grid { display: grid; gap: 1px; background: #eef2f6; }
+    @media (min-width: 768px) { .gx-facts__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .gx-facts__grid--odd > :last-child { grid-column: 1 / -1; } }
+    @media (min-width: 1024px) { .gx-facts__grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); } .gx-facts__grid--three > :last-child { grid-column: auto; } }
+    .gx-fact { display: flex; gap: 1rem; align-items: flex-start; background: #fff; padding: 1.35rem 1.5rem 1.45rem; }
+    .gx-fact__ico { flex-shrink: 0; width: 2.9rem; height: 2.9rem; border-radius: 1rem; display: inline-flex; align-items: center; justify-content: center; color: var(--c); background: color-mix(in srgb, var(--c) 11%, #fff); }
+    .gx-fact__ico svg { width: 1.4rem !important; height: 1.4rem !important; }
+    .gx-fact__label { font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--c); }
+    .gx-fact__big { margin-top: .3rem; font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: 1.12rem; line-height: 1.35; color: #0b1b2b; letter-spacing: -0.01em; }
+    .gx-fact__detail { margin-top: .4rem; font-size: .93rem; line-height: 1.6; color: #5b6b80; }
     .gx-blocks h2 { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; letter-spacing: -0.025em; color: #0b1b2b; font-size: clamp(1.55rem, 2.7vw, 2.15rem); line-height: 1.15; }
     .gx-blocks > section:first-child, .gx-blocks > div:first-child > section:first-child { margin-top: 0; }
     .gx-blocks section.border-t { border-top: 0; padding-top: 0; }

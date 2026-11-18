@@ -8,10 +8,10 @@
     .lx-seal small { display: block; font-size: .72rem; color: #64748b; }
     @media (max-width: 639px) { .lx-head { flex-direction: column; } .lx-seal { padding-right: .85rem; } }
 
-    .lx-top { position: relative; display: grid; border-radius: 1.6rem; overflow: hidden; background: #fff; box-shadow: 0 34px 70px -40px rgba(11, 27, 43, .55), 0 0 0 2px #ffc74a; }
+    .lx-top { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); border-radius: 1.6rem; overflow: hidden; background: #fff; box-shadow: 0 34px 70px -40px rgba(11, 27, 43, .55), 0 0 0 2px #ffc74a; }
     @media (min-width: 900px) { .lx-top { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); } }
-    .lx-top__media { position: relative; min-height: 15rem; aspect-ratio: 16 / 11; background: linear-gradient(135deg, var(--tint, #0f3a5c), #0b1b2b); overflow: hidden; isolation: isolate; }
-    @media (min-width: 900px) { .lx-top__media { aspect-ratio: auto; min-height: 100%; } }
+    .lx-top__media { position: relative; width: 100%; aspect-ratio: 16 / 11; background: linear-gradient(135deg, var(--tint, #0f3a5c), #0b1b2b); overflow: hidden; isolation: isolate; }
+    @media (min-width: 900px) { .lx-top__media { aspect-ratio: auto; min-height: 22rem; height: 100%; } }
     .lx-top__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; }
     .lx-top__media img.is-on { opacity: 1; }
     .lx-top__media::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(7, 18, 29, .35) 0%, rgba(7, 18, 29, 0) 35%, rgba(7, 18, 29, 0) 70%, rgba(7, 18, 29, .45) 100%); pointer-events: none; }
