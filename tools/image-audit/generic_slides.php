@@ -41,6 +41,16 @@ foreach (DB::table('rg_content_blocks')->where('owner_type', 'seo_page')->where(
             foreach ($toks as $t) if (str_contains($hay, $t)) $score++;
             $cands[] = [$score, crc32($sp->name . $b->owner_id), '/storage/' . ltrim($sp->path, '/'), $sp->name . ($sp->location ? ' (' . $sp->location . ')' : '')];
         }
+        if (!array_filter($cands, fn ($c) => $c[0] > 0)) {
+            // region unknown or no match there: any spot nationwide whose name/town matches the page title
+            $cands = [];
+            foreach (DB::table('rg_tourist_spots as s')->join('rg_media as m', 'm.id', '=', 's.media_id')->get(['s.name', 's.location', 'm.path']) as $sp) {
+                if (str_contains($sp->path, 'generic.jpg') || !is_file(storage_path('app/public/' . ltrim($sp->path, '/')))) continue;
+                $hay = strtolower($sp->name . ' ' . $sp->location); $score = 0;
+                foreach ($toks as $t) if (str_contains($hay, $t)) $score++;
+                if ($score > 0) $cands[] = [$score, crc32($sp->name . $b->owner_id), '/storage/' . ltrim($sp->path, '/'), $sp->name . ($sp->location ? ' (' . $sp->location . ')' : '')];
+            }
+        }
         usort($cands, fn ($a, $c) => [$c[0], $a[1]] <=> [$a[0], $c[1]]);
         foreach (array_slice($cands, 0, 6) as $c) $pool[$c[2]] = $c[3];
     }

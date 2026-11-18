@@ -29,7 +29,7 @@ $clean = fn ($s) => trim(html_entity_decode(strip_tags((string) $s)));
 
 // ---- collect picks
 $picks = [];
-foreach (glob("$dir/work-*/picks.json") as $pf) {
+foreach (array_merge(glob("$dir/work-*/picks.json") ?: [], glob("$dir/work-spots/s*/picks.json") ?: []) as $pf) {
     $w = dirname($pf);
     $cands = [];
     foreach (['r1', 'r2'] as $r) if (is_file("$w/$r/candidates.json")) $cands[$r] = json_decode(file_get_contents("$w/$r/candidates.json"), true);
@@ -55,7 +55,9 @@ foreach ($picks as $id => $c) {
     $rel = ($isBlog ? 'rg-media/blog-covers/' : 'rg-media/places/') . $slug . '.jpg';
     // Wikimedia serves thumbnails in standard buckets (/330px-, /1280px-...): ask for 1280.
     $thumbBase = preg_replace('~\?.*$~', '', (string) $c['thumb']);
-    $url = ($c['w'] > 1280 && preg_match('~/\d+px-~', $thumbBase)) ? preg_replace('~/\d+px-~', '/1280px-', $thumbBase) : preg_replace('~\?.*$~', '', (string) $c['orig']);
+    // originals on upload.wikimedia.org are rate limited, so prefer a standard thumb bucket
+    $bucket = $c['w'] > 1280 ? 1280 : ($c['w'] > 960 ? 960 : 0);
+    $url = ($bucket && preg_match('~/\d+px-~', $thumbBase)) ? preg_replace('~/\d+px-~', '/' . $bucket . 'px-', $thumbBase) : preg_replace('~\?.*$~', '', (string) $c['orig']);
     $artist = Str::limit(preg_replace('/\s+/', ' ', $c['artist'] ?: 'Unknown author'), 80);
     $credit = "Photo: {$artist}, Wikimedia Commons ({$c['license']})";
     $existing = DB::table('rg_media')->where('path', $rel)->where('source', 'image-audit-2026-11')->value('id');
@@ -66,7 +68,7 @@ foreach ($picks as $id => $c) {
     }
     if (!$dry) {
         $data = false;
-        foreach ([0, 5, 15, 40, 90] as $wait) {
+        foreach ([0, 8, 25] as $wait) {
             if ($wait) { fwrite(STDERR, "  retry #$id in {$wait}s
 "); sleep($wait); }
             $data = @file_get_contents($url, false, $ctx);
@@ -97,6 +99,13 @@ echo 'stored: ', count($newPath), "\n";
 $bySubject = [];
 foreach ($newPath as $id => $np) $bySubject[$subjects[$id]['subject']] = $id;
 $wrongSrcs = fn ($id) => array_map($norm, $subjects[$id]['srcs']);
+// spot subjects are labelled "Name (Location)"; attraction cards and slides use the bare name
+foreach ($newPath as $id => $np) {
+    if (!empty($subjects[$id]['spot_id'])) {
+        $bare = trim(preg_replace('/\s*\([^)]*\)\s*$/', '', $subjects[$id]['subject']));
+        if ($bare !== '' && !isset($bySubject[$bare])) $bySubject[$bare] = $id;
+    }
+}
 
 // ---- repoint block payloads
 $changedBlocks = 0; $changedSlots = 0;
