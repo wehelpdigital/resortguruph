@@ -5118,7 +5118,7 @@ class BlockRenderer
         }
         if ($ctaLabel !== '') {
             $href = $ctaUrl !== '' ? $ctaUrl : '#';
-            $prose .= '<div class="pt-2 md:pt-4"><a href="' . $this->e($href) . '" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 transition-colors no-underline">'
+            $prose .= '<div class="pt-2 md:pt-4"><a href="' . $this->e($href) . '" class="rg-btn rg-btn--coral rg-btn--lg no-underline">'
                 . $ctaLabel
                 . '<svg class="rg-cta-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a></div>';
         }
@@ -5691,7 +5691,7 @@ class BlockRenderer
         if ($ctaLabel !== '') {
             $href = $ctaUrl !== '' ? $ctaUrl : '#';
             if ($ctaDesc !== '') $out .= '<p class="text-base md:text-lg text-slate-700 font-medium max-w-2xl mx-auto mb-5">' . $ctaDesc . '</p>';
-            $out .= '<a href="' . $this->e($href) . '" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 transition-colors no-underline">'
+            $out .= '<a href="' . $this->e($href) . '" class="rg-btn rg-btn--coral rg-btn--lg no-underline">'
                 . $ctaLabel
                 . '<svg class="rg-cta-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>';
             if ($ctaNote !== '') $out .= '<p class="text-sm font-semibold text-slate-500 mt-3">' . $ctaNote . '</p>';
