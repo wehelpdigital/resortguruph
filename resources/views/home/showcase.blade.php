@@ -10,6 +10,7 @@
 @section('title'){{ $siteName }}: Philippines Travel Guide to Destinations, Food and Stays @endsection
 @section('meta_description')Plan your Philippines trip with {{ number_format($s['guides']) }} local guides to destinations, tourist spots, food and festivals, backed by {{ number_format($s['reviews']) }} traveler reviews. Free to use.@endsection
 @section('canonical'){{ url('/') }}@endsection
+@section('header_overlay', '1')
 @section('og_image'){{ asset('images/hero-palawan-1600.webp') }}@endsection
 @section('jsonld')
 {!! $jsonld !!}
@@ -302,7 +303,8 @@
 @endif
 
 <style>
-    .sx-hero { background: #0c2438; }
+    /* sits under the transparent header */
+    .sx-hero { background: #0c2438; margin-top: calc(-1 * var(--rg-header-h, 76px)); padding-top: var(--rg-header-h, 76px); }
     .sx-hero h1 { line-height: 1.04 !important; letter-spacing: -0.03em; text-shadow: 0 2px 30px rgba(7, 18, 29, .35); }
     .sx-hero__media { position: absolute; inset: 0; z-index: -2; }
     .sx-hero__media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
