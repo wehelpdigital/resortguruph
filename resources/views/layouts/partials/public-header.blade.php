@@ -63,8 +63,7 @@
     <div class="rg-header__bar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 lg:h-[72px] flex items-center gap-3 lg:gap-5">
             <a href="{{ route('home') }}" class="flex items-center shrink-0 min-w-0" aria-label="{{ $siteName }} home">
-                <img src="{{ asset('images/logo.webp') }}" alt="{{ $siteName }} logo" class="h-10 sm:h-11 lg:h-12 w-auto" width="160" height="100">
-                <span class="font-brand text-[1.85rem] sm:text-[2.1rem] lg:text-[2.35rem] leading-none font-light pt-1.5 whitespace-nowrap"><span style="color:#2980b9">Tourist</span><span style="color:#c0392b">Guide</span><span style="color:#f39c12">.Ph</span></span>
+                @include('layouts.partials.brand-logo')
             </a>
 
             {{-- Desktop typeahead --}}
@@ -118,7 +117,7 @@
     <div class="rg-drawer__backdrop" data-rg-drawer-close></div>
     <div class="rg-drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
         <div class="flex items-center justify-between px-5 h-16 border-b border-slate-100 shrink-0">
-            <span class="font-brand text-3xl leading-none pt-1.5"><span style="color:#2980b9">Tourist</span><span style="color:#c0392b">Guide</span><span style="color:#f39c12">.Ph</span></span>
+            @include('layouts.partials.brand-logo', ['size' => 'sm'])
             <button type="button" class="rg-iconbtn -mr-2" data-rg-drawer-close aria-label="Close menu">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>

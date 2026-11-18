@@ -20,9 +20,12 @@
     <meta property="og:url" content="{{ url()->current() }}">
     @hasSection('og_image')<meta property="og:image" content="@yield('og_image')">@endif
 
-    <link rel="icon" type="image/webp" href="{{ asset('images/logo.webp') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/brand/favicon.svg') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/brand/favicon-32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/brand/apple-touch-icon.png') }}">
+    <meta name="theme-color" content="#13669c">
 
-    <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
+    <script src="{{ asset('vendor/tailwind/tailwind-3.4.17-forms-typography.js') }}"></script>
     <script>
         // Design tokens. "brand"/"blue" is a deeper ocean blue that still
         // sits on the logo's #2980b9 hue; "coral" is the primary call to
@@ -47,13 +50,11 @@
             }
         }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="/vendor/fonts/fonts.css" rel="stylesheet">
 
     {{-- Splide carousel (used by keyword pages' hero gallery) --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link rel="stylesheet" href="/vendor/splide/splide.min.css">
+    <script defer src="/vendor/splide/splide.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.rg-hero-splide').forEach(function (el) {

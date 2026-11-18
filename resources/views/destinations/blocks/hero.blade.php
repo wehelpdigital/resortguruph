@@ -12,7 +12,7 @@
         </nav>
     </div>
 @endif
-<section class="mt-4 {{ $heroImage ? 'bg-cover bg-center' : 'bg-gradient-to-br from-brand-50 via-white to-emerald-50' }}"@if($heroImage) style="background-image:linear-gradient(rgba(255,255,255,.85),rgba(255,255,255,.92)),url('{{ $heroImage }}')"@endif>
+<section class="mt-4 {{ $heroImage ? 'bg-cover bg-center rg-hero-dark' : 'bg-gradient-to-br from-brand-50 via-white to-emerald-50' }}"@if($heroImage) style="background-image:linear-gradient(180deg,rgba(7,18,29,.62) 0%,rgba(12,36,56,.42) 45%,rgba(7,18,29,.74) 100%),url('{{ $heroImage }}')"@endif>
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 text-center">
         @if($eyebrow !== '')<p class="mb-7"><span class="inline-flex items-center rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-100 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em]">{{ $eyebrow }}</span></p>@endif
         <h1 class="font-brand font-normal leading-[0.95] text-5xl sm:text-6xl md:text-7xl" style="color:#c0392b">{{ $meta['name'] }}</h1>

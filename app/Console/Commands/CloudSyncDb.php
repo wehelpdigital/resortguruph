@@ -111,7 +111,7 @@ class CloudSyncDb extends Command
                 $batch = [];
                 $bytes = 0;
                 foreach ($query->cursor() as $row) {
-                    $row = (array) $row;
+                    $row = \App\Support\ContentSnapshot::rewriteRow((array) $row);
                     $batch[] = $row;
                     $bytes += array_sum(array_map(fn ($v) => is_string($v) ? strlen($v) : 8, $row));
                     if ($bytes >= self::BATCH_BYTES || count($batch) >= 1000) {

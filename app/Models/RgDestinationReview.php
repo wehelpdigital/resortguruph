@@ -18,7 +18,7 @@ class RgDestinationReview extends Model
     public function avatarUrl(): string
     {
         if (empty($this->reviewer_avatar)) {
-            return 'https://api.dicebear.com/7.x/notionists/svg?seed=' . urlencode($this->reviewer_name);
+            return \App\Support\Avatar::initials($this->reviewer_name);
         }
         if (preg_match('#^https?://#i', $this->reviewer_avatar)) {
             return $this->reviewer_avatar;

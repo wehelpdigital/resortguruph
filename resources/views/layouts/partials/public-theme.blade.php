@@ -47,6 +47,20 @@
     .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
 
+    /* ---------- Logo ---------- */
+    .rg-logo { display: inline-flex; align-items: center; gap: .6rem; white-space: nowrap; }
+    .rg-logo__mark { width: 2.5rem; height: 2.5rem; flex-shrink: 0; filter: drop-shadow(0 4px 10px rgba(19, 102, 156, .28)); }
+    .rg-logo__wm { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; letter-spacing: -.035em; font-size: 1.4rem; line-height: 1; }
+    .rg-logo__t { color: #0b1b2b; }
+    .rg-logo__g { color: var(--rg-ocean); }
+    .rg-logo__p { color: var(--rg-coral); }
+    .rg-logo--dark .rg-logo__t { color: #fff; }
+    .rg-logo--dark .rg-logo__g { color: #7bb9de; }
+    .rg-logo--dark .rg-logo__mark { filter: none; }
+    @media (min-width: 640px) { .rg-logo--md .rg-logo__mark { width: 2.75rem; height: 2.75rem; } .rg-logo--md .rg-logo__wm { font-size: 1.6rem; } }
+    .rg-logo--sm .rg-logo__mark { width: 2.2rem; height: 2.2rem; }
+    .rg-logo--sm .rg-logo__wm { font-size: 1.25rem; }
+
     /* ---------- Header ---------- */
     .rg-header { background: rgba(255, 255, 255, .92); -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px); transition: box-shadow .25s ease, background-color .25s ease; }
     .rg-header.is-scrolled { box-shadow: 0 8px 24px -16px rgba(11, 27, 43, .35); background: rgba(255, 255, 255, .97); }
@@ -127,6 +141,34 @@
     .rg-footer-cta { background: linear-gradient(120deg, #13669c 0%, #11527f 45%, #0c2438 100%); position: relative; overflow: hidden; }
     .rg-footer-cta::after { content: ""; position: absolute; right: -80px; top: -80px; width: 320px; height: 320px; border-radius: 999px; background: radial-gradient(circle, rgba(245, 165, 36, .45), transparent 65%); pointer-events: none; }
     .rg-footer .border-slate-800, .rg-footer .border-slate-800\/70 { border-color: rgba(148, 163, 184, .14) !important; }
+
+    /* ---------- Dark immersive photo heroes (hub + destination pages) ---------- */
+    .rg-hero-dark { background-color: #0c2438; color: #fff; }
+    .rg-hero-dark h1 { color: #fff !important; text-shadow: 0 2px 24px rgba(7, 18, 29, .45); }
+    .rg-hero-dark h1 .font-brand, .rg-hero-dark h1 [style*="#c0392b"], .rg-hero-dark .font-brand[style*="#c0392b"] { color: #ffd166 !important; }
+    .rg-hero-dark .text-slate-500, .rg-hero-dark .text-slate-600, .rg-hero-dark .text-slate-700, .rg-hero-dark .text-slate-800 { color: rgba(255, 255, 255, .88) !important; }
+    .rg-hero-dark blockquote { color: rgba(255, 255, 255, .92) !important; }
+    .rg-hero-dark nav a:hover { color: #ffd166 !important; }
+    /* eyebrow labels (accent colored text) */
+    .rg-hero-dark > div > .uppercase, .rg-hero-dark > div > p > .uppercase, .rg-hero-dark .text-blue-700:not([class*="rg-dest-ts"] *), .rg-hero-dark .text-amber-700:not([class*="rg-dest-ts"] *), .rg-hero-dark .text-emerald-700:not([class*="rg-dest-ts"] *), .rg-hero-dark .text-rose-700:not([class*="rg-dest-ts"] *), .rg-hero-dark .text-violet-700:not([class*="rg-dest-ts"] *), .rg-hero-dark .text-teal-700:not([class*="rg-dest-ts"] *) { color: #ffd166 !important; }
+    /* stat pills ("185 destinations"): glass on the dark photo */
+    .rg-hero-dark .rounded-full.bg-white.border { background: rgba(255, 255, 255, .12) !important; border-color: rgba(255, 255, 255, .28) !important; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    .rg-hero-dark .rounded-full.bg-white.border .font-bold { color: #ffd166 !important; }
+    .rg-hero-dark .rounded-full.bg-white.border .text-slate-600 { color: rgba(255, 255, 255, .9) !important; }
+    .rg-hero-dark .bg-blue-50.ring-1 { background: rgba(255, 255, 255, .12) !important; --tw-ring-color: rgba(255, 255, 255, .28) !important; color: #fff !important; }
+    .rg-hero-dark .rg-dest-ts__tab { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .28); color: #fff; }
+    .rg-hero-dark .rg-dest-ts__tab:hover { background: rgba(255, 255, 255, .2); border-color: rgba(255, 255, 255, .55); color: #fff; }
+    .rg-hero-dark .rg-dest-ts__tab.is-active { background: #fff; border-color: #fff; color: #0b1b2b; }
+    .rg-hero-dark .rg-dest-ts__shell { border-color: transparent; box-shadow: 0 24px 60px -18px rgba(0, 0, 0, .55), 0 0 0 6px rgba(255, 255, 255, .12); }
+    .rg-hero-dark .rg-dest-ts__shell:focus-within { box-shadow: 0 24px 60px -18px rgba(0, 0, 0, .55), 0 0 0 6px rgba(255, 209, 102, .45); }
+    .rg-hero-dark .rg-dest-ts__chips { color: rgba(255, 255, 255, .75); }
+    .rg-hero-dark .rg-dest-ts__chip { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .25); color: #fff; }
+    .rg-hero-dark .rg-dest-ts__chip:hover { background: #fff; border-color: #fff; color: #0b1b2b; }
+    @media (max-width: 767px) {
+        .rg-hero-dark .rg-dest-ts__tabs, .rg-hero-dark .rg-dest-ts__chips { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; scrollbar-width: none; margin-left: -1rem; margin-right: -1rem; padding: 0 1rem .15rem; }
+        .rg-hero-dark .rg-dest-ts__tabs::-webkit-scrollbar, .rg-hero-dark .rg-dest-ts__chips::-webkit-scrollbar { display: none; }
+        .rg-hero-dark .rg-dest-ts__tab, .rg-hero-dark .rg-dest-ts__chip, .rg-hero-dark .rg-dest-ts__chips > span { flex-shrink: 0; }
+    }
 
     /* ---------- Shared component polish ---------- */
     /* Share row: icon-only on phones so it fits one line. */

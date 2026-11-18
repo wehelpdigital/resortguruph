@@ -50,10 +50,16 @@ php artisan rg:cloud-sync-media     # upload storage/app/public (rg-media, rg-bl
 - The media library is committed under `storage/app/public` and ships with each deploy; composer's `post-install-cmd` creates the `public/storage` symlink. `/storage/{path}` falls back to `StorageFileController` (streams the local file, else redirects to the bucket).
 - Runtime uploads (owner dashboard) go to `config('filesystems.media_disk')`: the Cloud bucket in production (auto-detected from `LARAVEL_CLOUD_DISK_CONFIG`), the `public` disk locally.
 - Framework tables (sessions, cache, jobs) come from the guarded `2026_11_18_000000_create_framework_tables_if_missing` migration.
+- `php artisan rg:content-snapshot` exports public content (personal data stripped) to `database/snapshots/content` for seeding a fresh DB. It is NOT committed by default because the GitHub repo is public; for an existing production DB use `rg:cloud-sync-db`.
+- Never store absolute dev URLs (`http://resortguruph.test/...`) in content. The snapshot/sync rewrite them and the `RewriteLocalUrls` middleware is a safety net, but write root-relative `/storage/...` paths.
+- Everything the pages load is self-hosted under `public/vendor` (Tailwind 3.4.17 play runtime + forms/typography, Splide 4.1.4, Sortable 1.15.2, Inter + Plus Jakarta Sans woff2). Only Google Maps embeds stay external.
+- Homepage hero video is self-hosted at `public/videos/hero-philippines.mp4` (built from our own photos with ffmpeg); the old YouTube URL is kept in the block's `background_video_youtube`.
 
 ## Design system (public site)
 
 - Tokens, header, drawer, footer live in `resources/views/layouts/partials/public-{theme,header,footer}.blade.php`.
+- Logo: `layouts/partials/brand-logo.blade.php` (mark = `public/images/brand/logo-mark.svg`, the warty pig explorer). Set `rg_settings.logo_style = classic` to restore the original purple pig + Tahu wordmark.
+- Photo heroes on hub/destination pages use the dark `rg-hero-dark` treatment; payload `hero_style: "light"` restores the white-washed look.
 - Colors: `brand`/`blue` = ocean blue, `coral` = primary CTA, `sun` = highlight, `ink` = dark surfaces. Headings use Plus Jakarta Sans, body Inter, the Tahu script stays for brand accents.
 - `--rg-header-h` (set by JS) drives sticky sub-navs and anchor offsets; don't hardcode header heights.
 - Homepage hero (`home_unified_search`) is "immersive" when it has a background video/image; set payload `hero_style: "light"` for the old faded look. Phones get the poster image instead of the YouTube iframe.

@@ -14,7 +14,7 @@
     'name' => 'About the Logo',
     'description' => 'The story, symbolism, and colours behind the ' . $siteName . ' logo, a Visayan warty pig with a backpack.',
     'url' => url('/about-the-logo'),
-    'primaryImageOfPage' => asset('images/logo.webp'),
+    'primaryImageOfPage' => asset(\App\Models\RgSetting::get('logo_style', 'modern') === 'classic' ? 'images/logo.webp' : 'images/brand/icon-512.png'),
 ], JSON_UNESCAPED_SLASHES) !!}
 </script>
 <script type="application/ld+json">
@@ -58,7 +58,11 @@
         </div>
         <div class="flex justify-center">
             <div class="flex h-56 w-56 items-center justify-center rounded-full bg-white/70 md:h-72 md:w-72">
-                <img src="{{ asset('images/logo.webp') }}" alt="{{ $siteName }} logo, a Visayan warty pig with a backpack" class="h-40 w-auto md:h-52" width="200" height="200">
+                @if(\App\Models\RgSetting::get('logo_style', 'modern') === 'classic')
+                    <img src="{{ asset('images/logo.webp') }}" alt="{{ $siteName }} logo, a Visayan warty pig with a backpack" class="h-40 w-auto md:h-52" width="200" height="200">
+                @else
+                    <img src="{{ asset('images/brand/logo-mark.svg') }}" alt="{{ $siteName }} logo, a Visayan warty pig with a backpack" class="h-40 w-40 md:h-56 md:w-56 drop-shadow-xl" width="224" height="224">
+                @endif
             </div>
         </div>
     </div>

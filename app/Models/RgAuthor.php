@@ -12,7 +12,7 @@ class RgAuthor extends Model
     public function avatarUrl(): string
     {
         if (empty($this->avatar_path)) {
-            return 'https://api.dicebear.com/7.x/notionists/svg?seed=' . urlencode($this->name);
+            return \App\Support\Avatar::initials($this->name);
         }
         if (preg_match('#^https?://#i', $this->avatar_path)) {
             return $this->avatar_path;

@@ -23,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // so trust the proxy headers or every url()/asset()/redirect is
         // generated as http:// (mixed-content images, insecure form posts).
         $middleware->trustProxies(at: '*');
+        // Rewrite absolute dev-host links (http://resortguruph.test/...)
+        // left in content to root-relative ones.
+        $middleware->web(append: [\App\Http\Middleware\RewriteLocalUrls::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

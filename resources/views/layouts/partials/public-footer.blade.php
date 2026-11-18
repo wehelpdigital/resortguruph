@@ -49,8 +49,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_1fr] gap-x-8 gap-y-10 text-sm">
         <div class="col-span-2 md:col-span-1 max-w-sm">
             <a href="{{ route('home') }}" class="inline-flex items-center mb-4" aria-label="{{ $siteName }} home">
-                <img src="{{ asset('images/logo.webp') }}" alt="" class="h-11 w-auto shrink-0" style="filter:brightness(0) invert(1)">
-                <span class="font-brand text-3xl leading-none font-light pt-1.5 text-white">TouristGuide.Ph</span>
+                @include('layouts.partials.brand-logo', ['variant' => 'dark'])
             </a>
             <p class="text-slate-400 leading-relaxed">Your one-stop guide to exploring the Philippines. Find where to stay, what to eat, and where to go next across more than 7,000 islands, with picks from travelers who have actually been there.</p>
             <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-slate-300">

@@ -9,9 +9,9 @@
     {{-- Tailwind CDN gives us every utility class BlockRenderer emits.
          Splide assets so hero_slider mounts. Same versions as the public
          site so visual fidelity matches. --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script src="{{ asset('vendor/tailwind/tailwind-3.4.17-forms-typography.js') }}"></script>
+    <link rel="stylesheet" href="/vendor/splide/splide.min.css">
+    <script defer src="/vendor/splide/splide.min.js"></script>
 
     <style>
         html, body { margin: 0; padding: 0; background: #fff; }

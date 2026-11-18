@@ -353,7 +353,7 @@ class BlockRenderer
         foreach ($listings as $listing) {
             $resort = $listing->resort;
             if (!$resort) continue;
-            $img = $resort->hero_path ? '/storage/' . ltrim($resort->hero_path, '/') : 'https://placehold.co/400x250?text=' . urlencode($resort->name);
+            $img = $resort->hero_path ? '/storage/' . ltrim($resort->hero_path, '/') : '/images/placeholder-stay.svg';
             $out .= '<a href="/listing/' . $this->e($resort->slug) . '" class="block bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden border border-slate-200">';
             $out .= '<img src="' . $this->e($img) . '" alt="' . $this->e($resort->name) . '" class="w-full h-44 object-cover" loading="lazy">';
             $out .= '<div class="p-4"><h3 class="font-bold text-slate-900 mb-1">' . $this->e($resort->name) . '</h3>';
@@ -3419,10 +3419,14 @@ class BlockRenderer
         $bgImage = trim((string) ($p['background_image'] ?? ''));
         $bgImageUrl = $bgImage !== '' ? ((str_starts_with($bgImage, 'http') || str_starts_with($bgImage, '/')) ? $bgImage : '/storage/' . ltrim($bgImage, '/')) : '';
         $secBg = '';
+        // Dark immersive photo treatment (site-wide hero style); payload
+        // hero_style = "light" keeps the old white-washed photo.
+        $darkHero = $bgImageUrl !== '' && ($p['hero_style'] ?? 'immersive') !== 'light';
         if ($bgImageUrl !== '') {
-            $secBg = ' style="background-image:linear-gradient(rgba(255,255,255,.84),rgba(255,255,255,.92)),url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center"';
+            $scrim = $darkHero ? 'linear-gradient(180deg,rgba(7,18,29,.62) 0%,rgba(12,36,56,.42) 45%,rgba(7,18,29,.74) 100%)' : 'linear-gradient(rgba(255,255,255,.84),rgba(255,255,255,.92))';
+            $secBg = ' style="background-image:' . $scrim . ',url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center"';
         }
-        $out = '<section class="rg-dest-hero rg-dest-hero--bleed ' . ($bgImageUrl !== '' ? '' : $bgClass) . ' -mt-8"' . $secBg . '>';
+        $out = '<section class="rg-dest-hero rg-dest-hero--bleed ' . ($bgImageUrl !== '' ? '' : $bgClass) . ($darkHero ? ' rg-hero-dark' : '') . ' -mt-8"' . $secBg . '>';
         $out .= '<style>.rg-dest-hero--bleed{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw}</style>';
         $out .= '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center">';
         $out .= $breadcrumbHtml;
@@ -4917,11 +4921,17 @@ class BlockRenderer
             }
         }
         $hasBgVideo = $bgVideoId !== '';
+        // Self-hosted clip (e.g. /videos/hero-philippines.mp4): no YouTube
+        // player, branding, cookies or 1 MB of player JS.
+        $bgVideoFile = '';
+        if (!$hasBgVideo && $bgVideo !== '' && preg_match('~\.(mp4|webm|m4v)(\?.*)?$~i', $bgVideo)) {
+            $bgVideoFile = (str_starts_with($bgVideo, 'http') || str_starts_with($bgVideo, '/')) ? $bgVideo : '/storage/' . ltrim($bgVideo, '/');
+        }
 
         // Immersive mode (default whenever there's a photo or video): the
         // media shows through a dark ocean scrim and the copy turns white.
         // hero_style = "light" restores the old faded-watermark look.
-        $immersive = ($hasBgImage || $hasBgVideo) && ($p['hero_style'] ?? 'immersive') !== 'light';
+        $immersive = ($hasBgImage || $hasBgVideo || $bgVideoFile !== '') && ($p['hero_style'] ?? 'immersive') !== 'light';
         // Poster shown under the video while YouTube loads, and instead of
         // the video on phones (no autoplay iframe = far less data + no
         // YouTube chrome flashing up on mobile Safari).
@@ -4967,6 +4977,22 @@ class BlockRenderer
         // gets a slight extra text-shadow for crispness.
         if ($hasBgImage) {
             $out .= '<div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,rgba(15,23,42,0.55) 0%,rgba(15,23,42,0.35) 30%,rgba(15,23,42,0.55) 100%)"></div>';
+        }
+        if ($bgVideoFile !== '' && $immersive) {
+            $heroId = 'rg-uss-hero-' . substr(md5($bgVideoFile . $title), 0, 6);
+            $out .= '<div class="rg-uss-video" id="' . $heroId . '" aria-hidden="true">'
+                . '<video muted loop playsinline preload="none" disablepictureinpicture tabindex="-1" data-src="' . $this->e($bgVideoFile) . '"></video>'
+                . '<div class="rg-uss-poster" style="--poster-d:url(\'' . $this->e($posterDesktop) . '\');--poster-m:url(\'' . $this->e($posterMobile) . '\')"></div>'
+                . '</div>';
+            $out .= '<div class="rg-uss-scrim" aria-hidden="true"></div>';
+            // Phones, reduced motion and data saver keep the still poster.
+            $out .= '<script>(function(){var w=document.getElementById(' . json_encode($heroId) . ');if(!w)return;'
+                . 'var v=w.querySelector("video"),p=w.querySelector(".rg-uss-poster");'
+                . 'var mm=window.matchMedia||function(){return{matches:false}};'
+                . 'if(!mm("(min-width: 768px)").matches||mm("(prefers-reduced-motion: reduce)").matches||(navigator.connection&&navigator.connection.saveData))return;'
+                . 'v.addEventListener("playing",function(){p.classList.add("is-hidden")},{once:true});'
+                . 'v.src=v.getAttribute("data-src");var pr=v.play();if(pr&&pr.catch)pr.catch(function(){});'
+                . '})();</script>';
         }
         if ($hasBgVideo && $immersive) {
             $ytStart = max(0, (int) ($p['video_start_seconds'] ?? 10));
@@ -5154,6 +5180,7 @@ class BlockRenderer
             . '@media(min-width:768px){.rg-uss-poster{background-image:var(--poster-d)}}'
             . '.rg-uss-poster.is-hidden{opacity:0}'
             . '.rg-uss--immersive .rg-uss-video iframe{opacity:1}'
+            . '.rg-uss-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}'
             . '.rg-uss-scrim{position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(120% 80% at 50% 45%,rgba(7,18,29,.25) 0%,rgba(7,18,29,.55) 100%),linear-gradient(180deg,rgba(7,18,29,.55) 0%,rgba(12,36,56,.25) 35%,rgba(12,36,56,.35) 65%,rgba(7,18,29,.75) 100%)}'
             . '.rg-uss--immersive .rg-uss-search{--rg-acc:#ef5b3a}'
             . '.rg-uss--immersive .rg-uss__tabs{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;margin-left:-1rem;margin-right:-1rem;padding:0 1rem .15rem}'
@@ -7069,8 +7096,10 @@ class BlockRenderer
         $inner .= $searchHtml;
 
         if ($bgImageUrl !== '') {
-            $style = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;background-image:linear-gradient(rgba(255,255,255,.84),rgba(255,255,255,.92)),url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
-            $out = '<header class="rg-hub-hero -mt-8" style="' . $style . '">'
+            $darkHero = ($p['hero_style'] ?? 'immersive') !== 'light';
+            $scrim = $darkHero ? 'linear-gradient(180deg,rgba(7,18,29,.62) 0%,rgba(12,36,56,.42) 45%,rgba(7,18,29,.74) 100%)' : 'linear-gradient(rgba(255,255,255,.84),rgba(255,255,255,.92))';
+            $style = 'margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;max-width:100vw;background-image:' . $scrim . ',url(\'' . $this->e($bgImageUrl) . '\');background-size:cover;background-position:center';
+            $out = '<header class="rg-hub-hero -mt-8' . ($darkHero ? ' rg-hero-dark' : '') . '" style="' . $style . '">'
                 . '<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20' . ($centered ? ' text-center' : '') . '">' . $inner . '</div></header>';
         } else {
             $out = '<header class="rg-hub-hero mb-10' . ($centered ? ' text-center' : '') . '">' . $inner . '</header>';

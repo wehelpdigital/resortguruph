@@ -20,6 +20,6 @@ class RgBlogComment extends Model
         if (!empty($this->commenter_avatar) && preg_match('#^https?://#i', $this->commenter_avatar)) {
             return $this->commenter_avatar;
         }
-        return 'https://api.dicebear.com/7.x/notionists/svg?seed=' . urlencode($this->commenter_name);
+        return \App\Support\Avatar::initials($this->commenter_name);
     }
 }

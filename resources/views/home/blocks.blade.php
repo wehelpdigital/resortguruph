@@ -14,7 +14,7 @@
 @if(!empty($liveEdit))
     @push('head')
         <link rel="stylesheet" href="{{ asset('css/rg-live-edit.css') }}?v=1">
-        <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+        <script defer src="/vendor/sortable/Sortable.min.js"></script>
         <script>
             window.__rgLiveEdit = {
                 pageId: {{ (int) $page->id }},

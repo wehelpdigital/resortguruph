@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') · {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
-    <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/brand/favicon.svg') }}">
+    <script src="{{ asset('vendor/tailwind/tailwind-3.4.17-forms-typography.js') }}"></script>
     <script>
         tailwind.config = { theme: { extend: { colors: { brand: { 50: '#eef6fb', 100: '#d6eaf5', 200: '#afd5ec', 300: '#7bb9de', 400: '#4499cc', 500: '#217db6', 600: '#13669c', 700: '#11527f', 800: '#13466a', 900: '#153b59' } }, fontFamily: { sans: ['Inter', 'system-ui'], display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui'] } } } }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="/vendor/fonts/fonts.css" rel="stylesheet">
     <style>
         h1, h2, h3 { font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif; letter-spacing: -0.01em; }
         /* Phones: the sidebar becomes an off-canvas panel. */
@@ -29,7 +28,7 @@
     <div id="dashBackdrop" class="fixed inset-0 bg-slate-900/50 z-40 opacity-0 pointer-events-none md:hidden" onclick="rgDashNav(false)"></div>
     <aside id="dashSidebar" class="w-64 bg-[#0b1b2b] text-slate-300 hidden md:flex flex-col fixed inset-y-0 overflow-y-auto">
         <div class="p-5 border-b border-slate-800">
-            <a href="{{ route('home') }}" class="text-white font-bold flex items-center gap-2">🏖️ {{ \App\Models\RgSetting::get('site_name', 'Tourist Guide Ph') }}</a>
+            <a href="{{ route('home') }}" class="text-white font-bold flex items-center gap-2.5"><img src="{{ asset('images/brand/logo-mark.svg') }}" alt="" class="w-8 h-8"><span style="font-family:'Plus Jakarta Sans',Inter,sans-serif;font-weight:800;letter-spacing:-.03em">Tourist<span style="color:#7bb9de">Guide</span><span style="color:#ef5b3a">.ph</span></span></a>
         </div>
         <nav class="flex-1 p-3 space-y-1 text-sm">
             @php
