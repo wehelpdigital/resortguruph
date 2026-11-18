@@ -10,6 +10,12 @@ class DestinationsController extends Controller
 {
     public function index()
     {
+        // Hand-designed page by default; rg_settings.destinations_layout = blocks
+        // (or a live-editor request) uses the block-builder page below.
+        if (self::useShowcase()) {
+            return view('destinations.showcase', ['data' => app(\App\Services\DestinationShowcase::class)->index()]);
+        }
+
         $clusters = self::clusterMetadata();
         // Hard-filter to category=resort: food keywords have their own
         // /food-trip index and must never appear on /destinations.
@@ -347,6 +353,14 @@ class DestinationsController extends Controller
 
         if ($keywords->isEmpty()) abort(404);
 
+        if (self::useShowcase()) {
+            return view('destinations.region', [
+                'meta' => $meta,
+                'cluster' => $cluster,
+                'data' => app(\App\Services\DestinationShowcase::class)->region($cluster, $keywords),
+            ]);
+        }
+
         $others = collect(self::clusterMetadata())
             ->except($cluster)
             ->map(function ($m, $slug) {
@@ -545,6 +559,12 @@ class DestinationsController extends Controller
             'reviews' => $reviews,
             'hashtags' => $hashtags,
         ];
+    }
+
+    /** Hand-designed destination pages unless the admin switched back to blocks. */
+    private static function useShowcase(): bool
+    {
+        return \App\Models\RgSetting::get('destinations_layout', 'showcase') !== 'blocks' && !request()->query('_lt');
     }
 
     public static function clusterMetadata(): array

@@ -68,6 +68,7 @@ php artisan rg:cloud-sync-media     # upload storage/app/public (rg-media, rg-bl
 - Guide content (`.pk-guide`: keyword pages, blog posts, fiestas) is restyled by the page kit with `!important` rules because seeded `custom_html` blocks inject per-page CSS (`.page-{slug} h2/p`). Keep the `page-{slug}` class on the article, not on wrappers that hold the aside.
 - Admin HTML inside the two-column layouts goes through `App\Support\PageKit::balance()` so stray closing tags cannot push the sidebar out of the grid.
 - Block-rendered heroes (`hub_hero`, `dest_hero_search`, `home_hero_centered` with a photo) slide under the header via `PageKit::leadsWithDarkHero()` + the `pk-pull` wrapper class.
+- Destinations index and region pages are hand-built too: `destinations/showcase.blade.php` and `destinations/region.blade.php`, data from `App\Services\DestinationShowcase` (cached 10 min; curated per-region travel facts live in its `FACTS` const). `rg_settings.destinations_layout = blocks` (or a live-editor `_lt` request) switches back to the block-builder pages.
 - Homepage hero (`home_unified_search`) is "immersive" when it has a background video/image; set payload `hero_style: "light"` for the old faded look. Phones get the poster image instead of the YouTube iframe.
 
 ## Where things live
