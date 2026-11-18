@@ -64,7 +64,9 @@ Route::get('/sitemap', [SitemapController::class, 'page'])->name('sitemap.page')
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 // About the logo (static, custom layout)
-Route::view('/about-the-logo', 'about-logo')->name('about.logo');
+Route::get('/about-the-logo', fn () => view(
+    \App\Models\RgSetting::get('logo_style', 'modern') === 'classic' ? 'about-logo' : 'about-logo-modern'
+))->name('about.logo');
 
 // ============ AUTH (owner guard) ============
 Route::middleware('guest')->group(function () {

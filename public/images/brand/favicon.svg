@@ -1,42 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="TouristGuide.ph">
   <defs>
-    <linearGradient id="tg-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a8fca"/><stop offset="1" stop-color="#0f4c78"/></linearGradient>
-    <clipPath id="tg-clip"><rect x="2" y="2" width="116" height="116" rx="32"/></clipPath>
+    <linearGradient id="tgph-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a8fca"/><stop offset="1" stop-color="#0f4c78"/></linearGradient>
+    <clipPath id="tgph-clip"><rect x="2" y="2" width="116" height="116" rx="32"/></clipPath>
   </defs>
-  <rect x="2" y="2" width="116" height="116" rx="32" fill="url(#tg-bg)"/>
-  <g clip-path="url(#tg-clip)">
-    <g transform="translate(94 27)">
-      <circle r="8" fill="#ffc74a"/>
-      <path d="M0-12.5v-4M0 12.5v4M-12.5 0h-4M12.5 0h4M-8.8-8.8l-2.8-2.8M8.8 8.8l2.8 2.8M-8.8 8.8l-2.8 2.8M8.8-8.8l2.8-2.8" stroke="#ffc74a" stroke-width="3" stroke-linecap="round"/>
-    </g>
-    <path d="M0 99 C 24 93 40 93 62 99 S 100 105 120 97 V120 H0Z" fill="#0b2a44" opacity=".5"/>
-    <path d="M0 107 C 28 102 46 103 66 107 S 102 112 120 106 V120 H0Z" fill="#0b2a44" opacity=".55"/>
+  <rect x="2" y="2" width="116" height="116" rx="32" fill="url(#tgph-bg)"/>
+  <g clip-path="url(#tgph-clip)">
+    <path d="M0 90 C 22 83 40 83 60 90 S 98 97 120 88 V120 H0Z" fill="#7bb9de" opacity=".5"/>
+    <path d="M0 100 C 26 94 44 95 64 100 S 100 107 120 99 V120 H0Z" fill="#0b2a44" opacity=".55"/>
   </g>
-  <!-- Visayan warty pig, facing left -->
-  <g fill="#fff">
-    <!-- mane (spiky crest) -->
-    <path d="M40 52 L44 39 L49 49 L53 35 L58 47 L62 34 L67 46 L71 35 L76 47 L80 38 L84 49 L89 43 L91 54 Z"/>
-    <!-- body -->
-    <path d="M44 50 C 58 44 84 44 96 52 C 104 57 106 70 100 78 C 94 86 78 88 62 87 C 52 86 44 82 40 76 Z"/>
-    <!-- head: sloping boar wedge -->
-    <path d="M48 50 C 40 49 32 53 24 59 L 12 63 C 8 64.5 8 73 12 74.5 L 25 77 C 34 81 46 83 54 79 Z"/>
-    <!-- ear -->
-    <path d="M38 55 L42 42 L50 53 Z"/>
-    <!-- legs -->
-    <rect x="44" y="80" width="8.5" height="18" rx="4"/>
-    <rect x="55" y="83" width="8" height="15" rx="4"/>
-    <rect x="80" y="83" width="8" height="15" rx="4"/>
-    <rect x="90" y="80" width="8.5" height="18" rx="4"/>
-    <!-- tail -->
-    <path d="M100 62 c6-2 9 3 6 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+  <!-- guide pin -->
+  <path d="M60 15 C 40 15 25.5 29.5 25.5 48.5 C 25.5 70.5 60 99 60 99 C 60 99 94.5 70.5 94.5 48.5 C 94.5 29.5 80 15 60 15 Z" fill="#fff"/>
+  <!-- eight-rayed sun (Philippine flag) -->
+  <g transform="translate(60 48.5)">
+    <circle r="11.5" fill="#ffc74a"/>
+    <path d="M0-17v-5.5M0 17v5.5M-17 0h-5.5M17 0h5.5M-12-12l-3.9-3.9M12 12l3.9 3.9M-12 12l-3.9 3.9M12-12l3.9-3.9" stroke="#f5a524" stroke-width="3.6" stroke-linecap="round"/>
   </g>
-  <!-- face -->
-  <ellipse cx="10.8" cy="68.7" rx="1.6" ry="3.6" fill="#d6eaf5"/>
-  <circle cx="34" cy="61.5" r="2.3" fill="#0b1b2b"/>
-  <!-- backpack (rucksack with flap + strap) -->
-  <path d="M61 64 V51 C61 43.5 66.5 38.5 74 38.5 C81.5 38.5 87 43.5 87 51 V64 C87 66 85.5 67.5 83.5 67.5 H64.5 C62.5 67.5 61 66 61 64 Z" fill="#ef5b3a"/>
-  <path d="M61 51 C61 43.5 66.5 38.5 74 38.5 C81.5 38.5 87 43.5 87 51 C 81 55 67 55 61 51 Z" fill="#c93a22"/>
-  <rect x="71.5" y="51.5" width="5" height="6" rx="1.6" fill="#ffc74a"/>
-  <rect x="66" y="58.5" width="16" height="5.5" rx="2.2" fill="#d9432a"/>
-  <path d="M63 60 C 59 67 58.5 74 59.5 82" fill="none" stroke="#ef5b3a" stroke-width="3.4" stroke-linecap="round"/>
 </svg>
