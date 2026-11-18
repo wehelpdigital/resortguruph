@@ -1,0 +1,1536 @@
+{
+    "1001": {
+        "subject": "Arcovia",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1002": {
+        "subject": "At Megamall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1003": {
+        "subject": "Ayala",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1004": {
+        "subject": "Ayala Feliz",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1005": {
+        "subject": "Ayala Malls",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1006": {
+        "subject": "Ayala Triangle",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1007": {
+        "subject": "Balanga Bataan",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/nueva-ecija-pantabangan-lake.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1008": {
+        "subject": "Baliuag Bulacan",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1009": {
+        "subject": "Bataan",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/nueva-ecija-pantabangan-lake.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1010": {
+        "subject": "Bicutan",
+        "srcs": [
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot"
+        ],
+        "current_file": "storage/app/public/rg-media/spots/manila-intramuros.jpg"
+    },
+    "1011": {
+        "subject": "Blog: ATM Fees in the Philippines: A Traveler Cash Strategy",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1012": {
+        "subject": "Blog: Aliwagwag Falls 84-Tier Trek: A Calm Read on the Cateel Cascade",
+        "srcs": [
+            "/storage/rg-media/destinations/davao-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/davao-city-1.jpg"
+    },
+    "1013": {
+        "subject": "Blog: Atok, Benguet Flower Farm Route: A Calm DIY Day from Baguio",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1014": {
+        "subject": "Blog: Baguio to Sagada by Bus: The GL Trans Honest Guide",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1015": {
+        "subject": "Blog: Baler Shoulder Season Surf: A Slow Two-Day Plan from Manila",
+        "srcs": [
+            "/storage/rg-media/destinations/dingalan-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/dingalan-1.jpg"
+    },
+    "1016": {
+        "subject": "Blog: Banaue and Batad: A Three-Day DIY Plan for the Rice Terraces",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1017": {
+        "subject": "Blog: Bangui Windmills and the Northern Ilocos Loop: A One-Day Plan",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1018": {
+        "subject": "Blog: Best Surfing Spots in the Philippines: A Calm Roundup",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1019": {
+        "subject": "Blog: Budget Backpacking from Manila to Mindanao: A 21-Day Route",
+        "srcs": [
+            "/storage/rg-media/destinations/davao-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/davao-city-1.jpg"
+    },
+    "1020": {
+        "subject": "Blog: Camp John Hay: A Calm Baguio Weekend on the Pine Side",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1021": {
+        "subject": "Blog: Coron Town Proper: What to Do on a Calm Non-Boat Day",
+        "srcs": [
+            "/storage/rg-media/destinations/el-nido-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "home_category_accordion",
+            "home_badge_explainer",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/el-nido-1.jpg"
+    },
+    "1022": {
+        "subject": "Blog: Cuyo Palawan: The Slow Island Trip Most Travelers Never Plan",
+        "srcs": [
+            "/storage/rg-media/destinations/el-nido-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "home_category_accordion",
+            "home_badge_explainer",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/el-nido-1.jpg"
+    },
+    "1023": {
+        "subject": "Blog: GCash, PayMaya, Cash vs Card in the Philippines for Tourists",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1024": {
+        "subject": "Blog: Gluten-Free Philippines: A Celiac Read by Destination",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1025": {
+        "subject": "Blog: Haight's Place Atok: A Calm Read on the Philippine Sakura",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1026": {
+        "subject": "Blog: Halal Philippines: A Muslim Traveler Read by Region",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1027": {
+        "subject": "Blog: Honda Bay Island Hopping: The Calm Puerto Princesa Day",
+        "srcs": [
+            "/storage/rg-media/destinations/el-nido-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "home_category_accordion",
+            "home_badge_explainer",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/el-nido-1.jpg"
+    },
+    "1028": {
+        "subject": "Blog: Katunggan Eco Park Camiguin: A Calm Mangrove Walk",
+        "srcs": [
+            "/storage/rg-media/destinations/siquijor-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/siquijor-1.jpg"
+    },
+    "1029": {
+        "subject": "Blog: LGBT-Friendly Philippines: A Couple Destinations Read",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1030": {
+        "subject": "Blog: La Trinidad Strawberry Farm: A Slow Pick-Your-Own Morning from Baguio",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1031": {
+        "subject": "Blog: Loboc Bohol: An Off-Cruise Quiet Morning in Town",
+        "srcs": [
+            "/storage/rg-media/destinations/panglao-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/panglao-1.jpg"
+    },
+    "1032": {
+        "subject": "Blog: Loon Bohol: The Reconstructed Church and Dolphin Watch Coast",
+        "srcs": [
+            "/storage/rg-media/destinations/panglao-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/panglao-1.jpg"
+    },
+    "1033": {
+        "subject": "Blog: Malapascua Thresher Shark Dive: A Calm Read on the Monad Shoal",
+        "srcs": [
+            "/storage/rg-media/destinations/cebu-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/cebu-city-1.jpg"
+    },
+    "1034": {
+        "subject": "Blog: Marlboro Country Sagada: A Calm Sunrise Hill Loop",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1035": {
+        "subject": "Blog: Moalboal Seven Things Beyond the Sardines: A Calm Read",
+        "srcs": [
+            "/storage/rg-media/destinations/cebu-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/cebu-city-1.jpg"
+    },
+    "1036": {
+        "subject": "Blog: Mt Kalugong Eco Park, La Trinidad: A Slow Morning Read",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1037": {
+        "subject": "Blog: Mt Timbak, Atok: A Calm Day Hike and Camping Read",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1038": {
+        "subject": "Blog: Mt. Pinatubo via Sapang Uwak, Porac: The Aeta-Guided Trail Route",
+        "srcs": [
+            "/storage/rg-media/destinations/pampanga-province-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/pampanga-province-1.jpg"
+    },
+    "1039": {
+        "subject": "Blog: Mt. Pulag for Beginners: A Two-Day DIY via Ambangeg Trail",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1040": {
+        "subject": "Blog: Northern Blossom Farm Atok: A Quiet Cold Morning Read",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1041": {
+        "subject": "Blog: Oslob Whale Shark Watching: An Honest Read",
+        "srcs": [
+            "/storage/rg-media/destinations/cebu-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/cebu-city-1.jpg"
+    },
+    "1042": {
+        "subject": "Blog: Pagudpud and Saud Beach: A Slow Two-Night Plan",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1043": {
+        "subject": "Blog: Pamuayan Waterfall, Port Barton: A Quiet Trail Day",
+        "srcs": [
+            "/storage/rg-media/destinations/el-nido-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "home_category_accordion",
+            "home_badge_explainer",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/el-nido-1.jpg"
+    },
+    "1044": {
+        "subject": "Blog: Philippine Festival Calendar by Month: A Year of Fiestas",
+        "srcs": [
+            "/storage/rg-media/destinations/cebu-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/cebu-city-1.jpg"
+    },
+    "1045": {
+        "subject": "Blog: Philippine Visa and Overstay: An Honest Immigration Guide",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1046": {
+        "subject": "Blog: Port Barton Three-Island Slow Weekend, Palawan",
+        "srcs": [
+            "/storage/rg-media/destinations/el-nido-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "home_category_accordion",
+            "home_badge_explainer",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/el-nido-1.jpg"
+    },
+    "1047": {
+        "subject": "Blog: Puerto Princesa Underground River: A DIY Guide for First Timers",
+        "srcs": [
+            "/storage/rg-media/destinations/el-nido-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "home_category_accordion",
+            "home_badge_explainer",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/el-nido-1.jpg"
+    },
+    "1048": {
+        "subject": "Blog: Sagada Travel Tips: A Calm First-Timer Read",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1049": {
+        "subject": "Blog: Sagada or Baguio: Choosing the Cordillera Mountain Town",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1050": {
+        "subject": "Blog: Sevilla Bohol: The Bamboo Hanging Bridge Half-Day",
+        "srcs": [
+            "/storage/rg-media/destinations/panglao-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/panglao-1.jpg"
+    },
+    "1051": {
+        "subject": "Blog: Solo Travel Northern Philippines: A Slow Two-Week Read",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1052": {
+        "subject": "Blog: Sunken Cemetery Camiguin: A Calm Sunset Crossing Read",
+        "srcs": [
+            "/storage/rg-media/destinations/siquijor-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/siquijor-1.jpg"
+    },
+    "1053": {
+        "subject": "Blog: Tacloban and Kalanggaman Island: A Leyte Day-Trip Combo",
+        "srcs": [
+            "/storage/rg-media/destinations/cebu-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/cebu-city-1.jpg"
+    },
+    "1054": {
+        "subject": "Blog: Tinuy-an Falls in Surigao del Sur: The Wide Curtain of Bislig",
+        "srcs": [
+            "/storage/rg-media/destinations/davao-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/davao-city-1.jpg"
+    },
+    "1055": {
+        "subject": "Blog: Tuburan and Bugtong Bato Seven Falls Trek: A Tibiao Climb",
+        "srcs": [
+            "/storage/rg-media/destinations/iloilo-city-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/iloilo-city-1.jpg"
+    },
+    "1056": {
+        "subject": "Blog: Ube Halaya and Peanut Kisses: A Bohol Sweet Run",
+        "srcs": [
+            "/storage/rg-media/destinations/panglao-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/panglao-1.jpg"
+    },
+    "1057": {
+        "subject": "Blog: Vegan and Vegetarian Philippines: A Destination-by-Destination Read",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1058": {
+        "subject": "Blog: Vigan in Two Days: A Calesa Ride, the Cobblestones, and Ilocano Plates",
+        "srcs": [
+            "/storage/rg-media/destinations/la-union-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "image",
+            "attractions",
+            "tourist_spot",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/la-union-1.jpg"
+    },
+    "1059": {
+        "subject": "Blog: eSim Philippines: Data Plans for Digital Nomads",
+        "srcs": [
+            "/storage/rg-media/destinations/manila-1.jpg"
+        ],
+        "kinds": [
+            "hero_slider",
+            "blog_cover"
+        ],
+        "current_file": "storage/app/public/rg-media/destinations/manila-1.jpg"
+    },
+    "1060": {
+        "subject": "Busay",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1061": {
+        "subject": "Cabanatuan City",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/nueva-ecija-pantabangan-lake.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1062": {
+        "subject": "Caloocan",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1063": {
+        "subject": "Century Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1064": {
+        "subject": "City of Dreams",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1065": {
+        "subject": "Conrad Hotel",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1066": {
+        "subject": "Dasma",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1067": {
+        "subject": "Double Dragon",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1068": {
+        "subject": "Dumaguete",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1069": {
+        "subject": "Eton Centris",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1070": {
+        "subject": "Ever Gotesco Commonwealth",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1071": {
+        "subject": "Evia",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1072": {
+        "subject": "Evia Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1073": {
+        "subject": "Feliz",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1074": {
+        "subject": "Fisher Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1075": {
+        "subject": "Fishermall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1076": {
+        "subject": "Fishermall Qc",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1077": {
+        "subject": "Friendship",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1078": {
+        "subject": "Grand Central",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1079": {
+        "subject": "Greenfield",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1080": {
+        "subject": "Iba Zambales",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/nueva-ecija-pantabangan-lake.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1081": {
+        "subject": "Kabankalan City",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1082": {
+        "subject": "Kalibo",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1083": {
+        "subject": "Lapu Lapu",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1084": {
+        "subject": "Lapu Lapu City",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1085": {
+        "subject": "Lucena",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1086": {
+        "subject": "Lucena City",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1087": {
+        "subject": "Lucky Chinatown",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1088": {
+        "subject": "Lucky Chinatown Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1089": {
+        "subject": "Macapagal",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1090": {
+        "subject": "Marquee Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1091": {
+        "subject": "Mitsukoshi Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1092": {
+        "subject": "Moa Seaside",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1093": {
+        "subject": "Naia Terminal 1",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1094": {
+        "subject": "Naia Terminal 3",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1095": {
+        "subject": "Naic",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1096": {
+        "subject": "Nasugbu",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1097": {
+        "subject": "Near Manaoag Church",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1098": {
+        "subject": "Near Moa",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1099": {
+        "subject": "Nueva Ecija",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1100": {
+        "subject": "Ocean Park",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1101": {
+        "subject": "One Ayala Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1102": {
+        "subject": "Opus",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1103": {
+        "subject": "Parqal",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1104": {
+        "subject": "Parqal Mall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1105": {
+        "subject": "Pitx",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1106": {
+        "subject": "Quezon",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1107": {
+        "subject": "Rizal",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1108": {
+        "subject": "Rob Magnolia",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1109": {
+        "subject": "Robinsons Metro East",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1110": {
+        "subject": "Roxas City",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1111": {
+        "subject": "Sm",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1112": {
+        "subject": "Sm Bacoor",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1113": {
+        "subject": "Sm Bicutan",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1114": {
+        "subject": "Sm Dasma",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1115": {
+        "subject": "Sm Grand Central",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1116": {
+        "subject": "Sm San Lazaro",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1117": {
+        "subject": "Sm Southmall",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1118": {
+        "subject": "Sm Sta Mesa",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1119": {
+        "subject": "Sta Maria Bulacan",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1120": {
+        "subject": "Taft",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1121": {
+        "subject": "Tanay Rizal",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1122": {
+        "subject": "Tarlac City",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1123": {
+        "subject": "Taytay",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1124": {
+        "subject": "Taytay Rizal",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1125": {
+        "subject": "Terminal 3",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1126": {
+        "subject": "Urdaneta",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1127": {
+        "subject": "Valencia",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1128": {
+        "subject": "Venice",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1129": {
+        "subject": "Venice Grand Canal",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1130": {
+        "subject": "West Gate",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1131": {
+        "subject": "Westgate",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg",
+            "/storage/rg-media/spots/manila-intramuros.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    },
+    "1132": {
+        "subject": "Zamboanga City",
+        "srcs": [
+            "/storage/rg-media/food-locations/generic.jpg"
+        ],
+        "kinds": [
+            "hero_slider"
+        ],
+        "current_file": "storage/app/public/rg-media/food-locations/generic.jpg"
+    }
+}
