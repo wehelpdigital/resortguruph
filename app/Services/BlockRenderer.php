@@ -140,6 +140,8 @@ class BlockRenderer
             'home_unified_search' => $this->homeUnifiedSearch($p, $context),
             'home_press_logos' => $this->homePressLogos($p, $context),
             'home_alt_features' => $this->homeAltFeatures($p, $context),
+            'home_trust_strip' => $this->homeTrustStrip($p, $context),
+            'home_top_destinations' => $this->homeTopDestinations($p, $context),
             'home_badge_explainer' => $this->homeBadgeExplainer($p, $context),
             'home_partner_perks' => $this->homePartnerPerks($p, $context),
             'home_values_grid' => $this->homeValuesGrid($p, $context),
@@ -4632,7 +4634,7 @@ class BlockRenderer
         if ($subhead !== '') $out .= '<p class="text-slate-600 mb-8">' . $subhead . '</p>';
         // Framed article cards, matching the /blog index card treatment
         // (border + shadow, hover lift, cover with fallback, "Read article").
-        $out .= '<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">';
+        $out .= '<div class="rg-swipe grid gap-6 sm:grid-cols-2 lg:grid-cols-3">';
         foreach ($itemArr as $post) {
             $pArr = $this->toArrayShapeSimple($post);
             $title = $this->e((string) ($pArr['title'] ?? ''));
@@ -5925,6 +5927,133 @@ class BlockRenderer
      * Payload: eyebrow, heading, subhead, features[] of
      *          { eyebrow, heading, body, image, image_alt, accent }
      */
+    /**
+     * home_trust_strip: a floating stats card that overlaps the bottom of
+     * the hero. Counts are live (cached 10 min). Payload: items[] of
+     * {value, label, icon} to override; empty uses the defaults below.
+     */
+    private function homeTrustStrip(array $p, array $context): string
+    {
+        $stats = \Illuminate\Support\Facades\Cache::remember('home_trust_stats_v1', 600, function () {
+            $count = function (string $t, ?callable $w = null): int {
+                if (!\Illuminate\Support\Facades\Schema::hasTable($t)) return 0;
+                $q = \Illuminate\Support\Facades\DB::table($t);
+                if ($w) $w($q);
+                return (int) $q->count();
+            };
+            return [
+                'guides' => $count('rg_seo_pages', fn ($q) => $q->where('is_published', 1)),
+                'reviews' => $count('rg_destination_reviews'),
+                'spots' => $count('rg_tourist_spots'),
+            ];
+        });
+        $fmt = fn ($n) => $n >= 1000 ? number_format(floor($n / 100) * 100) . '+' : number_format($n);
+        $icons = [
+            'map' => '<path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/>',
+            'star' => '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>',
+            'pin' => '<path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/>',
+            'gift' => '<path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
+        ];
+        $items = is_array($p['items'] ?? null) && $p['items'] ? $p['items'] : [
+            ['value' => $fmt($stats['guides']), 'label' => 'destination and food guides', 'icon' => 'map'],
+            ['value' => $fmt($stats['reviews']), 'label' => 'traveler reviews', 'icon' => 'star'],
+            ['value' => $fmt($stats['spots']), 'label' => 'tourist spots mapped', 'icon' => 'pin'],
+            ['value' => 'Free', 'label' => 'to plan, no sign-up needed', 'icon' => 'gift'],
+        ];
+        $out = '<section class="rg-trust relative z-20 -mt-10 md:-mt-14 mb-2"><div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">'
+            . '<div class="rg-trust__card grid grid-cols-2 md:grid-cols-4">';
+        foreach ($items as $it) {
+            $it = $this->toArrayShapeSimple($it);
+            $ico = $icons[$it['icon'] ?? 'map'] ?? $icons['map'];
+            $out .= '<div class="rg-trust__item"><span class="rg-trust__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $ico . '</svg></span>'
+                . '<span><strong class="rg-trust__val">' . $this->e((string) ($it['value'] ?? '')) . '</strong><span class="rg-trust__lbl">' . $this->e((string) ($it['label'] ?? '')) . '</span></span></div>';
+        }
+        $out .= '</div></div><style>'
+            . '.rg-trust__card{background:#fff;border-radius:1.25rem;box-shadow:0 24px 50px -24px rgba(11,27,43,.35),0 0 0 1px rgba(15,23,42,.05);padding:.4rem}'
+            . '.rg-trust__item{display:flex;align-items:center;gap:.8rem;padding:1rem 1.1rem}'
+            . '@media(min-width:768px){.rg-trust__item+.rg-trust__item{border-left:1px solid #eef2f6}}'
+            . '@media(max-width:767px){.rg-trust__item:nth-child(n+3){border-top:1px solid #eef2f6}.rg-trust__item:nth-child(even){border-left:1px solid #eef2f6}}'
+            . '.rg-trust__ico{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:2.6rem;height:2.6rem;border-radius:.85rem;background:#eef6fb;color:#13669c}'
+            . '.rg-trust__item:nth-child(2) .rg-trust__ico{background:#fff9eb;color:#c26a06}.rg-trust__item:nth-child(3) .rg-trust__ico{background:#e7f6ef;color:#047857}.rg-trust__item:nth-child(4) .rg-trust__ico{background:#fff3ef;color:#d9432a}'
+            . '.rg-trust__ico svg{width:1.25rem;height:1.25rem}'
+            . '.rg-trust__val{display:block;font-family:"Plus Jakarta Sans",Inter,sans-serif;font-weight:800;font-size:1.35rem;line-height:1.1;color:#0b1b2b;letter-spacing:-.02em}'
+            . '.rg-trust__lbl{display:block;font-size:.8rem;color:#64748b;line-height:1.3;margin-top:.15rem}'
+            . '@media(max-width:400px){.rg-trust__item{padding:.85rem .7rem;gap:.55rem}.rg-trust__val{font-size:1.15rem}.rg-trust__ico{width:2.2rem;height:2.2rem}}'
+            . '</style></section>';
+        return $out;
+    }
+
+    /**
+     * home_top_destinations: big photo cards for the headline regions,
+     * linking to each destination cluster page with a live guide count.
+     * Payload: eyebrow, heading (supports *accent*), subhead, cta_label,
+     * items[] of {cluster, name?, tagline?, image?}.
+     */
+    private function homeTopDestinations(array $p, array $context): string
+    {
+        $meta = \App\Http\Controllers\DestinationsController::clusterMetadata();
+        $counts = \Illuminate\Support\Facades\Cache::remember('home_top_dest_counts_v1', 600, function () {
+            return \App\Models\RgKeyword::whereHas('seoPage', fn ($q) => $q->where('is_published', true))->get(['cluster_tag', 'phrase'])
+                ->groupBy(fn ($k) => \App\Support\RegionResolver::resolve($k->cluster_tag, $k->phrase))->map->count()->all();
+        });
+        $items = is_array($p['items'] ?? null) && $p['items'] ? $p['items'] : [
+            ['cluster' => 'palawan', 'tagline' => 'Limestone lagoons, island hopping and some of the clearest water in the country.'],
+            ['cluster' => 'visayas'], ['cluster' => 'north-luzon'], ['cluster' => 'bicol'],
+            ['cluster' => 'batangas'], ['cluster' => 'mindanao'], ['cluster' => 'rizal'], ['cluster' => 'metro-manila'],
+        ];
+        $eyebrow = $this->e(trim((string) ($p['eyebrow'] ?? 'Where to go')));
+        $heading = $this->headingFx((string) ($p['heading'] ?? 'Start With a *Region*'));
+        $subhead = $this->e(trim((string) ($p['subhead'] ?? 'Pick the part of the Philippines that fits your trip, then open local guides, tourist spots and places to stay.')));
+        $ctaLabel = $this->e((string) ($p['cta_label'] ?? 'See all destinations'));
+        $arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>';
+
+        $out = '<section class="rg-topd py-16 md:py-24"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">'
+            . '<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 md:mb-10"><div class="max-w-2xl">'
+            . ($eyebrow !== '' ? '<p class="text-[11px] font-bold uppercase tracking-[0.22em] text-brand-600 mb-2">' . $eyebrow . '</p>' : '')
+            . '<h2 class="text-3xl md:text-[2.6rem] font-extrabold text-slate-900 leading-tight">' . $heading . '</h2>'
+            . ($subhead !== '' ? '<p class="mt-3 text-base md:text-lg text-slate-600">' . $subhead . '</p>' : '')
+            . '</div><a href="' . $this->e(route('destinations.index')) . '" class="rg-btn rg-btn--outline shrink-0 self-start md:self-auto">' . $ctaLabel . $arrow . '</a></div>'
+            . '<div class="rg-topd__grid">';
+        foreach (array_values($items) as $i => $it) {
+            $it = $this->toArrayShapeSimple($it);
+            $slug = (string) ($it['cluster'] ?? '');
+            if ($slug === '' || !isset($meta[$slug])) continue;
+            $name = $this->e((string) ($it['name'] ?? $meta[$slug]['name']));
+            $tag = $this->e((string) ($it['tagline'] ?? ($meta[$slug]['tagline'] ?? '')));
+            $img = (string) ($it['image'] ?? '');
+            $img = $img !== '' ? ((str_starts_with($img, 'http') || str_starts_with($img, '/')) ? $img : '/storage/' . ltrim($img, '/')) : '/storage/rg-media/landmarks/' . $slug . '.jpg';
+            $n = (int) ($counts[$slug] ?? 0);
+            $out .= '<a href="' . $this->e(route('destinations.cluster', $slug)) . '" class="rg-topd__card' . ($i === 0 ? ' rg-topd__card--lg' : '') . '">'
+                . '<img src="' . $this->e($img) . '" alt="' . $name . ', Philippines" loading="lazy">'
+                . '<span class="rg-topd__shade"></span><span class="rg-topd__body">'
+                . ($n > 0 ? '<span class="rg-topd__pill">' . number_format($n) . ' guide' . ($n === 1 ? '' : 's') . '</span>' : '')
+                . '<span class="rg-topd__name">' . $name . '</span>'
+                . ($tag !== '' ? '<span class="rg-topd__tag">' . $tag . '</span>' : '')
+                . '<span class="rg-topd__go">Explore ' . $arrow . '</span>'
+                . '</span></a>';
+        }
+        $out .= '</div></div><style>'
+            . '.rg-topd__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}'
+            . '@media(min-width:768px){.rg-topd__grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:15rem;gap:1rem}.rg-topd__card--lg{grid-column:span 2;grid-row:span 2}}'
+            . '.rg-topd__card{position:relative;display:block;overflow:hidden;border-radius:1.25rem;aspect-ratio:3/4;background:#0c2438;isolation:isolate}'
+            . '@media(min-width:768px){.rg-topd__card{aspect-ratio:auto}}'
+            . '@media(max-width:767px){.rg-topd__card--lg{grid-column:span 2;aspect-ratio:16/11}}'
+            . '.rg-topd__card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.22,1,.36,1)}'
+            . '.rg-topd__card:hover img{transform:scale(1.06)}'
+            . '.rg-topd__shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,18,29,0) 35%,rgba(7,18,29,.82) 100%)}'
+            . '.rg-topd__body{position:absolute;left:0;right:0;bottom:0;padding:1rem 1.05rem 1.1rem;color:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:.3rem}'
+            . '@media(min-width:768px){.rg-topd__body{padding:1.25rem 1.35rem 1.4rem}}'
+            . '.rg-topd__pill{font-size:.68rem;font-weight:700;letter-spacing:.04em;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:.18rem .55rem;border-radius:999px}'
+            . '.rg-topd__name{font-family:"Plus Jakarta Sans",Inter,sans-serif;font-weight:800;font-size:1.15rem;line-height:1.15;letter-spacing:-.015em;text-shadow:0 2px 12px rgba(0,0,0,.35)}'
+            . '.rg-topd__card--lg .rg-topd__name{font-size:1.6rem}@media(min-width:768px){.rg-topd__card--lg .rg-topd__name{font-size:2.1rem}}'
+            . '.rg-topd__tag{display:none;font-size:.88rem;line-height:1.45;color:rgba(255,255,255,.88);max-width:34rem}'
+            . '.rg-topd__card--lg .rg-topd__tag{display:block}@media(min-width:1024px){.rg-topd__card:not(.rg-topd__card--lg) .rg-topd__tag{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.8rem}}'
+            . '.rg-topd__go{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:700;color:#ffd166;margin-top:.15rem}'
+            . '.rg-topd__go svg{width:.95rem;height:.95rem;transition:transform .2s ease}.rg-topd__card:hover .rg-topd__go svg{transform:translateX(3px)}'
+            . '</style></section>';
+        return $out;
+    }
+
     private function homeAltFeatures(array $p, array $context): string
     {
         if (isset($p['features']) && is_string($p['features'])) {
@@ -5955,7 +6084,8 @@ class BlockRenderer
             if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
             $out .= '</div>';
         }
-        $out .= '<div class="rg-feat">';
+        $featGrid = ($p['layout'] ?? '') === 'grid';
+        $out .= '<div class="rg-feat' . ($featGrid ? ' rg-feat--grid' : '') . '">';
         $sliderMounts = '';
         foreach ($features as $idx => $f) {
             $fa = $this->toArrayShapeSimple($f);
@@ -6032,6 +6162,16 @@ class BlockRenderer
             . '@media(min-width:768px){.rg-feat__title{font-size:2rem}}'
             . '.rg-feat__body{font-size:1rem;line-height:1.7;color:#475569;margin:0}'
             . '@media(prefers-reduced-motion:reduce){.rg-feat__media img{transition:none}}'
+            // grid layout: compact cards (3 cols desktop, swipe carousel on phones)
+            . '.rg-feat--grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}'
+            . '@media(min-width:1024px){.rg-feat--grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}}'
+            . '.rg-feat--grid .rg-feat__row{display:flex;flex-direction:column;gap:0;align-items:stretch;background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;overflow:hidden;box-shadow:0 1px 2px rgba(11,27,43,.05);transition:transform .25s ease,box-shadow .25s ease}'
+            . '.rg-feat--grid .rg-feat__row:hover{transform:translateY(-4px);box-shadow:0 18px 36px -18px rgba(11,27,43,.35)}'
+            . '.rg-feat--grid .rg-feat__row .rg-feat__media{order:0!important;aspect-ratio:16/10;border-radius:0;box-shadow:none}'
+            . '.rg-feat--grid .rg-feat__row .rg-feat__content{padding:1.15rem 1.3rem 1.4rem;text-align:left!important}'
+            . '.rg-feat--grid .rg-feat__title{font-size:1.15rem;margin-bottom:.45rem}'
+            . '.rg-feat--grid .rg-feat__body{font-size:.93rem;line-height:1.6}'
+            . '@media(max-width:639px){.rg-feat--grid{display:flex;flex-direction:row;overflow-x:auto;scroll-snap-type:x mandatory;gap:.85rem;margin:0 -1rem;padding:0 1rem 1rem;scrollbar-width:none}.rg-feat--grid::-webkit-scrollbar{display:none}.rg-feat--grid .rg-feat__row{flex:0 0 84%;scroll-snap-align:start}}'
             . '</style>';
         $out .= $sliderMounts;
         $out .= '</section>';
@@ -6369,7 +6509,7 @@ class BlockRenderer
         if ($heading !== '') $out .= '<h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">' . $heading . '</h2>';
         if ($subhead !== '') $out .= '<p class="text-base md:text-lg text-slate-600">' . $subhead . '</p>';
         $out .= '</div>';
-        $out .= '<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">';
+        $out .= '<div class="rg-swipe grid md:grid-cols-2 lg:grid-cols-3 gap-5">';
         foreach ($reviews as $rev) {
             $rArr = $this->toArrayShapeSimple($rev);
             $text = $this->e((string) ($rArr['text'] ?? ''));

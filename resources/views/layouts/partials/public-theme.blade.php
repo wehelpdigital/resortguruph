@@ -171,6 +171,12 @@
     }
 
     /* ---------- Shared component polish ---------- */
+    /* Card rows that stack into very tall columns on phones become swipe carousels. */
+    @media (max-width: 639px) {
+        .rg-swipe { display: flex !important; flex-direction: row; overflow-x: auto; scroll-snap-type: x mandatory; gap: .85rem !important; margin-left: -1rem; margin-right: -1rem; padding: 0 1rem 1rem; scrollbar-width: none; }
+        .rg-swipe::-webkit-scrollbar { display: none; }
+        .rg-swipe > * { flex: 0 0 84%; scroll-snap-align: start; min-width: 0; }
+    }
     /* Share row: icon-only on phones so it fits one line. */
     @media (max-width: 639px) {
         .rg-share-btn { padding: .5rem; }
