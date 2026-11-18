@@ -195,7 +195,7 @@
 
         </div>
 
-        <div class="space-y-4 lg:sticky lg:top-[calc(var(--rg-header-h,76px)+4.5rem)]">
+        <div class="space-y-5 lg:sticky lg:top-[calc(var(--rg-header-h,76px)+4.5rem)]">
             @if($rating)
                 <div class="gx-score">
                     <div class="gx-score__top">
@@ -222,7 +222,7 @@
                 </div>
             @endif
             @foreach($tips as $t)
-                <aside class="gx-tip !mt-0">
+                <aside class="gx-tip">
                     <span class="gx-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
                     <div><p class="gx-tip__eyebrow">{{ $t['eyebrow'] ?? 'Local tip' }}</p><p class="gx-tip__text">{{ $t['body'] }}</p></div>
                 </aside>
@@ -521,7 +521,7 @@
     .gx-short li { display: flex; gap: .75rem; align-items: flex-start; font-size: 1.12rem; line-height: 1.55; color: #0b1b2b; font-weight: 500; }
     .gx-short svg { width: 1.35rem; height: 1.35rem; padding: .2rem; margin-top: .1rem; border-radius: 999px; background: #fff3ef; color: #ef5b3a; flex-shrink: 0; }
     .gx-short__text { margin-top: 1.25rem; font-size: 1.15rem; line-height: 1.7; color: #1e293b; }
-    .gx-tip { margin-top: 1.25rem; display: flex; gap: .9rem; border-radius: 1.25rem; background: #fbf6ee; border: 1px solid #f0e4cf; padding: 1.1rem 1.25rem; }
+    .gx-tip { margin-top: 0; display: flex; gap: .9rem; border-radius: 1.25rem; background: #fbf6ee; border: 1px solid #f0e4cf; padding: 1.1rem 1.25rem; }
     .gx-tip__ico { width: 2.5rem; height: 2.5rem; border-radius: .85rem; background: #fff; color: #d97706; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .gx-tip__ico svg { width: 1.2rem; height: 1.2rem; }
     .gx-tip__eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #b45309; }
