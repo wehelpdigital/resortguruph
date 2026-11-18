@@ -13,6 +13,16 @@ class HomeController extends Controller
     public function index(SchemaGenerator $schema)
     {
         $jsonld = $schema->emit($schema->website()) . $schema->emit($schema->organization());
+
+        // Hand-designed homepage (resources/views/home/showcase.blade.php).
+        // Set rg_settings.home_layout = "blocks" to use the block-builder
+        // homepage (rg_static_pages "home") again.
+        if (\App\Models\RgSetting::get('home_layout', 'showcase') !== 'blocks') {
+            return view('home.showcase', [
+                'jsonld' => $jsonld,
+                'data' => app(\App\Services\HomeShowcase::class)->data(),
+            ]);
+        }
         $featuredKeywords = RgKeyword::query()
             ->where('category', 'resort')
             ->whereHas('seoPage', fn($q) => $q->where('is_published', true))
