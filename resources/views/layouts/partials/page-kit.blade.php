@@ -360,15 +360,45 @@
     .gh-history__source { margin-top: 1.1rem; padding-top: .9rem; border-top: 1px solid #efe3cc; font-size: .8rem; color: #8a6d3b !important; font-style: italic; }
     .gh-history__source a { color: inherit; text-decoration: underline; }
 
-    /* plain text sections, headings and images in the full guide */
-    .pk-guide section.my-6 { margin: 2.5rem 0; }
-    .pk-guide section.my-6 > h2 { margin-bottom: .9rem; }
-    .pk-guide section.my-6 > h2::before { content: ""; display: block; width: 2.5rem; height: 4px; border-radius: 999px; background: linear-gradient(90deg, #ef5b3a, #ffc74a); margin-bottom: .85rem; }
+    /* cards without a photo of their own: a designed panel (GuideHtml::photo) */
+    .gh-ph { display: flex !important; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: .65rem; padding: 1.25rem 1.35rem; color: #fff; isolation: isolate; text-decoration: none !important; }
+    .gh-ph::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: radial-gradient(rgba(255, 255, 255, .16) 1px, transparent 1.5px); background-size: 18px 18px; -webkit-mask-image: linear-gradient(160deg, #000 15%, transparent 80%); mask-image: linear-gradient(160deg, #000 15%, transparent 80%); }
+    .gh-ph::after { content: ""; position: absolute; right: -18%; top: -30%; width: 70%; aspect-ratio: 1; border-radius: 999px; z-index: -1; background: radial-gradient(circle, rgba(255, 255, 255, .22), transparent 65%); }
+    .gh-ph--0 { background: linear-gradient(140deg, #0b3f66 0%, #0f5788 45%, #0e9aa7 100%) !important; }
+    .gh-ph--1 { background: linear-gradient(140deg, #8a2c12 0%, #e2542f 55%, #f5a524 100%) !important; }
+    .gh-ph--2 { background: linear-gradient(140deg, #0f3f3b 0%, #0f766e 50%, #5fa82a 100%) !important; }
+    .gh-ph--3 { background: linear-gradient(140deg, #16163f 0%, #24479a 55%, #3fb5e8 100%) !important; }
+    .gh-ph__icon { width: 2.6rem; height: 2.6rem; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, .16); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); }
+    .gh-ph__icon svg { width: 1.3rem; height: 1.3rem; }
+    .gh-ph__label { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: 1.3rem; line-height: 1.18; letter-spacing: -0.02em; max-width: 92%; text-wrap: balance; text-shadow: 0 2px 14px rgba(0, 0, 0, .25); }
+    .gh-spot--lead .gh-ph { padding: 1.75rem; min-height: 15rem; }
+    .gh-spot--lead .gh-ph__label { font-size: 1.85rem; }
+    .gh-fest__img.gh-ph { padding-bottom: 4rem; min-height: 12rem; }
+    .gh-read__img.gh-ph, .gh-food__img.gh-ph { align-items: center; justify-content: center; }
+    .gh-food__img.gh-ph .gh-ph__label { display: none; }
+    .gh-note--solo { grid-template-columns: minmax(0, 1fr) !important; background: radial-gradient(120% 140% at 100% 0%, #1d3b5c 0%, #0b1b2b 55%) !important; }
+    .gh-note--solo .gh-note__body { padding: 1.75rem 2rem; }
+    .gh-note--solo .gh-p { font-size: 1.12rem; }
+
+    /* plain text sections, headings and images in the full guide: numbered chapters */
+    .pk-guide { counter-reset: gh-ch; }
+    .pk-guide section.my-6 { margin: 2.75rem 0; }
+    .pk-guide section.my-6 > h2, .pk-guide h2.rg-h { margin-bottom: .9rem; counter-increment: gh-ch; }
+    .pk-guide section.my-6 > h2::before, .pk-guide h2.rg-h::before { content: counter(gh-ch, decimal-leading-zero); display: block; width: max-content; padding-right: 3.25rem; margin-bottom: .8rem; font: 800 .8rem/1 "Plus Jakarta Sans", Inter, sans-serif; letter-spacing: .06em; color: #ef5b3a; background: linear-gradient(90deg, #ef5b3a, #ffc74a) no-repeat right center / 2.4rem 3px; }
+    .pk-guide h2.rg-h { margin-top: 3.5rem !important; }
+    .pk-guide h2.rg-h + section.my-6 { margin-top: .5rem; }
     .pk-guide .prose p { font-size: 1.04rem; line-height: 1.85; }
     .pk-guide .prose strong { color: #0b1b2b; }
-    .pk-guide figure.my-6 { margin: 2.25rem 0; }
-    .pk-guide figure.my-6 img { width: 100%; border-radius: 1.4rem !important; box-shadow: 0 30px 60px -40px rgba(11, 27, 43, .55); }
-    .pk-guide figure.my-6 figcaption { margin-top: .6rem; text-align: center; font-size: .78rem; color: #94a3b8; }
+    .pk-guide figure.my-6 { margin: 2.5rem 0; }
+    .pk-guide figure.my-6 img { display: block; width: 100%; border-radius: 1.4rem !important; box-shadow: 0 30px 60px -40px rgba(11, 27, 43, .55); }
+    .pk-guide figure.rg-fig img { aspect-ratio: 16 / 10; object-fit: cover; max-width: 100%; }
+    .pk-guide figure.my-6 figcaption { margin-top: .7rem; display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .8rem; text-align: left; font-size: .76rem; color: #94a3b8; }
+    .rg-fig__place { display: inline-flex; align-items: center; gap: .4rem; font-weight: 700; font-size: .8rem; color: #334155; }
+    .rg-fig__place::before { content: ""; width: .45rem; height: .45rem; border-radius: 999px; background: #ef5b3a; }
+    .rg-figs { display: grid; gap: 1.1rem; margin: 2.5rem 0; }
+    @media (min-width: 640px) { .rg-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pk-guide .rg-figs figure.rg-fig img { aspect-ratio: 4 / 5; } }
+    @media (min-width: 640px) { .rg-figs > figure:only-child img { aspect-ratio: 16 / 10; } }
+    .pk-guide .rg-figs figure.my-6 { margin: 0; }
 
     /* ---------- auth / form pages ---------- */
     .pk-auth { min-height: calc(100vh - var(--rg-header-h, 76px)); display: grid; }

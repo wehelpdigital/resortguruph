@@ -70,4 +70,17 @@ class PageKit
         while (($top = array_pop($stack)) !== null) $out .= '</' . $top . '>';
         return $out;
     }
+
+    /**
+     * Two or more image blocks in a row become one photo grid instead of a
+     * stack of full-width pictures (BlockRenderer::image marks them .rg-fig).
+     */
+    public static function figures(string $html): string
+    {
+        return preg_replace_callback(
+            '~(?:<figure class="rg-fig[^"]*">.*?</figure>\s*){2,}~s',
+            fn ($m) => '<div class="rg-figs not-prose">' . $m[0] . '</div>',
+            $html
+        ) ?? $html;
+    }
 }

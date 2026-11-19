@@ -254,7 +254,7 @@ class BlockRenderer
         $level = in_array($p['level'] ?? 'h2', ['h2', 'h3', 'h4'], true) ? $p['level'] : 'h2';
         $sizes = ['h2' => 'text-3xl md:text-4xl', 'h3' => 'text-2xl md:text-3xl', 'h4' => 'text-xl md:text-2xl'];
         $size = $sizes[$level] ?? 'text-2xl';
-        return "<$level class=\"$size font-bold text-slate-900 mt-2 mb-3\">" . $this->e($p['text'] ?? '') . "</$level>";
+        return "<$level class=\"rg-h $size font-bold text-slate-900 mt-2 mb-3\">" . $this->e($p['text'] ?? '') . "</$level>";
     }
 
     private function richText(array $p): string
@@ -265,12 +265,36 @@ class BlockRenderer
 
     private function image(array $p): string
     {
-        if (empty($p['src'])) return '';
+        $src = trim((string) ($p['src'] ?? ''));
+        if ($src === '') return '';
+        // a guide page shows each photo once (GuideHtml::startPage); repeats and
+        // placeholder art are dropped there, the live editor still sees them
+        if (!\App\Support\GuideHtml::claim($src) && (\App\Support\GuideHtml::tracking() || !\App\Support\GuideHtml::isPlaceholder($src))) return '';
         $align = $p['align'] ?? 'center';
         $alignClass = ['left' => 'mr-auto', 'right' => 'ml-auto', 'center' => 'mx-auto'][$align] ?? 'mx-auto';
         $alt = $this->e($p['alt'] ?? '');
-        $caption = !empty($p['caption']) ? '<figcaption class="text-sm text-slate-500 mt-2 text-center">' . $this->e($p['caption']) . '</figcaption>' : '';
-        return '<figure class="my-6"><img src="' . $this->e($p['src']) . '" alt="' . $alt . '"' . $this->titleAttr($p['title'] ?? '') . ' class="rounded-lg max-w-full ' . $alignClass . '" loading="lazy">' . $caption . '</figure>';
+
+        // Caption: the media library's place name + photo credit. Seeded captions
+        // were Commons file names ("Alfonso,Cavitejf9645"), which stopped matching
+        // once the photos were checked and replaced, so those are not shown.
+        $place = ''; $credit = '';
+        $meta = \App\Support\GuideHtml::mediaMeta($src);
+        $cap = trim((string) ($p['caption'] ?? ''));
+        if ($meta) {
+            $place = trim((string) ($meta['caption'] ?? ''));
+            $credit = trim((string) ($meta['credit'] ?? ''));
+        }
+        if ($cap !== '' && !\App\Support\GuideHtml::looksLikeFileName($cap)) {
+            if (preg_match('~^photo\b|wikimedia|\bcc[ -]?(by|0)~i', $cap)) { if ($credit === '') $credit = $cap; }
+            else $place = $cap;
+        }
+        $caption = ($place !== '' || $credit !== '')
+            ? '<figcaption class="text-sm text-slate-500 mt-2 text-center">'
+                . ($place !== '' ? '<span class="rg-fig__place">' . $this->e($place) . '</span>' : '')
+                . ($credit !== '' ? '<span class="rg-fig__credit">' . $this->e($credit) . '</span>' : '')
+                . '</figcaption>'
+            : '';
+        return '<figure class="rg-fig my-6"><img src="' . $this->e($src) . '" alt="' . $alt . '"' . $this->titleAttr($p['title'] ?? '') . ' class="rounded-lg max-w-full ' . $alignClass . '" loading="lazy">' . $caption . '</figure>';
     }
 
     private function gallery(array $p): string
@@ -1471,7 +1495,7 @@ class BlockRenderer
         // Typography. The body sits INSIDE so paragraphs, lists, blockquotes,
         // and inline links inherit prose's auto-styling — same behaviour
         // the legacy rich_text block had.
-        return '<section class="my-6">' . $headingHtml
+        return '<section class="rg-text my-6">' . $headingHtml
             . '<div class="prose prose-slate max-w-none text-slate-700 leading-relaxed">' . $bodyHtml . '</div>'
             . '</section>';
     }

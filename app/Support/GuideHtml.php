@@ -20,6 +20,84 @@ class GuideHtml
     private static DOMDocument $doc;
     private static DOMXPath $xp;
 
+    /** Photo de-duplication for one page render (see startPage / claim). */
+    private static bool $track = false;
+    private static array $seen = [];
+    private static array $keys = [];
+    private static array $media = [];
+    private static int $tone = 0;
+
+    /**
+     * Start tracking photos for one page: from now on claim() only lets the
+     * first use of each photo through, so a guide never shows the same
+     * picture twice (several spots shared one fallback photo).
+     */
+    public static function startPage(): void
+    {
+        self::$track = true;
+        self::$seen = [];
+        self::$tone = 0;
+    }
+
+    public static function tracking(): bool
+    {
+        return self::$track;
+    }
+
+    /** True when $src is a real photo not yet shown on this page (and records it). */
+    public static function claim(string $src): bool
+    {
+        $src = trim($src);
+        if ($src === '' || self::isPlaceholder($src)) return false;
+        if (!self::$track) return true;
+        $key = self::photoKey($src);
+        if (isset(self::$seen[$key])) return false;
+        return self::$seen[$key] = true;
+    }
+
+    public static function isPlaceholder(string $src): bool
+    {
+        return (bool) preg_match('~placeholder|placehold\.co|/images/brand/~i', $src);
+    }
+
+    /** Same file content = same photo, even under two names. */
+    private static function photoKey(string $src): string
+    {
+        $path = (string) strtok(preg_replace('~^https?://[^/]+~i', '', $src), '?');
+        if (isset(self::$keys[$path])) return self::$keys[$path];
+        $key = $path;
+        if (str_starts_with($path, '/storage/')) {
+            $file = storage_path('app/public/' . rawurldecode(substr($path, 9)));
+            if (is_file($file)) $key = filesize($file) . ':' . md5((string) file_get_contents($file, false, null, 0, 65536));
+        }
+        return self::$keys[$path] = $key;
+    }
+
+    /** Library caption + credit for a /storage photo, when the media library knows it. */
+    public static function mediaMeta(string $src): ?array
+    {
+        $path = (string) strtok(preg_replace('~^(https?://[^/]+)?/storage/~i', '', trim($src)), '?');
+        if ($path === '' || str_starts_with($path, 'http') || str_starts_with($path, '/')) return null;
+        if (!array_key_exists($path, self::$media)) {
+            try {
+                $row = \Illuminate\Support\Facades\DB::table('rg_media')->where('path', $path)->first(['caption', 'credit', 'source_url']);
+            } catch (\Throwable $e) {
+                $row = null;
+            }
+            self::$media[$path] = $row ? (array) $row : null;
+        }
+        return self::$media[$path];
+    }
+
+    /** Caption that reads like a Commons file name rather than a sentence. */
+    public static function looksLikeFileName(string $caption): bool
+    {
+        $c = trim($caption);
+        if ($c === '') return true;
+        if (preg_match('~^(photo|image|credit)\b|wikimedia|\bcc[ -]?(by|0)|public domain~i', $c)) return false;
+        return (bool) preg_match('~\.(jpe?g|png|webp)$|[a-z]{2,}\d{3,}|\d{2,}[a-z]{2,}|\d{4} \d{2} \d{2}|\b(DSC|IMG|DD)[ _]?\d|,\S|jf\d~i', $c);
+    }
+
     public static function transform(string $html): string
     {
         $trim = ltrim($html);
@@ -94,7 +172,7 @@ class GuideHtml
             foreach ($body->childNodes as $c) if ($c instanceof DOMElement && strtolower($c->tagName) === 'a') $links[] = [$c->getAttribute('href'), trim($c->textContent)];
 
             $out .= '<article class="gh-spot' . ($n === 1 ? ' gh-spot--lead' : '') . '">';
-            $out .= self::photo($img, $imgLink, 'gh-spot__img', '<span class="gh-num">' . str_pad((string) $n, 2, '0', STR_PAD_LEFT) . '</span>');
+            $out .= self::photo($img, $imgLink, 'gh-spot__img', '<span class="gh-num">' . str_pad((string) $n, 2, '0', STR_PAD_LEFT) . '</span>', $name);
             $out .= '<div class="gh-spot__body"><h3 class="gh-spot__name">' . self::e($name) . '</h3>';
             if ($score !== '') {
                 $out .= '<p class="gh-rating">' . self::stars((float) $score) . '<strong>' . self::e($score) . '</strong>' . ($count !== '' ? '<span>' . self::e($count) . '</span>' : '') . '</p>';
@@ -132,7 +210,7 @@ class GuideHtml
             }
             $paras = [];
             foreach ($body->childNodes as $c) if ($c instanceof DOMElement && strtolower($c->tagName) === 'p') $paras[] = self::inner($c);
-            $out .= '<article class="gh-fest">' . self::photo($img, '', 'gh-fest__img', $when !== '' ? '<span class="gh-date">' . self::cal() . self::e($when) . '</span>' : '');
+            $out .= '<article class="gh-fest">' . self::photo($img, '', 'gh-fest__img', $when !== '' ? '<span class="gh-date">' . self::cal() . self::e($when) . '</span>' : '', self::text($h3), 'star');
             $out .= '<div class="gh-fest__body"><h3 class="gh-fest__name">' . self::e(self::text($h3)) . '</h3>';
             foreach ($paras as $i => $p) {
                 if ($i === 1 && count($paras) > 2) { $out .= '<details class="gh-more"><summary><span>Read more</span></summary>'; }
@@ -161,8 +239,10 @@ class GuideHtml
         if ($foot) { $src = self::one('.//span', $foot); $via = $src ? self::inner($src) : ''; }
         // the overlay title and alt were the photo's original file name, which no
         // longer matches after the photo fixes: keep the note, drop the file name
-        if ($img) $img->setAttribute('alt', 'Field notes photo');
-        $out = '<aside class="gh-note not-prose">' . self::photo($img, $href, 'gh-note__img', '');
+        $src = $img ? trim($img->getAttribute('src')) : '';
+        $out = $src !== '' && self::claim($src)
+            ? '<aside class="gh-note not-prose"><a class="gh-note__img" href="' . self::e($href ?: '#') . '" target="_blank" rel="noopener nofollow"><img src="' . self::e($src) . '" alt="Field notes photo" loading="lazy"></a>'
+            : '<aside class="gh-note gh-note--solo not-prose">';
         $out .= '<div class="gh-note__body"><p class="gh-eyebrow">Field notes</p>';
         foreach ($paras as $p) $out .= '<p class="gh-p">' . $p . '</p>';
         $out .= '<p class="gh-note__foot">' . ($via !== '' ? '<span>' . $via . '</span>' : '') . ($href !== '' ? '<a href="' . self::e($href) . '" target="_blank" rel="noopener nofollow">Read the full post' . self::arrow() . '</a>' : '') . '</p>';
@@ -173,12 +253,18 @@ class GuideHtml
     {
         $intro = self::first('.//p', $el);
         $out = '<section class="gh-reads not-prose">' . self::head('From the blog', $h2, $intro) . '<div class="gh-reads__grid">';
-        foreach (self::all('.//a[.//h3]', $el) as $a) {
+        $cards = self::all('.//a[.//h3]', $el);
+        $covers = self::blogCovers(array_map(fn ($a) => $a->getAttribute('href'), $cards));
+        foreach ($cards as $a) {
             $img = self::one('.//img', $a);
+            $href = $a->getAttribute('href');
+            $title = self::text(self::one('.//h3', $a));
+            if ($img && isset($covers[$href])) $img->setAttribute('src', $covers[$href]);
+            if ($img && trim($img->getAttribute('alt')) === '') $img->setAttribute('alt', $title);
             $excerpt = self::one('.//p', $a);
-            $out .= '<a class="gh-read" href="' . self::e($a->getAttribute('href')) . '">';
-            $out .= '<span class="gh-read__img">' . ($img ? '<img src="' . self::e($img->getAttribute('src')) . '" alt="' . self::e($img->getAttribute('alt')) . '" loading="lazy">' : '') . '</span>';
-            $out .= '<span class="gh-read__body"><span class="gh-read__kicker">Travel story</span><span class="gh-read__title">' . self::e(self::text(self::one('.//h3', $a))) . '</span>';
+            $out .= '<a class="gh-read" href="' . self::e($href) . '">';
+            $out .= self::photo($img, '', 'gh-read__img', '', '', 'book');
+            $out .= '<span class="gh-read__body"><span class="gh-read__kicker">Travel story</span><span class="gh-read__title">' . self::e($title) . '</span>';
             if ($excerpt) $out .= '<span class="gh-read__text">' . self::e(self::text($excerpt)) . '</span>';
             $out .= '<span class="gh-read__go">Read the story' . self::arrow() . '</span></span></a>';
         }
@@ -208,7 +294,7 @@ class GuideHtml
             $cap = self::text(self::one('.//figcaption', $card));
             $h3 = self::one('.//h3', $card);
             $p = self::one('.//p', $card);
-            $out .= '<article class="gh-food">' . self::photo($img, '', 'gh-food__img', '');
+            $out .= '<article class="gh-food">' . self::photo($img, '', 'gh-food__img', '', self::text($h3), 'food');
             $out .= '<div class="gh-food__body"><h3 class="gh-food__name">' . self::e(self::text($h3)) . '</h3>';
             if ($p) $out .= '<p class="gh-food__text">' . self::inner($p) . '</p>';
             if ($a) $out .= '<a class="gh-food__link" href="' . self::e($a->getAttribute('href')) . '" target="_blank" rel="noopener nofollow">' . self::e($a->getAttribute('title') ?: 'Learn more') . self::arrow() . '</a>';
@@ -235,18 +321,58 @@ class GuideHtml
 
     // ------------------------------------------------------------------ pieces
 
+    /** href => current cover URL for /blog/{slug} links (the seeded markup kept old covers). */
+    private static function blogCovers(array $hrefs): array
+    {
+        $slugs = [];
+        foreach ($hrefs as $h) if (preg_match('~/blog/([a-z0-9-]+)/?$~i', (string) $h, $m)) $slugs[$m[1]] = $h;
+        if (!$slugs) return [];
+        try {
+            $rows = \Illuminate\Support\Facades\DB::table('rg_blog_posts')->whereIn('slug', array_keys($slugs))->whereNotNull('cover_path')->pluck('cover_path', 'slug');
+        } catch (\Throwable $e) {
+            return [];
+        }
+        $out = [];
+        foreach ($rows as $slug => $path) {
+            $path = trim((string) $path);
+            if ($path === '') continue;
+            $out[$slugs[$slug]] = preg_match('~^(https?:)?//|^/~', $path) ? $path : '/storage/' . ltrim($path, '/');
+        }
+        return $out;
+    }
+
     private static function head(string $eyebrow, string $title, string $intro): string
     {
         return '<header class="gh-head"><p class="gh-eyebrow">' . self::e($eyebrow) . '</p><h2 class="gh-title">' . self::e($title) . '</h2>'
             . ($intro !== '' ? '<p class="gh-intro">' . $intro . '</p>' : '') . '</header>';
     }
 
-    private static function photo(?DOMElement $img, string $href, string $cls, string $extra): string
+    private static function photo(?DOMElement $img, string $href, string $cls, string $extra, string $label = '', string $icon = 'pin'): string
     {
-        $inner = $img ? '<img src="' . self::e($img->getAttribute('src')) . '" alt="' . self::e($img->getAttribute('alt')) . '" loading="lazy"' . ($img->getAttribute('referrerpolicy') ? ' referrerpolicy="' . self::e($img->getAttribute('referrerpolicy')) . '"' : '') . '>' : '';
+        $src = $img ? trim($img->getAttribute('src')) : '';
+        if ($src !== '' && self::claim($src)) {
+            $inner = '<img src="' . self::e($src) . '" alt="' . self::e($img->getAttribute('alt')) . '" loading="lazy"' . ($img->getAttribute('referrerpolicy') ? ' referrerpolicy="' . self::e($img->getAttribute('referrerpolicy')) . '"' : '') . '>';
+        } else {
+            // no photo of its own (or the same picture as an earlier card): a designed panel instead
+            $cls .= ' gh-ph gh-ph--' . (self::$tone++ % 4);
+            $inner = '<span class="gh-ph__icon" aria-hidden="true">' . self::icon($icon) . '</span>'
+                . ($label !== '' ? '<span class="gh-ph__label" aria-hidden="true">' . self::e($label) . '</span>' : '');
+            $href = '';
+        }
         return $href !== ''
             ? '<a class="' . $cls . '" href="' . self::e($href) . '" target="_blank" rel="noopener nofollow">' . $inner . $extra . '</a>'
             : '<span class="' . $cls . '">' . $inner . $extra . '</span>';
+    }
+
+    private static function icon(string $name): string
+    {
+        $paths = [
+            'pin' => '<path d="M12 21s-7-5.6-7-11.5A7 7 0 0 1 19 9.5C19 15.4 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/>',
+            'food' => '<path d="M4 3v8a3 3 0 0 0 3 3v7M10 3v8a3 3 0 0 1-3 3M7 3v5"/><path d="M17 21V3c-2.2 1.4-3 4-3 7 0 2 1 3 3 3"/>',
+            'book' => '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+            'star' => '<path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/>',
+        ];
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' . ($paths[$name] ?? $paths['pin']) . '</svg>';
     }
 
     private static function quote(DOMElement $slide): string

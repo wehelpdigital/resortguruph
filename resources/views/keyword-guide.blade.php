@@ -45,7 +45,7 @@
     $placed = ['hero_slider', 'subtitle_intro', 'tldr_card', 'wwww_card', 'editor_rating', 'facts_list', 'quick_facts', 'local_tip',
         'we_recommend_band', 'listing_slot', 'listing_block', 'attractions', 'adventures_band', 'foods_to_try', 'restaurant_recs_band',
         'how_to_get_to', 'map_embed', 'faq', 'reviews_band', 'nearby_destinations', 'related_blogs', 'external_guides', 'tag_pills', 'author'];
-    $streamHtml = \App\Support\PageKit::balance($parts->reject(fn ($p) => in_array($p['type'], $placed, true))->pluck('html')->implode(''));
+    $streamHtml = \App\Support\PageKit::figures(\App\Support\PageKit::balance($parts->reject(fn ($p) => in_array($p['type'], $placed, true))->pluck('html')->implode('')));
 
     $tldr = $first('tldr_card')['payload'] ?? [];
     $wwww = $first('wwww_card')['payload'] ?? [];

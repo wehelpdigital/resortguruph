@@ -243,6 +243,7 @@ class KeywordPageController extends Controller
         // their own sections. The live editor and rg_settings.guide_layout =
         // classic keep the single block stream (keyword-page.blade.php).
         if (!$liveEdit && \App\Models\RgSetting::get('guide_layout', 'designed') !== 'classic') {
+            \App\Support\GuideHtml::startPage(); // each photo shows once per guide
             $parts = $renderer->renderEach($allBlocks->reject(fn ($b) => $b->block_type === 'social_share')->values(), $blockCtx, self::GUIDE_DATA_ONLY);
             return view('keyword-guide', compact(
                 'keyword', 'page', 'listings', 'faqs', 'cluster', 'related', 'parts',
