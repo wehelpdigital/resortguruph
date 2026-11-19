@@ -258,7 +258,7 @@
     @media (min-width: 1024px) { .rg-dest-clusters__nav .pk-jump__row { padding-left: 2rem; padding-right: 2rem; } }
 
     /* ---------- full guide: re-rendered content (App\Support\GuideHtml) ---------- */
-    .gh-eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #d9472a !important; margin-bottom: .45rem; display: flex; align-items: center; gap: .6rem; }
+    .gh-eyebrow { font-size: .7rem !important; line-height: 1.4 !important; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #d9472a !important; margin-bottom: .45rem; display: flex; align-items: center; gap: .6rem; }
     .gh-head { margin-bottom: 1.5rem; }
     .gh-intro { margin-top: .6rem; max-width: 42rem; color: #5b6b80 !important; font-size: 1rem; line-height: 1.7 !important; }
     .gh-p { font-size: .98rem; line-height: 1.78 !important; color: #3b4a5e !important; }
@@ -399,6 +399,30 @@
     @media (min-width: 640px) { .rg-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pk-guide .rg-figs figure.rg-fig img { aspect-ratio: 4 / 5; } }
     @media (min-width: 640px) { .rg-figs > figure:only-child img { aspect-ratio: 16 / 10; } }
     .pk-guide .rg-figs figure.my-6 { margin: 0; }
+
+    /* ---------- cross-check links + hashtag chips (externalGuides / tagPills) ---------- */
+    .xg { margin: 3.25rem 0; }
+    .xg__grid { display: grid; gap: .8rem; }
+    @media (min-width: 768px) { .xg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .xg__card { position: relative; display: flex; align-items: flex-start; gap: .9rem; padding: 1rem 2.6rem 1rem 1rem; border-radius: 1.15rem; border: 1px solid #e3e9f0; background: #fff; text-decoration: none !important; transition: box-shadow .3s ease, border-color .3s ease, transform .3s ease; }
+    .xg__card:hover { border-color: color-mix(in srgb, var(--brand) 35%, #e3e9f0); box-shadow: 0 20px 40px -28px rgba(11, 27, 43, .45); transform: translateY(-2px); }
+    .xg__logo { flex: none; width: 2.6rem; height: 2.6rem; border-radius: .85rem; display: inline-flex; align-items: center; justify-content: center; font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: 1.1rem; color: #fff; background: linear-gradient(140deg, var(--brand), var(--brand-d)); box-shadow: 0 10px 20px -12px var(--brand); }
+    .xg__body { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+    .xg__name { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: 1rem; line-height: 1.25; color: #0b1b2b; }
+    .xg__host { font-size: .66rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #94a3b8; }
+    .xg__blurb { margin-top: .25rem; font-size: .86rem; line-height: 1.55; color: #5b6b80; }
+    .xg__go { position: absolute; top: 1rem; right: 1rem; width: 1.1rem; height: 1.1rem; color: #94a3b8; transition: color .2s ease, transform .2s ease; }
+    .xg__card:hover .xg__go { color: var(--brand-d); transform: translate(2px, -2px); }
+    .xg__foot { margin-top: .9rem; font-size: .76rem; color: #94a3b8; }
+    .rg-tags { margin: 2.25rem 0; }
+    .rg-tags__row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .rg-tag { display: inline-flex; align-items: center; border-radius: 999px; background: #fff; border: 1px solid #e3e9f0; overflow: hidden; transition: border-color .2s ease, box-shadow .2s ease; }
+    .rg-tag:hover { border-color: color-mix(in srgb, var(--tag) 40%, #e3e9f0); box-shadow: 0 8px 18px -12px rgba(11, 27, 43, .4); }
+    .rg-tag__main { display: inline-flex; align-items: center; gap: .1rem; padding: .42rem .4rem .42rem .8rem; font-size: .8rem; font-weight: 700; color: #1e293b !important; text-decoration: none !important; }
+    .rg-tag__hash { color: var(--tag); font-weight: 800; }
+    .rg-tag__x { display: inline-flex; align-items: center; justify-content: center; width: 1.9rem; align-self: stretch; color: #94a3b8 !important; }
+    .rg-tag__x:hover { color: #0b1b2b !important; }
+    .rg-tag__x svg { width: .7rem; height: .7rem; }
 
     /* ---------- hub category grids + quick look (BlockRenderer::hubCategoryGrid) ---------- */
     .hx-cat { margin: 3.5rem 0 4.5rem; scroll-margin-top: calc(var(--rg-header-h, 76px) + 1.5rem); }

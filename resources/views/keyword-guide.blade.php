@@ -444,7 +444,7 @@
 
 {{-- ============ KEEP EXPLORING ============ --}}
 @if($exploreHtml !== '' || $extHtml !== '' || $author)
-<section class="gx-sec bg-sand-100 py-14 md:py-20">
+<section id="explore" class="gx-sec bg-sand-100 py-14 md:py-20">
     <div class="pk-wrap">
         @if($exploreHtml !== '')<div class="gx-blocks">{!! $exploreHtml !!}</div>@endif
         <div class="grid lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-8 mt-6 items-start">

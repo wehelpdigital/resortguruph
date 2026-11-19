@@ -1860,14 +1860,16 @@ class BlockRenderer
                 . 'Map embed URL must come from Google Maps or OpenStreetMap.</div>';
         }
 
-        $out = '<section class="not-prose my-8">';
-        if ($heading !== '') {
-            $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">' . $heading . '</h2>';
+        // "Open in Google Maps" for the plain ?q= embeds (the /maps/embed?pb= kind has no public twin)
+        $open = '';
+        if (preg_match('~google\.[a-z.]+/maps\?~i', $url) && preg_match('~[?&]q=([^&]+)~', $url, $qm)) {
+            $open = 'https://www.google.com/maps/search/?api=1&query=' . $qm[1];
         }
-        $out .= '<div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-100">'
-            . '<iframe src="' . $this->e($url) . '" width="100%" height="' . $height . '" style="border:0;display:block" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>'
-            . '</div>';
-        $out .= '</section>';
+        $out = '<section class="gh-map not-prose"><div class="gh-map__head"><div><p class="gh-eyebrow">On the map</p>';
+        if ($heading !== '') $out .= '<h2 class="gh-map__title">' . $heading . '</h2>';
+        $out .= '</div>';
+        if ($open !== '') $out .= '<a class="rg-btn rg-btn--outline" href="' . $this->e($open) . '" target="_blank" rel="noopener">Open in Google Maps</a>';
+        $out .= '</div><div class="gh-map__frame"><iframe src="' . $this->e($url) . '" title="' . ($heading !== '' ? $heading : 'Map') . '" style="height:' . min($height, 480) . 'px" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></section>';
         return $out;
     }
 
@@ -1942,31 +1944,21 @@ class BlockRenderer
             $facebookUrl = 'https://www.facebook.com/hashtag/' . rawurlencode($hashtag);
             $twitterUrl = 'https://twitter.com/search?q=%23' . rawurlencode($hashtag) . '&src=hashtag_click';
 
-            $pillHtml .= '<span class="group inline-flex items-center rounded-full overflow-hidden border transition hover:shadow-sm"'
-                . ' style="background:' . $pal['bg'] . ';border-color:' . $pal['fg'] . '20">'
-                // Main chip → Facebook hashtag search.
-                . '<a href="' . $this->e($facebookUrl) . '" rel="noopener nofollow" target="_blank"'
-                . ' class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold transition hover:opacity-80"'
-                . ' style="color:' . $pal['fg'] . '"'
-                . ' aria-label="Search Facebook for #' . $this->e($hashtag) . '">'
-                . '<span class="opacity-60">#</span><span>' . $this->e($hashtag) . '</span>'
-                . '</a>'
-                // Twitter / X mini-button — small bird icon on the right.
-                . '<a href="' . $this->e($twitterUrl) . '" rel="noopener nofollow" target="_blank"'
-                . ' class="inline-flex items-center justify-center w-6 h-7 transition hover:opacity-80 border-l"'
-                . ' style="color:' . $pal['hi'] . ';border-color:' . $pal['fg'] . '20"'
-                . ' aria-label="Search X for #' . $this->e($hashtag) . '">'
-                . '<svg viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path d="M18.244 2H21.5l-7.5 8.57L23 22h-6.844l-5.36-7.01L4.7 22H1.44l8.04-9.19L1 2h7.014l4.847 6.41L18.244 2zm-1.198 18.273h1.83L7.045 3.61H5.082l11.964 16.663z"/></svg>'
-                . '</a>'
-                . '</span>';
+            $pillHtml .= '<span class="rg-tag" style="--tag:' . $pal['hi'] . '">'
+                // Main chip: Facebook hashtag search; the small X link searches X.
+                . '<a href="' . $this->e($facebookUrl) . '" rel="noopener nofollow" target="_blank" class="rg-tag__main" aria-label="Search Facebook for #' . $this->e($hashtag) . '">'
+                . '<span class="rg-tag__hash">#</span>' . $this->e($hashtag) . '</a>'
+                . '<a href="' . $this->e($twitterUrl) . '" rel="noopener nofollow" target="_blank" class="rg-tag__x" aria-label="Search X for #' . $this->e($hashtag) . '">'
+                . '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2H21.5l-7.5 8.57L23 22h-6.844l-5.36-7.01L4.7 22H1.44l8.04-9.19L1 2h7.014l4.847 6.41L18.244 2zm-1.198 18.273h1.83L7.045 3.61H5.082l11.964 16.663z"/></svg>'
+                . '</a></span>';
         }
         $ariaLabel = $label !== '' ? ' aria-label="' . $this->e($label) . '"' : '';
         $headingHtml = $label !== ''
-            ? '<div class="text-[10px] uppercase tracking-[0.18em] font-bold text-slate-500 mb-3">' . $this->e($label) . '</div>'
+            ? '<p class="gh-eyebrow">' . $this->e($label) . '</p>'
             : '';
-        return '<div class="not-prose my-7"' . $ariaLabel . '>'
+        return '<div class="rg-tags not-prose"' . $ariaLabel . '>'
             . $headingHtml
-            . '<div class="flex flex-wrap gap-2">' . $pillHtml . '</div>'
+            . '<div class="rg-tags__row">' . $pillHtml . '</div>'
             . '</div>';
     }
 
@@ -2013,17 +2005,17 @@ class BlockRenderer
         // than just a label. Admin can override per page via the intro
         // field; the fallback is generic enough to fit any keyword page.
         if ($intro === '') {
-            $intro = 'A quick scan of how this place is covered across the major travel sites. Each one has its own slant — reviews, maps, menus, deals — so the picks rarely overlap. Open one or two before you book to triangulate.';
+            $intro = 'A quick scan of how this place is covered across the major travel sites. Each one has its own slant (reviews, maps, menus, deals), so the picks rarely overlap. Open one or two before you book to triangulate.';
         }
 
         // Clean text-only card layout. No brand-color tile or logo
         // square — just the platform name (in its brand colour) + the
         // host caption + a short blurb describing what the link gets you.
         // Reads like a curated bookmark list instead of a logo wall.
-        $out = '<section class="not-prose my-10">';
-        $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
-        $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $this->e($intro) . '</p>';
-        $out .= '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+        $out = '<section class="xg not-prose"><header class="gh-head"><p class="gh-eyebrow">Cross-check</p>';
+        $out .= '<h2 class="gh-title">' . $heading . '</h2>';
+        $out .= '<p class="gh-intro">' . $this->e(str_replace(' — ', ', ', $intro)) . '</p></header>';
+        $out .= '<div class="xg__grid">';
 
         foreach ($items as $item) {
             if (empty($item['name']) || empty($item['url'])) continue;
@@ -2046,22 +2038,19 @@ class BlockRenderer
             }
             $blurb = $this->e($blurbRaw);
 
-            $out .= '<a href="' . $url . '" rel="noopener nofollow" target="_blank"'
-                . ' class="group block rounded-xl border border-slate-200 bg-white p-5 transition hover:shadow-md hover:-translate-y-px"'
-                . ' style="border-left:4px solid ' . $brandColor . '">'
-                . '<div class="flex items-start justify-between gap-3 mb-2">'
-                . '<div class="min-w-0 flex-1">'
-                . '<h3 class="font-bold text-lg leading-tight m-0" style="color:' . $brandColorDark . '">' . $name . '</h3>'
-                . ($hostLabel !== '' ? '<div class="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mt-1">' . $hostLabel . '</div>' : '')
-                . '</div>'
-                . '<svg class="flex-none w-5 h-5 text-slate-400 mt-1 group-hover:translate-x-0.5 group-hover:text-slate-700 transition" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>'
-                . '</div>'
-                . ($blurb !== '' ? '<p class="text-sm text-slate-600 leading-relaxed m-0">' . $blurb . '</p>' : '')
+            $initial = $this->e(mb_strtoupper(mb_substr(preg_replace('~^the\s+~i', '', $rawName) ?: $rawName, 0, 1, 'UTF-8'), 'UTF-8'));
+            $out .= '<a href="' . $url . '" rel="noopener nofollow" target="_blank" class="xg__card" style="--brand:' . $brandColor . ';--brand-d:' . $brandColorDark . '">'
+                . '<span class="xg__logo" aria-hidden="true">' . $initial . '</span>'
+                . '<span class="xg__body"><span class="xg__name">' . $name . '</span>'
+                . ($hostLabel !== '' ? '<span class="xg__host">' . $hostLabel . '</span>' : '')
+                . ($blurb !== '' ? '<span class="xg__blurb">' . str_replace(' — ', ', ', $blurb) . '</span>' : '')
+                . '</span>'
+                . '<svg class="xg__go" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>'
                 . '</a>';
         }
         $out .= '</div>';
         if ($footnote !== '') {
-            $out .= '<p class="text-xs text-slate-500 mt-3 m-0">' . $footnote . '</p>';
+            $out .= '<p class="xg__foot">' . $footnote . '</p>';
         }
         $out .= '</section>';
         return $out;
@@ -2812,7 +2801,7 @@ class BlockRenderer
         $out = '<section class="not-prose my-12">';
         $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $this->e($heading) . '</h2>';
         if ($intro === '') {
-            $intro = 'Done eating? Here are the resorts, hotels, and weekend escapes within a comfortable drive from the area.';
+            $intro = 'More resorts, hotels, and weekend escapes within a comfortable drive of the area.';
         }
         $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $this->e($intro) . '</p>';
 
