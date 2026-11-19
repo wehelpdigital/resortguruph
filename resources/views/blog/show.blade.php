@@ -48,7 +48,7 @@
                 @if($hasBlocks)
                     {!! \App\Support\PageKit::balance($renderedBlocks) !!}
                 @else
-                    {!! \App\Support\PageKit::balance($post->content_html) !!}
+                    {!! \App\Support\PageKit::balance(\App\Support\BlogHtml::transform($post->content_html)) !!}
                 @endif
             </div>
 
@@ -189,7 +189,7 @@
 <style>
     .rg-blog-prose { font-size: 1.1rem; }
     .rg-blog-prose > *:first-child { margin-top: 0; }
-    .rg-blog-prose > p:first-child::first-letter { float: left; font-size: 3.9rem; line-height: .9; font-weight: 800; margin: .35rem .6rem 0 0; color: var(--rg-coral, #ef5b3a); font-family: "Plus Jakarta Sans", Inter, sans-serif; }
+    .rg-blog-prose > p:first-child::first-letter, .rg-blog-prose > .bx-intro > p:first-child::first-letter { float: left; font-size: 3.9rem; line-height: .9; font-weight: 800; margin: .35rem .6rem 0 0; color: var(--rg-coral, #ef5b3a); font-family: "Plus Jakarta Sans", Inter, sans-serif; }
     .rg-blog-prose h2 { font-weight: 800; letter-spacing: -0.02em; margin-top: 2.4rem; margin-bottom: .7rem; color: #0b1b2b; }
     .rg-blog-prose h3 { font-weight: 700; letter-spacing: -0.01em; color: #0b1b2b; }
     .rg-blog-prose p { line-height: 1.8; }
@@ -197,7 +197,69 @@
     .rg-blog-prose ul > li::marker { color: var(--rg-coral, #ef5b3a); }
     .rg-blog-prose blockquote { font-style: normal; border-left: 4px solid var(--rg-coral, #ef5b3a); background: #fbf6ee; border-radius: 0 1rem 1rem 0; padding: .9rem 1.25rem; color: #0b1b2b; }
     .rg-blog-prose img { border-radius: 1.25rem; }
-    @media (max-width: 640px) { .rg-blog-prose > p:first-child::first-letter { float: none; font-size: inherit; margin: 0; color: inherit; font-family: inherit; } }
+    /* ---------- post body re-layout (App\Support\BlogHtml) ---------- */
+    .bx-intro > p:first-child { font-size: 1.16rem; color: #1e293b; }
+    .bx-sec { margin: 2.9rem 0; }
+    .pk-guide .rg-blog-prose h2.bx-sec__title { display: flex; align-items: center; gap: .9rem; margin: 0 0 1rem !important; }
+    .bx-ico { flex: none; width: 2.8rem; height: 2.8rem; border-radius: .95rem; display: inline-flex; align-items: center; justify-content: center; background: #eef6fc; color: #0f5788; box-shadow: inset 0 0 0 1px #d4e7f5; }
+    .bx-ico svg { width: 1.35rem; height: 1.35rem; margin: 0 !important; }
+    .bx-sec--card { border-radius: 1.5rem; padding: 1.5rem 1.35rem 1.25rem; border: 1px solid #f0e4cf; background: linear-gradient(160deg, #fbf6ee, #fffdf9); }
+    @media (min-width: 640px) { .bx-sec--card { padding: 2rem 2.15rem 1.6rem; } }
+    .bx-sec--card .bx-ico { background: #fff; color: #d9472a; box-shadow: inset 0 0 0 1px #f0e4cf, 0 8px 18px -12px rgba(217, 71, 42, .5); }
+    .bx-sec--t1 { border-color: #d3e8f6; background: linear-gradient(160deg, #eef7fd, #fbfdff); }
+    .bx-sec--t1 .bx-ico { color: #0f5788; box-shadow: inset 0 0 0 1px #d3e8f6, 0 8px 18px -12px rgba(15, 87, 136, .5); }
+    .bx-sec--t2 { border-color: #cdeedd; background: linear-gradient(160deg, #effaf5, #fbfefc); }
+    .bx-sec--t2 .bx-ico { color: #0f7a55; box-shadow: inset 0 0 0 1px #cdeedd; }
+    .bx-sec--card > :last-child, .bx-day__body > :last-child { margin-bottom: 0 !important; }
+
+    .bx-days { margin: 2.9rem 0; }
+    .bx-day { position: relative; display: grid; grid-template-columns: 2.8rem minmax(0, 1fr); gap: .85rem; padding-bottom: 2.4rem; }
+    .bx-day::before { content: ""; position: absolute; left: 1.4rem; top: 3.4rem; bottom: .6rem; width: 2px; transform: translateX(-1px); background: repeating-linear-gradient(180deg, #f2c3b0 0 7px, transparent 7px 13px); }
+    .bx-day:last-child { padding-bottom: 0; }
+    .bx-day:last-child::before { display: none; }
+    .bx-day__node { width: 2.8rem; height: 2.8rem; border-radius: .9rem; background: #0b1b2b; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 14px 28px -16px rgba(11, 27, 43, .65); }
+    .bx-day__node span { font-size: .56rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #ffc74a; }
+    .bx-colon { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .pk-guide .bx-day__node strong { color: #fff !important; }
+    .bx-day__node strong { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-size: 1.3rem; font-weight: 800; margin-top: .2rem; color: #fff; white-space: nowrap; }
+    @media (min-width: 640px) {
+        .bx-day { grid-template-columns: 4.4rem minmax(0, 1fr); gap: 1.6rem; }
+        .bx-day::before { left: 2.2rem; top: 5.1rem; }
+        .bx-day__node { width: 4.4rem; height: 4.4rem; border-radius: 1.3rem; }
+        .bx-day__node strong { font-size: 1.75rem; }
+    }
+    .bx-day--hi .bx-day__node { background: linear-gradient(140deg, #ef5b3a, #f5a524); }
+    .bx-day--hi .bx-day__node span { color: #fff; }
+    .bx-day__body { min-width: 0; padding-top: .15rem; }
+    .bx-day--hi .bx-day__body { border-radius: 1.35rem; padding: 1.25rem 1.3rem 1.2rem; background: linear-gradient(160deg, #fbf6ee, #fffdf9); border: 1px solid #f0e4cf; }
+    @media (min-width: 640px) { .bx-day--hi .bx-day__body { padding: 1.6rem 1.75rem 1.4rem; } }
+    .pk-guide .rg-blog-prose h2.bx-day__title { margin: 0 0 .8rem !important; font-size: clamp(1.3rem, 2.2vw, 1.65rem) !important; line-height: 1.2 !important; }
+    .bx-day__tag { display: block; font-family: Inter, sans-serif; font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #d9472a; margin-bottom: .4rem; }
+
+    .rg-blog-prose figure.rg-figure { margin: 1.9rem 0; }
+    .rg-blog-prose figure.rg-figure img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; margin: 0; border-radius: 1.25rem; box-shadow: 0 26px 50px -36px rgba(11, 27, 43, .6); }
+    .rg-blog-prose figure.rg-figure figcaption { margin-top: .7rem; text-align: left; font-size: .84rem; line-height: 1.55; color: #64748b; padding-left: .85rem; border-left: 3px solid #ffc74a; }
+
+    .bx-sec--stays { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid #e3e9f0; }
+    .bx-stays { display: grid; gap: .85rem; margin: 1.5rem 0; }
+    .bx-stay { display: flex; border-radius: 1.2rem; overflow: hidden; border: 1px solid #e3e9f0; background: #fff; text-decoration: none !important; transition: box-shadow .3s ease, transform .3s ease; }
+    .bx-stay:hover { box-shadow: 0 22px 44px -28px rgba(11, 27, 43, .45); transform: translateY(-2px); }
+    .bx-stay__img { position: relative; display: block; flex: none; width: 7.5rem; min-height: 6.5rem; overflow: hidden; background: linear-gradient(135deg, #e0f0fa, #fdf3e3); }
+    .bx-stay__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; margin: 0 !important; border-radius: 0 !important; transition: transform .8s cubic-bezier(.22, 1, .36, 1); }
+    .bx-stay:hover .bx-stay__img img { transform: scale(1.05); }
+    .bx-stay__img.gh-ph { align-items: center; justify-content: center; padding: 0; }
+    .bx-stay__body { display: flex; flex-direction: column; justify-content: center; gap: .25rem; padding: .85rem 1rem; min-width: 0; }
+    .bx-stay__kicker { font-size: .64rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #94a3b8; }
+    .bx-stay__title { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: 1rem; line-height: 1.3; color: #0b1b2b; }
+    .bx-stay__go { display: inline-flex; align-items: center; gap: .3rem; margin-top: .2rem; font-size: .8rem; font-weight: 700; color: #d9432a; }
+    .bx-stay__go svg { width: .9rem; height: .9rem; }
+    @media (min-width: 640px) {
+        .bx-stays { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+        .bx-stay { flex-direction: column; }
+        .bx-stay__img { width: auto; min-height: 0; aspect-ratio: 4 / 3; }
+        .bx-stay__body { justify-content: flex-start; padding: 1rem 1.1rem 1.1rem; }
+    }
+    @media (max-width: 640px) { .rg-blog-prose > p:first-child::first-letter, .rg-blog-prose > .bx-intro > p:first-child::first-letter { float: none; font-size: inherit; margin: 0; color: inherit; font-family: inherit; } }
 </style>
 @endpush
 @endsection
