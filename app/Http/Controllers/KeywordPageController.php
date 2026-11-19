@@ -244,6 +244,14 @@ class KeywordPageController extends Controller
         // classic keep the single block stream (keyword-page.blade.php).
         if (!$liveEdit && \App\Models\RgSetting::get('guide_layout', 'designed') !== 'classic') {
             \App\Support\GuideHtml::startPage(); // each photo shows once per guide
+            // spot cards reuse the page's own attraction photos for the same place
+            $attrPhotos = [];
+            foreach ($allBlocks->where('block_type', 'attractions') as $ab) {
+                foreach ((array) (json_decode((string) $ab->payload_json, true)['items'] ?? []) as $it) {
+                    if (!empty($it['name']) && !empty($it['image'])) $attrPhotos[(string) $it['name']] = (string) $it['image'];
+                }
+            }
+            \App\Support\GuideHtml::preferPhotos($attrPhotos);
             $parts = $renderer->renderEach($allBlocks->reject(fn ($b) => $b->block_type === 'social_share')->values(), $blockCtx, self::GUIDE_DATA_ONLY);
             return view('keyword-guide', compact(
                 'keyword', 'page', 'listings', 'faqs', 'cluster', 'related', 'parts',

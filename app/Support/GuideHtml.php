@@ -26,6 +26,8 @@ class GuideHtml
     private static array $keys = [];
     private static array $media = [];
     private static int $tone = 0;
+    /** normalised spot name => photo (the page's own attraction photos) */
+    private static array $prefer = [];
 
     /**
      * Start tracking photos for one page: from now on claim() only lets the
@@ -37,6 +39,75 @@ class GuideHtml
         self::$track = true;
         self::$seen = [];
         self::$tone = 0;
+        self::$prefer = [];
+    }
+
+    /**
+     * Photos the page already has for named places (its attractions block):
+     * spot cards with the same name use them instead of a generic town photo.
+     */
+    public static function preferPhotos(array $nameToSrc): void
+    {
+        foreach ($nameToSrc as $name => $src) {
+            $src = trim((string) $src);
+            $key = self::nameKey((string) $name);
+            if ($key === '' || $src === '' || self::isPlaceholder($src)) continue;
+            if (!preg_match('~^(https?:)?//|^/~', $src)) $src = '/storage/' . ltrim($src, '/');
+            $src = preg_replace('~^https?://[^/]+(?=/storage/)~i', '', $src);
+            if (preg_match('~/rg-media/destinations/~', $src)) continue;
+            self::$prefer[$key] = $src;
+        }
+    }
+
+    /** "Ma-Cho Temple (San Fernando city)" -> "ma cho temple" */
+    public static function nameKey(string $s): string
+    {
+        $s = mb_strtolower(html_entity_decode($s, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $s = preg_replace('~\(.*?\)~u', ' ', $s);
+        $s = preg_replace('~[^\p{L}\p{N}]+~u', ' ', (string) $s);
+        return trim(preg_replace('~\s+~u', ' ', (string) $s));
+    }
+
+    /**
+     * The best photo for a spot card. Seeded lists filled photo-less spots with
+     * the town's generic photos (rg-media/destinations/*), cycling through them,
+     * so a halo-halo shop showed a forest path. Order: the page's own attraction
+     * photo for that name, the spot's own photo, the tourist-spot library by
+     * name; a generic town photo is not used (the card gets a panel).
+     */
+    private static function spotPhoto(string $name, string $src): string
+    {
+        if (!self::$track) return $src;
+        $key = self::nameKey($name);
+        if ($key !== '' && isset(self::$prefer[$key])) return self::$prefer[$key];
+        $generic = $src === '' || self::isPlaceholder($src) || preg_match('~/rg-media/destinations/~', $src);
+        if (!$generic) return $src;
+        $lib = self::spotLibrary();
+        return $key !== '' && isset($lib[$key]) ? $lib[$key] : '';
+    }
+
+    /** Published tourist spots with their own photo, by normalised name (cached). */
+    private static function spotLibrary(): array
+    {
+        static $lib = null;
+        if ($lib !== null) return $lib;
+        try {
+            $lib = \Illuminate\Support\Facades\Cache::remember('gh_spot_library_v1', 600, function () {
+                $out = [];
+                if (!\Illuminate\Support\Facades\Schema::hasTable('rg_tourist_spots')) return $out;
+                foreach (\Illuminate\Support\Facades\DB::table('rg_tourist_spots as s')->join('rg_media as m', 'm.id', '=', 's.media_id')
+                    ->where('s.status', 'published')->get(['s.name', 'm.path']) as $r) {
+                    $path = ltrim((string) $r->path, '/');
+                    if ($path === '' || str_contains($path, 'rg-media/destinations/')) continue;
+                    $key = self::nameKey((string) $r->name);
+                    if ($key !== '' && !isset($out[$key])) $out[$key] = '/storage/' . $path;
+                }
+                return $out;
+            });
+        } catch (\Throwable $e) {
+            $lib = [];
+        }
+        return $lib;
     }
 
     public static function tracking(): bool
@@ -149,16 +220,19 @@ class GuideHtml
     private static function spots(DOMElement $el, string $h2): string
     {
         $intro = self::first('.//div[1]/p', $el);
-        $out = '<section class="gh-spots not-prose">' . self::head('Things to see', $h2, $intro);
-        $out .= '<div class="gh-spots__grid">';
-        $n = 0;
+
+        // pass 1: read every card and settle its photo (claim() runs once per card)
+        $cards = [];
         foreach (self::all('.//article', $el) as $art) {
-            $n++;
             $img = self::one('.//img', $art);
             $imgLink = $img && $img->parentNode instanceof DOMElement && strtolower($img->parentNode->tagName) === 'a' ? $img->parentNode->getAttribute('href') : '';
             $h3 = self::one('.//h3', $art);
             $body = $h3 ? $h3->parentNode : $art;
             $name = self::text($h3);
+            $own = $img ? trim($img->getAttribute('src')) : '';
+            $src = self::spotPhoto($name, $own);
+            if ($src !== '' && !self::claim($src)) $src = '';
+            if ($src === '' && !self::$track && $own !== '') $src = $own;
             $score = ''; $count = '';
             foreach (self::all('.//span', $body) as $sp) {
                 $t = trim($sp->textContent);
@@ -167,28 +241,49 @@ class GuideHtml
             }
             $paras = [];
             foreach ($body->childNodes as $c) if ($c instanceof DOMElement && strtolower($c->tagName) === 'p') $paras[] = self::inner($c);
-            $review = self::one('.//*[contains(@class, "rg-spot-review-slide")]', $art);
             $links = [];
             foreach ($body->childNodes as $c) if ($c instanceof DOMElement && strtolower($c->tagName) === 'a') $links[] = [$c->getAttribute('href'), trim($c->textContent)];
+            $review = self::one('.//*[contains(@class, "rg-spot-review-slide")]', $art);
+            $cards[] = compact('name', 'src', 'imgLink', 'score', 'count', 'paras', 'links') + ['alt' => $img ? $img->getAttribute('alt') : '', 'quote' => $review ? self::quote($review) : ''];
+        }
+        // spots with a photo of their own lead; the rest follow as text cards (no repeated or generic pictures)
+        if (self::$track) {
+            $withPhoto = array_values(array_filter($cards, fn ($c) => $c['src'] !== ''));
+            $cards = array_merge($withPhoto, array_values(array_filter($cards, fn ($c) => $c['src'] === '')));
+        }
 
-            $out .= '<article class="gh-spot' . ($n === 1 ? ' gh-spot--lead' : '') . '">';
-            $out .= self::photo($img, $imgLink, 'gh-spot__img', '<span class="gh-num">' . str_pad((string) $n, 2, '0', STR_PAD_LEFT) . '</span>', $name);
-            $out .= '<div class="gh-spot__body"><h3 class="gh-spot__name">' . self::e($name) . '</h3>';
-            if ($score !== '') {
-                $out .= '<p class="gh-rating">' . self::stars((float) $score) . '<strong>' . self::e($score) . '</strong>' . ($count !== '' ? '<span>' . self::e($count) . '</span>' : '') . '</p>';
+        $out = '<section class="gh-spots not-prose">' . self::head('Things to see', $h2, $intro) . '<div class="gh-spots__grid">';
+        foreach ($cards as $i => $c) {
+            $n = $i + 1;
+            $num = '<span class="gh-num">' . str_pad((string) $n, 2, '0', STR_PAD_LEFT) . '</span>';
+            $hasPhoto = $c['src'] !== '';
+            $out .= '<article class="gh-spot' . ($n === 1 && $hasPhoto ? ' gh-spot--lead' : '') . ($hasPhoto ? '' : ' gh-spot--text') . '">';
+            if ($hasPhoto) {
+                $alt = trim($c['alt']) !== '' && !self::looksLikeFileName($c['alt']) ? $c['alt'] : $c['name'];
+                $imgHtml = '<img src="' . self::e($c['src']) . '" alt="' . self::e($alt) . '" loading="lazy">';
+                $out .= $c['imgLink'] !== ''
+                    ? '<a class="gh-spot__img" href="' . self::e($c['imgLink']) . '" target="_blank" rel="noopener nofollow">' . $imgHtml . $num . '</a>'
+                    : '<span class="gh-spot__img">' . $imgHtml . $num . '</span>';
             }
-            if ($paras) {
-                $out .= '<p class="gh-p gh-p--clamp">' . $paras[0] . '</p>';
-                if (count($paras) > 1) {
+            $out .= '<div class="gh-spot__body">';
+            $out .= $hasPhoto
+                ? '<h3 class="gh-spot__name">' . self::e($c['name']) . '</h3>'
+                : '<div class="gh-spot__top">' . $num . '<span class="gh-spot__pin" aria-hidden="true">' . self::icon('pin') . '</span></div><h3 class="gh-spot__name">' . self::e($c['name']) . '</h3>';
+            if ($c['score'] !== '') {
+                $out .= '<p class="gh-rating">' . self::stars((float) $c['score']) . '<strong>' . self::e($c['score']) . '</strong>' . ($c['count'] !== '' ? '<span>' . self::e($c['count']) . '</span>' : '') . '</p>';
+            }
+            if ($c['paras']) {
+                $out .= '<p class="gh-p gh-p--clamp">' . $c['paras'][0] . '</p>';
+                if (count($c['paras']) > 1) {
                     $out .= '<details class="gh-more"><summary><span>Read more</span></summary>';
-                    foreach (array_slice($paras, 1) as $p) $out .= '<p class="gh-p">' . $p . '</p>';
+                    foreach (array_slice($c['paras'], 1) as $p) $out .= '<p class="gh-p">' . $p . '</p>';
                     $out .= '</details>';
                 }
             }
-            if ($review) $out .= self::quote($review);
-            if ($links) {
+            $out .= $c['quote'];
+            if ($c['links']) {
                 $out .= '<p class="gh-links">';
-                foreach ($links as [$href, $label]) $out .= '<a href="' . self::e($href) . '" target="_blank" rel="noopener nofollow">' . self::e($label) . self::arrow() . '</a>';
+                foreach ($c['links'] as [$href, $label]) $out .= '<a href="' . self::e($href) . '" target="_blank" rel="noopener nofollow">' . self::e($label) . self::arrow() . '</a>';
                 $out .= '</p>';
             }
             $out .= '</div></article>';
@@ -210,6 +305,8 @@ class GuideHtml
             }
             $paras = [];
             foreach ($body->childNodes as $c) if ($c instanceof DOMElement && strtolower($c->tagName) === 'p') $paras[] = self::inner($c);
+            // a generic town photo is not a picture of the festival: use the panel
+            if ($img && self::$track && preg_match('~/rg-media/destinations/~', (string) $img->getAttribute('src'))) $img = null;
             $out .= '<article class="gh-fest">' . self::photo($img, '', 'gh-fest__img', $when !== '' ? '<span class="gh-date">' . self::cal() . self::e($when) . '</span>' : '', self::text($h3), 'star');
             $out .= '<div class="gh-fest__body"><h3 class="gh-fest__name">' . self::e(self::text($h3)) . '</h3>';
             foreach ($paras as $i => $p) {

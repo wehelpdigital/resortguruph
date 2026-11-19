@@ -360,6 +360,14 @@
     .gh-history__source { margin-top: 1.1rem; padding-top: .9rem; border-top: 1px solid #efe3cc; font-size: .8rem; color: #8a6d3b !important; font-style: italic; }
     .gh-history__source a { color: inherit; text-decoration: underline; }
 
+    /* spot cards without a photo of their own: text cards with a tinted top (GuideHtml::spots) */
+    .gh-spot--text { background: linear-gradient(180deg, #f3f8fc 0, #fff 7rem); }
+    .gh-spot--text .gh-spot__body { padding-top: 1.1rem; }
+    .gh-spot__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: .2rem; }
+    .gh-spot__top .gh-num { position: static; box-shadow: none; }
+    .gh-spot__pin { width: 2.2rem; height: 2.2rem; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; color: #0f5788; background: #fff; box-shadow: inset 0 0 0 1px #d4e7f5; }
+    .gh-spot__pin svg { width: 1.05rem; height: 1.05rem; }
+
     /* cards without a photo of their own: a designed panel (GuideHtml::photo) */
     .gh-ph { display: flex !important; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: .65rem; padding: 1.25rem 1.35rem; color: #fff; isolation: isolate; text-decoration: none !important; }
     .gh-ph::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: radial-gradient(rgba(255, 255, 255, .16) 1px, transparent 1.5px); background-size: 18px 18px; -webkit-mask-image: linear-gradient(160deg, #000 15%, transparent 80%); mask-image: linear-gradient(160deg, #000 15%, transparent 80%); }

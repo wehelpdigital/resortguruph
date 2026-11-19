@@ -1441,7 +1441,8 @@ class BlockRenderer
         // Legacy shape — paragraphs[] array — still resolves correctly so
         // pre-migration blocks keep rendering until the seeder catches up.
         $paragraphs = [];
-        $body = trim((string) ($p['body'] ?? ''));
+        // some imported bodies carry the two characters "\n" instead of real line breaks
+        $body = trim(str_replace(['\r\n', '\n'], "\n", (string) ($p['body'] ?? '')));
         if ($body !== '') {
             $chunks = preg_split('~\n\s*\n+~', $body) ?: [];
             foreach ($chunks as $chunk) {

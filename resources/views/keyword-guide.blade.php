@@ -58,6 +58,24 @@
         fn ($i) => array_map(fn ($v) => is_string($v) ? html_entity_decode($v, ENT_QUOTES | ENT_HTML5, 'UTF-8') : $v, (array) $i),
         $attr['items'] ?? []
     ), fn ($i) => trim($i['name'] ?? '') !== ''));
+    // The seeded "Tourist spots in X" list (GuideHtml .gh-spots) is the richest things-to-do
+    // content: it leads the Things to do section instead of sitting deep in the full guide,
+    // and the short attractions grid (the same places) is dropped once the list covers it.
+    $spotsHtml = '';
+    if (preg_match('~<section class="gh-spots not-prose">.*?</section>~s', $streamHtml, $sm)) {
+        $spotsHtml = $sm[0];
+        $streamHtml = trim(str_replace($sm[0], '', $streamHtml));
+    }
+    $spotsText = mb_strtolower(html_entity_decode(strip_tags($spotsHtml), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    $attrCovered = $attrItems && $spotsHtml !== ''
+        && count(array_filter($attrItems, fn ($i) => str_contains($spotsText, mb_strtolower(trim($i['name']))))) >= ceil(count($attrItems) * 0.8);
+    $showAttrGrid = $attrItems && !$attrCovered;
+    if ($attrCovered && trim($attr['heading'] ?? '') !== '') {
+        // keep the attractions heading ("What's in La Union?") on the page as the list's kicker
+        $spotsHtml = preg_replace('~<p class="gh-eyebrow">Things to see</p>~', '<p class="gh-eyebrow">' . e(html_entity_decode(trim($attr['heading']), ENT_QUOTES | ENT_HTML5, 'UTF-8')) . '</p>', $spotsHtml, 1);
+    }
+    // on "tourist spot / where to go / things to do" guides the spots come before the stays
+    $spotsFirst = ($spotsHtml !== '' || $attrItems) && preg_match('~tourist spots?|where to go|things to do|attractions?|what to do|places to visit|itinerary~i', $keyword->phrase);
     $getting = $first('how_to_get_to')['payload'] ?? null;
     $map = $first('map_embed')['payload'] ?? null;
     $faqBlock = $first('faq')['payload'] ?? null;
@@ -96,11 +114,13 @@
     // "be the first to list" box (no picks) stays below the overview.
     $stayFirst = $hasPicks && $stayHtml !== '';
     $stayLabel = $stayHtml !== '' ? ($isFood ? 'Where to eat' : 'Where to stay') : null;
+    $todoLabel = ($attrItems || $spotsHtml !== '' || $advHtml !== '') ? ($spotsFirst ? 'Tourist spots' : 'Things to do') : null;
     $nav = array_filter([
         'stay-top' => $stayFirst ? $stayLabel : null,
         'overview' => 'Overview',
+    ] + ($spotsFirst ? ['todo' => $todoLabel] : []) + [
         'stay' => $stayFirst ? null : $stayLabel,
-        'todo' => ($attrItems || $advHtml !== '') ? 'Things to do' : null,
+        'todo' => $todoLabel,
         'guide' => $streamHtml !== '' ? 'The guide' : null,
         'food' => (!$isFood && $foodHtml !== '') ? 'Food' : ($isFood && $foodHtml !== '' ? 'Dishes' : null),
         'getting-there' => ($getting || $map) ? 'Getting there' : null,
@@ -262,19 +282,32 @@
 </section>
 
 {{-- ============ WHERE TO STAY / EAT (no picks yet: owner invite) ============ --}}
+@php ob_start(); @endphp
 @if($stayHtml !== '' && !$stayFirst)
 <section id="stay" class="gx-sec gx-stay bg-sand-100 py-14 md:py-20">
     <div class="pk-wrap gx-blocks">{!! $stayHtml !!}</div>
 </section>
 @endif
+@php $staySection = ob_get_clean(); ob_start(); @endphp
 
 {{-- ============ THINGS TO DO ============ --}}
-@if($attrItems || $advHtml !== '')
-<section id="todo" class="gx-sec py-14 md:py-20">
+@if($attrItems || $spotsHtml !== '' || $advHtml !== '')
+<section id="todo" class="gx-sec gx-todo py-14 md:py-20">
     <div class="pk-wrap">
-        @if($attrItems)
-            <div class="max-w-2xl mb-8">
-                <p class="pk-eyebrow">Things to do</p>
+        @if($spotsHtml !== '')
+            @php $spotCount = substr_count($spotsHtml, '<article class="gh-spot'); @endphp
+            <div class="gx-todo__spots" data-gx-spots>
+                {!! $spotsHtml !!}
+                @if($spotCount > 5)
+                    <button type="button" class="gx-todo__more rg-btn rg-btn--outline" data-gx-more>Show all {{ $spotCount }} spots</button>
+                    {{-- phones: the first 5 spots, the rest one tap away (all of them stay in the page) --}}
+                    <script>(function(){var w=document.currentScript.parentNode;w.classList.add('is-collapsible');w.querySelector('[data-gx-more]').addEventListener('click',function(){w.classList.add('is-open')});})();</script>
+                @endif
+            </div>
+        @endif
+        @if($showAttrGrid)
+            <div class="max-w-2xl mb-8 {{ $spotsHtml !== '' ? 'mt-16' : '' }}">
+                <p class="pk-eyebrow">{{ $spotsHtml !== '' ? 'More to see' : 'Things to do' }}</p>
                 <h2 class="pk-h2">{{ $attr['heading'] ?? 'Tourist spots nearby' }}</h2>
                 @if(!empty($attr['intro']))<p class="mt-3 text-slate-600 text-lg">{{ $attr['intro'] }}</p>@endif
             </div>
@@ -296,10 +329,12 @@
                 @endforeach
             </div>
         @endif
-        @if($advHtml !== '')<div class="gx-blocks {{ $attrItems ? 'mt-14' : '' }}">{!! $advHtml !!}</div>@endif
+        @if($advHtml !== '')<div class="gx-blocks {{ ($showAttrGrid || $spotsHtml !== '') ? 'mt-14' : '' }}">{!! $advHtml !!}</div>@endif
     </div>
 </section>
 @endif
+@php $todoSection = ob_get_clean(); @endphp
+{!! $spotsFirst ? $todoSection . $staySection : $staySection . $todoSection !!}
 
 {{-- ============ THE FULL GUIDE ============ --}}
 @if($streamHtml !== '')
@@ -568,6 +603,25 @@
     .gx-blocks h2 { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; letter-spacing: -0.025em; color: #0b1b2b; font-size: clamp(1.55rem, 2.7vw, 2.15rem); line-height: 1.15; }
     .gx-blocks > section:first-child, .gx-blocks > div:first-child > section:first-child { margin-top: 0; }
     .gx-blocks section.border-t { border-top: 0; padding-top: 0; }
+
+    /* the full tourist-spot list, moved up into Things to do (full width: 3 columns) */
+    .gx-todo__spots .gh-spots { margin: 0; }
+    .gx-todo__spots .gh-head { max-width: 46rem; margin-bottom: 2rem; }
+    .gx-todo__spots .gh-eyebrow { font-size: .72rem !important; letter-spacing: .2em; }
+    .gx-todo__spots .gh-title { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-size: clamp(1.7rem, 3.2vw, 2.5rem); line-height: 1.12; font-weight: 800; color: #0b1b2b; letter-spacing: -0.025em; }
+    .gx-todo__spots .gh-intro { font-size: 1.05rem; max-width: 44rem; }
+    .gx-todo__more { display: none; }
+    @media (max-width: 767px) {
+        .gx-todo__spots.is-collapsible:not(.is-open) .gh-spot:nth-child(n+6) { display: none; }
+        .gx-todo__spots.is-collapsible:not(.is-open) .gx-todo__more { display: flex; width: 100%; justify-content: center; margin-top: 1.25rem; }
+    }
+    @media (min-width: 1100px) {
+        .gx-todo__spots .gh-spots__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; }
+        .gx-todo__spots .gh-spot--lead { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+        .gx-todo__spots .gh-spot--lead .gh-spot__img { min-height: 26rem; }
+        .gx-todo__spots .gh-spot--lead .gh-spot__name { font-size: 2rem; }
+        .gx-todo__spots .gh-spot--lead .gh-spot__body { padding: 2.25rem 2.5rem; }
+    }
 
     .gx-spots { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
     @media (min-width: 640px) { .gx-spots { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
