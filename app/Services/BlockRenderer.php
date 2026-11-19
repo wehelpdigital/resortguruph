@@ -433,7 +433,7 @@ class BlockRenderer
 
     private function customHtml(array $p): string
     {
-        $html = $this->swapPlaceholderImages((string) ($p['html'] ?? ''));
+        $html = \App\Support\GuideHtml::transform($this->swapPlaceholderImages((string) ($p['html'] ?? '')));
 
         // Pattern detection: the seeder ships a "Tourist spots in X"
         // section as a custom_html block — a heading + an intro
@@ -3072,63 +3072,21 @@ class BlockRenderer
         $citationLabel = trim((string) ($p['citation_label'] ?? ''));
         $citationUrl = trim((string) ($p['citation_url'] ?? ''));
 
-        // Split body on blank lines, render each chunk as a paragraph.
-        $paragraphs = preg_split('~\n\s*\n+~', $body) ?: [];
-        $bodyHtml = '';
-        foreach ($paragraphs as $chunk) {
+        $out = '<section class="gh-history not-prose"><div class="gh-history__rail" aria-hidden="true"></div><div class="gh-history__body">';
+        $out .= '<p class="gh-eyebrow">' . $eyebrow . ($founded !== '' ? '<span class="gh-history__since">Since ' . $this->e($founded) . '</span>' : '') . '</p>';
+        if ($heading !== '') $out .= '<h2 class="gh-history__title">' . $this->e($heading) . '</h2>';
+        $i = 0;
+        foreach (preg_split('~\n\s*\n+~', $body) ?: [] as $chunk) {
             $chunk = trim($chunk);
             if ($chunk === '') continue;
-            $bodyHtml .= '<p class="text-slate-700 leading-relaxed m-0 mb-3 last:mb-0 text-[15px] sm:text-base">'
-                . $this->e($chunk) . '</p>';
+            $out .= '<p class="gh-p' . ($i++ === 0 ? ' gh-p--lead' : '') . '">' . $this->e($chunk) . '</p>';
         }
-
-        // Citation footer (small "Source: NHCP" type line). Renders only
-        // when a label is provided; URL is optional and adds the
-        // rel="noopener nofollow" + target="_blank" per Rule 11.
-        $citationHtml = '';
         if ($citationLabel !== '') {
-            $linkHtml = $citationUrl !== ''
-                ? '<a href="' . $this->e($citationUrl) . '" rel="noopener nofollow" target="_blank"'
-                    . ' class="underline decoration-amber-700/40 hover:decoration-amber-700">'
-                    . $this->e($citationLabel) . '</a>'
-                : $this->e($citationLabel);
-            $citationHtml = '<div class="mt-5 pt-4 border-t border-amber-700/15 text-xs text-amber-900/80 italic">'
-                . 'Source: ' . $linkHtml . '</div>';
+            $out .= '<p class="gh-history__source">Source: ' . ($citationUrl !== ''
+                ? '<a href="' . $this->e($citationUrl) . '" rel="noopener nofollow" target="_blank">' . $this->e($citationLabel) . '</a>'
+                : $this->e($citationLabel)) . '</p>';
         }
-
-        $foundedChip = $founded !== ''
-            ? '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] uppercase tracking-wider font-bold bg-amber-100 text-amber-800 border border-amber-200">'
-                . 'Since ' . $this->e($founded) . '</span>'
-            : '';
-
-        // Inline-SVG scroll icon. Sits in a circle ahead of the eyebrow
-        // so the section visually telegraphs "history" at a glance.
-        $scrollSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">'
-            . '<path d="M8 3h11a2 2 0 0 1 2 2v3"/>'
-            . '<path d="M21 8a3 3 0 0 1-3 3H7"/>'
-            . '<path d="M5 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h13a3 3 0 0 0 3-3V8"/>'
-            . '<path d="M8 9h6M8 13h6M8 17h4"/>'
-            . '</svg>';
-
-        return '<section class="not-prose my-10 rounded-2xl overflow-hidden border border-amber-200"'
-            . ' style="background:linear-gradient(180deg,#fffbeb 0%,#fef3c7 100%)">'
-            . '<div class="p-6 sm:p-8">'
-            // Eyebrow row: icon circle + uppercase label + optional year chip.
-            . '<div class="flex items-center gap-3 mb-3 flex-wrap">'
-            . '<div class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-200/70 text-amber-800">'
-            . $scrollSvg . '</div>'
-            . '<div class="text-[11px] uppercase tracking-[0.2em] font-bold text-amber-800">'
-            . $eyebrow . '</div>'
-            . ($foundedChip !== '' ? '<div class="ml-auto">' . $foundedChip . '</div>' : '')
-            . '</div>'
-            . ($heading !== ''
-                ? '<h2 class="text-2xl sm:text-3xl font-bold text-amber-950 mb-4 leading-tight" style="font-family:Georgia,Cambria,Times New Roman,serif">'
-                    . $this->e($heading) . '</h2>'
-                : '')
-            . $bodyHtml
-            . $citationHtml
-            . '</div>'
-            . '</section>';
+        return $out . '</div></section>';
     }
 
     /**
