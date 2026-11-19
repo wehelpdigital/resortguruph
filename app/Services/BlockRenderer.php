@@ -7245,7 +7245,7 @@ class BlockRenderer
      * `images[]` entry, falling back to a gradient + the category emoji when
      * the item has no photo yet. Otherwise it renders the compact text card.
      */
-    private function hubItemCard(array $item, bool $imageCards, string $urlPrefix, string $fallbackIcon): string
+    private function hubItemCard(array $item, bool $imageCards, string $urlPrefix, string $fallbackIcon, string $catLabel = '', bool $lead = false): string
     {
         $slug = (string) ($item['slug'] ?? '');
         $name = $this->e((string) ($item['name'] ?? ''));
@@ -7260,21 +7260,74 @@ class BlockRenderer
             return $c . '</a>';
         }
 
-        $img = '';
-        $imgs = $item['images'] ?? [];
-        if (is_array($imgs) && count($imgs)) $img = (string) $imgs[0];
-        elseif (is_string($item['image'] ?? '') && ($item['image'] ?? '') !== '') $img = (string) $item['image'];
+        $imgs = array_values(array_filter(array_map('strval', is_array($item['images'] ?? null) ? $item['images'] : []), fn ($u) => $u !== ''));
+        if (!$imgs && is_string($item['image'] ?? null) && $item['image'] !== '') $imgs = [(string) $item['image']];
+        $imgs = array_map(fn ($u) => preg_replace('~^https?://[^/]+(?=/storage/)~i', '', $u), $imgs);
+        $where = trim((string) ($item['where'] ?? $item['region'] ?? $item['province'] ?? ''));
+        $rawNote = trim((string) ($item['note'] ?? ''));
+        $rawDesc = trim((string) ($item['description'] ?? ''));
+        $id = 'item-' . preg_replace('~[^a-z0-9-]+~', '-', strtolower($slug));
+        $data = [
+            'name' => (string) ($item['name'] ?? ''),
+            'cat' => $catLabel,
+            'icon' => $fallbackIcon,
+            'where' => $where,
+            'desc' => $rawDesc !== '' ? $rawDesc : $rawNote,
+            'note' => $rawDesc !== '' && $rawNote !== '' && $rawNote !== $rawDesc ? $rawNote : '',
+            'images' => array_slice($imgs, 0, 4),
+        ];
+        $pin = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.6-7-11.5A7 7 0 0 1 19 9.5C19 15.4 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>';
 
-        $c = '<a href="' . $href . '" class="group/ic block rounded-xl border border-slate-200 bg-white overflow-hidden hover:border-slate-300 hover:shadow-md transition-all">';
-        $c .= '<div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">';
-        if ($img !== '') {
-            $c .= '<img src="' . $this->e($img) . '" alt="' . $name . '" loading="lazy" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/ic:scale-105">';
+        $c = '<a href="#' . $id . '" id="' . $id . '" class="hx-card' . ($lead ? ' hx-card--lead' : '') . '" data-hx-item="' . $this->e(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) . '">';
+        if ($imgs) {
+            $c .= '<span class="hx-card__img"><img src="' . $this->e($imgs[0]) . '" alt="' . $name . '" loading="lazy">';
         } else {
-            $c .= '<div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-4xl select-none" aria-hidden="true">' . ($fallbackIcon !== '' ? $fallbackIcon : '🍽') . '</div>';
+            $c .= '<span class="hx-card__img gh-ph gh-ph--' . (crc32($slug) % 4) . '"><span class="hx-card__emoji" aria-hidden="true">' . ($fallbackIcon !== '' ? $fallbackIcon : '🍽') . '</span>';
         }
-        $c .= '</div><div class="p-3"><div class="font-bold text-slate-900 text-sm mb-0.5">' . $name . '</div>';
-        if ($note !== '') $c .= '<div class="text-xs text-slate-500 line-clamp-2 leading-snug">' . $note . '</div>';
-        return $c . '</div></a>';
+        if ($where !== '') $c .= '<span class="hx-card__where">' . $pin . '<span>' . $this->e($where) . '</span></span>';
+        $c .= '</span><span class="hx-card__body"><span class="hx-card__name">' . $name . '</span>';
+        if ($note !== '') $c .= '<span class="hx-card__note">' . $note . '</span>';
+        $c .= '<span class="hx-card__go">Quick look <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>';
+        return $c . '</span></a>';
+    }
+
+    /** The shared quick-look dialog for hub item cards (emitted once per page). */
+    private function hubItemDialog(): string
+    {
+        static $done = false;
+        if ($done) return '';
+        $done = true;
+        return '<dialog class="hx-dlg" id="hx-dlg" aria-labelledby="hx-dlg-name">'
+            . '<div class="hx-dlg__inner">'
+            . '<div class="hx-dlg__media" data-hx-media></div>'
+            . '<div class="hx-dlg__body">'
+            . '<p class="hx-dlg__cat" data-hx-cat></p>'
+            . '<h3 class="hx-dlg__name" id="hx-dlg-name" data-hx-name></h3>'
+            . '<p class="hx-dlg__where" data-hx-where><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.6-7-11.5A7 7 0 0 1 19 9.5C19 15.4 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg><span></span></p>'
+            . '<p class="hx-dlg__desc" data-hx-desc></p>'
+            . '<p class="hx-dlg__note" data-hx-note></p>'
+            . '<div class="hx-dlg__actions"><a class="rg-btn rg-btn--coral" href="/create-your-adventure">Plan a trip around it</a><button type="button" class="rg-btn rg-btn--outline" data-hx-close>Close</button></div>'
+            . '</div></div>'
+            . '<button type="button" class="hx-dlg__x" data-hx-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'
+            . '</dialog>'
+            . '<script>(function(){var d=document.getElementById("hx-dlg");if(!d||!d.showModal)return;'
+            . 'var q=function(s){return d.querySelector(s)},media=q("[data-hx-media]"),cur=0,timer=null;'
+            . 'function show(i){var ims=media.querySelectorAll("img"),ds=media.querySelectorAll(".hx-dlg__dots button");if(!ims.length)return;cur=(i+ims.length)%ims.length;ims.forEach(function(m,k){m.classList.toggle("is-on",k===cur)});ds.forEach(function(b,k){b.setAttribute("aria-current",k===cur?"true":"false")})}'
+            . 'function txt(sel,v){var el=q(sel);if(!el)return;var t=el.querySelector("span")||el;t.textContent=v||"";el.hidden=!v}'
+            . 'function open(card){var x;try{x=JSON.parse(card.getAttribute("data-hx-item"))}catch(e){return false}'
+            . 'media.innerHTML="";clearInterval(timer);var imgs=x.images||[];'
+            . 'if(imgs.length){imgs.forEach(function(src){var m=new Image();m.src=src;m.alt=x.name||"";media.appendChild(m)});'
+            . 'if(imgs.length>1){var dots=document.createElement("div");dots.className="hx-dlg__dots";imgs.forEach(function(_,k){var b=document.createElement("button");b.type="button";b.setAttribute("aria-label","Photo "+(k+1));b.addEventListener("click",function(){show(k);clearInterval(timer)});dots.appendChild(b)});media.appendChild(dots);timer=setInterval(function(){show(cur+1)},4000)}}'
+            . 'else{var em=document.createElement("span");em.className="hx-dlg__emoji";em.textContent=x.icon||"";media.appendChild(em)}'
+            . 'media.classList.toggle("gh-ph",!imgs.length);media.classList.toggle("gh-ph--0",!imgs.length);'
+            . 'txt("[data-hx-cat]",x.cat);txt("[data-hx-name]",x.name);txt("[data-hx-where]",x.where);txt("[data-hx-desc]",x.desc);txt("[data-hx-note]",x.note);'
+            . 'd.showModal();show(0);try{history.replaceState(null,"","#"+card.id)}catch(e){}return true}'
+            . 'document.addEventListener("click",function(e){var c=e.target.closest&&e.target.closest("[data-hx-item]");if(c&&open(c))e.preventDefault()});'
+            . 'd.addEventListener("click",function(e){if(e.target===d||e.target.closest("[data-hx-close]"))d.close()});'
+            . 'd.addEventListener("close",function(){clearInterval(timer);if(location.hash.indexOf("#item-")===0){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}});'
+            . 'function fromHash(){if(location.hash.indexOf("#item-")!==0||d.open)return;var c=document.getElementById(location.hash.slice(1));if(c&&c.hasAttribute("data-hx-item"))open(c)}'
+            . 'if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",fromHash);else fromHash();window.addEventListener("hashchange",fromHash);'
+            . '})();</script>';
     }
 
     private function hubCategoryGrid(array $p, array $context): string
@@ -7327,17 +7380,39 @@ class BlockRenderer
             $out .= '</div></details>';
         } else {
             $out = !empty($p['divider']) ? $this->hubDivider((string) $p['divider']) : '';
-            $out .= '<section class="rg-hub-category my-12" id="cat-' . $this->e($key) . '">';
-            $out .= '<div class="mb-6">';
-            if ($icon !== '') $out .= '<div class="text-3xl mb-2" aria-hidden="true">' . $icon . '</div>';
-            if ($label !== '') $out .= '<h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">' . $label . '</h2>';
-            if ($intro !== '') $out .= '<p class="text-slate-600 leading-relaxed mt-2 max-w-3xl">' . $intro . '</p>';
-            $out .= '</div>';
-            $out .= '<div class="grid ' . $gridClass . ' gap-3">';
-            foreach ($items as $item) {
-                $out .= $this->hubItemCard((array) $item, $imageCards, $urlPrefix, $icon);
+            if (!$imageCards) {
+                $out .= '<section class="rg-hub-category my-12" id="cat-' . $this->e($key) . '">';
+                $out .= '<div class="mb-6">';
+                if ($icon !== '') $out .= '<div class="text-3xl mb-2" aria-hidden="true">' . $icon . '</div>';
+                if ($label !== '') $out .= '<h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">' . $label . '</h2>';
+                if ($intro !== '') $out .= '<p class="text-slate-600 leading-relaxed mt-2 max-w-3xl">' . $intro . '</p>';
+                $out .= '</div>';
+                $out .= '<div class="grid ' . $gridClass . ' gap-3">';
+                foreach ($items as $item) {
+                    $out .= $this->hubItemCard((array) $item, $imageCards, $urlPrefix, $icon);
+                }
+                return $out . '</div></section>';
             }
-            $out .= '</div></section>';
+            $noun = ['buys' => 'finds', 'foods' => 'dishes', 'cultures' => 'groups', 'activities' => 'experiences'][(string) ($context['hub_slug'] ?? '')] ?? 'picks';
+            $n = count($items);
+            $leadAt = -1;
+            if ($n >= 5) {
+                foreach (array_values($items) as $i => $it) {
+                    if (!empty(((array) $it)['images'])) { $leadAt = $i; break; }
+                }
+            }
+            $out .= '<section class="rg-hub-category hx-cat" id="cat-' . $this->e($key) . '">';
+            $out .= '<header class="hx-cat__head">';
+            if ($icon !== '') $out .= '<span class="hx-cat__icon" aria-hidden="true">' . $icon . '</span>';
+            $out .= '<div class="min-w-0"><p class="hx-cat__count">' . $n . ' ' . $noun . '</p>';
+            if ($label !== '') $out .= '<h2 class="hx-cat__title">' . $label . '</h2>';
+            if ($intro !== '') $out .= '<p class="hx-cat__intro">' . $intro . '</p>';
+            $out .= '</div></header>';
+            $out .= '<div class="hx-grid hx-grid--' . $perRow . '">';
+            foreach (array_values($items) as $i => $item) {
+                $out .= $this->hubItemCard((array) $item, true, $urlPrefix, $icon, $label !== '' ? html_entity_decode($label, ENT_QUOTES, 'UTF-8') : '', $i === $leadAt);
+            }
+            $out .= '</div></section>' . $this->hubItemDialog();
         }
         return $out;
     }
