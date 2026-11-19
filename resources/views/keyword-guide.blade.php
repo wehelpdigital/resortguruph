@@ -53,7 +53,11 @@
     $facts = $of(['facts_list', 'quick_facts'])->flatMap(fn ($p) => $p['payload']['cards'] ?? [])->values()->all();
     $tips = $of(['local_tip'])->pluck('payload')->filter(fn ($t) => trim($t['body'] ?? '') !== '')->values()->all();
     $attr = $first('attractions')['payload'] ?? null;
-    $attrItems = array_values(array_filter($attr['items'] ?? [], fn ($i) => trim($i['name'] ?? '') !== ''));
+    // some seeded payloads hold pre-escaped text ("People&#039;s Park"): decode once so Blade escapes it only once
+    $attrItems = array_values(array_filter(array_map(
+        fn ($i) => array_map(fn ($v) => is_string($v) ? html_entity_decode($v, ENT_QUOTES | ENT_HTML5, 'UTF-8') : $v, (array) $i),
+        $attr['items'] ?? []
+    ), fn ($i) => trim($i['name'] ?? '') !== ''));
     $getting = $first('how_to_get_to')['payload'] ?? null;
     $map = $first('map_embed')['payload'] ?? null;
     $faqBlock = $first('faq')['payload'] ?? null;

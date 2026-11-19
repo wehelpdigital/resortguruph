@@ -3675,7 +3675,7 @@ class BlockRenderer
             $out .= '<div class="rg-dfs-img-wrap">';
             if ($imgUrl !== '') {
                 $alt = $name . ($location !== '' ? ' in ' . $location : '');
-                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $this->e($alt) . '" loading="lazy" class="rg-dfs-img">';
+                $out .= '<img src="' . $this->e($imgUrl) . '" alt="' . $alt . '" loading="lazy" class="rg-dfs-img">'; // $name/$location are already escaped
             } else {
                 $out .= '<div class="rg-dfs-img rg-dfs-img--fallback">';
                 $out .= '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 12 8 12s8-6.5 8-12a8 8 0 0 0-8-8z"/></svg>';
