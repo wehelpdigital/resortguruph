@@ -83,4 +83,20 @@ class PageKit
             $html
         ) ?? $html;
     }
+
+    /**
+     * Keyword phrase as a display title: small words stay lower case and the
+     * usual acronyms stay upper case ("restaurant in bgc" -> "Restaurant in BGC").
+     */
+    public static function titleCase(string $s): string
+    {
+        $small = ['of', 'the', 'in', 'at', 'on', 'and', 'a', 'an', 'to', 'for', 'by', 'from', 'with', 'near'];
+        $words = preg_split('/\s+/', mb_strtolower(trim($s))) ?: [];
+        foreach ($words as $i => $w) {
+            if ($w === '') continue;
+            $words[$i] = ($i === 0 || !in_array($w, $small, true)) ? mb_convert_case($w, MB_CASE_TITLE, 'UTF-8') : $w;
+        }
+        $acr = ['Bgc' => 'BGC', 'Moa' => 'MOA', 'Qc' => 'QC', 'Cdo' => 'CDO', 'Sm' => 'SM', 'Atc' => 'ATC', 'Up' => 'UP', 'Ust' => 'UST', 'Edsa' => 'EDSA', 'Naia' => 'NAIA', 'Ncr' => 'NCR', 'Pitx' => 'PITX', 'Bf' => 'BF', 'Diy' => 'DIY'];
+        return preg_replace_callback('/\b(' . implode('|', array_keys($acr)) . ')\b/', fn ($m) => $acr[$m[1]], implode(' ', $words)) ?? implode(' ', $words);
+    }
 }

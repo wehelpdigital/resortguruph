@@ -13,7 +13,7 @@ class SchemaGenerator
 {
     public function organization(): array
     {
-        $name = RgSetting::get('site_name', 'Resort Guru PH');
+        $name = RgSetting::get('site_name', 'Tourist Guide Ph');
         $url = config('app.url', url('/'));
         return [
             '@context' => 'https://schema.org',
@@ -32,7 +32,7 @@ class SchemaGenerator
     public function website(): array
     {
         $url = config('app.url', url('/'));
-        $name = RgSetting::get('site_name', 'Resort Guru PH');
+        $name = RgSetting::get('site_name', 'Tourist Guide Ph');
         return [
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',

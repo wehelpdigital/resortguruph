@@ -136,7 +136,7 @@ class SitemapController extends Controller
                     }
                     $links = [['label' => 'All resorts in ' . $meta[$regionKey]['name'], 'url' => route('destinations.cluster', $regionKey), 'strong' => true]];
                     foreach ($kws as $k) {
-                        $links[] = ['label' => ucwords($k->phrase), 'url' => url($k->slug)];
+                        $links[] = ['label' => \App\Support\PageKit::titleCase($k->phrase), 'url' => url($k->slug)];
                     }
                     $sections[] = ['group' => 'Destinations by region', 'title' => $meta[$regionKey]['name'], 'links' => $links];
                 });
@@ -148,7 +148,7 @@ class SitemapController extends Controller
                 ->orderByDesc('search_volume_monthly')
                 ->get(['phrase', 'slug']);
             if ($foodKws->isNotEmpty()) {
-                $sections[] = ['group' => 'Food & experiences', 'title' => 'Food finds', 'links' => $foodKws->map(fn ($k) => ['label' => ucwords($k->phrase), 'url' => url($k->slug)])->all()];
+                $sections[] = ['group' => 'Food & experiences', 'title' => 'Food finds', 'links' => $foodKws->map(fn ($k) => ['label' => \App\Support\PageKit::titleCase($k->phrase), 'url' => url($k->slug)])->all()];
             }
 
             // Fiestas.
