@@ -45,7 +45,7 @@
         <p class="pk-eyebrow !text-sun-300">Happening in {{ $monthName }}</p>
         <h2 class="pk-h2 !text-white max-w-2xl">Time your trip with a fiesta</h2>
         {{-- a compact list: the same fiestas have their photo cards in the calendar below --}}
-        <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             @foreach($thisMonth as $f)
                 <a href="{{ route('fiestas.show', $f->slug) }}" class="group flex items-center gap-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3.5 hover:bg-white/10 transition">
                     <span class="shrink-0 w-14 h-14 rounded-xl bg-white/10 flex flex-col items-center justify-center leading-none">
