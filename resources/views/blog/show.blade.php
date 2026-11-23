@@ -21,7 +21,12 @@
 @endphp
 
 @include('partials.page-hero', [
-    'slides' => $post->cover_path ? [['src' => '/storage/' . ltrim($post->cover_path, '/')]] : [],
+    // the cover carries its photo credit (Commons / Flickr licences ask for attribution)
+    'slides' => $post->cover_path ? [(function () use ($post) {
+        $src = '/storage/' . ltrim($post->cover_path, '/');
+        $meta = \App\Support\GuideHtml::mediaMeta($src);
+        return ['src' => $src, 'caption' => (string) ($meta['credit'] ?? ''), 'credit_url' => (string) ($meta['source_url'] ?? '')];
+    })()] : [],
     'size' => 'md',
     'crumbs' => [['Home', url('/')], ['Blog', route('blog.index')], [\Illuminate\Support\Str::limit($post->title, 48), null]],
     'kicker' => $tags ? ucwords($tags[0]) : 'Travel story',
