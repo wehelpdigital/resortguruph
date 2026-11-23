@@ -3123,22 +3123,30 @@ class BlockRenderer
         $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
         if ($intro !== '') $out .= '<p class="rg-foods__intro">' . $intro . '</p>';
         $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">';
+        // settle each dish's photo first (the checked photo, once per page), then show the
+        // dishes with a photo before the text-only cards so rows stay even
+        foreach ($items as $k => $item) {
+            $img = trim((string) ($item['image'] ?? ''));
+            if ($img === '' || \App\Support\GuideHtml::isPlaceholder($img)) {
+                $img = \App\Support\GuideHtml::subjectPhoto('food', (string) $item['name']);
+                if ($img !== '' && !\App\Support\GuideHtml::claim($img)) $img = '';
+            }
+            $items[$k]['_img'] = $img;
+        }
+        $items = array_merge(array_values(array_filter($items, fn ($i) => $i['_img'] !== '')), array_values(array_filter($items, fn ($i) => $i['_img'] === '')));
+        $textNo = 0;
         foreach ($items as $n => $item) {
             $name = $this->e(trim((string) $item['name']));
             $where = $this->e($item['where'] ?? '');
             $blurb = $this->e($item['blurb'] ?? '');
-            $img = trim((string) ($item['image'] ?? ''));
-            if ($img === '' || \App\Support\GuideHtml::isPlaceholder($img)) {
-                // the checked photo of this dish, once per page
-                $img = \App\Support\GuideHtml::subjectPhoto('food', (string) $item['name']);
-                if ($img !== '' && !\App\Support\GuideHtml::claim($img)) $img = '';
-            }
+            $img = $item['_img'];
+            if ($img === '') $textNo++;
             $out .= '<article class="rg-food' . ($img === '' ? ' rg-food--text' : '') . '">';
             if ($img !== '') {
                 $out .= '<span class="rg-food__img"><img src="' . $this->e($this->normalizeMediaUrl($img)) . '" alt="' . $name . '" loading="lazy"></span>';
             }
             $out .= '<div class="rg-food__body">'
-                . ($img === '' ? '<span class="rg-food__num">' . str_pad((string) ($n + 1), 2, '0', STR_PAD_LEFT) . '</span>' : '')
+                . ($img === '' ? '<span class="rg-food__num">' . str_pad((string) $textNo, 2, '0', STR_PAD_LEFT) . '</span>' : '')
                 . '<h3 class="rg-food__name">' . $name . '</h3>'
                 . ($where !== '' ? '<p class="rg-food__where"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/></svg>' . $where . '</p>' : '')
                 . ($blurb !== '' ? '<p class="rg-food__blurb">' . $blurb . '</p>' : '')

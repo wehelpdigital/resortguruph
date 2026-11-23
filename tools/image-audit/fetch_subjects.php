@@ -64,7 +64,9 @@ $file = sprintf('%s/cand-%d-%d%s.jsonl', $out, $from, min($to, 99999), getenv('O
 if (is_file($file)) foreach (file($file) as $line) { $r = json_decode($line, true); if ($r) $done[$r['id']] = true; }
 $fh = fopen($file, 'a');
 $root = __DIR__ . '/../../storage/app/public/';
-usort($subjects, fn ($a, $b) => $b['uses'] <=> $a['uses']); // most-seen subjects first
+// wrong blog photos, hub items, festivals and dishes first, then places by how often they are shown
+$prio = fn ($k) => ['blogfig' => 0, 'hub-foods' => 1, 'hub-cultures' => 1, 'hub-buys' => 1, 'hub-activities' => 1, 'fiesta' => 2, 'festival' => 2, 'food' => 3][$k] ?? 4;
+usort($subjects, fn ($a, $b) => [$prio($a['kind']), -$a['uses']] <=> [$prio($b['kind']), -$b['uses']]);
 if (getenv('ORDER') === 'asc') $subjects = array_reverse($subjects); // a second worker starts from the other end
 $seenOther = function () use ($out) {
     $ids = [];
