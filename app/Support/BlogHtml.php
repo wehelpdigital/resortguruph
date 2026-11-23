@@ -20,10 +20,13 @@ use DOMXPath;
 class BlogHtml
 {
     private static DOMDocument $doc;
+    /** photo ids already on the page (the cover, earlier figures): each photo shows once */
+    private static array $shown = [];
 
-    public static function transform(?string $html): string
+    public static function transform(?string $html, string $cover = ''): string
     {
         $html = (string) $html;
+        self::$shown = $cover !== '' ? [GuideHtml::photoId($cover) => true] : [];
         if (!str_contains($html, 'rg-h2-iconized')) return $html;
 
         $doc = new DOMDocument();
@@ -38,6 +41,19 @@ class BlogHtml
         // photos found to show something else (or missing on disk) are left out wherever they sit
         foreach (iterator_to_array($doc->getElementsByTagName('img')) as $img) {
             if (GuideHtml::usable((string) $img->getAttribute('src'))) continue;
+            $fig = $img->parentNode;
+            while ($fig instanceof DOMElement && strtolower($fig->tagName) !== 'figure' && $fig !== $root) $fig = $fig->parentNode;
+            $node = $fig instanceof DOMElement && strtolower($fig->tagName) === 'figure' ? $fig : $img;
+            if ($node->parentNode) $node->parentNode->removeChild($node);
+        }
+        // a photo already shown (the cover, an earlier figure) is not repeated further down
+        foreach (iterator_to_array($doc->getElementsByTagName('img')) as $img) {
+            if ($img->parentNode === null) continue;
+            $inStays = false;
+            for ($p = $img->parentNode; $p instanceof DOMElement && $p !== $root; $p = $p->parentNode) if (strtolower($p->tagName) === 'a') { $inStays = true; break; }
+            if ($inStays) continue; // guide cards pick their own photo in stays()
+            $id = GuideHtml::photoId((string) $img->getAttribute('src'));
+            if (!isset(self::$shown[$id])) { self::$shown[$id] = true; continue; }
             $fig = $img->parentNode;
             while ($fig instanceof DOMElement && strtolower($fig->tagName) !== 'figure' && $fig !== $root) $fig = $fig->parentNode;
             $node = $fig instanceof DOMElement && strtolower($fig->tagName) === 'figure' ? $fig : $img;
@@ -167,7 +183,7 @@ class BlogHtml
     private static function stays(DOMElement $grid): string
     {
         $out = '<div class="bx-stays not-prose">';
-        $seen = [];
+        $seen = self::$shown;
         $n = 0;
         foreach ($grid->getElementsByTagName('a') as $a) {
             $href = self::localUrls($a->getAttribute('href'));
