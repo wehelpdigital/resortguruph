@@ -101,7 +101,11 @@
     foreach ([[$getting['heading'] ?? '', '/^How to get to (.+)$/i'], [$attr['heading'] ?? '', "/^What['’]?s in (.+?)\\??$/i"], [$rating['title'] ?? '', '/^Our take on (.+)$/i']] as [$h, $re]) {
         if ($h && preg_match($re, trim($h), $m)) { $place = trim($m[1]); break; }
     }
-    $place = $place ?: ($cluster['name'] ?? $properTitle(preg_replace('/^(beach\s+resort|resort|hotel|hotels|airbnb|restaurant|restaurants|where to eat|tourist spots?)\s+(in|at|near)\s+/i', '', $keyword->phrase)));
+    // else the place named in the keyword ("restaurant in moalboal"), then the region
+    $kwPlace = preg_match('/\b(?:in|at|near)\s+(.+)$/i', $keyword->phrase, $kpm) ? $properTitle($kpm[1]) : '';
+    $place = $place ?: ($kwPlace ?: ($cluster['name'] ?? $properTitle(preg_replace('/^(beach\s+resort|resort|hotel|hotels|airbnb|restaurant|restaurants|where to eat|tourist spots?)\s+(in|at|near)\s+/i', '', $keyword->phrase))));
+    // seeded getting-there text that still carries its template placeholder
+    if (is_array($getting)) array_walk_recursive($getting, function (&$v) use ($place) { if (is_string($v)) $v = str_replace('$area', $place, $v); });
     $gridItems = [];
     if ($showAttrGrid) {
         // every card shows a photo: the checked photo, else its own; cards without one are left out
