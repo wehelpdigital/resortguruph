@@ -309,7 +309,7 @@
                 <h2 class="pk-h2 !text-2xl sm:!text-3xl">All {{ number_format($s['guides']) }} destination guides</h2>
             </div>
         </div>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
             @foreach($data['az'] as $g)
                 <details class="dx-az">
                     <summary><span class="font-semibold text-ink-900">{{ $g['name'] }}</span><span class="text-sm text-slate-500">{{ count($g['guides']) }}</span></summary>

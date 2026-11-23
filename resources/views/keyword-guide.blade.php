@@ -52,7 +52,11 @@
     $wwww = $first('wwww_card')['payload'] ?? [];
     $rating = $first('editor_rating')['payload'] ?? null;
     $facts = $of(['facts_list', 'quick_facts'])->flatMap(fn ($p) => $p['payload']['cards'] ?? [])->values()->all();
-    $tips = $of(['local_tip'])->pluck('payload')->filter(fn ($t) => trim($t['body'] ?? '') !== '')->values()->all();
+    // seeded text writes some acronyms as words ("Bgc packs ...") and carries the odd em dash in labels
+    $fixText = fn ($v) => is_string($v) ? str_replace([' — ', '—'], [', ', ', '], preg_replace_callback('~\b(Bgc|Moa|Cdo|Qc|Nlex|Slex|Tplex|Sctex|Naia|Uptc)\b~', fn ($m) => strtoupper($m[1]), $v)) : $v;
+    // a seeded summary cut off mid-word ("Bauang next door h...") ends at its last whole sentence instead
+    $whole = function ($v) { $v = trim((string) $v); if (!preg_match('~(\.\.\.|…)$~u', $v)) return $v; $cut = mb_strrpos($v, '. '); return $cut !== false && $cut > 40 ? mb_substr($v, 0, $cut + 1) : $v; };
+    $tips = $of(['local_tip'])->pluck('payload')->filter(fn ($t) => trim($t['body'] ?? '') !== '')->map(fn ($t) => array_map($fixText, (array) $t))->values()->all();
     $attr = $first('attractions')['payload'] ?? null;
     // some seeded payloads hold pre-escaped text ("People&#039;s Park"): decode once so Blade escapes it only once
     $attrItems = array_values(array_filter(array_map(
@@ -88,7 +92,9 @@
     $foodHtml = $htmlOf(['foods_to_try', 'restaurant_recs_band']);
     $reviewsHtml = $htmlOf(['reviews_band']);
     $exploreHtml = $htmlOf(['nearby_destinations', 'related_blogs']);
-    $extHtml = $htmlOf(['external_guides', 'tag_pills']);
+    $tagHtml = $htmlOf(['tag_pills']);
+    $guidesHtml = $htmlOf(['external_guides']);
+    $extHtml = $tagHtml . $guidesHtml;
 
     // the place this guide is about: "How to get to El Nido" / "What's in El Nido?" / "Our take on El Nido"
     $place = null;
@@ -152,10 +158,10 @@
     $arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>';
     $toneHex = fn ($n) => ['blue' => '#13669c', 'emerald' => '#059669', 'rose' => '#e0462a', 'amber' => '#d97706', 'violet' => '#7c3aed', 'slate' => '#334155', 'cyan' => '#0891b2', 'orange' => '#ea580c'][$n] ?? '#13669c';
     $wwwwRows = array_values(array_filter([
-        ['Why go', trim((string) ($wwww['why'] ?? '')), '#ef5b3a', '<path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/>'],
-        ['When to go', trim((string) ($wwww['when'] ?? '')), '#13669c', '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>'],
-        ['Where to base', trim((string) ($wwww['where'] ?? '')), '#059669', '<path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/>'],
-        ['Who it suits', trim((string) ($wwww['whom'] ?? '')), '#7c3aed', '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>'],
+        ['Why go', $whole($fixText($wwww['why'] ?? '')), '#ef5b3a', '<path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/>'],
+        ['When to go', $whole($fixText($wwww['when'] ?? '')), '#13669c', '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>'],
+        ['Where to base', $whole($fixText($wwww['where'] ?? '')), '#059669', '<path d="M12 21s-7-7.5-7-13a7 7 0 0 1 14 0c0 5.5-7 13-7 13z"/><circle cx="12" cy="8" r="2.5"/>'],
+        ['Who it suits', $whole($fixText($wwww['whom'] ?? '')), '#7c3aed', '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>'],
     ], fn ($r) => $r[1] !== ''));
     $tldrBody = trim((string) ($tldr['body'] ?? ''));
     $tldrBullets = [];
@@ -210,7 +216,11 @@
 
 {{-- ============ OVERVIEW ============ --}}
 <section id="overview" class="gx-sec py-14 md:py-20">
-    <div class="pk-wrap grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-8 lg:gap-14 items-start">
+    {{-- Balanced layout: the summary sits next to the score card; the at-a-glance tiles and the
+         local tips flow together in a masonry row below (no stretched, half-empty cards). Pages
+         without tiles keep their tips under the summary so both columns end level. --}}
+    @php $tipsInMasonry = (bool) $wwwwRows; $tipsBeside = !$wwwwRows && $rating; @endphp
+    <div class="pk-wrap grid {{ ($rating || !$tipsBeside && $tips) ? 'lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]' : '' }} gap-8 lg:gap-14 items-start">
         <div>
             <p class="pk-eyebrow">{{ $tldr['eyebrow'] ?? 'The short version' }}</p>
             <h2 class="pk-h2">{{ $place }} at a glance</h2>
@@ -226,20 +236,20 @@
                 @endif
             @endif
 
-            @if($wwwwRows)
-                <div class="mt-8 grid sm:grid-cols-2 gap-3">
-                    @foreach($wwwwRows as [$label, $body, $color, $icon])
-                        <div class="rg-glance__tile" style="--c:{{ $color }}">
-                            <span class="rg-glance__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $icon !!}</svg></span>
-                            <div class="min-w-0"><h3 class="rg-glance__label">{{ $label }}</h3><p class="rg-glance__text">{{ $body }}</p></div>
-                        </div>
-                    @endforeach
+            @if($tipsBeside && $tips)
+                <div class="mt-8 space-y-4">
+                @foreach($tips as $t)
+                    <aside class="gx-tip">
+                        <span class="gx-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
+                        <div><p class="gx-tip__eyebrow">{{ $t['eyebrow'] ?? 'Local tip' }}</p><p class="gx-tip__text">{{ $t['body'] }}</p></div>
+                    </aside>
+                @endforeach
                 </div>
             @endif
-
         </div>
 
-        <div class="space-y-5 lg:sticky lg:top-[calc(var(--rg-header-h,76px)+4.5rem)]">
+        @if($rating || (!$tipsInMasonry && !$tipsBeside && $tips))
+        <div class="space-y-5">
             @if($rating)
                 <div class="gx-score">
                     <div class="gx-score__top">
@@ -265,14 +275,38 @@
                     @if(!empty($rating['summary']))<p class="gx-score__summary">{{ $rating['summary'] }}</p>@endif
                 </div>
             @endif
-            @foreach($tips as $t)
-                <aside class="gx-tip">
-                    <span class="gx-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
-                    <div><p class="gx-tip__eyebrow">{{ $t['eyebrow'] ?? 'Local tip' }}</p><p class="gx-tip__text">{{ $t['body'] }}</p></div>
-                </aside>
-            @endforeach
+            @if(!$tipsInMasonry && !$tipsBeside)
+                @foreach($tips as $t)
+                    <aside class="gx-tip">
+                        <span class="gx-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
+                        <div><p class="gx-tip__eyebrow">{{ $t['eyebrow'] ?? 'Local tip' }}</p><p class="gx-tip__text">{{ $t['body'] }}</p></div>
+                    </aside>
+                @endforeach
+            @endif
         </div>
+        @endif
     </div>
+
+    @if($wwwwRows)
+        <div class="pk-wrap mt-10">
+            <div class="gx-glance">
+                        @foreach($wwwwRows as [$label, $body, $color, $icon])
+                            <div class="rg-glance__tile" style="--c:{{ $color }}">
+                                <span class="rg-glance__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $icon !!}</svg></span>
+                                <div class="min-w-0"><h3 class="rg-glance__label">{{ $label }}</h3><p class="rg-glance__text">{{ $body }}</p></div>
+                            </div>
+                        @endforeach
+                @if($tipsInMasonry)
+                    @foreach($tips as $t)
+                        <aside class="gx-tip">
+                            <span class="gx-tip__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
+                            <div><p class="gx-tip__eyebrow">{{ $t['eyebrow'] ?? 'Local tip' }}</p><p class="gx-tip__text">{{ $t['body'] }}</p></div>
+                        </aside>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+    @endif
 
     @if($facts)
         <div class="pk-wrap mt-12 md:mt-14">
@@ -337,7 +371,13 @@
                         $img = $it['_img'];
                         $tag = !empty($it['url']) ? 'a' : 'div';
                     @endphp
-                    <{{ $tag }} @if($tag === 'a') href="{{ $it['url'] }}" @endif class="gx-spot group {{ $n === 0 && count($gridItems) >= 4 ? 'gx-spot--big' : '' }}">
+                    @php
+                        // fill the last row of the 3-column grid (the lead card takes 2x2 from 4 items up)
+                        $cnt = count($gridItems);
+                        $rem = $cnt >= 4 ? ($cnt - 3) % 3 : $cnt % 3;
+                        $fill = $n === $cnt - 1 ? ($rem === 1 ? 'gx-spot--row' : ($rem === 2 ? 'gx-spot--wide' : '')) : '';
+                    @endphp
+                    <{{ $tag }} @if($tag === 'a') href="{{ $it['url'] }}" @endif class="gx-spot group {{ $n === 0 && $cnt >= 4 ? 'gx-spot--big' : '' }} {{ $fill }}">
                         <span class="gx-spot__img"><img src="{{ $img }}" alt="{{ $it['name'] }}" loading="lazy"><span class="gx-spot__n">{{ $n + 1 }}</span></span>
                         <span class="gx-spot__body">
                             <h3 class="gx-spot__name">{{ $it['name'] }}</h3>
@@ -389,7 +429,7 @@
 {{-- ============ GETTING THERE ============ --}}
 @if($getting || $map)
 <section id="getting-there" class="gx-sec py-14 md:py-20">
-    <div class="pk-wrap grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-10 lg:gap-14 items-start">
+    <div class="pk-wrap grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-10 lg:gap-14 items-start lg:items-stretch">
         <div>
             <p class="pk-eyebrow">Getting there</p>
             <h2 class="pk-h2">{{ $getting['heading'] ?? ('How to get to ' . $place) }}</h2>
@@ -418,7 +458,7 @@
                 $mapQuery = '';
                 if (preg_match('~[?&]q=([^&]+)~', $map['embed_url'], $mq)) $mapQuery = urldecode($mq[1]);
             @endphp
-            <div class="gx-map lg:sticky lg:top-[calc(var(--rg-header-h,76px)+4.5rem)]">
+            <div class="gx-map">
                 <div class="gx-map__head">
                     <h2 class="font-display font-extrabold text-ink-900 text-lg">{{ $map['heading'] ?? 'On the map' }}</h2>
                     <a href="https://www.google.com/maps/search/?api=1&query={{ rawurlencode($mapQuery ?: $place . ', Philippines') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm font-bold text-brand-700 hover:text-brand-800">Open in Google Maps <span class="w-4 h-4 inline-flex">{!! $arrow !!}</span></a>
@@ -505,10 +545,13 @@
 <section id="explore" class="gx-sec bg-sand-100 py-14 md:py-20">
     <div class="pk-wrap">
         @if($exploreHtml !== '')<div class="gx-blocks">{!! $exploreHtml !!}</div>@endif
-        <div class="grid lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-8 mt-6 items-start">
-            @if($extHtml !== '')<div class="gx-blocks">{!! $extHtml !!}</div>@endif
-            @if($author && !empty($author['name']))
-                <div class="gx-author">
+        {{-- tags, then the cross-check cards across the full width, then the byline as a wide band:
+             no column sits beside a much taller one --}}
+        @if($tagHtml !== '')<div class="gx-blocks gx-explore-tags">{!! $tagHtml !!}</div>@endif
+        @if($guidesHtml !== '')<div class="gx-blocks gx-xg-wide mt-12">{!! $guidesHtml !!}</div>@endif
+        @if($author && !empty($author['name']))
+            <div class="gx-author mt-10">
+                <div class="gx-author__who">
                     <p class="gx-author__eyebrow">{{ $author['eyebrow'] ?? 'Written by' }}</p>
                     <div class="flex items-center gap-4 mt-3">
                         @if(!empty($author['avatar']))<img src="{{ $author['avatar'] }}" alt="{{ $author['name'] }}" class="w-16 h-16 rounded-2xl object-cover ring-4 ring-white/10" loading="lazy">@endif
@@ -517,11 +560,13 @@
                             @if(!empty($author['role']))<p class="text-sm text-white/65">{{ $author['role'] }}</p>@endif
                         </div>
                     </div>
-                    @if(!empty($author['bio']))<p class="mt-4 text-white/80 leading-relaxed">{{ $author['bio'] }}</p>@endif
-                    @if(!empty($author['more_url']))<a href="{{ $author['more_url'] }}" class="mt-4 inline-flex text-sm font-bold text-sun-300 hover:text-sun-200">{{ $author['more_label'] ?: 'More from this writer' }} &rarr;</a>@endif
                 </div>
-            @endif
-        </div>
+                <div class="gx-author__bio">
+                    @if(!empty($author['bio']))<p class="text-white/80 leading-relaxed">{{ $author['bio'] }}</p>@endif
+                    @if(!empty($author['more_url']))<a href="{{ $author['more_url'] }}" class="mt-3 inline-flex text-sm font-bold text-sun-300 hover:text-sun-200">{{ $author['more_label'] ?: 'More from this writer' }} &rarr;</a>@endif
+                </div>
+            </div>
+        @endif
     </div>
 </section>
 @endif
@@ -642,6 +687,11 @@
         .gx-todo__spots .gh-spot--lead .gh-spot__body { padding: 2.25rem 2.5rem; }
     }
 
+    .gx-glance { columns: 1; column-gap: 1rem; }
+    @media (min-width: 640px) { .gx-glance { columns: 2; } }
+    @media (min-width: 1100px) { .gx-glance { columns: 3; } }
+    .gx-glance > * { break-inside: avoid; margin-bottom: 1rem; }
+    .gx-glance > .gx-tip { display: flex; }
     .gx-spots { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
     @media (min-width: 640px) { .gx-spots { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (min-width: 1024px) { .gx-spots { grid-template-columns: repeat(3, minmax(0, 1fr)); } .gx-spot--big { grid-column: span 2; grid-row: span 2; } }
@@ -655,6 +705,14 @@
     .gx-spot__body { display: block; padding: 1rem 1.15rem 1.15rem; }
     .gx-spot__name { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: 1.08rem; line-height: 1.3; color: #0b1b2b; }
     .gx-spot--big .gx-spot__name { font-size: 1.45rem; }
+    @media (min-width: 1024px) {
+        .gx-spot--wide { grid-column: span 2; }
+        .gx-spot--wide .gx-spot__img { aspect-ratio: auto; flex: 1; min-height: 12rem; }
+        .gx-spot--row { grid-column: 1 / -1; flex-direction: row; }
+        .gx-spot--row .gx-spot__img { aspect-ratio: auto; width: 40%; min-height: 15rem; flex: none; }
+        .gx-spot--row .gx-spot__body { flex: 1; align-self: center; padding: 1.5rem 2rem; }
+        .gx-spot--row .gx-spot__name { font-size: 1.3rem; }
+    }
     .gx-spot__blurb { margin-top: .4rem; font-size: .92rem; line-height: 1.6; color: #5b6b80; }
 
     .gx-way { border-radius: 1.2rem; border: 1px solid #e3e9f0; background: #fff; transition: border-color .2s ease, box-shadow .2s ease; }
@@ -672,7 +730,8 @@
     .gx-map { border-radius: 1.5rem; overflow: hidden; border: 1px solid #e3e9f0; background: #fff; box-shadow: 0 30px 60px -36px rgba(11, 27, 43, .45); }
     .gx-map__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.2rem; flex-wrap: wrap; }
     .gx-map iframe { display: block; width: 100%; height: 22rem; border: 0; }
-    @media (min-width: 1024px) { .gx-map iframe { height: 30rem; } }
+    /* the map fills the height of the directions column beside it, so neither side leaves a hole */
+    @media (min-width: 1024px) { .gx-map { display: flex; flex-direction: column; min-height: 30rem; } .gx-map iframe { flex: 1 1 auto; height: auto; min-height: 26rem; } }
 
     .gx-faq { display: grid; gap: .6rem; }
     .gx-faq__item { border-radius: 1.1rem; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); }
@@ -688,7 +747,10 @@
     .gx-faq__item[open] .gx-faq__icon::after { opacity: 0; }
     .gx-faq__answer { padding: 0 1.25rem 1.2rem; color: rgba(255, 255, 255, .78); line-height: 1.7; }
 
-    .gx-author { border-radius: 1.5rem; background: #0b1b2b; padding: 1.5rem; }
+    .gx-author { border-radius: 1.5rem; background: #0b1b2b; padding: 1.5rem; display: grid; gap: 1.25rem; }
+    @media (min-width: 768px) { .gx-author { grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr); align-items: center; gap: 2.5rem; padding: 1.75rem 2rem; } .gx-author__bio { border-left: 1px solid rgba(255, 255, 255, .12); padding-left: 2.5rem; } }
+    .gx-explore-tags .rg-tags { margin: 2.5rem 0 1rem; }
+    @media (min-width: 1024px) { .gx-xg-wide .xg__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .gx-xg-wide .xg .gh-intro { max-width: 46rem; } }
     .gx-author__eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #ffc74a; }
 </style>
 <script>

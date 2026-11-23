@@ -2037,6 +2037,7 @@ class BlockRenderer
             if ($blurbRaw === '' && !empty($platform['defaultBlurb'])) {
                 $blurbRaw = $platform['defaultBlurb'];
             }
+            if ($blurbRaw === '') $blurbRaw = 'A second source worth a quick look before you go. Compare its details with what you read here.';
             $blurb = $this->e($blurbRaw);
 
             $initial = $this->e(mb_strtoupper(mb_substr(preg_replace('~^the\s+~i', '', $rawName) ?: $rawName, 0, 1, 'UTF-8'), 'UTF-8'));
@@ -2333,6 +2334,20 @@ class BlockRenderer
                 'color' => 'rose',
                 'wordmark' => 'Instagram',
                 'defaultBlurb' => 'Recent guest photos and the daily-special story posts. Filter by the location tag to see what the food and rooms actually look like right now, not in the brochure.',
+            ],
+            'philippines.travel' => [
+                'host' => 'philippines.travel',
+                'brandColor' => '#1e293b',
+                'color' => 'slate',
+                'wordmark' => 'Department of Tourism',
+                'defaultBlurb' => 'The official tourism site: event calendars, travel advisories, and the accredited list of hotels, tour operators, and guides for the area.',
+            ],
+            'tourism.gov.ph' => [
+                'host' => 'tourism.gov.ph',
+                'brandColor' => '#1e293b',
+                'color' => 'slate',
+                'wordmark' => 'Department of Tourism',
+                'defaultBlurb' => 'The official tourism site: event calendars, travel advisories, and the accredited list of hotels, tour operators, and guides for the area.',
             ],
             'youtube' => [
                 'host' => 'youtube.com',
