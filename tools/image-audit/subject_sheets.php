@@ -18,10 +18,10 @@ foreach ($subjects as $id => $s) {
     if ($only !== null && !isset($only[$id])) continue;
     if (!isset($cands[$id]) && !$s['local']) continue;          // not fetched yet
     $cells = [];
-    if ($s['current'] !== '' && !preg_match('~/rg-media/destinations/~', $s['current'])) $cells['cur'] = ['local' => $s['current']];
+    if ($s['current'] !== '' && ($s['kind'] === 'blogfig' || !preg_match('~/rg-media/destinations/~', $s['current']))) $cells['cur'] = ['local' => $s['current']];
     foreach (array_slice($s['local'], 0, 3) as $k => $l) if ($l !== $s['current']) $cells['L' . ($k + 1)] = ['local' => $l];
     foreach (array_slice($cands[$id] ?? [], 0, 4) as $k => $c) if (!empty($c['thumb_file'])) $cells['C' . ($k + 1)] = ['commons' => $k, 'file' => $c['thumb_file']];
-    if (!array_filter(array_keys($cells), fn ($l) => $l !== 'cur')) continue; // nothing new to choose from
+    if (!getenv('CUR_ONLY') && !array_filter(array_keys($cells), fn ($l) => $l !== 'cur')) continue; // nothing new to choose from
     $rows[] = ['id' => $id, 'cells' => $cells];
 }
 
