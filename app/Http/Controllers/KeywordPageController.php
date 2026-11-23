@@ -248,7 +248,8 @@ class KeywordPageController extends Controller
             $attrPhotos = [];
             foreach ($allBlocks->where('block_type', 'attractions') as $ab) {
                 foreach ((array) (json_decode((string) $ab->payload_json, true)['items'] ?? []) as $it) {
-                    if (!empty($it['name']) && !empty($it['image'])) $attrPhotos[(string) $it['name']] = (string) $it['image'];
+                    $ph = \App\Support\GuideHtml::attractionPhoto((array) $it);
+                    if (!empty($it['name']) && $ph !== '') $attrPhotos[(string) $it['name']] = $ph;
                 }
             }
             \App\Support\GuideHtml::preferPhotos($attrPhotos);

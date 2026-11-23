@@ -31,6 +31,14 @@ foreach (DB::table('rg_content_blocks')->where('block_type', 'hero_slider')->get
         $add($im['src'] ?? '', trim(($im['caption_title'] ?? '') ?: ($im['alt'] ?? '')), 'hero:' . ($b->owner_type === 'seo_page' ? ($slugs[$b->owner_id] ?? $b->owner_id) : $b->owner_type . $b->owner_id));
     }
 }
+foreach (DB::table('rg_content_blocks')->whereIn('block_type', ['image', 'attractions'])->where('payload_json', 'like', '%' . str_replace('/', '\\/', ltrim($prefix, '/')) . '%')->get(['owner_id', 'block_type', 'payload_json']) as $b) {
+    $p = json_decode($b->payload_json, true) ?: [];
+    $where = 'page:' . ($slugs[$b->owner_id] ?? $b->owner_id);
+    if ($b->block_type === 'image') { $add($p['src'] ?? '', $p['alt'] ?? '', $where); continue; }
+    foreach ($p['items'] ?? [] as $it) {
+        foreach (array_merge([(string) ($it['image'] ?? '')], (array) ($it['images'] ?? [])) as $src) if ($src !== '') $add($src, $it['name'] ?? '', $where);
+    }
+}
 ksort($figs);
 $list = [];
 $n = 0;

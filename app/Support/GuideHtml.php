@@ -186,6 +186,29 @@ class GuideHtml
         return !str_starts_with($path, '/storage/') || is_file(storage_path('app/public/' . rawurldecode(substr($path, 9))));
     }
 
+    /**
+     * The photo for an attraction card: its own "image", else the first entry of its
+     * "images" list whose file name names the place ("moa-arena.jpg" for "Mall of Asia
+     * Arena"). The lists were filled with the area's photos in turn, so an entry that
+     * does not name the place is not used.
+     */
+    public static function attractionPhoto(array $item, string $place = ''): string
+    {
+        $own = trim((string) ($item['image'] ?? ''));
+        if ($own !== '' && self::usable($own)) return $own;
+        $generic = array_flip(array_merge(explode(' ', self::nameKey($place)), ['the', 'of', 'and', 'in', 'at', 'sm', 'mall', 'moa', 'asia', 'city', 'town', 'main', 'inside', 'area', 'side', 'beach', 'park']));
+        $want = array_diff(explode(' ', self::nameKey((string) ($item['name'] ?? ''))), array_keys($generic));
+        if (!$want) return '';
+        foreach ((array) ($item['images'] ?? []) as $cand) {
+            $cand = (string) $cand;
+            if (!self::usable($cand)) continue;
+            $file = self::nameKey(str_replace(['-', '_'], ' ', pathinfo((string) parse_url($cand, PHP_URL_PATH), PATHINFO_FILENAME)));
+            foreach ($want as $w) if (strlen($w) > 3 && str_contains(' ' . $file . ' ', ' ' . $w . ' ')) return $cand;
+            foreach ($want as $w) if (strlen($w) >= 3 && str_contains(str_replace(" ", "", $file), $w)) return $cand;
+        }
+        return '';
+    }
+
     public static function isPlaceholder(string $src): bool
     {
         if (preg_match('~placeholder|placehold\.co|/images/brand/~i', $src)) return true;

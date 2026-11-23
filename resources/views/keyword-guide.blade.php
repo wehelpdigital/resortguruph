@@ -43,11 +43,12 @@
     $htmlOf = fn (array $types) => \App\Support\PageKit::balance($of($types)->pluck('html')->implode(''));
 
     $placed = ['hero_slider', 'subtitle_intro', 'tldr_card', 'wwww_card', 'editor_rating', 'facts_list', 'quick_facts', 'local_tip',
-        'we_recommend_band', 'listing_slot', 'listing_block', 'attractions', 'adventures_band', 'foods_to_try', 'restaurant_recs_band',
+        'we_recommend_band', 'listing_slot', 'listing_block', 'attractions', 'adventures_band', 'foods_to_try', 'restaurant_recs_band', 'short_version',
         'how_to_get_to', 'map_embed', 'faq', 'reviews_band', 'nearby_destinations', 'related_blogs', 'external_guides', 'tag_pills', 'author'];
     $streamHtml = \App\Support\PageKit::figures(\App\Support\PageKit::balance($parts->reject(fn ($p) => in_array($p['type'], $placed, true))->pluck('html')->implode('')));
 
-    $tldr = $first('tldr_card')['payload'] ?? [];
+    // the summary: the TL;DR card, or the older "short version" block on pages that only have that
+    $tldr = $first('tldr_card')['payload'] ?? ($first('short_version')['payload'] ?? []);
     $wwww = $first('wwww_card')['payload'] ?? [];
     $rating = $first('editor_rating')['payload'] ?? null;
     $facts = $of(['facts_list', 'quick_facts'])->flatMap(fn ($p) => $p['payload']['cards'] ?? [])->values()->all();
@@ -314,11 +315,12 @@
             <div class="gx-spots">
                 @foreach($attrItems as $n => $it)
                     @php
-                        $img = trim((string) ($it['image'] ?? ''));
+                        $img = \App\Support\GuideHtml::attractionPhoto($it, $place ?? '');
                         $img = $img !== '' ? (preg_replace('~^https?://[^/]+(/storage/.*)$~i', '$1', $img) ?: $img) : '';
                         $checkedImg = \App\Support\GuideHtml::subjectPhoto('place', (string) $it['name'], $place ?? '');
                         if ($checkedImg !== '') $img = $checkedImg;
                         elseif ($img !== '' && (\App\Support\GuideHtml::isPlaceholder($img) || str_contains($img, '/rg-media/destinations/'))) $img = '';
+                        if ($img !== '' && !\App\Support\GuideHtml::claim($img)) $img = '';
                         $tag = !empty($it['url']) ? 'a' : 'div';
                     @endphp
                     <{{ $tag }} @if($tag === 'a') href="{{ $it['url'] }}" @endif class="gx-spot group {{ $n === 0 && count($attrItems) >= 4 ? 'gx-spot--big' : '' }}">
