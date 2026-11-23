@@ -19,6 +19,9 @@ class ResortPageController extends Controller
                 ['name' => $resort->name, 'url' => url('/listing/' . $resort->slug)],
             ]));
 
-        return view('resort-page', compact('resort', 'jsonld'));
+        $response = response()->view('resort-page', compact('resort', 'jsonld'));
+        // the seeded sample properties stay reachable for their owners but out of search engines
+        if ($resort->isDemo()) $response->header('X-Robots-Tag', 'noindex, nofollow');
+        return $response;
     }
 }

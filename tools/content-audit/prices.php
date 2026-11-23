@@ -41,6 +41,8 @@ function strip_prices(string $html, array &$log): string
             }
             // "(PHP 50)" asides
             $sentence = (string) preg_replace('~\s*\([^()]*?' . $price . '[^()]*\)~u', '', $sentence);
+            // "is the budget pick at 200 to 300 pesos per meal, and ..." -> "is the budget pick, and ..."
+            $sentence = (string) preg_replace('~\s+(?:at|for|around|about|roughly|under)\s+' . $price . '(?:\s+(?:per|a|each)\s+\w+)?(?=[,;])~iu', '', $sentence);
             // "... and PHP 50 fare."
             $sentence = (string) preg_replace('~\s+and\s+' . $price . '(?:\s+(?:fare|fee|each way|one way|round trip))?(?=[.,;!?])~iu', '', $sentence);
             // a closing clause after a comma: ", fare around PHP 200 to 250."
@@ -50,7 +52,7 @@ function strip_prices(string $html, array &$log): string
             // the price is the point (or too little is left): drop the sentence
             $kept = isset($tm[1]); // rewritten to its travel-time part
             $subject = !$kept && preg_match('~^(?:[*\-•]\s*)?(?:[\w ]+:\s*)?(?:total\s+)?(?:budget|cost|costs|price|prices|rates?|fares?|entrance|fees?)\b~iu', trim($orig));
-            $short = !$kept && mb_strlen(trim($sentence)) < 0.55 * mb_strlen(trim($orig));
+            $short = !$kept && mb_strlen(trim($sentence)) < 0.4 * mb_strlen(trim($orig));
             $unbalanced = substr_count($sentence, '(') !== substr_count($sentence, ')');
             if ($subject || $short || $unbalanced || preg_match('~' . $price . '~u', $sentence) || mb_strlen($bare) < 30) $sentence = '';
             unset($tm);
@@ -61,7 +63,9 @@ function strip_prices(string $html, array &$log): string
         return $out;
     };
     if (!str_contains($html, '<')) return $fixRun($html);
-    return (string) preg_replace_callback('~(?<=>)([^<>]+)(?=<)~u', fn ($m) => $fixRun($m[1]), $html);
+    // text before the first tag and after the last one counts too
+    $out = (string) preg_replace_callback('~(?<=>)([^<>]+)(?=<)~u', fn ($m) => $fixRun($m[1]), '<x>' . $html . '</x>');
+    return substr($out, 3, -4);
 }
 
 /** FAQ items / cards whose answer or text is now empty go as a whole. */
