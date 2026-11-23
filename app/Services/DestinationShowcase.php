@@ -119,7 +119,7 @@ class DestinationShowcase
     /** Everything the region page needs beyond the controller's keyword list. */
     public function region(string $slug, $keywords): array
     {
-        return Cache::remember('dest_region_v4_' . $slug, 600, function () use ($slug, $keywords) {
+        return Cache::remember('dest_region_v5_' . $slug, 600, function () use ($slug, $keywords) {
             $meta = DestinationsController::clusterMetadata()[$slug];
             $ids = $keywords->pluck('id')->all();
 
@@ -276,7 +276,8 @@ class DestinationShowcase
         [$by, $val] = self::FIESTA_SCOPE[$slug];
         $q = DB::table('rg_fiestas')->where('is_published', 1)->whereNotNull('cover_image_path');
         $by === 'region' ? $q->where('region_cluster', $val) : $q->where('province', 'like', '%' . $val . '%');
-        return $q->orderBy('month')->limit(8)->get(['slug', 'name', 'city_or_town', 'province', 'month', 'date_label', 'cover_image_path'])
+        return $q->orderBy('month')->limit(12)->get(['slug', 'name', 'city_or_town', 'province', 'month', 'date_label', 'cover_image_path'])
+            ->filter(fn ($f) => \App\Support\GuideHtml::usable('/storage/' . ltrim($f->cover_image_path, '/')))->take(8)->values()
             ->map(fn ($f) => [
                 'name' => preg_replace('/\s*\(.*\)$/', '', $f->name), 'url' => route('fiestas.show', $f->slug),
                 'image' => '/storage/' . ltrim($f->cover_image_path, '/'),

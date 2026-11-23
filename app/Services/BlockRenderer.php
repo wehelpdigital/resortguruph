@@ -2812,8 +2812,10 @@ class BlockRenderer
             $url = trim((string) ($item['url'] ?? ''));
             if ($title === '' || $url === '') continue;
             $img = trim((string) ($item['image'] ?? ''));
-            // several guides share one town photo: show it once per page, the other cards get a panel
+            // several guides share one town photo: show it once per page; a card left without a photo is not shown
             if ($img !== '' && \App\Support\GuideHtml::tracking() && !\App\Support\GuideHtml::claim($this->normalizeMediaUrl($img))) $img = '';
+            if ($img === '' && \App\Support\GuideHtml::tracking()) continue;
+            $shownCards = ($shownCards ?? 0) + 1;
             $blurb = trim((string) ($item['blurb'] ?? ''));
             $clusterKey = (string) ($item['cluster'] ?? '');
             $eyebrow = $item['eyebrow'] ?? ($clusterLabels[$clusterKey] ?? '');
@@ -2844,6 +2846,7 @@ class BlockRenderer
                 . ($blurb !== '' ? '<p class="text-sm text-slate-600 leading-snug m-0">' . $this->e($blurb) . '</p>' : '')
                 . '</div></a>';
         }
+        if (\App\Support\GuideHtml::tracking() && empty($shownCards)) return '';
         $out .= '</div></section>';
         return $out;
     }
@@ -3123,17 +3126,16 @@ class BlockRenderer
         $out .= '<h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">' . $heading . '</h2>';
         if ($intro !== '') $out .= '<p class="rg-foods__intro">' . $intro . '</p>';
         $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">';
-        // settle each dish's photo first (the checked photo, once per page), then show the
-        // dishes with a photo before the text-only cards so rows stay even
+        // every dish card has a photo: the item's own, the checked photo, or the same dish's
+        // photo on the food hub (once per page); a dish with no photo at all is left out
         foreach ($items as $k => $item) {
             $img = trim((string) ($item['image'] ?? ''));
-            if ($img === '' || \App\Support\GuideHtml::isPlaceholder($img)) {
-                $img = \App\Support\GuideHtml::subjectPhoto('food', (string) $item['name']);
-                if ($img !== '' && !\App\Support\GuideHtml::claim($img)) $img = '';
-            }
+            if ($img === '' || !\App\Support\GuideHtml::usable($img)) $img = \App\Support\GuideHtml::dishPhoto((string) $item['name']);
+            if ($img !== '' && !\App\Support\GuideHtml::claim($img)) $img = '';
             $items[$k]['_img'] = $img;
         }
-        $items = array_merge(array_values(array_filter($items, fn ($i) => $i['_img'] !== '')), array_values(array_filter($items, fn ($i) => $i['_img'] === '')));
+        $items = array_values(array_filter($items, fn ($i) => $i['_img'] !== ''));
+        if (!$items) return '';
         $textNo = 0;
         foreach ($items as $n => $item) {
             $name = $this->e(trim((string) $item['name']));
@@ -7399,6 +7401,13 @@ class BlockRenderer
                 return $out . '</div></section>';
             }
             $noun = ['buys' => 'finds', 'foods' => 'dishes', 'cultures' => 'groups', 'activities' => 'experiences'][(string) ($context['hub_slug'] ?? '')] ?? 'picks';
+            // every card has a photo: items with no usable photo are left out of the grid
+            $items = array_values(array_filter(array_map(function ($it) {
+                $it = (array) $it;
+                $it['images'] = array_values(array_filter((array) ($it['images'] ?? []), fn ($u) => \App\Support\GuideHtml::usable((string) preg_replace('~^https?://[^/]+(?=/storage/)~i', '', (string) $u))));
+                return $it;
+            }, (array) $items), fn ($it) => $it['images'] !== []));
+            if (!$items) return '';
             $n = count($items);
             $leadAt = -1;
             if ($n >= 5) {

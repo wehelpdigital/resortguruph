@@ -30,7 +30,7 @@ class HomeShowcase
 
     public function data(): array
     {
-        return Cache::remember('home_showcase_v2', 600, fn () => [
+        return Cache::remember('home_showcase_v3', 600, fn () => [
             'stats' => $this->stats(),
             'trending' => $this->trending(),
             'styles' => $this->styles(),
@@ -93,7 +93,8 @@ class HomeShowcase
         $m = (int) now()->format('n');
         $pick = function (int $month) {
             return DB::table('rg_fiestas')->where('is_published', 1)->where('month', $month)->whereNotNull('cover_image_path')
-                ->orderByDesc('pageviews_30d')->limit(4)->get(['slug', 'name', 'city_or_town', 'province', 'date_label', 'cover_image_path'])->all();
+                ->orderByDesc('pageviews_30d')->limit(8)->get(['slug', 'name', 'city_or_town', 'province', 'date_label', 'cover_image_path'])
+                ->filter(fn ($f) => \App\Support\GuideHtml::usable('/storage/' . ltrim($f->cover_image_path, '/')))->take(4)->values()->all();
         };
         $items = $pick($m);
         $month = $m;

@@ -181,18 +181,40 @@ class BlogHtml
                 if (str_contains($c, ' uppercase ')) $kicker = trim($d->textContent);
             }
             if ($title === '') $title = $img ? $img->getAttribute('alt') : trim($a->textContent);
-            $key = $src !== '' ? basename(parse_url($src, PHP_URL_PATH) ?: $src) : '';
-            $photo = $src !== '' && !isset($seen[$key]) && !GuideHtml::isPlaceholder($src)
-                ? '<span class="bx-stay__img"><img src="' . self::e($src) . '" alt="' . self::e($title) . '" loading="lazy"></span>'
-                : '<span class="bx-stay__img gh-ph gh-ph--' . ($n % 4) . '"><span class="gh-ph__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11.5A7 7 0 0 1 19 9.5C19 15.4 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg></span></span>';
-            if ($key !== '') $seen[$key] = true;
+            // each card shows its own photo: the link's photo, else another photo of that guide; no photo, no card
+            $photoSrc = '';
+            foreach (array_merge([$src], self::guidePhotos($href)) as $cand) {
+                $k = $cand !== '' ? GuideHtml::photoId($cand) : '';
+                if ($cand !== '' && !isset($seen[$k]) && GuideHtml::usable($cand) && !preg_match('~/rg-media/food-locations/generic~', $cand)) { $photoSrc = $cand; $seen[$k] = true; break; }
+            }
+            if ($photoSrc === '') continue;
+            $photo = '<span class="bx-stay__img"><img src="' . self::e($photoSrc) . '" alt="' . self::e($title) . '" loading="lazy"></span>';
             $out .= '<a class="bx-stay" href="' . self::e($href) . '">' . $photo
                 . '<span class="bx-stay__body"><span class="bx-stay__kicker">' . self::e($kicker ?: 'Curated picks') . '</span>'
                 . '<span class="bx-stay__title">' . self::e($title) . '</span>'
                 . '<span class="bx-stay__go">See the guide <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span></span></a>';
             $n++;
         }
-        return $out . '</div>';
+        return $n ? $out . '</div>' : '';
+    }
+
+    /** Hero photos of the guide page a link points to (/{slug}). */
+    private static function guidePhotos(string $href): array
+    {
+        if (!preg_match('~^/([a-z0-9-]+)/?$~', $href, $m)) return [];
+        try {
+            $pid = \Illuminate\Support\Facades\DB::table('rg_seo_pages')->where('slug', $m[1])->value('id');
+            if (!$pid) return [];
+            $b = \Illuminate\Support\Facades\DB::table('rg_content_blocks')->where('owner_type', 'seo_page')->where('owner_id', $pid)->where('block_type', 'hero_slider')->value('payload_json');
+        } catch (\Throwable $e) {
+            return [];
+        }
+        $out = [];
+        foreach ((json_decode((string) $b, true)['images'] ?? []) as $im) {
+            $src = (string) preg_replace('~^https?://[^/]+(?=/storage/)~i', '', trim((string) ($im['src'] ?? '')));
+            if ($src !== '') $out[] = $src;
+        }
+        return $out;
     }
 
     /** Seeded links kept the dev host (http://resortguruph.test/...): make them root-relative. */

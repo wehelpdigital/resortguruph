@@ -6,13 +6,13 @@
 @section('title', $fiesta->meta_title ?: ($fiesta->name . ($fiesta->city_or_town ? ' in ' . $fiesta->city_or_town : '') . ' | Tourist Guide Ph'))
 @section('meta_description'){{ $fiesta->meta_description ?: $fiesta->summary }}@endsection
 @section('canonical'){{ route('fiestas.show', $fiesta->slug) }}@endsection
-@if($fiesta->og_image_path ?: $fiesta->cover_image_path)
+@if($fiesta->og_image_path ?: $fiesta->coverUrl())
     @section('og_image'){{ url($fiesta->og_image_path ? '/storage/' . ltrim($fiesta->og_image_path, '/') : $fiesta->coverUrl()) }}@endsection
 @endif
 
 @section('content')
 @include('partials.page-hero', [
-    'slides' => $fiesta->cover_image_path ? [['src' => $fiesta->coverUrl()]] : [],
+    'slides' => $fiesta->coverUrl() !== '' ? [['src' => $fiesta->coverUrl()]] : [],
     'crumbs' => [['Home', url('/')], ['Festivals', route('fiestas.index')], [$fiesta->name, null]],
     'kicker' => $fiesta->regionLabel() . ($place ? ' · ' . $place : ''),
     'title' => $fiesta->h1 ?: $fiesta->name,
@@ -89,7 +89,7 @@
             ],
         ],
     ];
-    if ($fiesta->cover_image_path) $ld['image'] = url($fiesta->coverUrl());
+    if ($fiesta->coverUrl() !== '') $ld['image'] = url($fiesta->coverUrl());
 @endphp
 <script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 

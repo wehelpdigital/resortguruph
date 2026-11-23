@@ -101,7 +101,7 @@
                     <a href="{{ route('fiestas.show', $fiesta->slug) }}" data-fz-card data-month="{{ (int) $fiesta->month }}"
                        class="group flex flex-col rounded-[1.25rem] border border-slate-200 bg-white overflow-hidden hover:shadow-xl hover:-translate-y-1 hover:border-slate-300 transition duration-300">
                         <span class="relative block aspect-[16/10] overflow-hidden bg-gradient-to-br from-amber-50 via-rose-50 to-sky-50">
-                            @if($fiesta->cover_image_path)
+                            @if($fiesta->coverUrl() !== '')
                                 <img src="{{ $fiesta->coverUrl() }}" alt="{{ $fiesta->name }}" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-105" loading="lazy">
                             @endif
                             <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-ink-900 shadow-sm">

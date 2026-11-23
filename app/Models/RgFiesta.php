@@ -44,11 +44,11 @@ class RgFiesta extends Model
 
     public function coverUrl(): string
     {
-        $path = $this->cover_image_path;
-        if (!$path) return '';
-        if (str_starts_with($path, 'http')) return $path;
-        if (str_starts_with($path, '/storage/')) return $path;
-        return '/storage/' . ltrim($path, '/');
+        $path = (string) $this->cover_image_path;
+        $url = $path === '' ? '' : (str_starts_with($path, 'http') || str_starts_with($path, '/storage/') ? $path : '/storage/' . ltrim($path, '/'));
+        if ($url !== '' && \App\Support\GuideHtml::usable($url)) return $url;
+        // no cover of its own (or one found to show something else): a photo of the town or province
+        return \App\Support\GuideHtml::areaPhoto(array_filter([$this->city_or_town, $this->province]), (string) $this->region_cluster);
     }
 
     public function regionLabel(): string

@@ -124,6 +124,44 @@ class GuideHtml
         return $reg;
     }
 
+    /**
+     * A photo of an area (town or province names, most specific first): a checked place photo
+     * of that area, a tourist-spot library photo there, then the town photo. Used where a card
+     * must have a picture and has none of its own (a festival without a cover).
+     */
+    public static function areaPhoto(array $places, string $cluster = ''): string
+    {
+        $keys = array_values(array_filter(array_map(fn ($p) => self::nameKey((string) $p), $places)));
+        foreach ($keys as $pk) {
+            foreach (self::registry()['place'] ?? [] as $key => $src) {
+                if (str_ends_with($key, '|' . $pk) && self::usable($src)) return $src;
+            }
+        }
+        try {
+            foreach (\Illuminate\Support\Facades\DB::table('rg_tourist_spots as s')->join('rg_media as m', 'm.id', '=', 's.media_id')->where('s.status', 'published')
+                ->get(['s.location', 's.region_label', 'm.path']) as $r) {
+                if (!in_array(self::nameKey((string) $r->location), $keys, true) && !in_array(self::nameKey((string) $r->region_label), $keys, true)) continue;
+                $src = '/storage/' . ltrim((string) $r->path, '/');
+                if (!preg_match('~/rg-media/(destinations|food-locations)/~', $src) && self::usable($src)) return $src;
+            }
+        } catch (\Throwable $e) {
+        }
+        foreach ($places as $p) {
+            $slug = \Illuminate\Support\Str::slug((string) $p);
+            foreach (["/storage/rg-media/destinations/{$slug}-1.jpg", "/storage/rg-media/destinations/{$slug}-province-1.jpg"] as $src) if ($slug !== '' && self::usable($src)) return $src;
+        }
+        $land = '/storage/rg-media/landmarks/' . $cluster . '.jpg';
+        return $cluster !== '' && self::usable($land) ? $land : '';
+    }
+
+    /** The tourist-spot library photo of a place with this name ('' when none). */
+    public static function libraryPhoto(string $name): string
+    {
+        $lib = self::spotLibrary();
+        $k = self::nameKey($name);
+        return $k !== '' && isset($lib[$k]) && self::usable($lib[$k]) ? $lib[$k] : '';
+    }
+
     /** Published tourist spots with their own photo, by normalised name (cached). */
     private static function spotLibrary(): array
     {
@@ -333,29 +371,28 @@ class GuideHtml
             $review = self::one('.//*[contains(@class, "rg-spot-review-slide")]', $art);
             $cards[] = compact('name', 'src', 'imgLink', 'score', 'count', 'paras', 'links') + ['alt' => $img ? $img->getAttribute('alt') : '', 'quote' => $review ? self::quote($review) : ''];
         }
-        // spots with a photo of their own lead; the rest follow as text cards (no repeated or generic pictures)
-        if (self::$track) {
-            $withPhoto = array_values(array_filter($cards, fn ($c) => $c['src'] !== ''));
-            $cards = array_merge($withPhoto, array_values(array_filter($cards, fn ($c) => $c['src'] === '')));
+        // only cards with a photo are shown; places that have none make way for other
+        // checked places of the same area (tourist-spot library), so every card has a picture
+        $shown = array_values(array_filter($cards, fn ($c) => $c['src'] !== ''));
+        $missing = count($cards) - count($shown);
+        if ($missing > 0) {
+            $have = array_map(fn ($c) => self::nameKey($c['name']), $shown);
+            foreach (self::areaSpots($place, $have, min($missing, 8)) as $alt) $shown[] = $alt;
         }
+        $cards = $shown;
+        if (!$cards) return '';
 
         $out = '<section class="gh-spots not-prose">' . self::head('Things to see', $h2, $intro) . '<div class="gh-spots__grid">';
         foreach ($cards as $i => $c) {
             $n = $i + 1;
             $num = '<span class="gh-num">' . str_pad((string) $n, 2, '0', STR_PAD_LEFT) . '</span>';
-            $hasPhoto = $c['src'] !== '';
-            $out .= '<article class="gh-spot' . ($n === 1 && $hasPhoto ? ' gh-spot--lead' : '') . ($hasPhoto ? '' : ' gh-spot--text') . '">';
-            if ($hasPhoto) {
-                $alt = trim($c['alt']) !== '' && !self::looksLikeFileName($c['alt']) ? $c['alt'] : $c['name'];
-                $imgHtml = '<img src="' . self::e($c['src']) . '" alt="' . self::e($alt) . '" loading="lazy">';
-                $out .= $c['imgLink'] !== ''
-                    ? '<a class="gh-spot__img" href="' . self::e($c['imgLink']) . '" target="_blank" rel="noopener nofollow">' . $imgHtml . $num . '</a>'
-                    : '<span class="gh-spot__img">' . $imgHtml . $num . '</span>';
-            }
-            $out .= '<div class="gh-spot__body">';
-            $out .= $hasPhoto
-                ? '<h3 class="gh-spot__name">' . self::e($c['name']) . '</h3>'
-                : '<div class="gh-spot__top">' . $num . '<span class="gh-spot__pin" aria-hidden="true">' . self::icon('pin') . '</span></div><h3 class="gh-spot__name">' . self::e($c['name']) . '</h3>';
+            $out .= '<article class="gh-spot' . ($n === 1 ? ' gh-spot--lead' : '') . '">';
+            $alt = trim($c['alt']) !== '' && !self::looksLikeFileName($c['alt']) ? $c['alt'] : $c['name'];
+            $imgHtml = '<img src="' . self::e($c['src']) . '" alt="' . self::e($alt) . '" loading="lazy">';
+            $out .= $c['imgLink'] !== ''
+                ? '<a class="gh-spot__img" href="' . self::e($c['imgLink']) . '" target="_blank" rel="noopener nofollow">' . $imgHtml . $num . '</a>'
+                : '<span class="gh-spot__img">' . $imgHtml . $num . '</span>';
+            $out .= '<div class="gh-spot__body"><h3 class="gh-spot__name">' . self::e($c['name']) . '</h3>';
             if ($c['score'] !== '') {
                 $out .= '<p class="gh-rating">' . self::stars((float) $c['score']) . '<strong>' . self::e($c['score']) . '</strong>' . ($c['count'] !== '' ? '<span>' . self::e($c['count']) . '</span>' : '') . '</p>';
             }
@@ -378,10 +415,54 @@ class GuideHtml
         return $out . '</div></section>';
     }
 
+    /**
+     * Other places of the same area with a checked photo (tourist-spot library), as spot
+     * cards: used where a list's own places have no photo. Each photo once per page.
+     */
+    private static function areaSpots(string $place, array $haveKeys, int $limit): array
+    {
+        $pk = self::nameKey($place);
+        if ($pk === '' || $limit < 1) return [];
+        static $all = null;
+        if ($all === null) {
+            try {
+                $all = \Illuminate\Support\Facades\DB::table('rg_tourist_spots as s')->join('rg_media as m', 'm.id', '=', 's.media_id')
+                    ->where('s.status', 'published')->orderByRaw('s.featured_order is null')->orderBy('s.featured_order')->orderBy('s.id')
+                    ->get(['s.name', 's.location', 's.region_label', 's.description', 'm.path'])->all();
+            } catch (\Throwable $e) {
+                $all = [];
+            }
+        }
+        $have = array_flip($haveKeys);
+        $out = [];
+        foreach ($all as $s) {
+            $lk = self::nameKey((string) $s->location);
+            $rk = self::nameKey((string) $s->region_label);
+            $near = ($lk !== '' && ($lk === $pk || str_contains(' ' . $pk . ' ', ' ' . $lk . ' ') || str_contains(' ' . $lk . ' ', ' ' . $pk . ' ')))
+                || ($rk !== '' && $rk === $pk);
+            if (!$near) continue;
+            $k = self::nameKey((string) $s->name);
+            if ($k === '' || isset($have[$k])) continue;
+            $src = '/storage/' . ltrim((string) $s->path, '/');
+            if (preg_match('~/rg-media/(destinations|food-locations)/~', $src) || !self::usable($src) || !self::claim($src)) continue;
+            $have[$k] = true;
+            $desc = trim(strip_tags((string) $s->description));
+            $desc = $desc === '' ? '' : self::e(rtrim(ucfirst($desc), '.') . '.');
+            $out[] = [
+                'name' => (string) $s->name, 'src' => $src, 'imgLink' => '', 'score' => '', 'count' => '', 'alt' => (string) $s->name,
+                'paras' => $desc !== '' ? [$desc] : [], 'quote' => '',
+                'links' => [['https://www.google.com/maps/search/?api=1&query=' . rawurlencode(trim($s->name . ' ' . $s->location) . ' Philippines'), 'Open in Google Maps']],
+            ];
+            if (count($out) >= $limit) break;
+        }
+        return $out;
+    }
+
     private static function festivals(DOMElement $el, string $h2): string
     {
         $intro = self::first('.//div[1]/p', $el);
-        $out = '<section class="gh-fests not-prose">' . self::head('Festivals', $h2, $intro) . '<div class="gh-fests__list">';
+        $fplace = preg_match('~^Notable festivals (?:in|near|around) (.+)$~i', trim($h2), $fm) ? trim($fm[1]) : '';
+        $items = [];
         foreach (self::all('.//article', $el) as $art) {
             $img = self::one('.//img', $art);
             $h3 = self::one('.//h3', $art);
@@ -393,25 +474,55 @@ class GuideHtml
             $paras = [];
             foreach ($body->childNodes as $c) if ($c instanceof DOMElement && strtolower($c->tagName) === 'p') $paras[] = self::inner($c);
             // a checked festival photo first; a generic town photo is not a picture of the festival
-            $fplace = preg_match('~^Notable festivals (?:in|near|around) (.+)$~i', trim($h2), $fm) ? trim($fm[1]) : '';
-            $checked = self::$track ? self::subjectPhoto('festival', self::text($h3), $fplace) : '';
-            if ($checked !== '') {
-                if (!$img) $img = self::$doc->createElement('img');
-                $img->setAttribute('src', $checked);
-                $img->setAttribute('alt', self::text($h3));
-            } elseif ($img && self::$track && preg_match('~/rg-media/destinations/~', (string) $img->getAttribute('src'))) {
-                $img = null;
-            }
-            $out .= '<article class="gh-fest">' . self::photo($img, '', 'gh-fest__img', $when !== '' ? '<span class="gh-date">' . self::cal() . self::e($when) . '</span>' : '', self::text($h3), 'star');
-            $out .= '<div class="gh-fest__body"><h3 class="gh-fest__name">' . self::e(self::text($h3)) . '</h3>';
-            foreach ($paras as $i => $p) {
-                if ($i === 1 && count($paras) > 2) { $out .= '<details class="gh-more"><summary><span>Read more</span></summary>'; }
+            $src = self::subjectPhoto('festival', self::text($h3), $fplace);
+            if ($src === '' && $img && !preg_match('~/rg-media/destinations/~', (string) $img->getAttribute('src'))) $src = trim((string) $img->getAttribute('src'));
+            if ($src === '' || !self::claim($src)) continue; // no photo of the festival: left out
+            $items[] = ['name' => self::text($h3), 'src' => $src, 'when' => $when, 'paras' => $paras, 'href' => ''];
+        }
+        // festival pages of the same area fill in for the ones without a photo
+        foreach (self::areaFiestas($fplace, array_map(fn ($i) => self::nameKey($i['name']), $items), max(0, 3 - count($items))) as $f) $items[] = $f;
+        if (!$items) return '';
+        $out = '<section class="gh-fests not-prose">' . self::head('Festivals', $h2, $intro) . '<div class="gh-fests__list">';
+        foreach ($items as $it) {
+            $date = $it['when'] !== '' ? '<span class="gh-date">' . self::cal() . self::e($it['when']) . '</span>' : '';
+            $out .= '<article class="gh-fest"><span class="gh-fest__img"><img src="' . self::e($it['src']) . '" alt="' . self::e($it['name']) . '" loading="lazy">' . $date . '</span>';
+            $out .= '<div class="gh-fest__body"><h3 class="gh-fest__name">' . self::e($it['name']) . '</h3>';
+            foreach ($it['paras'] as $i => $p) {
+                if ($i === 1 && count($it['paras']) > 2) { $out .= '<details class="gh-more"><summary><span>Read more</span></summary>'; }
                 $out .= '<p class="gh-p">' . $p . '</p>';
             }
-            if (count($paras) > 2) $out .= '</details>';
+            if (count($it['paras']) > 2) $out .= '</details>';
+            if ($it['href'] !== '') $out .= '<p class="gh-links"><a href="' . self::e($it['href']) . '">Festival guide' . self::arrow() . '</a></p>';
             $out .= '</div></article>';
         }
         return $out . '</div></section>';
+    }
+
+    /** Festival pages (with a cover photo) of the same province or town, as festival cards. */
+    private static function areaFiestas(string $place, array $haveKeys, int $limit): array
+    {
+        $pk = self::nameKey($place);
+        if ($pk === '' || $limit < 1) return [];
+        try {
+            $rows = \Illuminate\Support\Facades\DB::table('rg_fiestas')->where('is_published', 1)->whereNotNull('cover_image_path')
+                ->get(['slug', 'name', 'province', 'city_or_town', 'date_label', 'summary', 'cover_image_path']);
+        } catch (\Throwable $e) {
+            return [];
+        }
+        $have = array_flip($haveKeys);
+        $out = [];
+        foreach ($rows as $f) {
+            $keys = array_filter([self::nameKey((string) $f->province), self::nameKey((string) $f->city_or_town)]);
+            $near = false;
+            foreach ($keys as $k) if ($k === $pk || str_contains(' ' . $pk . ' ', ' ' . $k . ' ')) $near = true;
+            if (!$near || isset($have[self::nameKey((string) $f->name)])) continue;
+            $cover = (string) $f->cover_image_path;
+            $src = preg_match('~^(https?:)?//|^/~', $cover) ? $cover : '/storage/' . ltrim($cover, '/');
+            if (!self::usable($src) || !self::claim($src)) continue;
+            $out[] = ['name' => (string) $f->name, 'src' => $src, 'when' => (string) $f->date_label, 'paras' => [self::e((string) $f->summary)], 'href' => '/fiestas/' . $f->slug];
+            if (count($out) >= $limit) break;
+        }
+        return $out;
     }
 
     private static function note(DOMElement $el): string
@@ -444,23 +555,23 @@ class GuideHtml
     private static function reads(DOMElement $el, string $h2): string
     {
         $intro = self::first('.//p', $el);
-        $out = '<section class="gh-reads not-prose">' . self::head('From the blog', $h2, $intro) . '<div class="gh-reads__grid">';
         $cards = self::all('.//a[.//h3]', $el);
         $covers = self::blogCovers(array_map(fn ($a) => $a->getAttribute('href'), $cards));
+        $html = '';
         foreach ($cards as $a) {
             $img = self::one('.//img', $a);
             $href = $a->getAttribute('href');
             $title = self::text(self::one('.//h3', $a));
-            if ($img && isset($covers[$href])) $img->setAttribute('src', $covers[$href]);
-            if ($img && trim($img->getAttribute('alt')) === '') $img->setAttribute('alt', $title);
+            $src = $covers[$href] ?? ($img ? trim($img->getAttribute('src')) : '');
+            if ($src === '' || !self::claim($src)) continue; // a story without its own cover is left out
             $excerpt = self::one('.//p', $a);
-            $out .= '<a class="gh-read" href="' . self::e($href) . '">';
-            $out .= self::photo($img, '', 'gh-read__img', '', '', 'book');
-            $out .= '<span class="gh-read__body"><span class="gh-read__kicker">Travel story</span><span class="gh-read__title">' . self::e($title) . '</span>';
-            if ($excerpt) $out .= '<span class="gh-read__text">' . self::e(self::text($excerpt)) . '</span>';
-            $out .= '<span class="gh-read__go">Read the story' . self::arrow() . '</span></span></a>';
+            $html .= '<a class="gh-read" href="' . self::e($href) . '"><span class="gh-read__img"><img src="' . self::e($src) . '" alt="' . self::e($title) . '" loading="lazy"></span>';
+            $html .= '<span class="gh-read__body"><span class="gh-read__kicker">Travel story</span><span class="gh-read__title">' . self::e($title) . '</span>';
+            if ($excerpt) $html .= '<span class="gh-read__text">' . self::e(self::text($excerpt)) . '</span>';
+            $html .= '<span class="gh-read__go">Read the story' . self::arrow() . '</span></span></a>';
         }
-        return $out . '</div></section>';
+        if ($html === '') return '';
+        return '<section class="gh-reads not-prose">' . self::head('From the blog', $h2, $intro) . '<div class="gh-reads__grid">' . $html . '</div></section>';
     }
 
     private static function map(DOMElement $el, string $h2): string
@@ -479,31 +590,75 @@ class GuideHtml
 
     private static function foods(DOMElement $el): string
     {
-        $out = '<div class="gh-foods not-prose">';
+        $html = '';
         foreach (self::all('.//*[contains(concat(" ", normalize-space(@class), " "), " food-card ")]', $el) as $card) {
             $a = self::one('.//a', $card);
             $img = self::one('.//img', $card);
             $cap = self::text(self::one('.//figcaption', $card));
             $h3 = self::one('.//h3', $card);
             $p = self::one('.//p', $card);
-            $checked = self::$track ? self::subjectPhoto('food', self::text($h3)) : '';
-            if ($checked !== '') {
-                if (!$img) $img = self::$doc->createElement('img');
-                $img->setAttribute('src', $checked);
-                $img->setAttribute('alt', self::text($h3));
-                $cap = '';
-            } elseif ($img && self::$track && preg_match('~/rg-media/(destinations|food-locations)/~', (string) $img->getAttribute('src'))) {
-                $img = null;
-                $cap = '';
-            }
-            $out .= '<article class="gh-food">' . self::photo($img, '', 'gh-food__img', '', self::text($h3), 'food');
-            $out .= '<div class="gh-food__body"><h3 class="gh-food__name">' . self::e(self::text($h3)) . '</h3>';
-            if ($p) $out .= '<p class="gh-food__text">' . self::inner($p) . '</p>';
-            if ($a) $out .= '<a class="gh-food__link" href="' . self::e($a->getAttribute('href')) . '" target="_blank" rel="noopener nofollow">' . self::e($a->getAttribute('title') ?: 'Learn more') . self::arrow() . '</a>';
-            if ($cap !== '') $out .= '<p class="gh-food__cap">Photo: ' . self::e($cap) . '</p>';
-            $out .= '</div></article>';
+            $name = self::text($h3);
+            // the checked dish photo, else the card's own photo when it is not a town/mall stand-in, else the dish's photo
+            $src = self::subjectPhoto('food', $name);
+            if ($src !== '') $cap = '';
+            if ($src === '' && $img && !preg_match('~/rg-media/(destinations|food-locations)/~', (string) $img->getAttribute('src'))) $src = trim((string) $img->getAttribute('src'));
+            if ($src === '' || !self::usable($src) || self::seen($src)) { $src = self::dishPhoto($name); $cap = ''; }
+            if ($src === '' || !self::claim($src)) continue; // a dish without a photo is left out
+            $html .= '<article class="gh-food"><span class="gh-food__img"><img src="' . self::e($src) . '" alt="' . self::e($name) . '" loading="lazy"></span>';
+            $html .= '<div class="gh-food__body"><h3 class="gh-food__name">' . self::e($name) . '</h3>';
+            if ($p) $html .= '<p class="gh-food__text">' . self::inner($p) . '</p>';
+            if ($a) $html .= '<a class="gh-food__link" href="' . self::e($a->getAttribute('href')) . '" target="_blank" rel="noopener nofollow">' . self::e($a->getAttribute('title') ?: 'Learn more') . self::arrow() . '</a>';
+            if ($cap !== '') $html .= '<p class="gh-food__cap">Photo: ' . self::e($cap) . '</p>';
+            $html .= '</div></article>';
         }
-        return $out . '</div>';
+        return $html === '' ? '' : '<div class="gh-foods not-prose">' . $html . '</div>';
+    }
+
+    /**
+     * A photo of the dish: the checked photo, else the photo of the same dish on the
+     * Filipino food hub ("Pinakbet Ilocano" uses the Pinakbet photo). Not recorded as shown.
+     */
+    public static function dishPhoto(string $name): string
+    {
+        $checked = self::subjectPhoto('food', $name);
+        if ($checked !== '' && !self::seen($checked)) return $checked;
+        $hub = self::hubDishPhotos();
+        $k = self::nameKey($name);
+        if ($k === '') return '';
+        $cands = [];
+        if (isset($hub[$k])) $cands[] = $hub[$k];
+        $toks = array_flip(explode(' ', $k));
+        $best = []; // hub dishes whose whole name is part of this name, longest first
+        foreach ($hub as $hk => $srcs) {
+            $ht = array_unique(explode(' ', $hk));
+            if (count(array_intersect_key(array_flip($ht), $toks)) === count($ht)) $best[strlen($hk)] = $srcs;
+        }
+        krsort($best);
+        foreach ($best as $srcs) $cands[] = $srcs;
+        foreach ($cands as $srcs) foreach ($srcs as $src) if (self::usable($src) && !self::seen($src)) return $src;
+        return '';
+    }
+
+    /** name key => photos of each dish on the foods hub (database/data + rg-media/foods/{slug}-N.jpg). */
+    private static function hubDishPhotos(): array
+    {
+        static $map = null;
+        if ($map !== null) return $map;
+        $map = [];
+        try {
+            $m = new \ReflectionMethod(\App\Http\Controllers\FoodsController::class, 'categories');
+            $m->setAccessible(true);
+            foreach ($m->invoke(app(\App\Http\Controllers\FoodsController::class)) as $cat) {
+                foreach ($cat['items'] ?? [] as $it) {
+                    $imgs = array_values(array_map(fn ($u) => (string) preg_replace('~^https?://[^/]+(?=/storage/)~i', '', (string) $u), (array) ($it['images'] ?? [])));
+                    $k = self::nameKey((string) ($it['name'] ?? ''));
+                    if ($k !== '' && $imgs) $map[$k] = $imgs;
+                }
+            }
+        } catch (\Throwable $e) {
+            $map = [];
+        }
+        return $map;
     }
 
     private static function history(DOMElement $el, string $h2): string
