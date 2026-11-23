@@ -44,15 +44,19 @@
     <div class="pk-wrap">
         <p class="pk-eyebrow !text-sun-300">Happening in {{ $monthName }}</p>
         <h2 class="pk-h2 !text-white max-w-2xl">Time your trip with a fiesta</h2>
-        <div class="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+        {{-- a compact list: the same fiestas have their photo cards in the calendar below --}}
+        <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             @foreach($thisMonth as $f)
-                <a href="{{ route('fiestas.show', $f->slug) }}" class="group block rounded-[1.25rem] overflow-hidden bg-white/5 border border-white/10 hover:bg-white/10 transition">
-                    <span class="block aspect-[4/3] overflow-hidden"><img src="{{ $f->coverUrl() }}" alt="{{ $f->name }}" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-105"></span>
-                    <span class="block p-4">
-                        <span class="block text-[.7rem] font-bold uppercase tracking-wider text-sun-300">{{ \Illuminate\Support\Str::limit($f->date_label ?: $monthName, 40) }}</span>
-                        <span class="block mt-1 font-display font-extrabold leading-snug">{{ $cleanName($f->name) }}</span>
-                        <span class="block mt-1 text-xs text-white/65">{{ trim(($f->city_or_town ?: '') . ($f->province ? ', ' . $f->province : ''), ', ') }}</span>
+                <a href="{{ route('fiestas.show', $f->slug) }}" class="group flex items-center gap-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3.5 hover:bg-white/10 transition">
+                    <span class="shrink-0 w-14 h-14 rounded-xl bg-white/10 flex flex-col items-center justify-center leading-none">
+                        <span class="text-[.62rem] font-extrabold uppercase tracking-wider text-sun-300">{{ substr(\App\Models\RgFiesta::MONTH_LABELS[(int) $f->month] ?? $monthName, 0, 3) }}</span>
+                        <span class="mt-1 font-display font-extrabold text-lg">{{ preg_match('~\b(\d{1,2})\b~', (string) $f->date_label, $dm) ? $dm[1] : 'All' }}</span>
                     </span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block font-display font-extrabold leading-snug group-hover:text-sun-200">{{ $cleanName($f->name) }}</span>
+                        <span class="block mt-0.5 text-xs text-white/65 truncate">{{ trim(($f->city_or_town ?: '') . ($f->province ? ', ' . $f->province : ''), ', ') }}@if($f->date_label) · {{ \Illuminate\Support\Str::limit($f->date_label, 34) }}@endif</span>
+                    </span>
+                    <span class="w-4 h-4 inline-flex text-white/50 group-hover:text-white shrink-0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg></span>
                 </a>
             @endforeach
         </div>

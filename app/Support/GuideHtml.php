@@ -28,6 +28,8 @@ class GuideHtml
     private static int $tone = 0;
     /** normalised spot name => photo (the page's own attraction photos) */
     private static array $prefer = [];
+    /** links of story / guide cards already shown on the page */
+    private static array $links = [];
 
     /**
      * Start tracking photos for one page: from now on claim() only lets the
@@ -40,6 +42,24 @@ class GuideHtml
         self::$seen = [];
         self::$tone = 0;
         self::$prefer = [];
+        self::$links = [];
+    }
+
+    /** Record that a card linking to $href is on the page. */
+    public static function markLink(string $href): void
+    {
+        if (self::$track && trim($href) !== '') self::$links[self::linkKey($href)] = true;
+    }
+
+    /** Is a card linking to $href already on the page? */
+    public static function linkShown(string $href): bool
+    {
+        return self::$track && isset(self::$links[self::linkKey($href)]);
+    }
+
+    private static function linkKey(string $href): string
+    {
+        return rtrim(strtolower((string) strtok((string) preg_replace('~^https?://[^/]+~i', '', trim($href)), '?#')), '/');
     }
 
     /**
@@ -563,7 +583,8 @@ class GuideHtml
             $href = $a->getAttribute('href');
             $title = self::text(self::one('.//h3', $a));
             $src = $covers[$href] ?? ($img ? trim($img->getAttribute('src')) : '');
-            if ($src === '' || !self::claim($src)) continue; // a story without its own cover is left out
+            if (self::linkShown($href) || $src === '' || !self::claim($src)) continue; // a story without its own cover is left out
+            self::markLink($href);
             $excerpt = self::one('.//p', $a);
             $html .= '<a class="gh-read" href="' . self::e($href) . '"><span class="gh-read__img"><img src="' . self::e($src) . '" alt="' . self::e($title) . '" loading="lazy"></span>';
             $html .= '<span class="gh-read__body"><span class="gh-read__kicker">Travel story</span><span class="gh-read__title">' . self::e($title) . '</span>';

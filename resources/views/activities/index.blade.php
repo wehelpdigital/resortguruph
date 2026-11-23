@@ -286,7 +286,7 @@
      the page as a structured directory of Philippine tourist activities. --}}
 @php
     $ld = [
-        '@context' => 'https://schema.org',
+        "\x40context" => 'https://schema.org',
         '@type' => 'ItemList',
         'name' => 'Philippine Tourist Activities, Adventures & What To Do',
         'description' => 'The complete guide to tourist activities and adventures in the Philippines: water sports, land treks, air rides, casinos, heritage tours, wellness retreats, and year-round fiestas.',

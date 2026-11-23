@@ -30,16 +30,22 @@ class HomeShowcase
 
     public function data(): array
     {
-        return Cache::remember('home_showcase_v3', 600, fn () => [
-            'stats' => $this->stats(),
-            'trending' => $this->trending(),
-            'styles' => $this->styles(),
-            'fiestas' => $this->fiestas(),
-            'regions' => $this->regions(),
-            'reviews' => $this->reviews(),
-            'posts' => $this->posts(),
-            'faqs' => $this->faqs(),
-        ]);
+        return Cache::remember('home_showcase_v4', 600, function () {
+            $d = [
+                'stats' => $this->stats(),
+                'trending' => $this->trending(),
+                'styles' => $this->styles(),
+                'fiestas' => $this->fiestas(),
+                'regions' => $this->regions(),
+                'reviews' => $this->reviews(),
+            ];
+            // the blog row skips posts whose cover is already a destination or style photo above
+            $used = [];
+            foreach (['trending', 'styles', 'fiestas', 'regions'] as $k) foreach ($d[$k] as $row) if (!empty($row['image'])) $used[\App\Support\GuideHtml::photoId((string) $row['image'])] = true;
+            $d['posts'] = $this->posts($used);
+            $d['faqs'] = $this->faqs();
+            return $d;
+        });
     }
 
     private function stats(): array
@@ -154,12 +160,13 @@ class HomeShowcase
         return $out;
     }
 
-    private function posts(): array
+    private function posts(array $usedPhotos = []): array
     {
         if (!Schema::hasTable('rg_blog_posts')) return [];
         return DB::table('rg_blog_posts')->where('status', 'published')->whereNotNull('cover_path')
-            ->orderByDesc('published_at')->limit(3)->get(['slug', 'title', 'excerpt', 'cover_path', 'published_at'])
-            ->map(fn ($p) => ['title' => $p->title, 'excerpt' => $p->excerpt, 'url' => route('blog.show', $p->slug), 'image' => '/storage/' . ltrim($p->cover_path, '/'), 'date' => $p->published_at ? date('M j, Y', strtotime($p->published_at)) : ''])
+            ->orderByDesc('published_at')->limit(12)->get(['slug', 'title', 'excerpt', 'cover_path', 'published_at'])
+            ->reject(fn ($p) => isset($usedPhotos[\App\Support\GuideHtml::photoId('/storage/' . ltrim($p->cover_path, '/'))]))
+            ->take(3)->map(fn ($p) => ['title' => $p->title, 'excerpt' => $p->excerpt, 'url' => route('blog.show', $p->slug), 'image' => '/storage/' . ltrim($p->cover_path, '/'), 'date' => $p->published_at ? date('M j, Y', strtotime($p->published_at)) : ''])
             ->all();
     }
 

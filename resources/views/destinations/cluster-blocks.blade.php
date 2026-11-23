@@ -14,7 +14,7 @@
 @section('jsonld')
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
@@ -25,7 +25,7 @@
 </script>
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'CollectionPage',
     'name' => 'Resorts in ' . $meta['name'],
     'description' => $meta['meta_description'],
@@ -45,7 +45,7 @@
 @if(!empty($spotImages) && count($spotImages))
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'ItemList',
     'name' => 'Featured tourist spots in ' . $meta['name'],
     'itemListElement' => collect($spotImages)->take(12)->values()->map(fn ($sp, $i) => [

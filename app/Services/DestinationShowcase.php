@@ -68,7 +68,7 @@ class DestinationShowcase
 
     public function index(): array
     {
-        return Cache::remember('dest_showcase_v1', 600, function () {
+        return Cache::remember('dest_showcase_v2', 600, function () {
             $meta = DestinationsController::clusterMetadata();
             $kw = DB::table('rg_keywords as k')->join('rg_seo_pages as p', 'p.keyword_id', '=', 'k.id')
                 ->where('p.is_published', 1)->where('k.category', 'resort')
@@ -105,7 +105,8 @@ class DestinationShowcase
                 'regions' => $regions,
                 'classics' => $home['trending'] ?? [],
                 'styles' => $this->styles($kw),
-                'spots' => $this->featuredSpots(8),
+                // "Worth the detour" leaves out the places whose photo is already a classic above
+                'spots' => $this->featuredSpots(8, array_column($home['trending'] ?? [], 'image')),
                 'months' => $this->months(),
                 'reviews' => array_slice($home['reviews'] ?? [], 0, 3),
                 'az' => collect($regions)->map(fn ($r) => [
@@ -119,7 +120,7 @@ class DestinationShowcase
     /** Everything the region page needs beyond the controller's keyword list. */
     public function region(string $slug, $keywords): array
     {
-        return Cache::remember('dest_region_v5_' . $slug, 600, function () use ($slug, $keywords) {
+        return Cache::remember('dest_region_v6_' . $slug, 600, function () use ($slug, $keywords) {
             $meta = DestinationsController::clusterMetadata()[$slug];
             $ids = $keywords->pluck('id')->all();
 
@@ -152,9 +153,14 @@ class DestinationShowcase
             $pool = array_values(array_unique(array_column($spots, 'image')));
             $used = [];
             $guides = [];
+            $townPhotos = $this->townPhotos();
             foreach ($keywords->values() as $i => $k) {
                 $img = null;
                 foreach ($byKw[$k->id] ?? [] as $cand) if (!isset($used[$cand]) && !isset($spotImgs[$cand])) { $img = $cand; break; }
+                // then a town photo of the guide's own place, which the spot cards do not show
+                if (!$img) foreach ($this->placeTokens($k->phrase) as $tok) { foreach ($townPhotos[$tok] ?? [] as $cand) if (!isset($used[$cand]) && !isset($spotImgs[$cand])) { $img = $cand; break 2; } }
+                // then another guide's photo of the region that no card shows
+                if (!$img) foreach ($byKw as $imgs) { foreach ($imgs as $cand) if (!isset($used[$cand]) && !isset($spotImgs[$cand]) && \App\Support\GuideHtml::usable($cand)) { $img = $cand; break 2; } }
                 if (!$img) foreach ($byKw[$k->id] ?? [] as $cand) if (!isset($used[$cand])) { $img = $cand; break; }
                 if (!$img) foreach ($pool as $cand) if (!isset($used[$cand])) { $img = $cand; break; }
                 $img = $img ?? ($pool ? $pool[$i % count($pool)] : $this->landmark($slug));
@@ -192,7 +198,18 @@ class DestinationShowcase
                 $others[] = ['name' => DestinationsController::clusterMetadata()[$s]['name'], 'url' => route('destinations.cluster', $s), 'image' => $this->landmark($s), 'count' => (int) $counts[$s], 'from' => $f['from']];
             }
 
+            // the "What X is like" collage: guide photos no card on the page uses
+            $collage = [];
+            foreach ($byKw as $imgs) foreach ($imgs as $cand) {
+                if (count($collage) >= 3) break 2;
+                if (isset($used[$cand]) || isset($spotImgs[$cand]) || in_array($cand, $collage, true) || !\App\Support\GuideHtml::usable($cand)) continue;
+                $id = \App\Support\GuideHtml::photoId($cand);
+                foreach ($collage as $c) if (\App\Support\GuideHtml::photoId($c) === $id) continue 2;
+                $collage[] = $cand;
+            }
+
             return [
+                'collage' => $collage,
                 'facts' => self::FACTS[$slug] ?? null,
                 'hero' => array_values(array_filter(array_merge([$this->landmark($slug)], array_column(array_slice($spots, 0, 4), 'image')))),
                 'guides' => $guides,
@@ -227,6 +244,27 @@ class DestinationShowcase
         return $out;
     }
 
+    /** word => town photos (rg-media/destinations/{town}-N.jpg) whose file name has that word. */
+    private function townPhotos(): array
+    {
+        static $map = null;
+        if ($map !== null) return $map;
+        $map = [];
+        foreach (glob(storage_path('app/public/rg-media/destinations/*.jpg')) ?: [] as $f) {
+            $src = '/storage/rg-media/destinations/' . basename($f);
+            if (!\App\Support\GuideHtml::usable($src)) continue;
+            foreach (explode('-', preg_replace('~-\d+\.jpg$~', '', basename($f))) as $t) if (strlen($t) > 3 && !in_array($t, ['city', 'province', 'general', 'beach', 'island', 'islands'], true)) $map[$t][] = $src;
+        }
+        return $map;
+    }
+
+    /** Distinct place words of a keyword ("resort in lobo batangas" => lobo, batangas). */
+    private function placeTokens(string $phrase): array
+    {
+        $place = preg_match('~\b(?:in|at|near|of)\s+(.+)$~i', $phrase, $m) ? $m[1] : $phrase;
+        return array_values(array_filter(preg_split('~[^a-z]+~', strtolower($place)) ?: [], fn ($t) => strlen($t) > 3 && !in_array($t, ['city', 'philippines', 'beach', 'resort', 'with', 'pool', 'private'], true)));
+    }
+
     private function styles($kw): array
     {
         $out = [];
@@ -241,8 +279,10 @@ class DestinationShowcase
         return $out;
     }
 
-    private function featuredSpots(int $limit): array
+    private function featuredSpots(int $limit, array $skipPhotos = []): array
     {
+        $skip = [];
+        foreach ($skipPhotos as $src) $skip[\App\Support\GuideHtml::photoId((string) $src)] = true;
         if (!Schema::hasTable('rg_tourist_spots')) return [];
         $rows = DB::table('rg_tourist_spots as s')->join('rg_media as m', 'm.id', '=', 's.media_id')->join('rg_keywords as k', 'k.id', '=', 's.keyword_id')
             ->where('s.status', 'published')->whereNotNull('s.featured_order')
@@ -250,7 +290,7 @@ class DestinationShowcase
             ->get(['s.name', 's.location', 'm.path', 'k.slug', 'k.id as kid']);
         $ratings = DB::table('rg_destination_reviews')->whereIn('keyword_id', $rows->pluck('kid')->unique()->all() ?: [0])->where('status', 'published')
             ->groupBy('keyword_id')->selectRaw('keyword_id, round(avg(rating), 1) r, count(*) c')->get()->keyBy('keyword_id');
-        return $rows->filter(fn ($s) => is_file(storage_path('app/public/' . ltrim($s->path, '/'))))->take($limit)
+        return $rows->filter(fn ($s) => is_file(storage_path('app/public/' . ltrim($s->path, '/'))) && !isset($skip[\App\Support\GuideHtml::photoId('/storage/' . ltrim($s->path, '/'))]))->take($limit)
             ->map(fn ($s) => ['name' => $s->name, 'location' => (string) $s->location, 'image' => '/storage/' . ltrim($s->path, '/'), 'url' => url($s->slug),
                 'rating' => isset($ratings[$s->kid]) ? (float) $ratings[$s->kid]->r : null])->values()->all();
     }

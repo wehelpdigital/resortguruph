@@ -73,7 +73,7 @@
 
 @php
     $ld = [
-        '@context' => 'https://schema.org',
+        "\x40context" => 'https://schema.org',
         '@type' => 'Event',
         'name' => $fiesta->name,
         'description' => $fiesta->summary,

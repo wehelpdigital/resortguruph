@@ -124,6 +124,14 @@
             }
         }
     }
+    // one card per place, dish, festival or story: later repeats (in display order) are dropped
+    ['spots' => $spotsHtml, 'adv' => $advHtml, 'stream' => $streamHtml, 'food' => $foodHtml, 'explore' => $exploreHtml]
+        = \App\Support\CardDedupe::run(['spots' => $spotsHtml, 'adv' => $advHtml, 'stream' => $streamHtml, 'food' => $foodHtml, 'explore' => $exploreHtml]);
+    if ($gridItems && $spotsHtml !== '') {
+        preg_match_all('~class="gh-spot__name">(.*?)</~s', $spotsHtml, $snm);
+        $spotKeys = array_flip(array_map([\App\Support\CardDedupe::class, 'key'], $snm[1] ?? []));
+        $gridItems = array_values(array_filter($gridItems, fn ($it) => !isset($spotKeys[\App\Support\CardDedupe::key((string) $it['name'])])));
+    }
     $showAttrGrid = $gridItems !== [];
 
     // ---------- hero ----------

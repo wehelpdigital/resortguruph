@@ -9,7 +9,7 @@
 @section('jsonld')
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'AboutPage',
     'name' => 'About the Logo',
     'description' => 'The story, symbolism, and colours behind the ' . $siteName . ' logo, a Visayan warty pig with a backpack.',
@@ -19,7 +19,7 @@
 </script>
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],

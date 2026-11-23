@@ -254,7 +254,7 @@
 {{-- JSON-LD ItemList — each category is one item. --}}
 @php
     $ld = [
-        '@context' => 'https://schema.org',
+        "\x40context" => 'https://schema.org',
         '@type' => 'ItemList',
         'name' => 'Filipino Food, Dishes & What To Eat in the Philippines',
         'description' => 'The complete guide to Filipino food: popular staples, street food, exotic dishes, regional specialties from Luzon, Visayas, and Mindanao, and traditional sweets.',

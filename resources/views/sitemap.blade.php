@@ -12,7 +12,7 @@
 @endphp
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
@@ -22,7 +22,7 @@
 </script>
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'CollectionPage',
     'name' => 'Sitemap',
     'description' => 'Every public page on ' . $siteName . '.',

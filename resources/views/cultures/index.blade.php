@@ -237,7 +237,7 @@
 
 @php
     $ld = [
-        '@context' => 'https://schema.org',
+        "\x40context" => 'https://schema.org',
         '@type' => 'ItemList',
         'name' => 'Philippine Tribes, Ethnic Groups & Cultures to Meet',
         'description' => 'The complete guide to Philippine ethnolinguistic and indigenous groups, organized by region. Major lowland groups, Cordillera Igorot, Caraballo / Sierra Madre, MIMAROPA islands, Visayan IPs, Mindanao Lumad, and Mindanao Moro.',

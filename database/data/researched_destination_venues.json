@@ -91,7 +91,7 @@
     },
     {
         "token": "cebu-city",
-        "name": "Cebu City (Visayas — capital, lechon hub)",
+        "name": "Cebu City (Visayas, capital, lechon hub)",
         "short_version": "Cebu City is the capital of Cebu and the urban core of the Visayas, anchored by a Spanish-era downtown around the Basilica del Santo Nino and Magellan's Cross. It is the country's lechon capital, and the modern side of the city sits in Lahug at Cebu IT Park and Ayala Center Cebu. Note that Mactan Island, where the airport actually sits, is a separate city across the bridge.",
         "pros": [
             "Zubuchon and House of Lechon for the lemongrass-stuffed Cebu-style roast pig",
@@ -451,7 +451,7 @@
     },
     {
         "token": "manila",
-        "name": "Manila (city, capital — Malate \/ Ermita \/ Intramuros \/ Binondo)",
+        "name": "Manila (city, capital, Malate \/ Ermita \/ Intramuros \/ Binondo)",
         "short_version": "Manila proper is the old core of the capital, not the whole megacity. Inside it sit Intramuros (the Spanish walled city), Binondo (world's oldest Chinatown, 1594), and the Malate-Ermita strip facing Manila Bay with Rizal Park and the National Museum complex. It is a walking and eating city, not a beach or nightlife pick.",
         "pros": [
             "Intramuros circuit: Fort Santiago, San Agustin Church (1607, UNESCO), Manila Cathedral.",
@@ -481,7 +481,7 @@
     },
     {
         "token": "taguig",
-        "name": "Taguig (city — BGC, McKinley, FTI)",
+        "name": "Taguig (city, BGC, McKinley, FTI)",
         "short_version": "Taguig is the Metro Manila side that feels closest to a planned modern city, anchored by BGC, McKinley Hill, and now the new Arca South district near FTI. It works well if you want walkable streets, decent coffee, museums, and night spots without committing to Makati or Manila proper. Stay near High Street if you want everything on foot, or near Venice Mall if you want gondolas and quieter side streets.",
         "pros": [
             "BGC High Street is genuinely walkable with sidewalks, art, and street food carts.",
@@ -841,7 +841,7 @@
     },
     {
         "token": "pansol",
-        "name": "Pansol (Calamba, Laguna — hot springs)",
+        "name": "Pansol (Calamba, Laguna, hot springs)",
         "short_version": "Pansol is a barangay in Calamba, Laguna packed with private hot spring resorts fed by thermal water from Mt. Makiling, the dormant volcano next door. It is the default weekend pick for Manila families doing birthday rentals, debuts, and barkada overnighters because you can drive in via SLEX in roughly an hour off-peak and book a whole villa with a heated pool for your group.",
         "pros": [
             "Naturally heated mineral water from Mt. Makiling, good for sore muscles and cool nights",
@@ -871,7 +871,7 @@
     },
     {
         "token": "davao-city",
-        "name": "Davao City (Mindanao — Mount Apo region)",
+        "name": "Davao City (Mindanao, Mount Apo region)",
         "short_version": "Davao City is the gateway to Mt. Apo, the country's highest peak at 2,954 meters, and sits a short ferry hop from Samal Island. The pace is calmer than Cebu or Manila, the streets are noticeably orderly, and the food scene leans into durian, pomelo, and grilled tuna panga. It works well as a base for a Mindanao trip mixing mountain trekking, island days, and slow city eating.",
         "pros": [
             "Mt. Apo summit via Kapatagan or Kidapawan trail, a 3 to 4 day climb to Lake Venado.",
@@ -1020,7 +1020,7 @@
     },
     {
         "token": "kidapawan",
-        "name": "Kidapawan (North Cotabato — Mt. Apo gateway)",
+        "name": "Kidapawan (North Cotabato, Mt. Apo gateway)",
         "short_version": "Kidapawan is the North Cotabato city most climbers use as the eastern jump-off for Mt. Apo, with Lake Agco hot springs and Ilomavis as the staging point. It is also called the City of Fruits, so July to October trips coincide with durian, mangosteen, and rambutan season around the Timpupo Festival. Pack for cool nights and humid afternoons, and book a permit through the LGU or an accredited operator before you climb.",
         "pros": [
             "Eastern jump-off to Mt. Apo via Ilomavis and Lake Agco trail",
@@ -1050,7 +1050,7 @@
     },
     {
         "token": "vigan",
-        "name": "Vigan (Ilocos Sur — UNESCO heritage town)",
+        "name": "Vigan (Ilocos Sur, UNESCO heritage town)",
         "short_version": "Vigan is the UNESCO World Heritage town in Ilocos Sur known for Calle Crisologo, a cobblestone street of preserved Spanish colonial houses. It is one of Northern Luzon's most walkable old towns, and a solid base for trying Ilocano food like bagnet, Vigan longganisa, and the orange empanada. Best visited on weekdays during dry season to skip the heaviest weekend crowds.",
         "pros": [
             "Calle Crisologo at night when the lamps come on and cars are blocked off",
@@ -1200,7 +1200,7 @@
     },
     {
         "token": "bolinao",
-        "name": "Bolinao (Pangasinan — Patar Beach)",
+        "name": "Bolinao (Pangasinan, Patar Beach)",
         "short_version": "Bolinao sits at the western tip of Pangasinan and gives you an actual swimmable shoreline at Patar Beach, plus inland stops like Bolinao Falls and the old Cape Bolinao Lighthouse. It is roughly a 5 to 6 hour drive from Manila, so most DIY travelers do it as a weekend trip and pair it with Alaminos and the Hundred Islands.",
         "pros": [
             "Patar Beach has soft cream sand and shallow water good for swimming.",
@@ -1290,7 +1290,7 @@
     },
     {
         "token": "bauang",
-        "name": "Bauang (La Union — family resort coast)",
+        "name": "Bauang (La Union, family resort coast)",
         "short_version": "Bauang is the older family resort row of La Union, south of San Fernando, with calmer water than San Juan and a stretch of beachfront resorts built for swimming and reunions. Come for picnics by the shore, grape picking at the Bauang farms from March to May, and quiet evenings without the surf crowd up north.",
         "pros": [
             "Calmer, shallower water than San Juan, safer for kids and casual swimmers.",
@@ -1560,7 +1560,7 @@
     },
     {
         "token": "rodriguez-montalban",
-        "name": "Rodriguez \/ Montalban (Rizal — Wawa Dam)",
+        "name": "Rodriguez \/ Montalban (Rizal, Wawa Dam)",
         "short_version": "Rodriguez, still called Montalban by most locals, is the closest serious hiking spot to Metro Manila, sitting about an hour out via Cubao or Marikina. The draw is Wawa Gorge and the 1909 Wawa Dam on the Marikina River, plus the trio of Mt. Pamitinan, Mt. Binacayan, and Mt. Hapunang Banoi. It works best as a sunrise day hike, not an overnight, since accommodations in town are limited.",
         "pros": [
             "Mt. Pamitinan and Mt. Binacayan summits both finish in 2 to 3 hours from Brgy. Wawa",
@@ -1590,7 +1590,7 @@
     },
     {
         "token": "tanay",
-        "name": "Tanay (Rizal — Daranak Falls, Masungi)",
+        "name": "Tanay (Rizal, Daranak Falls, Masungi)",
         "short_version": "Tanay sits at the foot of the Sierra Madre about two hours east of Manila, packing waterfalls, caves, and ridge views into one weekend. It is the easy answer when you want mountain air without flying out of Luzon, and the place most Manileños default to for a quick nature reset.",
         "pros": [
             "Daranak Falls has a clean 14m drop and a deep emerald pool good for swimming",
@@ -1620,7 +1620,7 @@
     },
     {
         "token": "calamba",
-        "name": "Calamba (Laguna — Rizal Shrine, hot springs)",
+        "name": "Calamba (Laguna, Rizal Shrine, hot springs)",
         "short_version": "Calamba is the Laguna city where Jose Rizal was born, and it doubles as the go-to weekend soak spot for families from Metro Manila because of the Pansol and Bucal hot spring resorts fed by Mount Makiling. You can pair a quick museum stop at the Rizal Shrine with an overnight private pool rental, then bring home buko pie and espasol before heading back. It works best as a one or two night trip, not a long stay.",
         "pros": [
             "Rizal Shrine is a real reconstructed birthplace with period furniture, not a token marker",
@@ -1650,7 +1650,7 @@
     },
     {
         "token": "san-pablo",
-        "name": "San Pablo (Laguna — Seven Lakes)",
+        "name": "San Pablo (Laguna, Seven Lakes)",
         "short_version": "San Pablo is the quiet Laguna city famous for its Seven Lakes, the volcanic crater lakes scattered around town. It works best as a slow weekend trip if you like bamboo raft rides on Pandin and Yambo, lakeside walks at Sampaloc, and a side hike up Mt. Cristobal. Come for cool provincial air, lanzones season pasalubong, and old Spanish-era houses converted into cafes.",
         "pros": [
             "Pandin and Yambo offer bamboo raft rides with grilled tilapia and pako salad lunches",
@@ -1680,7 +1680,7 @@
     },
     {
         "token": "lucban",
-        "name": "Lucban (Quezon — Pahiyas Festival)",
+        "name": "Lucban (Quezon, Pahiyas Festival)",
         "short_version": "Lucban is a highland town in Quezon Province sitting at around 420 meters at the foot of Mt. Banahaw, which keeps the air noticeably cooler than the lowlands. It is best known for the Pahiyas Festival every May 15, when residents drape their houses with colored kiping rice wafers, fruits, and vegetables to honor San Isidro Labrador. Outside fiesta week it stays a quiet heritage town with old churches, pilgrimage sites, and famously good longganisa.",
         "pros": [
             "Pahiyas Festival on May 15 fills streets with kiping-decorated houses to walk through",
@@ -1710,7 +1710,7 @@
     },
     {
         "token": "sariaya",
-        "name": "Sariaya (Quezon — heritage town)",
+        "name": "Sariaya (Quezon, heritage town)",
         "short_version": "Sariaya is the Art Deco heritage town of Quezon Province, known for grand 1920s and 1930s ancestral houses built by old coconut barons. Most people slot it as a half-day stop between Lucena and Lucban, with a longer visit timed for the Agawan Festival every May 15.",
         "pros": [
             "Three signature homes to tour: Villa Sariaya, Gala-Rodriguez, and Enriquez Mansion.",
@@ -1740,7 +1740,7 @@
     },
     {
         "token": "lucena",
-        "name": "Lucena City (Quezon — provincial capital)",
+        "name": "Lucena City (Quezon, provincial capital)",
         "short_version": "Lucena is the capital of Quezon Province, a calm provincial city that mostly works as a base for trips to Lucban, Tayabas, Sariaya, and the Mt. Banahaw side. Expect malls, jeepneys, and pancit chami, not beaches or nightlife. Most travelers stay a night, eat well, then push on to the heritage towns nearby.",
         "pros": [
             "Lucena Grand Central Terminal connects easy rides to Lucban, Tayabas, and Sariaya",
@@ -1830,7 +1830,7 @@
     },
     {
         "token": "manaoag",
-        "name": "Manaoag (Pangasinan — pilgrimage church)",
+        "name": "Manaoag (Pangasinan, pilgrimage church)",
         "short_version": "Manaoag is a small Pangasinan town built around the Minor Basilica of Our Lady of the Most Holy Rosary, one of the most visited Marian shrines in the country. Most travelers come as a day trip from Manila for the candle lighting, vehicle blessing, and the ivory image of the Virgin enshrined inside the basilica. Pack light, dress modestly, and plan for a long bus ride if you are coming from the metro.",
         "pros": [
             "Minor Basilica status from Pope Francis in 2014, daily Masses and confessions.",
@@ -1890,7 +1890,7 @@
     },
     {
         "token": "san-fabian",
-        "name": "San Fabian (Pangasinan — beach coast)",
+        "name": "San Fabian (Pangasinan, beach coast)",
         "short_version": "San Fabian is the family beach side of Pangasinan, a long stretch of powdery gray sand facing Lingayen Gulf with calm, shallow water that suits kids and first-time beachgoers. It sits between Dagupan and the Manaoag pilgrimage route, so weekenders usually pair a swim with a quick church visit before heading home.",
         "pros": [
             "Gray sand beaches from Nibaliw West to Bolasi run for kilometers, easy walking",
@@ -1920,7 +1920,7 @@
     },
     {
         "token": "sual",
-        "name": "Sual (Pangasinan — beach + power plant)",
+        "name": "Sual (Pangasinan, beach + power plant)",
         "short_version": "Sual is a coastal town in western Pangasinan where you trade the usual Patar or Bolinao crowds for quieter coves, fishing barangays, and short boat rides out to small islands. The Sual coal plant and international port sit on the same coastline as the beaches, so the vibe is half industrial town, half low-key beach escape. Best for DIY travelers who want a slow weekend without the Boracay-style buildup.",
         "pros": [
             "Short banca ride from Tobuan or Masamirey out to Cabalitian Island",
@@ -1950,7 +1950,7 @@
     },
     {
         "token": "dasol",
-        "name": "Dasol (Pangasinan — Tambobong, salt farms)",
+        "name": "Dasol (Pangasinan, Tambobong, salt farms)",
         "short_version": "Dasol is a quiet fishing and salt-making town on the western coast of Pangasinan, with Tambobong Beach as its main stretch of cream-colored sand and Colibra Island sitting about 8 kilometers offshore. It is a calmer alternative to Bolinao and Patar, better suited for travelers who want a slower DIY weekend than a developed resort scene.",
         "pros": [
             "Long cream-sand stretch at Tambobong Beach with shallow, swimmable water",
@@ -1980,7 +1980,7 @@
     },
     {
         "token": "urdaneta",
-        "name": "Urdaneta (Pangasinan — provincial city)",
+        "name": "Urdaneta (Pangasinan, provincial city)",
         "short_version": "Urdaneta is a busy inland city on McArthur Highway, the natural stopover for travelers heading to or from Baguio, Dagupan, and the rest of Northern Luzon. It works better as a transit and pasalubong pause than a full destination, so plan a half day for a meal and a plaza walk.",
         "pros": [
             "CB Mall and SM City Urdaneta Central sit right along the highway for easy stopovers",
@@ -2009,7 +2009,7 @@
     },
     {
         "token": "rosales",
-        "name": "Rosales (Pangasinan — SM Rosales)",
+        "name": "Rosales (Pangasinan, SM Rosales)",
         "short_version": "Rosales is the Pangasinan town most Manila to North Luzon drivers know by one landmark, SM City Rosales along MacArthur Highway in Barangay Carmen East. It sits right at the TPLEX Carmen Exit, which makes it the natural halfway pit stop for road trips to La Union, Baguio, Ilocos, or Vigan. It is not really a destination town on its own, more of a clean, dependable break before you push further north.",
         "pros": [
             "TPLEX Carmen Exit drops you almost straight into SM City Rosales parking",
@@ -2039,7 +2039,7 @@
     },
     {
         "token": "calasiao",
-        "name": "Calasiao (Pangasinan — puto + jueteng)",
+        "name": "Calasiao (Pangasinan, puto + jueteng)",
         "short_version": "Calasiao is the Pangasinan town right next to Dagupan, known nationwide as the home of puto Calasiao, the small soft fermented rice cakes locals call white gold. Most travelers swing by for a quick stop: load up on fresh puto at the public market stalls, drop by the centuries-old Saints Peter and Paul Parish Church, then push on to Dagupan or Lingayen.",
         "pros": [
             "Puto Calasiao stalls in front of the municipal hall sell fresh, warm trays daily",
@@ -2069,7 +2069,7 @@
     },
     {
         "token": "dingalan",
-        "name": "Dingalan (Aurora — beach + view deck)",
+        "name": "Dingalan (Aurora, beach + view deck)",
         "short_version": "Dingalan is the quiet Aurora town on the Pacific side of the Sierra Madre, often called the Batanes of the East for its grassy cliffs and rolling hills. If Baler feels too crowded for you, this is the slower, DIY version: a short boat hop to White Beach, a 30-minute trek to the view deck, and a lighthouse looking out over the Philippine Sea. Locals also call it the Window to the Pacific.",
         "pros": [
             "Dingalan View Deck gives a 180-degree look at the Pacific after a 30-minute uphill trek",
@@ -2099,7 +2099,7 @@
     },
     {
         "token": "binangonan",
-        "name": "Binangonan (Rizal — Laguna de Bay coast)",
+        "name": "Binangonan (Rizal, Laguna de Bay coast)",
         "short_version": "Binangonan is the Rizal town hugging Laguna de Bay where Manila day-trippers catch the small boat to Talim Island for Mt. Tagapo hikes and fishing-village mornings. It is a quiet weekend pick if you want lake views, an old Spanish-era church, and a slower pace within driving distance of the metro.",
         "pros": [
             "Talim Island via Binangonan Port for Mt. Tagapo sunrise hike, around 438 meters",
@@ -2218,7 +2218,7 @@
     },
     {
         "token": "pandi",
-        "name": "Pandi (Bulacan — resort barangay)",
+        "name": "Pandi (Bulacan, resort barangay)",
         "short_version": "Pandi is a quiet farming town in central Bulacan that has quietly turned into a private-pool rental hub for Metro Manila families wanting a weekend escape without flying anywhere. You drive up via NLEX, exit around Sta. Rita or Pulilan, and within roughly an hour you are inside a walled compound with a pool, kubo, and karaoke. It is not a scenic destination, it is a backyard-resort destination.",
         "pros": [
             "Dozens of private pool rentals in Malibo Matanda, Bagong Barrio, and Masuso barangays",
@@ -2248,7 +2248,7 @@
     },
     {
         "token": "amadeo",
-        "name": "Amadeo (Cavite — coffee + cool weather)",
+        "name": "Amadeo (Cavite, coffee + cool weather)",
         "short_version": "Amadeo is the quieter coffee town right next to Tagaytay, sitting around 330 to 570 meters up so the air stays cool most of the year. The Cafe Amadeo Cooperative has been serving the local Pahimis blend since 2002, and a 12-kilometer stretch of CM Delos Reyes Avenue has slowly filled with farm cafes and small kitchens. If Tagaytay feels too crowded on a weekend, Amadeo is the calmer detour that locals actually drive to.",
         "pros": [
             "Cafe Amadeo Cooperative serves the Pahimis blend of arabica, excelsa, and robusta.",
@@ -2278,7 +2278,7 @@
     },
     {
         "token": "alfonso",
-        "name": "Alfonso (Cavite — Bahay Lampara)",
+        "name": "Alfonso (Cavite, Bahay Lampara)",
         "short_version": "Alfonso sits on the upland edge of Cavite, sharing the same cool ridge climate as Tagaytay but with quieter roads and more farm air. It is where you go for golf at Splendido Taal, weekend lunches near Twin Lakes, and a slower pace than the main Tagaytay strip a few kilometers north.",
         "pros": [
             "Cool 20 to 25 C nights from December to February, sweater weather close to Manila",
@@ -2308,7 +2308,7 @@
     },
     {
         "token": "indang",
-        "name": "Indang (Cavite — historic + cool)",
+        "name": "Indang (Cavite, historic + cool)",
         "short_version": "Indang is the upland Cavite town that quietly trades on history and cool air, sitting just south of the Tagaytay traffic without the resort crowd. It is where Andres Bonifacio was held in 1897, where Saint Gregory the Great Church still stands from the 1600s, and where coffee farms and small falls now pull in weekend day trippers. Come for a slower, leafier Cavite, not a party town.",
         "pros": [
             "Saint Gregory the Great Parish Church dates to the 1600s with trompe l'oeil ceiling work",
@@ -2338,7 +2338,7 @@
     },
     {
         "token": "silang",
-        "name": "Silang (Cavite — Tagaytay-adjacent)",
+        "name": "Silang (Cavite, Tagaytay-adjacent)",
         "short_version": "Silang sits along Aguinaldo Highway, the last stretch before the road climbs to Tagaytay. Most travelers treat it as a coffee stop or outlet detour, but the town has its own farm-to-table places and a quieter weekend pace than the ridge above. Worth pulling over for if you want Tagaytay air without Tagaytay crowds.",
         "pros": [
             "Acienda Designer Outlet sits right on Aguinaldo Highway for a no-fuss stop",
@@ -2368,7 +2368,7 @@
     },
     {
         "token": "imus",
-        "name": "Imus (Cavite — historic + urban)",
+        "name": "Imus (Cavite, historic + urban)",
         "short_version": "Imus is a Cavite city where 1898 revolutionary history meets weekday mall life. The Battle of Alapan happened here on May 28, 1898, the day Aguinaldo first unfurled the Philippine flag, and the old Imus Cathedral still anchors the town. It is a practical base if you want heritage stops by morning and air-conditioned malls by afternoon, about 20 km south of Metro Manila.",
         "pros": [
             "Alapan Heritage Park marks where the PH flag was first unfurled in 1898",
@@ -2398,7 +2398,7 @@
     },
     {
         "token": "bacoor",
-        "name": "Bacoor (Cavite — coast + commercial)",
+        "name": "Bacoor (Cavite, coast + commercial)",
         "short_version": "Bacoor sits at the gateway between Metro Manila and Cavite, so most visitors pass through on the way south rather than stay over. It mixes Manila Bay coastline with heavy commercial strips along Aguinaldo Highway and Molino Boulevard. Come for the mussel and oyster farms, the historic Zapote Bridge area, and the malls, not for resort-style beach time.",
         "pros": [
             "SM City Bacoor and SM Center Molino cover most weekend errands and mall food",
@@ -2428,7 +2428,7 @@
     },
     {
         "token": "dasmarinas",
-        "name": "Dasmariñas (Cavite — university town)",
+        "name": "Dasmariñas (Cavite, university town)",
         "short_version": "Dasmariñas is the practical Cavite city most people pass through on the way to Tagaytay, but it earns its own stop thanks to a cluster of universities and steady commercial life. You will not find beaches or a heritage strip here, just reliable malls, food chains, and a working-city pace that suits short stays or family visits to a student. It works best as a mid-trip base if you want cheaper rooms than Tagaytay while still being close enough for a day trip.",
         "pros": [
             "De La Salle University Dasmariñas anchors the city with student-friendly cafes nearby",
@@ -2458,7 +2458,7 @@
     },
     {
         "token": "naic",
-        "name": "Naic (Cavite — south coastal)",
+        "name": "Naic (Cavite, south coastal)",
         "short_version": "Naic is a quiet first-class town on the Manila Bay side of south Cavite, about 47 kilometers from Manila and roughly two hours via CAVITEX on a clean run. It is more of a residential and fishing community than a beach destination, with the Casa Hacienda de Naic and Bancaan fish port grounding most of the day-trip interest. Most travelers pass through on the way to Ternate or down to Nasugbu, so plan it as a short stop rather than a base.",
         "pros": [
             "Casa Hacienda de Naic is a real Katipunan site where Bonifacio was once held",

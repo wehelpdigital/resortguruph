@@ -227,7 +227,7 @@
 
 @php
     $ld = [
-        '@context' => 'https://schema.org',
+        "\x40context" => 'https://schema.org',
         '@type' => 'ItemList',
         'name' => 'Philippine Souvenirs, Pasalubong & What To Buy',
         'description' => 'The complete pasalubong guide. Heritage salts, regional textiles, artisanal crafts, and packaged sweets from every Philippine province.',

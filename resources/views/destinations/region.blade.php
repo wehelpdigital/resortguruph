@@ -12,7 +12,7 @@
 @section('jsonld')
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
@@ -23,7 +23,7 @@
 </script>
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'CollectionPage',
     'name' => $meta['name'] . ' travel guide',
     'description' => $meta['meta_description'],
@@ -38,7 +38,7 @@
 @if($data['spots'])
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'ItemList',
     'name' => 'Tourist spots in ' . $meta['name'],
     'itemListElement' => collect($data['spots'])->take(12)->values()->map(fn ($sp, $i) => [
@@ -152,7 +152,7 @@
                 <a href="{{ route('fiestas.index') }}" class="rg-btn rg-btn--outline rg-btn--lg">Festival calendar</a>
             </div>
         </div>
-        @php $collage = array_slice(array_column($spots, 'image'), 0, 3); @endphp
+        @php $collage = $data['collage'] ?? []; @endphp
         @if(count($collage) >= 2)
             <div class="relative h-[22rem] sm:h-[28rem]">
                 <img src="{{ $collage[0] }}" alt="" loading="lazy" class="rx-collage rx-collage--a">

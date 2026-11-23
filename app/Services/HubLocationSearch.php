@@ -52,36 +52,41 @@ class HubLocationSearch
     ];
 
     /**
-     * A curated "featured" shortlist for the top slider: up to 2 image-bearing
-     * items per category, spread across the hub, capped at $limit. Each row
-     * matches the dest_featured_slider card shape (name, region=category
-     * label shown as the eyebrow, image, url=hub category anchor).
+     * The top slider: one card per category ("Street Food & Offal Cuts, 18 dishes")
+     * linking to that category. Its photo is an item's second photo, which the grid
+     * below does not show, so the slider never repeats a card or a picture from the grid.
+     * Shape matches dest_featured_slider (name, region = eyebrow, image, url).
      */
     public function featured(string $hub, array $categories, int $limit = 12): array
     {
         $hubUrl = self::HUB_URL[$hub] ?? '';
-        $perCat = 2;
+        $noun = ['buys' => 'finds', 'foods' => 'dishes', 'cultures' => 'groups', 'activities' => 'experiences'][$hub] ?? 'picks';
+        $usable = fn ($src) => \App\Support\GuideHtml::usable((string) preg_replace('~^https?://[^/]+(?=/storage/)~i', '', (string) $src));
         $out = [];
         foreach ($categories as $cat) {
-            $catKey = (string) ($cat['key'] ?? '');
-            $catLabel = (string) ($cat['label'] ?? '');
-            $anchor = $hubUrl . ($catKey !== '' ? '#cat-' . $catKey : '');
-            $taken = 0;
-            foreach (($cat['items'] ?? []) as $it) {
-                if ($taken >= $perCat || count($out) >= $limit) break;
-                $imgs = $it['images'] ?? [];
-                if (!is_array($imgs) || !count($imgs)) continue;
-                $out[] = [
-                    'name' => (string) ($it['name'] ?? ''),
-                    'region' => $catLabel,
-                    'location' => '',
-                    'image' => (string) $imgs[0],
-                    'url' => $anchor,
-                    'slug' => (string) ($it['slug'] ?? ''),
-                ];
-                $taken++;
-            }
             if (count($out) >= $limit) break;
+            $items = array_values(array_filter($cat['items'] ?? [], fn ($it) => count(array_filter((array) ($it['images'] ?? []), $usable)) > 0));
+            if (!$items) continue;
+            $gridPhotos = [];
+            foreach ($items as $it) foreach ((array) ($it['images'] ?? []) as $img) if ($usable($img)) { $gridPhotos[\App\Support\GuideHtml::photoId((string) $img)] = true; break; }
+            // an item's other photo, from the middle of the list first
+            $order = array_merge(array_slice($items, (int) floor(count($items) / 3)), array_slice($items, 0, (int) floor(count($items) / 3)));
+            $photo = '';
+            foreach ($order as $it) {
+                foreach (array_slice((array) ($it['images'] ?? []), 1) as $img) {
+                    if ($usable($img) && !isset($gridPhotos[\App\Support\GuideHtml::photoId((string) $img)])) { $photo = (string) $img; break 2; }
+                }
+            }
+            if ($photo === '') continue;
+            $catKey = (string) ($cat['key'] ?? '');
+            $out[] = [
+                'name' => (string) ($cat['label'] ?? ''),
+                'region' => count($items) . ' ' . $noun,
+                'location' => '',
+                'image' => $photo,
+                'url' => $hubUrl . ($catKey !== '' ? '#cat-' . $catKey : ''),
+                'slug' => $catKey,
+            ];
         }
         return $out;
     }

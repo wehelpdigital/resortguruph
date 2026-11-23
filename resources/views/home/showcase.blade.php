@@ -15,7 +15,7 @@
 @section('jsonld')
 {!! $jsonld !!}
 @if(!empty($data['faqs']))
-<script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn ($f) => ['@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']]], $data['faqs'])], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode(["\x40context" => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn ($f) => ['@type' => 'Question', 'name' => $f['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a']]], $data['faqs'])], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 @endif
 @endsection
 
@@ -126,7 +126,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div class="relative order-2 lg:order-1 h-[22rem] sm:h-[28rem]">
             <img src="{{ asset('storage/rg-media/destinations/el-nido-1.jpg') }}" alt="Beach in El Nido, Palawan" loading="lazy" class="sx-collage sx-collage--a">
-            <img src="{{ asset('storage/rg-media/foods/adobo-1.jpg') }}" alt="Filipino adobo" loading="lazy" class="sx-collage sx-collage--b">
+            <img src="{{ asset('storage/rg-media/foods/adobo-2.jpg') }}" alt="Filipino adobo" loading="lazy" class="sx-collage sx-collage--b">
             <img src="{{ asset('storage/rg-media/fiestas/ati-atihan.jpg') }}" alt="Ati-Atihan festival" loading="lazy" class="sx-collage sx-collage--c">
             <div class="sx-float">
                 <span class="sx-stars text-sun-400">{!! $stars() !!}</span>

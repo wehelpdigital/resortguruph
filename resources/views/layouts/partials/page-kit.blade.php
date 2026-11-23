@@ -170,9 +170,10 @@
 
     .rg-glance__eyebrow, .rg-fact__label, .rg-tip__eyebrow, .rg-rating__label { font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
     .rg-glance__eyebrow { color: #64748b !important; margin-bottom: .7rem; }
-    .rg-glance__grid { display: grid; gap: .75rem; }
-    @media (min-width: 640px) { .rg-glance__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rg-glance__grid--one { grid-template-columns: 1fr; } }
-    .rg-glance__tile { display: flex; gap: .85rem; align-items: flex-start; border-radius: 1.1rem; border: 1px solid #e3e9f0; background: #fff; padding: 1rem 1.1rem; }
+    /* tiles flow in two columns (masonry), so a short tile never sits stretched beside a long one */
+    .rg-glance__grid { columns: 1; column-gap: .75rem; }
+    @media (min-width: 640px) { .rg-glance__grid { columns: 2; } .rg-glance__grid--one { columns: 1; } }
+    .rg-glance__tile { display: flex; gap: .85rem; align-items: flex-start; border-radius: 1.1rem; border: 1px solid #e3e9f0; background: #fff; padding: 1rem 1.1rem; break-inside: avoid; margin-bottom: .75rem; }
     .rg-glance__ico, .rg-fact__ico, .rg-tip__ico { flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: .85rem; display: inline-flex; align-items: center; justify-content: center; color: var(--c); background: color-mix(in srgb, var(--c) 11%, #fff); }
     .rg-glance__ico svg, .rg-tip__ico svg { width: 1.2rem; height: 1.2rem; }
     .rg-glance__label { font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--c) !important; }

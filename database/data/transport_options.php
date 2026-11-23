@@ -171,7 +171,7 @@ return [
         ['name' => 'Grab', 'type' => 'ride', 'url' => 'https://www.grab.com/ph/', 'note' => 'Reliable from QC, 30-50 minutes outside peak'],
     ],
     'taytay-rizal' => [
-        ['name' => 'Taytay jeepneys', 'type' => 'bus', 'url' => '#', 'note' => 'From Pasig, Ortigas, or Cainta — multiple jeep routes'],
+        ['name' => 'Taytay jeepneys', 'type' => 'bus', 'url' => '#', 'note' => 'From Pasig, Ortigas, or Cainta, multiple jeep routes'],
         ['name' => 'Grab', 'type' => 'ride', 'url' => 'https://www.grab.com/ph/', 'note' => 'Direct from BGC or Ortigas, 30-50 minutes'],
     ],
 

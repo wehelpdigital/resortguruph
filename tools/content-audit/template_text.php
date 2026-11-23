@@ -59,7 +59,27 @@ foreach (DB::table('rg_seo_pages')->where('tldr', 'like', '%character over gener
     if ($apply) DB::table('rg_seo_pages')->where('id', $pg->id)->update(['tldr' => preg_replace($chains, $chainsTo, $pg->tldr)]);
 }
 
-echo "\$area filled: {$count['area']}, Metro Manila routes line fixed: {$count['routes']}, chain-character line rewritten: {$count['chains']}\n";
+// a stray closing quote left at the end of a paragraph (festival guides: '... and unmoved."')
+$count['quotes'] = 0;
+foreach (DB::table('rg_content_blocks')->whereIn('block_type', ['text_section', 'short_version', 'rich_text'])->where('payload_json', 'like', '%.\\\\"%')->get() as $b) {
+    $p = json_decode($b->payload_json, true) ?: [];
+    $changed = false;
+    array_walk_recursive($p, function (&$v, $k) use (&$changed) {
+        if (!is_string($v) || in_array($k, ['html', 'src', 'url'], true)) return;
+        $paras = preg_split("~(\n\s*\n)~", $v, -1, PREG_SPLIT_DELIM_CAPTURE);
+        foreach ($paras as &$para) {
+            $t = rtrim($para);
+            if (preg_match('~[.!?]"$~', $t) && substr_count($t, '"') % 2 === 1) { $para = substr($t, 0, -1) . substr($para, strlen($t)); $changed = true; }
+        }
+        $v = implode('', $paras);
+    });
+    if (!$changed) continue;
+    $backup[] = (array) $b;
+    $count['quotes']++;
+    if ($apply) DB::table('rg_content_blocks')->where('id', $b->id)->update(['payload_json' => json_encode($p, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), 'updated_at' => now()]);
+}
+
+echo "\$area filled: {$count['area']}, Metro Manila routes line fixed: {$count['routes']}, chain-character line rewritten: {$count['chains']}, stray quotes: {$count['quotes']}\n";
 if ($apply && $backup) {
     @mkdir(storage_path('app/content-backups'), 0775, true);
     $f = storage_path('app/content-backups/template-text-' . date('Ymd-His') . '.json');

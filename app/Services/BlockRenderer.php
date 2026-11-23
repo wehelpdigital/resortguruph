@@ -2850,7 +2850,7 @@ class BlockRenderer
 
             $external = !str_starts_with($url, '/');
             $rel = $external ? ' rel="noopener nofollow" target="_blank"' : '';
-            $out .= '<a href="' . $this->e($url) . '"' . $rel
+            $cards[] = '<a href="' . $this->e($url) . '"' . $rel
                 . ' class="group block rounded-xl border border-slate-200 bg-white overflow-hidden transition hover:shadow-lg hover:-translate-y-px">'
                 . $hero
                 . '<div class="p-4">'
@@ -2862,7 +2862,11 @@ class BlockRenderer
                 . '</div></a>';
         }
         if (\App\Support\GuideHtml::tracking() && empty($shownCards)) return '';
-        $out .= '</div></section>';
+        $cards = $cards ?? [];
+        // whole rows of three: a fourth or fifth card would sit alone on the last row
+        if (count($cards) > 3) $cards = array_slice($cards, 0, count($cards) - count($cards) % 3);
+        if (count($cards) < 3) $out = str_replace('sm:grid-cols-2 lg:grid-cols-3 gap-4', count($cards) === 2 ? 'sm:grid-cols-2 gap-4' : 'max-w-md gap-4', $out);
+        $out .= implode('', $cards) . '</div></section>';
         return $out;
     }
 
@@ -2920,11 +2924,23 @@ class BlockRenderer
         $intro = trim((string) ($p['intro'] ?? ''));
         $items = $p['items'] ?? [];
 
+        $max = (int) ($p['max'] ?? 3);
         if (!$items && !empty($p['auto_from_keywords'])) {
-            $items = $this->fetchRelatedBlogs(
-                (array) $p['auto_from_keywords'],
-                (int) ($p['max'] ?? 3)
-            );
+            // overscan: stories already on the page (or with a cover the page already shows) make way for the next ones
+            $items = $this->fetchRelatedBlogs((array) $p['auto_from_keywords'], $max * 4);
+        }
+        if (\App\Support\GuideHtml::tracking()) {
+            $keep = [];
+            foreach ($items as $item) {
+                $url = trim((string) ($item['url'] ?? ''));
+                $cover = trim((string) ($item['cover'] ?? ''));
+                if ($url === '' || \App\Support\GuideHtml::linkShown($url)) continue;
+                if ($cover !== '' && !\App\Support\GuideHtml::claim($this->normalizeMediaUrl($cover))) continue;
+                \App\Support\GuideHtml::markLink($url);
+                $keep[] = $item;
+                if (count($keep) >= max(1, $max)) break;
+            }
+            $items = $keep;
         }
         if (!$items) return '';
 
@@ -2935,7 +2951,9 @@ class BlockRenderer
         }
         $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $this->e($intro) . '</p>';
 
-        $out .= '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">';
+        $n = count(array_filter($items, fn ($i) => trim((string) ($i['title'] ?? '')) !== '' && trim((string) ($i['url'] ?? '')) !== ''));
+        $cols = $n >= 3 ? 'md:grid-cols-2 lg:grid-cols-3' : ($n === 2 ? 'md:grid-cols-2' : 'max-w-xl');
+        $out .= '<div class="grid grid-cols-1 ' . $cols . ' gap-5">';
         foreach ($items as $item) {
             $title = trim((string) ($item['title'] ?? ''));
             $url = trim((string) ($item['url'] ?? ''));
@@ -2955,7 +2973,7 @@ class BlockRenderer
             $external = !str_starts_with($url, '/');
             $rel = $external ? ' rel="noopener nofollow" target="_blank"' : '';
             $out .= '<a href="' . $this->e($url) . '"' . $rel
-                . ' class="group rounded-xl border border-slate-200 bg-white overflow-hidden transition hover:shadow-lg hover:-translate-y-px flex flex-col">'
+                . ' class="rg-rel-card group rounded-xl border border-slate-200 bg-white overflow-hidden transition hover:shadow-lg hover:-translate-y-px flex flex-col">'
                 . $hero
                 . '<div class="p-5 flex-1 flex flex-col">'
                 . ($eyebrow ? '<div class="text-[10px] uppercase tracking-wider font-bold text-amber-700 mb-2">' . $this->e($eyebrow) . '</div>' : '')

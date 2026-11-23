@@ -9,7 +9,7 @@
 @section('jsonld')
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    "\x40context" => 'https://schema.org',
     '@type' => 'AboutPage',
     'name' => 'About the Logo',
     'description' => 'The meaning behind the ' . $siteName . ' logo: a guide pin, the eight-rayed sun of the Philippine flag, and the sea.',
