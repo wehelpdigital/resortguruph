@@ -172,8 +172,18 @@ class GuideHtml
         if ($src === '' || self::isPlaceholder($src)) return false;
         if (!self::$track) return true;
         $key = self::photoKey($src);
+        if (str_starts_with($key, '/storage/')) return false; // a library file that is not on disk
         if (isset(self::$seen[$key])) return false;
         return self::$seen[$key] = true;
+    }
+
+    /** A real photo that can be shown: not a placeholder, not blocked, and on disk when it is a library file. */
+    public static function usable(string $src): bool
+    {
+        $src = trim($src);
+        if ($src === '' || self::isPlaceholder($src)) return false;
+        $path = (string) strtok(preg_replace('~^https?://[^/]+~i', '', $src), '?');
+        return !str_starts_with($path, '/storage/') || is_file(storage_path('app/public/' . rawurldecode(substr($path, 9))));
     }
 
     public static function isPlaceholder(string $src): bool
