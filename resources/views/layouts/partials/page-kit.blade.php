@@ -272,7 +272,14 @@
     .gh-spot:hover { box-shadow: 0 24px 48px -30px rgba(11, 27, 43, .45); }
     @media (min-width: 768px) { .gh-spot--lead { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } .gh-spot--lead .gh-spot__img { aspect-ratio: auto; min-height: 100%; } }
     .gh-spot__img, .gh-fest__img, .gh-note__img, .gh-food__img, .gh-read__img { position: relative; display: block; overflow: hidden; background: linear-gradient(135deg, #e0f0fa, #fdf3e3); }
-    .gh-spot__img { aspect-ratio: 16 / 10; }
+    .gh-spot__img { aspect-ratio: 16 / 10; flex: 1 0 auto; } /* a short card beside a long one grows its photo, not a blank strip */
+    /* 2 columns: an odd card left alone on the last row takes the full row, photo beside the text */
+    @media (min-width: 768px) {
+        .gh-spots__grid > .gh-spot:last-child:nth-child(even):not(.gh-spot--lead) { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+        .gh-spots__grid > .gh-spot:last-child:nth-child(even):not(.gh-spot--lead) .gh-spot__img { aspect-ratio: auto; min-height: 15rem; }
+        .gh-spots__grid > .gh-spot:last-child:nth-child(even):not(.gh-spot--lead) .gh-spot__body { justify-content: center; padding: 1.6rem 1.8rem; }
+        .gh-spots__grid > .gh-spot:last-child:not(.gh-spot--lead) .gh-spot__body .gh-links { margin-top: .35rem; }
+    }
     .gh-spot__img img, .gh-fest__img img, .gh-note__img img, .gh-food__img img, .gh-read__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .9s cubic-bezier(.22, 1, .36, 1); margin: 0; border-radius: 0 !important; }
     .gh-spot:hover .gh-spot__img img, .gh-fest:hover img, .gh-note:hover img, .gh-food:hover img, .gh-read:hover img { transform: scale(1.05); }
     .gh-num { position: absolute; top: .85rem; left: .85rem; min-width: 2.4rem; height: 2.4rem; padding: 0 .55rem; border-radius: 999px; background: #0b1b2b; color: #ffc74a; font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: .9rem; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 8px 18px -8px rgba(0, 0, 0, .5); }

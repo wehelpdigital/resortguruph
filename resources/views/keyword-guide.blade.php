@@ -689,6 +689,14 @@
         .gx-todo__spots .gh-spot--lead .gh-spot__img { min-height: 26rem; }
         .gx-todo__spots .gh-spot--lead .gh-spot__name { font-size: 2rem; }
         .gx-todo__spots .gh-spot--lead .gh-spot__body { padding: 2.25rem 2.5rem; }
+        /* 3 columns after the lead: fill the last row (one card left: full row, two cards: the last spans two) */
+        .gx-todo__spots .gh-spots__grid > .gh-spot:last-child:nth-child(even):not(.gh-spot--lead) { grid-column: auto; display: flex; }
+        .gx-todo__spots .gh-spots__grid > .gh-spot:last-child:nth-child(even):not(.gh-spot--lead) .gh-spot__img { aspect-ratio: 16 / 10; min-height: 0; }
+        .gx-todo__spots .gh-spots__grid > .gh-spot:last-child:nth-child(even):not(.gh-spot--lead) .gh-spot__body { padding: 1.25rem 1.35rem 1.35rem; justify-content: flex-start; }
+        .gx-todo__spots .gh-spots__grid > .gh-spot:last-child:nth-child(3n+2):not(.gh-spot--lead) { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+        .gx-todo__spots .gh-spots__grid > .gh-spot:last-child:nth-child(3n):not(.gh-spot--lead) { grid-column: span 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+        .gx-todo__spots .gh-spots__grid > .gh-spot:last-child:is(:nth-child(3n+2), :nth-child(3n)):not(.gh-spot--lead) .gh-spot__img { aspect-ratio: auto; min-height: 16rem; }
+        .gx-todo__spots .gh-spots__grid > .gh-spot:last-child:is(:nth-child(3n+2), :nth-child(3n)):not(.gh-spot--lead) .gh-spot__body { justify-content: center; padding: 1.75rem 2rem; }
     }
 
     .gx-glance { columns: 1; column-gap: 1rem; }
@@ -754,7 +762,7 @@
     .gx-author { border-radius: 1.5rem; background: #0b1b2b; padding: 1.5rem; display: grid; gap: 1.25rem; }
     @media (min-width: 768px) { .gx-author { grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr); align-items: center; gap: 2.5rem; padding: 1.75rem 2rem; } .gx-author__bio { border-left: 1px solid rgba(255, 255, 255, .12); padding-left: 2.5rem; } }
     .gx-explore-tags .rg-tags { margin: 2.5rem 0 1rem; }
-    @media (min-width: 1024px) { .gx-xg-wide .xg__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .gx-xg-wide .xg .gh-intro { max-width: 46rem; } }
+    @media (min-width: 1280px) { .gx-xg-wide .xg__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } } .gx-xg-wide .xg .gh-intro { max-width: 46rem; }
     .gx-author__eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #ffc74a; }
 </style>
 <script>
