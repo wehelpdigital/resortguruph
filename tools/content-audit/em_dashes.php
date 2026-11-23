@@ -26,6 +26,28 @@ foreach (['rg_tourist_spots' => ['name', 'description'], 'rg_destination_reviews
         }
     }
 }
+// JSON columns (blog "at a glance" tiles, FAQ answers): em dashes are stored as — there
+foreach (['rg_blog_posts' => ['wwww_json'], 'rg_seo_pages' => ['wwww_json', 'faq_json', 'schema_json']] as $table => $cols) {
+    foreach ($cols as $col) {
+        foreach (DB::table($table)->where(fn ($q) => $q->where($col, 'like', '%—%')->orWhere($col, 'like', '%\\\\u2014%'))->get(['id', $col]) as $r) {
+            $d = json_decode((string) $r->$col, true);
+            if (!is_array($d)) continue;
+            array_walk_recursive($d, function (&$v) use ($fix) { if (is_string($v) && str_contains($v, '—')) $v = $fix($v); });
+            $backup[] = ['table' => $table, 'id' => $r->id, $col => $r->$col];
+            $n++;
+            if ($apply) DB::table($table)->where('id', $r->id)->update([$col => json_encode($d, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)]);
+        }
+    }
+}
+foreach (['rg_blog_posts' => ['tldr', 'meta_description'], 'rg_seo_pages' => ['tldr', 'subtitle', 'meta_description']] as $table => $cols) {
+    foreach ($cols as $col) {
+        foreach (DB::table($table)->where($col, 'like', '%—%')->get(['id', $col]) as $r) {
+            $backup[] = ['table' => $table, 'id' => $r->id, $col => $r->$col];
+            $n++;
+            if ($apply) DB::table($table)->where('id', $r->id)->update([$col => $fix((string) $r->$col)]);
+        }
+    }
+}
 foreach (DB::table('rg_content_blocks')->where('payload_json', 'like', '%—%')->orWhere('payload_json', 'like', '%\\\\u2014%')->get() as $b) {
     $p = json_decode($b->payload_json, true);
     if (!is_array($p)) continue;

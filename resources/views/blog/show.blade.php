@@ -48,7 +48,7 @@
                 @if($hasBlocks)
                     {!! \App\Support\PageKit::balance($renderedBlocks) !!}
                 @else
-                    {!! \App\Support\PageKit::balance(\App\Support\BlogHtml::transform($post->content_html, $post->cover_path ? '/storage/' . ltrim($post->cover_path, '/') : '')) !!}
+                    {!! \App\Support\PageKit::balance(\App\Support\BlogHtml::transform($post->content_html, $post->cover_path ? '/storage/' . ltrim($post->cover_path, '/') : '', collect($related ?? [])->map(fn ($r) => $r->cover_path ? '/storage/' . ltrim($r->cover_path, '/') : '')->all())) !!}
                 @endif
             </div>
 

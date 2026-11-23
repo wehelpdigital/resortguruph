@@ -22,11 +22,15 @@ class BlogHtml
     private static DOMDocument $doc;
     /** photo ids already on the page (the cover, earlier figures): each photo shows once */
     private static array $shown = [];
+    /** photo ids used further down the page (the related story cards): stay cards pick others */
+    private static array $reserved = [];
 
-    public static function transform(?string $html, string $cover = ''): string
+    public static function transform(?string $html, string $cover = '', array $reserved = []): string
     {
         $html = (string) $html;
         self::$shown = $cover !== '' ? [GuideHtml::photoId($cover) => true] : [];
+        self::$reserved = [];
+        foreach ($reserved as $src) if (trim((string) $src) !== '') self::$reserved[GuideHtml::photoId((string) $src)] = true;
         if (!str_contains($html, 'rg-h2-iconized')) return $html;
 
         $doc = new DOMDocument();
@@ -199,7 +203,7 @@ class BlogHtml
     private static function stays(DOMElement $grid): string
     {
         $out = '<div class="bx-stays not-prose">';
-        $seen = self::$shown;
+        $seen = self::$shown + self::$reserved;
         $n = 0;
         foreach ($grid->getElementsByTagName('a') as $a) {
             $href = self::localUrls($a->getAttribute('href'));
