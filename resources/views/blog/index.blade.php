@@ -9,8 +9,8 @@
     $first = $posts->onFirstPage() ? $posts->first() : null;
     $rest = $first ? $posts->getCollection()->slice(1) : $posts->getCollection();
     $cover = fn ($p) => $p && $p->cover_path ? '/storage/' . ltrim($p->cover_path, '/') : null;
-    $slides = collect($posts->items())->filter(fn ($p) => $p->cover_path)->unique('cover_path')->take(3)
-        ->map(fn ($p) => ['src' => $cover($p), 'title' => $p->title])->values()->all();
+    $slides = collect($heroPosts ?? [])->map(fn ($p) => ['src' => $cover($p), 'title' => $p->title])->values()->all();
+    $totalPosts = $totalPosts ?? $posts->total();
 @endphp
 
 @include('partials.page-hero', [
@@ -21,7 +21,7 @@
     'title' => $intro['heading'] ?: 'Travel stories from people who went',
     'lede' => $intro['lede'] ?: 'Real routes, honest tips and the local detail you only get from someone who has been there.',
     'chips' => [
-        ['icon' => 'book', 'text' => number_format($posts->total()) . ' articles'],
+        ['icon' => 'book', 'text' => number_format($totalPosts) . ' articles'],
         ['icon' => 'user', 'text' => 'Written by travelers'],
     ],
 ])
@@ -47,8 +47,8 @@
             <p class="pk-eyebrow">{{ $posts->onFirstPage() ? 'More to read' : 'Page ' . $posts->currentPage() }}</p>
             <h2 class="pk-h2">All articles</h2>
         </div>
-        @if($posts->total())
-            <p class="text-sm font-medium text-slate-500">{{ number_format($posts->total()) }} articles</p>
+        @if($totalPosts)
+            <p class="text-sm font-medium text-slate-500">{{ number_format($totalPosts) }} articles</p>
         @endif
     </div>
 

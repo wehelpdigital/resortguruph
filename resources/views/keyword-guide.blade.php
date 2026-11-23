@@ -70,6 +70,9 @@
     if (preg_match('~<section class="gh-spots not-prose">.*?</section>~s', $streamHtml, $sm)) {
         $spotsHtml = $sm[0];
         $streamHtml = trim(str_replace($sm[0], '', $streamHtml));
+        // a heading that introduced the list ("Why X Is Worth The Trip") and now leads straight into the next titled section goes too
+        $streamHtml = (string) preg_replace('~<div class="my-6">\s*</div>~', '', $streamHtml);
+        $streamHtml = trim((string) preg_replace('~<h2 class="rg-h[^"]*">[^<]*</h2>\s*(?=<div class="my-6">\s*<section class="gh-(?:history|fests|reads|map|spots)|<h2|$)~', '', $streamHtml));
     }
     $spotsText = mb_strtolower(html_entity_decode(strip_tags($spotsHtml), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     $attrCovered = $attrItems && $spotsHtml !== ''
@@ -83,6 +86,8 @@
     $spotsFirst = ($spotsHtml !== '' || $attrItems) && preg_match('~tourist spots?|where to go|things to do|attractions?|what to do|places to visit|itinerary~i', $keyword->phrase);
     $getting = $first('how_to_get_to')['payload'] ?? null;
     $map = $first('map_embed')['payload'] ?? null;
+    // one map per page: the Getting there map replaces the seeded "Where X sits on the map" card in the guide
+    if (!empty($map['embed_url'])) $streamHtml = trim((string) preg_replace('~(<div class="my-6">\s*)?<section class="gh-map not-prose">.*?</section>(\s*</div>)?~s', '', $streamHtml));
     $faqBlock = $first('faq')['payload'] ?? null;
     $faqItems = $of(['faq'])->flatMap(fn ($p) => $p['payload']['items'] ?? [])->filter(fn ($i) => !empty($i['question']))->values()->all();
     $author = $first('author')['payload'] ?? null;
@@ -441,7 +446,8 @@
 {{-- ============ GETTING THERE ============ --}}
 @if($getting || $map)
 <section id="getting-there" class="gx-sec py-14 md:py-20">
-    <div class="pk-wrap grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-10 lg:gap-14 items-start lg:items-stretch">
+    <div class="pk-wrap grid {{ $getting ? 'lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]' : '' }} gap-10 lg:gap-14 items-start lg:items-stretch">
+        @if($getting)
         <div>
             <p class="pk-eyebrow">Getting there</p>
             <h2 class="pk-h2">{{ $getting['heading'] ?? ('How to get to ' . $place) }}</h2>
@@ -465,6 +471,7 @@
             @endif
             @if(!empty($getting['footer']))<p class="mt-5 text-sm text-slate-500">{{ $getting['footer'] }}</p>@endif
         </div>
+        @endif
         @if(!empty($map['embed_url']))
             @php
                 $mapQuery = '';

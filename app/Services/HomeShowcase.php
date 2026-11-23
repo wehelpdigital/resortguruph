@@ -30,7 +30,7 @@ class HomeShowcase
 
     public function data(): array
     {
-        return Cache::remember('home_showcase_v4', 600, function () {
+        return Cache::remember('home_showcase_v5', 600, function () {
             $d = [
                 'stats' => $this->stats(),
                 'trending' => $this->trending(),
@@ -146,9 +146,12 @@ class HomeShowcase
         $seen = []; $out = [];
         foreach ($rows as $r) {
             // seeded reviews share templates: skip repeats of the same opening words or reviewer
-            $sig = implode(' ', array_slice(preg_split('/\s+/', strtolower(preg_replace('/[^a-z ]/i', '', $r->review_text))), 0, 4));
-            if (isset($seen[$r->reviewer_name]) || isset($seen['sig:' . $sig])) continue;
-            $seen[$r->reviewer_name] = true; $seen['sig:' . $sig] = true;
+            // the same template with another place name ("Drove down to Boracay / Bacolod ...") counts as a repeat too
+            $words = preg_split('/\s+/', trim(strtolower(preg_replace('/[^a-z ]/i', '', $r->review_text))));
+            $sig = implode(' ', array_slice($words, 0, 3));
+            $end = implode(' ', array_slice($words, -5));
+            if (isset($seen[$r->reviewer_name]) || isset($seen['sig:' . $sig]) || isset($seen['end:' . $end])) continue;
+            $seen[$r->reviewer_name] = true; $seen['sig:' . $sig] = true; $seen['end:' . $end] = true;
             $av = (string) $r->reviewer_avatar;
             $out[] = [
                 'name' => $r->reviewer_name, 'from' => $r->reviewer_location, 'rating' => (int) $r->rating, 'text' => $r->review_text,

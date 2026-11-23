@@ -204,7 +204,7 @@ class UnifiedSearchIndex
     {
         if (!Schema::hasTable('rg_resorts')) return [];
         $rows = RgResort::query()
-            ->where('status', 'published')
+            ->where('status', 'published')->real()
             ->orderByDesc('updated_at')
             ->limit(400)
             ->get(['id', 'name', 'slug', 'city', 'province', 'tagline', 'hero_path']);

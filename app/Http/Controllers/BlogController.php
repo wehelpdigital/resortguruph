@@ -14,9 +14,17 @@ class BlogController extends Controller
 {
     public function index(BlockRenderer $renderer)
     {
-        $posts = RgBlogPost::where('status', 'published')
-            ->orderByDesc('published_at')
-            ->paginate(12);
+        // page 1 holds the featured "latest" post plus twelve cards, later pages twelve cards:
+        // the three-column grid always ends on a full row
+        $per = 12;
+        $pageNo = max(1, (int) request('page', 1));
+        $query = RgBlogPost::where('status', 'published')->orderByDesc('published_at')->orderByDesc('id');
+        $totalPosts = (clone $query)->count();
+        $items = (clone $query)->skip($pageNo === 1 ? 0 : $per + 1 + ($pageNo - 2) * $per)->take($pageNo === 1 ? $per + 1 : $per)->get();
+        $posts = new \Illuminate\Pagination\LengthAwarePaginator($items, max(0, $totalPosts - 1), $per, $pageNo, ['path' => request()->url(), 'pageName' => 'page']);
+        // the hero shows other stories than the ones in the list below
+        $heroPosts = (clone $query)->whereNotNull('cover_path')->whereNotIn('id', $items->pluck('id')->all() ?: [0])
+            ->skip(($pageNo - 1) * 3)->take(12)->get()->unique('cover_path')->take(3)->values();
 
         // Read editorial intro / FAQ / CTA blocks from the
         // `blog-index` static_page row so the index reads as a
@@ -27,17 +35,26 @@ class BlogController extends Controller
             ->first();
         $renderedBlocks = $page ? $renderer->renderFor('static_page', $page->id) : '';
 
-        return view('blog.index', compact('posts', 'page', 'renderedBlocks'));
+        return view('blog.index', compact('posts', 'page', 'renderedBlocks', 'totalPosts', 'heroPosts'));
     }
 
     public function show(RgBlogPost $post, BlockRenderer $renderer, SchemaGenerator $schema)
     {
         if ($post->status !== 'published') abort(404);
-        $related = RgBlogPost::where('status', 'published')
-            ->where('id', '<>', $post->id)
-            ->orderByDesc('published_at')
-            ->limit(3)
-            ->get();
+        // stories on the same places first (shared tags), then the latest; none with this post's cover
+        $tags = array_values(array_filter(array_map('trim', explode(',', (string) $post->tags))));
+        $base = RgBlogPost::where('status', 'published')->where('id', '<>', $post->id)
+            ->when($post->cover_path, fn ($q) => $q->where(fn ($w) => $w->whereNull('cover_path')->orWhere('cover_path', '<>', $post->cover_path)));
+        $related = collect();
+        if ($tags) {
+            $related = (clone $base)->where(function ($q) use ($tags) { foreach (array_slice($tags, 0, 6) as $t) $q->orWhere('tags', 'like', '%' . $t . '%'); })
+                ->orderByDesc('published_at')->limit(24)->get()
+                ->sortByDesc(fn ($p) => count(array_intersect(array_map('strtolower', array_map('trim', explode(',', (string) $p->tags))), array_map('strtolower', $tags))))
+                ->unique('cover_path')->take(3)->values();
+        }
+        if ($related->count() < 3) {
+            $related = $related->concat((clone $base)->whereNotIn('id', $related->pluck('id')->all() ?: [0])->orderByDesc('published_at')->limit(3 - $related->count())->get())->values();
+        }
         $renderedBlocks = $renderer->renderFor('blog_post', $post->id);
 
         $comments = RgBlogComment::where('blog_post_id', $post->id)

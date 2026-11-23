@@ -380,6 +380,7 @@ class BlockRenderer
         if (!$keywordId) return $sentinelStart . ($p['fallback_html'] ?? '') . $sentinelEnd;
         $listings = RgListing::where('keyword_id', $keywordId)
             ->where('status', 'active')
+            ->whereHas('resort', fn ($q) => $q->where('status', 'published')->real())
             ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
             ->orderByDesc('bid_gp')
             ->orderBy('last_bid_at')
@@ -2705,6 +2706,8 @@ class BlockRenderer
         $out .= '</div></div>';
 
         $out .= '<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">';
+        // whole rows of three cards (the score above still counts every review)
+        if ($reviews->count() > 3) $reviews = $reviews->take($reviews->count() - $reviews->count() % 3);
         foreach ($reviews as $r) {
             $name = $this->e((string) ($r->reviewer_name ?? ''));
             $location = $this->e((string) ($r->reviewer_location ?? ''));

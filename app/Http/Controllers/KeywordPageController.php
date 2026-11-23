@@ -44,6 +44,7 @@ class KeywordPageController extends Controller
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
             ->with(['resort' => fn($q) => $q->where('status', 'published')])
+            ->whereHas('resort', fn ($q) => $q->where('status', 'published')->real())
             ->orderByDesc('bid_gp')
             ->orderBy('last_bid_at')
             ->paginate($listingsPerPage)

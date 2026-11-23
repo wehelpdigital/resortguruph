@@ -68,7 +68,7 @@ class SitemapController extends Controller
                 });
 
             // Resort detail pages
-            RgResort::where('status', 'published')->orderBy('id')->each(function ($r) use (&$urls) {
+            RgResort::where('status', 'published')->real()->orderBy('id')->each(function ($r) use (&$urls) {
                 $urls[] = [
                     'loc' => route('resort.show', $r->slug),
                     'lastmod' => optional($r->updated_at)->toAtomString() ?? now()->toAtomString(),
@@ -158,7 +158,7 @@ class SitemapController extends Controller
             }
 
             // Published resorts.
-            $resorts = RgResort::where('status', 'published')->orderBy('name')->get(['name', 'slug']);
+            $resorts = RgResort::where('status', 'published')->real()->orderBy('name')->get(['name', 'slug']);
             if ($resorts->isNotEmpty()) {
                 $sections[] = ['group' => 'Stays', 'title' => 'Resorts', 'links' => $resorts->map(fn ($r) => ['label' => $r->name, 'url' => route('resort.show', $r->slug)])->all()];
             }

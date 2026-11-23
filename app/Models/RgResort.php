@@ -33,6 +33,21 @@ class RgResort extends Model
         return $this->hasMany(RgResortMedia::class, 'resort_id')->orderBy('sort_order');
     }
 
+    /**
+     * Real properties only: the seeded sample resorts ("Sample property for demo
+     * purposes", @dummy.test emails) stay out of public listings, search and the sitemap.
+     */
+    public function scopeReal($query)
+    {
+        return $query->where(fn ($q) => $q->whereNull('email')->orWhere('email', 'not like', '%@dummy.test'))
+            ->where(fn ($q) => $q->whereNull('description_html')->orWhere('description_html', 'not like', '%Sample property for demo purposes%'));
+    }
+
+    public function isDemo(): bool
+    {
+        return str_ends_with((string) $this->email, '@dummy.test') || str_contains((string) $this->description_html, 'Sample property for demo purposes');
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';

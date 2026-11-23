@@ -120,7 +120,7 @@ class DestinationShowcase
     /** Everything the region page needs beyond the controller's keyword list. */
     public function region(string $slug, $keywords): array
     {
-        return Cache::remember('dest_region_v6_' . $slug, 600, function () use ($slug, $keywords) {
+        return Cache::remember('dest_region_v7_' . $slug, 600, function () use ($slug, $keywords) {
             $meta = DestinationsController::clusterMetadata()[$slug];
             $ids = $keywords->pluck('id')->all();
 
@@ -176,9 +176,11 @@ class DestinationShowcase
                     ->whereRaw('char_length(r.review_text) between 90 and 320')
                     ->orderByDesc('r.is_featured')->orderByDesc('r.review_date')->limit(40)
                     ->get(['r.reviewer_name', 'r.reviewer_location', 'r.reviewer_avatar', 'r.rating', 'r.review_text', 'k.phrase', 'k.slug']) as $r) {
-                    $sig = implode(' ', array_slice(preg_split('/\s+/', strtolower(preg_replace('/[^a-z ]/i', '', $r->review_text))), 0, 4));
-                    if (isset($seen[$r->reviewer_name]) || isset($seen[$sig])) continue;
-                    $seen[$r->reviewer_name] = $seen[$sig] = true;
+                    $words = preg_split('/\s+/', trim(strtolower(preg_replace('/[^a-z ]/i', '', $r->review_text))));
+                    $sig = implode(' ', array_slice($words, 0, 3));
+                    $end = 'end:' . implode(' ', array_slice($words, -5));
+                    if (isset($seen[$r->reviewer_name]) || isset($seen[$sig]) || isset($seen[$end])) continue;
+                    $seen[$r->reviewer_name] = $seen[$sig] = $seen[$end] = true;
                     $av = (string) $r->reviewer_avatar;
                     $reviews[] = [
                         'name' => $r->reviewer_name, 'from' => $r->reviewer_location, 'rating' => (int) $r->rating, 'text' => $r->review_text,
