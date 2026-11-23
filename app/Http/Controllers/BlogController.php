@@ -45,15 +45,22 @@ class BlogController extends Controller
         $tags = array_values(array_filter(array_map('trim', explode(',', (string) $post->tags))));
         $base = RgBlogPost::where('status', 'published')->where('id', '<>', $post->id)
             ->when($post->cover_path, fn ($q) => $q->where(fn ($w) => $w->whereNull('cover_path')->orWhere('cover_path', '<>', $post->cover_path)));
+        // photos this post already shows (cover and body): a story card with the same photo is skipped
+        $shownPhotos = [];
+        $norm = fn ($src) => (string) preg_replace('~^https?://[^/]+(?=/storage/)~i', '', trim((string) $src));
+        if ($post->cover_path) $shownPhotos[\App\Support\GuideHtml::photoId('/storage/' . ltrim($post->cover_path, '/'))] = true;
+        if (preg_match_all('~<img[^>]+src="([^"]+)"~i', (string) $post->content_html, $im)) foreach ($im[1] as $src) $shownPhotos[\App\Support\GuideHtml::photoId($norm($src))] = true;
+        $freshCover = fn ($p) => !$p->cover_path || !isset($shownPhotos[\App\Support\GuideHtml::photoId('/storage/' . ltrim($p->cover_path, '/'))]);
         $related = collect();
         if ($tags) {
             $related = (clone $base)->where(function ($q) use ($tags) { foreach (array_slice($tags, 0, 6) as $t) $q->orWhere('tags', 'like', '%' . $t . '%'); })
                 ->orderByDesc('published_at')->limit(24)->get()
                 ->sortByDesc(fn ($p) => count(array_intersect(array_map('strtolower', array_map('trim', explode(',', (string) $p->tags))), array_map('strtolower', $tags))))
-                ->unique('cover_path')->take(3)->values();
+                ->filter($freshCover)->unique('cover_path')->take(3)->values();
         }
         if ($related->count() < 3) {
-            $related = $related->concat((clone $base)->whereNotIn('id', $related->pluck('id')->all() ?: [0])->orderByDesc('published_at')->limit(3 - $related->count())->get())->values();
+            $related = $related->concat((clone $base)->whereNotIn('id', $related->pluck('id')->all() ?: [0])->orderByDesc('published_at')->limit(12)->get()
+                ->filter($freshCover)->take(3 - $related->count()))->values();
         }
         $renderedBlocks = $renderer->renderFor('blog_post', $post->id);
 
