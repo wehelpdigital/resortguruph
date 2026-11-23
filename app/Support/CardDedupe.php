@@ -26,11 +26,19 @@ class CardDedupe
     private array $names = [];
     private array $links = [];
 
-    /** @param array<string,string> $parts html in display order @return array<string,string> */
-    public static function run(array $parts): array
+    /**
+     * @param array<string,string> $parts html in display order
+     * @param array<string,string[]> $shownAfter names of cards drawn outside these parts (the
+     *        attraction grid), registered right after the part with the same key
+     * @return array<string,string>
+     */
+    public static function run(array $parts, array $shownAfter = []): array
     {
         $d = new self();
-        foreach ($parts as $k => $html) $parts[$k] = $d->filter((string) $html);
+        foreach ($parts as $k => $html) {
+            $parts[$k] = $d->filter((string) $html);
+            foreach ($shownAfter[$k] ?? [] as $name) if (($key = self::key((string) $name)) !== '') $d->names[$key] = true;
+        }
         return $parts;
     }
 

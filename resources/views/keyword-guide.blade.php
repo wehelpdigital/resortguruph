@@ -130,13 +130,15 @@
         }
     }
     // one card per place, dish, festival or story: later repeats (in display order) are dropped
-    ['spots' => $spotsHtml, 'adv' => $advHtml, 'stream' => $streamHtml, 'food' => $foodHtml, 'explore' => $exploreHtml]
-        = \App\Support\CardDedupe::run(['spots' => $spotsHtml, 'adv' => $advHtml, 'stream' => $streamHtml, 'food' => $foodHtml, 'explore' => $exploreHtml]);
+    // the attraction grid drops places the spot list already has, then everything below drops what both show
     if ($gridItems && $spotsHtml !== '') {
         preg_match_all('~class="gh-spot__name">(.*?)</~s', $spotsHtml, $snm);
         $spotKeys = array_flip(array_map([\App\Support\CardDedupe::class, 'key'], $snm[1] ?? []));
         $gridItems = array_values(array_filter($gridItems, fn ($it) => !isset($spotKeys[\App\Support\CardDedupe::key((string) $it['name'])])));
     }
+    ['spots' => $spotsHtml, 'adv' => $advHtml, 'stream' => $streamHtml, 'food' => $foodHtml, 'explore' => $exploreHtml]
+        = \App\Support\CardDedupe::run(['spots' => $spotsHtml, 'adv' => $advHtml, 'stream' => $streamHtml, 'food' => $foodHtml, 'explore' => $exploreHtml],
+            ['spots' => array_map(fn ($it) => (string) $it['name'], $gridItems)]);
     $showAttrGrid = $gridItems !== [];
 
     // ---------- hero ----------
