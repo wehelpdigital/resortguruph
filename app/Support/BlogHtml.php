@@ -46,6 +46,22 @@ class BlogHtml
             $node = $fig instanceof DOMElement && strtolower($fig->tagName) === 'figure' ? $fig : $img;
             if ($node->parentNode) $node->parentNode->removeChild($node);
         }
+        // a heading left with nothing under it (its text was removed): the heading, or its whole callout box, goes
+        foreach (iterator_to_array($doc->getElementsByTagName('h2')) as $h) {
+            if ($h->parentNode === null) continue;
+            $after = '';
+            $media = false;
+            for ($n = $h->nextSibling; $n !== null; $n = $n->nextSibling) {
+                if ($n instanceof DOMElement && strtolower($n->tagName) === 'h2') break;
+                $after .= $n->textContent;
+                if ($n instanceof DOMElement && ($n->getElementsByTagName('img')->length || in_array(strtolower($n->tagName), ['img', 'table', 'iframe'], true))) $media = true;
+            }
+            if (trim($after) !== '' || $media) continue;
+            $box = $h->parentNode;
+            while ($box instanceof DOMElement && $box !== $root && trim($box->textContent) === trim($h->textContent) && $box->parentNode instanceof DOMElement && $box->parentNode !== $root && trim($box->parentNode->textContent) === trim($h->textContent)) $box = $box->parentNode;
+            $node = ($box instanceof DOMElement && $box !== $root && trim($box->textContent) === trim($h->textContent)) ? $box : $h;
+            if ($node->parentNode) $node->parentNode->removeChild($node);
+        }
         // a photo already shown (the cover, an earlier figure) is not repeated further down
         foreach (iterator_to_array($doc->getElementsByTagName('img')) as $img) {
             if ($img->parentNode === null) continue;
