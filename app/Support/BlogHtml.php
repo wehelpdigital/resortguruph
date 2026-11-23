@@ -35,6 +35,15 @@ class BlogHtml
         if (!$root) return $html;
         self::$doc = $doc;
 
+        // photos found to show something else (or missing on disk) are left out wherever they sit
+        foreach (iterator_to_array($doc->getElementsByTagName('img')) as $img) {
+            if (GuideHtml::usable((string) $img->getAttribute('src'))) continue;
+            $fig = $img->parentNode;
+            while ($fig instanceof DOMElement && strtolower($fig->tagName) !== 'figure' && $fig !== $root) $fig = $fig->parentNode;
+            $node = $fig instanceof DOMElement && strtolower($fig->tagName) === 'figure' ? $fig : $img;
+            if ($node->parentNode) $node->parentNode->removeChild($node);
+        }
+
         try {
             $items = [];
             self::walk($root, 0, $items);
