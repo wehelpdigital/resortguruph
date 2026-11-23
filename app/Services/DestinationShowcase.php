@@ -119,7 +119,7 @@ class DestinationShowcase
     /** Everything the region page needs beyond the controller's keyword list. */
     public function region(string $slug, $keywords): array
     {
-        return Cache::remember('dest_region_v3_' . $slug, 600, function () use ($slug, $keywords) {
+        return Cache::remember('dest_region_v4_' . $slug, 600, function () use ($slug, $keywords) {
             $meta = DestinationsController::clusterMetadata()[$slug];
             $ids = $keywords->pluck('id')->all();
 
@@ -144,19 +144,20 @@ class DestinationShowcase
                     ])->all();
             }
 
-            // one photo per guide: the guide's own hero photo, then its spot, then the next unused spot photo
+            // one photo per guide, each shown once on the page: the guide's own hero slides first
+            // (several guides share a town photo, so take the first slide nobody used yet), then a
+            // spot photo the spot cards do not show, then the next unused spot photo
             $byKw = $this->guideHeroImages($ids);
-            foreach ($spots as $sp) if ($sp['keyword_id'] && !isset($byKw[$sp['keyword_id']])) $byKw[$sp['keyword_id']] = $sp['image'];
+            $spotImgs = array_flip(array_column($spots, 'image'));
             $pool = array_values(array_unique(array_column($spots, 'image')));
             $used = [];
             $guides = [];
             foreach ($keywords->values() as $i => $k) {
-                $img = $byKw[$k->id] ?? null;
-                if (!$img || isset($used[$img])) {
-                    $img = null;
-                    foreach ($pool as $cand) if (!isset($used[$cand])) { $img = $cand; break; }
-                    $img = $img ?? ($pool ? $pool[$i % count($pool)] : $this->landmark($slug));
-                }
+                $img = null;
+                foreach ($byKw[$k->id] ?? [] as $cand) if (!isset($used[$cand]) && !isset($spotImgs[$cand])) { $img = $cand; break; }
+                if (!$img) foreach ($byKw[$k->id] ?? [] as $cand) if (!isset($used[$cand])) { $img = $cand; break; }
+                if (!$img) foreach ($pool as $cand) if (!isset($used[$cand])) { $img = $cand; break; }
+                $img = $img ?? ($pool ? $pool[$i % count($pool)] : $this->landmark($slug));
                 $used[$img] = true;
                 $guides[] = ['label' => self::title($k->phrase), 'url' => url($k->slug), 'image' => $img, 'popular' => $i < 3];
             }
@@ -204,7 +205,7 @@ class DestinationShowcase
         });
     }
 
-    /** keyword_id => first hero_slider photo of that keyword's guide page. */
+    /** keyword_id => the hero_slider photos of that keyword's guide page, in order. */
     private function guideHeroImages(array $keywordIds): array
     {
         if (!$keywordIds) return [];
@@ -220,8 +221,7 @@ class DestinationShowcase
                 $src = str_starts_with($src, '/') || preg_match('#^https?://#', $src) ? $src : '/' . ltrim($src, '/');
                 $local = str_starts_with($src, '/storage/') ? storage_path('app/public/' . substr($src, 9)) : null;
                 if ($local && !is_file($local)) continue;
-                $out[$kid] = $src;
-                break;
+                $out[$kid][] = $src;
             }
         }
         return $out;

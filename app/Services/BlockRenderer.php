@@ -2807,11 +2807,13 @@ class BlockRenderer
         $out .= '<p class="text-slate-600 mb-6 leading-relaxed max-w-3xl">' . $this->e($intro) . '</p>';
 
         $out .= '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">';
-        foreach ($items as $item) {
+        foreach (array_values($items) as $ni => $item) {
             $title = trim((string) ($item['title'] ?? ''));
             $url = trim((string) ($item['url'] ?? ''));
             if ($title === '' || $url === '') continue;
             $img = trim((string) ($item['image'] ?? ''));
+            // several guides share one town photo: show it once per page, the other cards get a panel
+            if ($img !== '' && \App\Support\GuideHtml::tracking() && !\App\Support\GuideHtml::claim($this->normalizeMediaUrl($img))) $img = '';
             $blurb = trim((string) ($item['blurb'] ?? ''));
             $clusterKey = (string) ($item['cluster'] ?? '');
             $eyebrow = $item['eyebrow'] ?? ($clusterLabels[$clusterKey] ?? '');
@@ -2827,7 +2829,7 @@ class BlockRenderer
                             . $this->e($distance) . '</div>'
                         : '')
                     . '</div>'
-                : '<div class="aspect-[16/10] bg-gradient-to-br from-emerald-50 to-slate-100"></div>';
+                : '<div class="relative aspect-[16/10] gh-ph gh-ph--' . ($ni % 4) . '"><span class="gh-ph__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11.5A7 7 0 0 1 19 9.5C19 15.4 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg></span></div>';
 
             $external = !str_starts_with($url, '/');
             $rel = $external ? ' rel="noopener nofollow" target="_blank"' : '';
@@ -3126,6 +3128,11 @@ class BlockRenderer
             $where = $this->e($item['where'] ?? '');
             $blurb = $this->e($item['blurb'] ?? '');
             $img = trim((string) ($item['image'] ?? ''));
+            if ($img === '' || \App\Support\GuideHtml::isPlaceholder($img)) {
+                // the checked photo of this dish, once per page
+                $img = \App\Support\GuideHtml::subjectPhoto('food', (string) $item['name']);
+                if ($img !== '' && !\App\Support\GuideHtml::claim($img)) $img = '';
+            }
             $out .= '<article class="rg-food' . ($img === '' ? ' rg-food--text' : '') . '">';
             if ($img !== '') {
                 $out .= '<span class="rg-food__img"><img src="' . $this->e($this->normalizeMediaUrl($img)) . '" alt="' . $name . '" loading="lazy"></span>';

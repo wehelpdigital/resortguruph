@@ -316,10 +316,13 @@
                     @php
                         $img = trim((string) ($it['image'] ?? ''));
                         $img = $img !== '' ? (preg_replace('~^https?://[^/]+(/storage/.*)$~i', '$1', $img) ?: $img) : '';
+                        $checkedImg = \App\Support\GuideHtml::subjectPhoto('place', (string) $it['name'], $place ?? '');
+                        if ($checkedImg !== '') $img = $checkedImg;
+                        elseif ($img !== '' && (\App\Support\GuideHtml::isPlaceholder($img) || str_contains($img, '/rg-media/destinations/'))) $img = '';
                         $tag = !empty($it['url']) ? 'a' : 'div';
                     @endphp
                     <{{ $tag }} @if($tag === 'a') href="{{ $it['url'] }}" @endif class="gx-spot group {{ $n === 0 && count($attrItems) >= 4 ? 'gx-spot--big' : '' }}">
-                        <span class="gx-spot__img">@if($img !== '')<img src="{{ $img }}" alt="{{ $it['name'] }}" loading="lazy">@endif<span class="gx-spot__n">{{ $n + 1 }}</span></span>
+                        <span class="gx-spot__img {{ $img === '' ? 'gh-ph gh-ph--' . ($n % 4) : '' }}">@if($img !== '')<img src="{{ $img }}" alt="{{ $it['name'] }}" loading="lazy">@else<span class="gh-ph__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11.5A7 7 0 0 1 19 9.5C19 15.4 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg></span>@endif<span class="gx-spot__n">{{ $n + 1 }}</span></span>
                         <span class="gx-spot__body">
                             <h3 class="gx-spot__name">{{ $it['name'] }}</h3>
                             @if(!empty($it['short']))<span class="block text-xs font-semibold text-coral-600 mt-1">{{ $it['short'] }}</span>@endif

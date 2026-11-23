@@ -252,7 +252,21 @@ class KeywordPageController extends Controller
                 }
             }
             \App\Support\GuideHtml::preferPhotos($attrPhotos);
+            // the hero's town photos belong to the hero: content blocks with the same picture are dropped
+            $generic = fn ($src) => (bool) preg_match('~/rg-media/(destinations|food-locations|landmarks)/~', (string) $src);
+            foreach ($hero['slides'] as $sl) if ($generic($sl['src'])) \App\Support\GuideHtml::claim((string) $sl['src']);
             $parts = $renderer->renderEach($allBlocks->reject(fn ($b) => $b->block_type === 'social_share')->values(), $blockCtx, self::GUIDE_DATA_ONLY);
+            // a place photo already shown in a card leaves the hero; repeated slides go too (one slide minimum)
+            $keep = []; $ids = [];
+            $attrIds = [];
+            foreach ($attrPhotos as $ap) $attrIds[\App\Support\GuideHtml::photoId(preg_match('~^(https?:)?//|^/~', $ap) ? $ap : '/storage/' . ltrim($ap, '/'))] = true;
+            foreach ($hero['slides'] as $sl) {
+                $pid = \App\Support\GuideHtml::photoId((string) $sl['src']);
+                if (isset($ids[$pid]) || (!$generic($sl['src']) && (\App\Support\GuideHtml::seen((string) $sl['src']) || isset($attrIds[$pid])))) continue;
+                $ids[$pid] = true;
+                $keep[] = $sl;
+            }
+            $hero['slides'] = $keep ?: array_slice($hero['slides'], 0, 1);
             return view('keyword-guide', compact(
                 'keyword', 'page', 'listings', 'faqs', 'cluster', 'related', 'parts',
                 'jsonld', 'reviews', 'restaurantListings', 'hero'
@@ -285,7 +299,7 @@ class KeywordPageController extends Controller
             $p = $b->payload ?? [];
             if ($b->block_type === 'hero_slider' && !$slides) {
                 foreach ($p['images'] ?? [] as $img) {
-                    if (empty($img['src'])) continue;
+                    if (empty($img['src']) || \App\Support\GuideHtml::isPlaceholder((string) $img['src'])) continue;
                     $slides[] = [
                         'src' => $img['src'],
                         'title' => $img['caption_title'] ?? '',

@@ -1,0 +1,434 @@
+{
+    "adobo": {
+        "description": "Adobo is meat or seafood, most often chicken or pork, simmered in vinegar, soy sauce, garlic, bay leaf and black peppercorns until the sauce reduces and the meat turns glossy. The vinegar braise predates Spanish rule, and regional versions skip the soy as adobong puti, add coconut milk, or use turmeric as adobong dilaw in Batangas and Cavite. It keeps for days and is a standard baon and everyday ulam with rice."
+    },
+    "sinigang": {
+        "description": "Sinigang is a sour broth built on tamarind, though cooks also sour it with kamias, guava, green mango or batuan. Pork ribs, shrimp, milkfish or salmon belly go in with kangkong, radish, string beans, eggplant, okra and sometimes taro to thicken the soup. It is eaten hot over rice at lunch or dinner in homes across the country, often with a small dish of patis and chili on the side."
+    },
+    "lechon": {
+        "description": "Lechon is a whole pig roasted for hours over charcoal on a bamboo spit, turned by hand until the skin goes amber and crackling. Cebu's version, tied to Carcar and Talisay, is stuffed with lemongrass, garlic, onion and spices and eaten without sauce, while Luzon lechon is seasoned simply and served with a sweet liver sauce. It is the centerpiece of fiestas, weddings and Christmas tables."
+    },
+    "kare-kare": {
+        "description": "Kare-kare is oxtail, tripe and beef shank stewed until tender in a sauce of ground roasted peanuts and toasted rice, tinted with annatto, with eggplant, pechay, string beans and banana heart added near the end. The sauce is mild on purpose, so the salty bagoong alamang served alongside does the seasoning. Pampanga is often credited as its home, and it shows up at Sunday lunches and fiestas with plenty of rice."
+    },
+    "sisig": {
+        "description": "Sisig is pig face, ears and sometimes liver that are boiled, grilled over charcoal, then chopped fine and seasoned with onion, chili, calamansi and vinegar. The sizzling-plate version is credited to Angeles City in Pampanga in the 1970s, though the Kapampangan word once referred to sour, vinegar-dressed salads. It is ordered as pulutan with beer or as ulam with rice, and many places now stir in mayonnaise."
+    },
+    "crispy-pata": {
+        "description": "Crispy pata is a whole pork hock boiled with garlic, bay leaf and peppercorns until tender, dried, then deep-fried until the skin blisters and shatters. It is brought to the table whole and cut apart with kitchen shears or a knife, with a dip of soy sauce, vinegar, chopped onion and chili. It is a Manila restaurant classic meant for sharing at family lunches and drinking sessions."
+    },
+    "bulalo": {
+        "description": "Bulalo is beef shank with the marrow bone still in, simmered for hours with onion and peppercorns until the broth turns clear and rich, with corn on the cob, pechay and cabbage added at the end. The marrow is scooped out and eaten with rice, and a dip of patis, calamansi and chili sits on the side. It is most associated with Batangas cattle country and the roadside eateries of cool, breezy Tagaytay."
+    },
+    "tinola": {
+        "description": "Tinola is chicken sauteed with ginger, garlic and onion, then simmered in water seasoned with patis until the broth is light and gingery, with wedges of green papaya or sayote and a handful of chili leaves or malunggay added last. It is everyday home cooking across the country and a common soup for someone who is sick. Jose Rizal even wrote it into an early chapter of Noli Me Tangere."
+    },
+    "nilaga": {
+        "description": "Nilaga is beef shank or pork ribs boiled slowly with onion and whole peppercorns, then finished with potato, cabbage, pechay, corn and ripe saba banana. The broth is clear and lightly salty, and people season their own bowls with patis and crushed chili at the table. It is a rainy-day staple in Filipino homes, eaten with rice for lunch or dinner."
+    },
+    "kaldereta": {
+        "description": "Kaldereta is a rich stew of goat or beef cooked in tomato sauce with potato, carrot and bell pepper, thickened with liver spread or mashed liver, and often finished with grated cheese, olives or chili. The name comes from the Spanish word for cauldron. Goat kaldereta is a fiesta and pulutan favorite, while beef, pork or chicken versions turn up at birthdays and family parties across the country."
+    },
+    "mechado": {
+        "description": "Mechado is a beef braise in tomato sauce with soy sauce, calamansi, onion, bay leaf, potato and bell pepper, simmered until the meat is fork tender. The name comes from the Spanish word for wick, after the strip of pork fat that cooks once threaded through the beef to keep it moist. It is a Tagalog home and party dish served over rice, simpler in flavor than kaldereta."
+    },
+    "afritada": {
+        "description": "Afritada is chicken or pork browned and then simmered in tomato sauce with potato, carrot and red and green bell pepper. It is the simplest of the tomato stews of Spanish descent, without the liver of kaldereta or menudo, which makes it a weeknight and Sunday lunch dish in many homes. It is eaten with rice and often packed as baon the next day."
+    },
+    "menudo": {
+        "description": "Filipino menudo is diced pork and pork liver simmered in tomato sauce with potato, carrot and sometimes chickpeas, raisins or sliced hotdog. It shares only its name with the Mexican tripe soup, the Spanish word for small pieces. It is a fixture at fiestas, birthdays and town gatherings, cooked in big pots and served with rice."
+    },
+    "pinakbet": {
+        "description": "Pinakbet is a vegetable stew of bitter melon, eggplant, okra, string beans and tomato, steamed in its own juices with fermented fish paste and stirred as little as possible. The name comes from the Ilocano word for shriveled, and in Ilocos it is seasoned with bagoong monamon and topped with bagnet or grilled fish. Tagalog cooks add squash and use shrimp paste, and it is eaten as ulam with rice across Luzon."
+    },
+    "pancit-canton": {
+        "description": "Pancit canton is thick wheat egg noodles stir-fried with pork, chicken or shrimp, cabbage, carrots, snow peas and soy sauce, finished with a squeeze of calamansi. Noodles came with Chinese traders, and the word pancit is traced to a Hokkien phrase for food that is conveniently cooked. Long noodles stand for long life, so canton is served at birthdays, merienda spreads and family parties."
+    },
+    "pancit-bihon": {
+        "description": "Pancit bihon uses thin rice vermicelli, soaked and stir-fried with chicken or pork, shrimp, cabbage, carrots and soy sauce until the noodles soak up the broth. It is lighter and drier than canton, and many cooks mix the two in one pan as bihon-canton. Like other pancit it is a birthday and fiesta dish for long life, eaten with calamansi on the side."
+    },
+    "pancit-palabok": {
+        "description": "Pancit palabok is soft rice noodles covered with a thick orange sauce made from shrimp broth, annatto and sometimes crab fat. It is topped with shrimp, crushed chicharon, sliced boiled egg, flaked smoked fish, fried garlic and scallions, then squeezed with calamansi. It is a merienda and party standard in Manila and the Tagalog provinces, a close cousin of Pampanga's pancit luglug."
+    },
+    "pancit-malabon": {
+        "description": "Pancit Malabon comes from the old fishing town of Malabon in Metro Manila and uses thick rice noodles under a heavy shrimp and annatto sauce. The toppings lean on seafood, with squid rings, shrimp and sometimes oysters, along with chicharon, boiled egg and calamansi. It is usually ordered by the bilao, a round woven tray, for birthdays and office gatherings."
+    },
+    "pancit-lomi": {
+        "description": "Lomi is thick fresh egg noodles cooked in a broth thickened with starch and beaten egg until it is almost a gravy. It is a Batangas specialty, especially in Lipa and Batangas City, topped with sliced pork, liver, kikiam, fishball and crushed chicharon. Locals eat it hot at any hour, with soy sauce, calamansi, onion and chili stirred straight into the bowl."
+    },
+    "lumpia-shanghai": {
+        "description": "Lumpia shanghai is ground pork mixed with minced carrot, onion, garlic and egg, rolled finger-thin in spring roll wrappers and deep-fried until crisp. Spring rolls arrived with Chinese settlers and became a Filipino party staple over generations. It is usually the first tray to empty at birthdays and fiestas, dipped in sweet chili sauce, banana ketchup or vinegar."
+    },
+    "lumpiang-sariwa": {
+        "description": "Lumpiang sariwa is an unfried spring roll, a soft egg crepe wrapped around a lettuce leaf and sauteed vegetables such as heart of palm, sweet potato, carrot, jicama and green beans, often with shrimp or pork. It is topped with a sweet sauce of brown sugar, soy and cornstarch, then sprinkled with crushed peanuts and raw garlic. Silay in Negros Occidental is known for its lumpiang ubod made with heart of palm."
+    },
+    "chicken-inasal": {
+        "description": "Chicken inasal is chicken marinated in coconut vinegar, calamansi, lemongrass, ginger and garlic, then grilled over charcoal while being basted with annatto oil, which gives it its orange color. It comes from Bacolod in Negros Occidental, where the grills of Manokan Country made it famous. It is served with garlic rice and a dip of soy sauce, calamansi and sinamak, the local spiced vinegar."
+    },
+    "tocino": {
+        "description": "Tocino is pork shoulder or belly sliced thin and cured for a few days in sugar, salt and garlic, often tinted red with annatto or food coloring. It is pan-fried with a little water until the sugar caramelizes at the edges. Pampanga is known for its tocino, and it is mostly eaten at breakfast as tosilog, with garlic fried rice and a fried egg."
+    },
+    "beef-tapa": {
+        "description": "Beef tapa is thinly sliced beef cured in soy sauce, garlic, sugar and vinegar, sometimes dried in the sun the traditional way, then fried until the edges crisp. It is the meat in tapsilog, the plate of tapa, sinangag and itlog served at tapsihan eateries, many of which stay open through the night. A small saucer of spiced vinegar comes with it."
+    },
+    "daing-na-bangus": {
+        "description": "Daing na bangus is milkfish split open along the back and marinated overnight in vinegar, crushed garlic, salt and black pepper, then fried until the skin is crisp and the belly fat turns golden. Bangus is farmed widely in Pangasinan, Bulacan and the Visayas. Daing is a breakfast standard served with garlic rice, fried egg and sliced tomato."
+    },
+    "tortang-talong": {
+        "description": "Tortang talong is eggplant grilled or broiled until the skin chars, peeled, flattened with a fork, then dipped in beaten egg and fried. Some cooks add ground pork, onion and tomato to the egg. It is everyday ulam in homes and carinderias across the country, eaten with rice and banana ketchup, and a common baon for school and work."
+    },
+    "bicol-express": {
+        "description": "Bicol express is pork cooked in coconut milk with plenty of chili, shrimp paste, garlic and onion until the sauce thickens and turns oily. The name comes from the passenger train that ran from Manila to Bicol, and though it was coined in Manila, the dish is close to the sinilihan Bicolanos cook at home. It is eaten with rice, and kitchens adjust the number of chilies to the crowd."
+    },
+    "isaw": {
+        "description": "Isaw is cleaned chicken or pork intestine that is boiled, threaded on bamboo sticks and grilled over charcoal while being brushed with a sweet barbecue marinade. Vendors set up grills on sidewalks and campus corners from late afternoon, and buyers pick sticks from the tray to have them reheated. It is dipped in vinegar with onion, cucumber and chili and eaten as merienda or pulutan."
+    },
+    "betamax": {
+        "description": "Betamax is chicken or pork blood cooked until it sets, cut into small rectangular blocks, then skewered and grilled with a barbecue baste. Like many street grill nicknames, the name is a joke about its shape. It sits on the same grills as isaw and adidas and is eaten as an afternoon snack or pulutan, dipped in vinegar with onion and chili."
+    },
+    "adidas": {
+        "description": "Adidas is chicken feet, nicknamed after the sports brand, boiled until soft, marinated and grilled on skewers over charcoal. Some carinderias also cook them adobo style or in a sweet and spicy sauce. Eaters nibble the skin, cartilage and tendons off the small bones, usually with spiced vinegar and a cold drink, at evening street grills across the country."
+    },
+    "helmet": {
+        "description": "Helmet is the street grill name for chicken head, boiled, skewered and grilled with barbecue marinade until the skin firms up. Eaters bite through the crisp skin and small skull to get to the soft meat and brain inside. It is sold beside isaw and adidas at roadside grills in the late afternoon and evening, and eaten with vinegar and chili."
+    },
+    "walkman": {
+        "description": "Walkman is pig ear, named after the portable cassette player because of where its headphones sat. The ears are boiled until tender, then skewered and grilled with a sweet barbecue glaze, so the cartilage keeps some crunch while the skin turns chewy. It is dipped in vinegar with chili at sidewalk grills and eaten with beer or rice."
+    },
+    "chicharon-bulaklak": {
+        "description": "Chicharon bulaklak is pork mesentery, the frilly fat-lined membrane that holds the intestines, boiled until clean and tender and then deep-fried until it puffs into crisp, ruffled pieces. Bulaklak means flower in Tagalog. It is a classic pulutan in Manila and Central Luzon, served with a dip of vinegar, garlic and chili, and is best eaten hot because it softens as it cools."
+    },
+    "chicharon-bituka": {
+        "description": "Chicharon bituka is pork small intestine that is cleaned thoroughly, boiled with salt, garlic and vinegar, then deep-fried until it curls up hard and crunchy. It is sold in bags at markets and roadside stalls and served by the plate at drinking spots. The usual dip is sukang maanghang, vinegar steeped with garlic, onion and chili."
+    },
+    "dinuguan": {
+        "description": "Dinuguan is pork and offal, often intestines, ears and lungs, simmered in pig's blood with vinegar, garlic, onion and long green chilies until the sauce turns dark and thick. It is eaten across the country, and the drier Ilocano version is called dinardaraan. It is a common carinderia dish, eaten with plain rice or with the small steamed rice cakes called puto."
+    },
+    "bopis": {
+        "description": "Bopis is pork lungs and heart boiled, minced fine, and sauteed with garlic, onion, chili, vinegar and sometimes annatto, carrot and bell pepper until almost dry. The name comes from the Spanish bofes, meaning lungs. It is a popular pulutan at drinking sessions and is also sold in carinderias, and even canned, as ulam with rice."
+    },
+    "papaitan": {
+        "description": "Papaitan is a soup of goat or beef innards, usually tripe, intestines and liver, flavored with bile or bitter intestinal juices that give it its name, from pait, meaning bitter. Ginger, onion, chili and a souring agent such as kamias or tamarind balance the bitterness. It is an Ilocano dish also common in Pampanga and Tarlac, served hot with rice or as pulutan."
+    },
+    "soup-no-5": {
+        "description": "Soup No. 5 is a clear soup made from bull testes and sometimes the penis, boiled for hours with ginger, onion, peppercorns and vegetables until tender. Where the name came from is uncertain, and it is often explained as its number on an old restaurant menu. Older diners order it believing it builds stamina, and it is found in Manila panciterias and Central Luzon eateries, usually with rice."
+    },
+    "tokwa-baboy": {
+        "description": "Tokwa't baboy is fried firm tofu cubes and boiled pork, usually belly and ears, tossed in a sauce of soy sauce, vinegar, onion, garlic and chili. The crisp tofu soaks up the tangy sauce while the pork adds chew. It is served as pulutan with beer and as the classic partner to goto or lugaw at roadside stalls in Manila and nearby provinces."
+    },
+    "kwek-kwek": {
+        "description": "Kwek-kwek is hard-boiled quail eggs coated in a thick orange batter, colored with annatto or food coloring, and deep-fried, while tokneneng is the larger version made with chicken or duck eggs. Street vendors fry them to order in deep woks. Buyers dunk them in vinegar with cucumber, onion and chili or in a sweet brown sauce, usually as an after-school or after-work snack."
+    },
+    "fishball": {
+        "description": "Fishball, squidball and kikiam are processed fish or meat snacks fried in a big wok by street vendors and speared on bamboo sticks by the buyer. Fishballs are flat discs of fish paste, squidballs are rounder, and kikiam is a longer roll loosely based on the Chinese five-spice meat roll. They are dipped in a sweet, spicy or vinegar sauce and eaten as a quick snack on the way home from school or work."
+    },
+    "day-old-chick": {
+        "description": "Day-old chick is a newly hatched chick, usually a male culled at hatcheries that raise egg-laying hens, which is seasoned, battered and deep-fried whole. It is eaten in one or two bites, bones and all, with spiced vinegar. Health and animal welfare groups have raised concerns about it, but it is still sold at some street stalls in Manila and provincial towns."
+    },
+    "proben": {
+        "description": "Proben is the proventriculus, the glandular part of a chicken's stomach just before the gizzard, coated in seasoned flour or cornstarch and deep-fried until crisp. Street vendors sell it on bamboo skewers beside fishballs and kwek-kwek. It is dipped in vinegar with onion and chili or in a sweet and sour sauce, and is a common afternoon snack in Manila."
+    },
+    "atay": {
+        "description": "Atay means liver, and at the street grill it means chicken or pork liver threaded on skewers, marinated in soy sauce, garlic and sugar, and grilled until just firm. It is best cooked to order so it stays moist rather than chalky. It is eaten with vinegar and chili alongside isaw and pork barbecue, as merienda, pulutan or dinner with rice."
+    },
+    "balunbalunan": {
+        "description": "Balunbalunan is chicken gizzard, boiled until tender and then grilled on skewers with barbecue marinade, or cooked adobo style in vinegar, soy sauce and garlic. The muscle has a firm, springy bite that softens with a long simmer before grilling. It is a regular on evening street grills and a popular pulutan, dipped in spiced vinegar."
+    },
+    "tenga": {
+        "description": "Tenga is the Tagalog word for ear, and at the grill it means pork ear skewers that are boiled, marinated and grilled over charcoal until the edges crisp and char. The same ears go into sisig, tokwa't baboy and kilawin. Grilled tenga is eaten with vinegar and chili at roadside barbecue stalls, often as pulutan with beer."
+    },
+    "goto": {
+        "description": "Goto is rice porridge cooked with ginger and garlic in a broth with beef tripe, simmered until tender and sliced into the bowl, then topped with fried garlic and scallions and seasoned with calamansi, patis and chili. It is eaten for breakfast, merienda or late at night at roadside stalls, often with tokwa't baboy or a boiled egg. In Batangas, the name refers instead to a beef offal soup without rice."
+    },
+    "balut": {
+        "description": "Balut is a fertilized duck egg incubated for around two to three weeks, then boiled and eaten warm from the shell. Eaters crack the top, sip the broth, season it, and eat the yolk and embryo together. Pateros in Metro Manila has long been known for duck raising, and vendors call out balut on the streets at night, carrying baskets kept warm under cloth."
+    },
+    "penoy": {
+        "description": "Penoy is a duck egg that did not develop, usually because it was not fertilized, boiled and sold warm by the same vendors who carry balut. The white is firm and the yolk rich and creamy, like a fuller-flavored hard-boiled egg. It is seasoned with salt or vinegar and is a common choice for those who want the night street snack without the embryo."
+    },
+    "tamilok": {
+        "description": "Tamilok is the long, soft body of a shipworm, a wood-boring mollusk that lives in rotting mangrove logs, though it is usually called a woodworm. Gatherers split the logs to pull them out, then clean them and serve them raw as kinilaw with vinegar, calamansi, onion, ginger and chili. It is best known in Palawan, especially Puerto Princesa, and in mangrove areas such as Aklan, and tastes a lot like oysters."
+    },
+    "salagubang": {
+        "description": "Abal-abal, or salagubang in Tagalog, are June beetles gathered from trees at night when they swarm at the start of the rainy season. Their wings and legs are removed before they are sauteed or cooked adobo style in vinegar, soy sauce and garlic until crisp. They are eaten mostly in Ilocos, Pangasinan and Cagayan Valley, as pulutan or with rice, and taste nutty and slightly earthy."
+    },
+    "abalin": {
+        "description": "Abalin is the fat white grub of the June beetle, dug from fields and river banks in Cagayan Valley and parts of Ilocos, where Ibanag, Itawes and Ilocano cooks prize it. The larvae are cleaned, then sauteed with garlic and onion, cooked adobo style, or deep-fried until the skin crisps. They are served as pulutan or ulam, with a soft, creamy center under the crunch."
+    },
+    "uok": {
+        "description": "Uok is a rural name for the plump white grubs found inside rotting coconut trunks, the larvae of beetles that breed in old palms. Farmers who clear dead trees sometimes eat them raw on the spot, but most are sauteed with garlic and onion or fried crisp in a little oil. They are an occasional food in coconut-growing provinces rather than a market dish, and are rarely sold."
+    },
+    "kamaru": {
+        "description": "Kamaru are mole crickets caught in the rice fields of Pampanga, usually when the paddies are flooded and plowed for planting. The wings and legs are removed, then the crickets are boiled and sauteed with garlic, onion, tomato and vinegar, sometimes with soy sauce, until crisp. Kapampangan restaurants serve them as an appetizer or pulutan, and they taste closer to fried shrimp than most people expect."
+    },
+    "abuos": {
+        "description": "Abuos are the eggs, larvae and pupae of red weaver ants, gathered in summer from the leaf nests the ants build in mango and other trees. The harvest window lasts only a few weeks, which makes them a prized seasonal food in Ilocos and Abra. They are sauteed quickly with garlic, onion and tomato or folded into an omelette, and have a soft, creamy texture."
+    },
+    "betute-tugak": {
+        "description": "Betute tugak is a Kapampangan dish of a whole field frog, cleaned and stuffed with seasoned minced pork, then deep-fried until the skin turns crisp. Tugak is the Kapampangan word for frog, and the frogs come from the rice paddies of Pampanga. It is served as an appetizer or pulutan with spiced vinegar and is a regular on the menus of older eateries in San Fernando and Angeles."
+    },
+    "crispy-frog-legs": {
+        "description": "Frog legs, or palaka, usually come from bullfrogs or rice field frogs, marinated in garlic, calamansi and pepper, dredged in flour or cornstarch, and deep-fried until golden. The meat is white, mild and tender. It is most common in Central Luzon, especially Pampanga and Nueva Ecija, where it is served as pulutan with a vinegar dip or as ulam with rice."
+    },
+    "adobong-sawa": {
+        "description": "Adobong sawa is python meat cut into pieces and cooked like any adobo, in vinegar, soy sauce, garlic and bay leaf, a dish from remote rural areas where snakes were once caught for food. The meat is firm and lean, often compared to chicken or fish. Wild pythons are covered by the Philippine Wildlife Act, so hunting, trading or serving them without a permit is illegal."
+    },
+    "bayawak": {
+        "description": "Bayawak are monitor lizards, and in some rural and upland communities the meat was traditionally grilled, stewed, or cooked adobo or ginataan style. The meat is lean and firm, somewhere between chicken and fish. Monitor lizards are protected under the Philippine Wildlife Act, several native species are threatened, and hunting, selling or serving them is illegal."
+    },
+    "tapang-usa": {
+        "description": "Tapang usa is venison sliced thin, cured with salt, garlic, vinegar and sometimes sugar, then sun-dried and fried the same way as beef tapa. It has long been made in upland and forest communities and is eaten with rice and vinegar at breakfast or as pulutan. Native Philippine deer are protected, so legitimate venison comes from licensed deer farms rather than the wild."
+    },
+    "tapang-baboy-damo": {
+        "description": "Tapang baboy damo is wild boar meat cured with salt, garlic and vinegar, then dried and fried like other tapa. The meat is darker, leaner and gamier than farm pork, with a firmer chew. Native wild pigs such as the Philippine warty pig are protected, so most of what is sold today comes from farm-raised wild-type or crossbred pigs, eaten with rice and spiced vinegar."
+    },
+    "bulca-chong": {
+        "description": "Bulca chong is a carabao meat soup from Davao City, its name joining bulalo and carabao with the nickname of the cook whose eatery made it famous. Chunks of carabao meat and bone are simmered for hours with plenty of ginger until tender, giving a deeper, beefier broth than regular bulalo. It is eaten hot with rice and a dip of soy sauce, calamansi and chili, at any hour of the day or night."
+    },
+    "palos": {
+        "description": "Palos is freshwater eel caught in rivers, lakes and rice field canals, with rich, oily flesh and a thick skin. It is cleaned, cut into rounds, and cooked as adobo, simmered in coconut milk with chili, grilled, or dressed as kinilaw. It is a local food wherever eels are caught across the country, eaten as ulam with rice or as pulutan."
+    },
+    "adobong-pugita": {
+        "description": "Adobong pugita is octopus cleaned, blanched or pounded to tenderize it, then simmered in vinegar, soy sauce, garlic, bay leaf and pepper until the sauce reduces, and some cooks add the ink, which turns the sauce black. It is common in coastal towns across the Visayas, Mindanao and Bicol, eaten as ulam or pulutan. Cooks either keep it brief or braise it long, since anything in between turns rubbery."
+    },
+    "adobong-sahang": {
+        "description": "Sahang, also spelled saang, is the spider conch, a sea snail with long finger-like spines gathered from shallow reefs and seagrass beds. The meat is pulled from the shell, cleaned, and cooked adobo style in vinegar, soy sauce, garlic and pepper, or the snails are cooked whole in the shell. It is coastal home cooking in the Visayas and Mindanao, eaten as ulam or pulutan."
+    },
+    "salawaki": {
+        "description": "Salawaki is sea urchin, mainly the short-spined Tripneustes gratilla, gathered from shallow seagrass beds and known as swaki in Cebu. The shell is cracked open and the orange or yellow roe is scooped out and eaten raw, often with vinegar, calamansi or a pinch of salt, right on the beach. It is eaten in coastal areas of the Visayas and Mindanao and is best freshly opened from clean water."
+    },
+    "ginataang-kuhol": {
+        "description": "Ginataang kuhol is freshwater snails, often the golden apple snails farmers pick from rice paddies, simmered in coconut milk with garlic, ginger, chili and leafy greens such as kangkong, spinach or malunggay. The tip of each shell is clipped so the meat can be sucked out or pulled with a toothpick. It is a home dish in Bicol, Pampanga and the Tagalog provinces, eaten with rice."
+    },
+    "pinikpikan": {
+        "description": "Pinikpikan is a Cordillera chicken soup in which the live bird is beaten lightly with a stick to bruise the meat, then singed over fire and cooked with etag and ginger. It began as a ritual dish among Cordillera peoples, served during healing rites and when elders consulted the spirits. Animal welfare groups have criticized the method, and versions cooked without the beating are now common outside rituals."
+    },
+    "tuslob-buwa": {
+        "description": "Tuslob-buwa is a thick sauce of pork brain and liver sauteed with shrimp paste, onion, garlic and chili in a small wok set over a fire at the table. Diners dip puso, rice cooked in woven coconut leaves, into the sauce while it boils, and the Cebuano name means dipping into the bubbles. It started in Pasil, a fishing district of Cebu City, and is eaten as an afternoon snack or late meal."
+    },
+    "kinunot-na-pagi": {
+        "description": "Kinunot na pagi is stingray that is boiled, skinned and flaked by hand, kinunot meaning flaked, then cooked in coconut milk with malunggay, ginger, garlic and chili. It is a Bicol dish, common in Albay and Sorsogon, and the flaked meat absorbs the coconut milk the way shredded fish does. It is eaten with rice for lunch or dinner."
+    },
+    "kinunot-na-pating": {
+        "description": "Kinunot na pating uses young shark, boiled and flaked the same way as stingray, then cooked in coconut milk with malunggay, chili and ginger. It is a Bicol coastal dish, made where small sharks come in with the catch. The whale shark and several other shark species are protected in Philippine waters, and conservation groups discourage eating shark at all."
+    },
+    "palileng": {
+        "description": "Palileng is a small river fish from the upland streams of Abra in the Cordillera. It is cooked very simply, grilled over coals or simmered with vinegar and salt in a little water, and the smallest ones are dried and kept for later. Families eat it with steamed rice as everyday food rather than restaurant fare."
+    },
+    "kankannool": {
+        "description": "Kankannool is a wild ground mushroom from the forests of Abra and nearby Cordillera highlands, a puffball or earthball type that comes up only once a year. Gatherers climb steep slopes to find it, so it is prized and sells out quickly in local markets. It is cooked simply with garlic, onion and tomato, and the health department advises buying wild mushrooms only from gatherers who know them well."
+    },
+    "etag-kiniing": {
+        "description": "Etag is pork salted and then air-dried, sun-dried or smoked over the hearth, and aged for weeks or months until it develops a strong, salty flavor. Sagada and Mountain Province call it etag, the Kankanaey call their version kiniing, and the Ibaloy of Benguet say kinuday. Small pieces season pinikpikan, vegetable soups and mung beans, much as lowland cooks use bagoong."
+    },
+    "bagnet": {
+        "description": "Bagnet is pork belly boiled with garlic and salt, hung to dry, then deep-fried, often twice, until the skin blisters while the meat stays moist. It is an Ilocos staple found in Vigan, Batac and Laoag, and is sold in big slabs at markets for frying again at home. It is eaten with rice and sukang Iloko or the Ilocano KBL of tomato, bagoong and onion, and is chopped into pinakbet and dinengdeng."
+    },
+    "vigan-empanada": {
+        "description": "The Ilocos empanada has a thin crust of rice flour dough colored orange with annatto, folded around grated green papaya, mung beans or bean sprouts, a whole egg and chopped longganisa, then deep-fried to order. Stalls in Vigan, especially around Plaza Burgos, and in Batac each keep their own version. It is eaten as merienda or a light dinner with sukang Iloko spiked with chili and onion."
+    },
+    "dinakdakan": {
+        "description": "Dinakdakan is pig face, ears and sometimes liver that are boiled, grilled over charcoal, then sliced and tossed with onion, ginger, chili and vinegar or calamansi. The traditional dressing is mashed pig brain, which makes it creamy, and many cooks now use mayonnaise instead. It is an Ilocano pulutan served with beer or basi, and also works as ulam with rice."
+    },
+    "poqui-poqui": {
+        "description": "Poqui-poqui is an Ilocano dish of eggplant grilled over coals until soft, peeled and chopped, then sauteed with garlic, onion and tomato and bound with scrambled egg. It is smoky, soft and mild, and comes together in minutes. It is everyday home cooking in Ilocos Norte and Ilocos Sur, served as ulam with rice alongside fried fish, bagnet or longganisa."
+    },
+    "dinengdeng": {
+        "description": "Dinengdeng is an Ilocano broth of whatever vegetables are on hand, often marunggay, saluyot, squash flowers, bitter melon leaves, string beans and bamboo shoots, seasoned with bagoong monamon, the local fermented anchovy. A piece of grilled or fried fish is often added just before serving. Also called inabraw, it is daily food in Ilocos and Ilocano communities across the north, eaten with rice."
+    },
+    "igado": {
+        "description": "Igado is strips of pork tenderloin and pork liver, sometimes with kidney and heart, sauteed and braised in vinegar, soy sauce, garlic, bay leaf and black pepper, often with green peas and red bell pepper. It comes from Ilocos and is a fixture at fiestas, weddings and family gatherings in the region. It is served with plenty of rice and keeps well for the day after."
+    },
+    "pancit-batil-patung": {
+        "description": "Pancit batil patung is a Tuguegarao noodle dish of fresh miki stir-fried with ground or sliced carabao meat, liver, bean sprouts and vegetables, crowned with an egg and crushed chicharon. Batil refers to the beaten egg in the side soup, and patung to the toppings stacked on the noodles. It is eaten with a dip of chopped onion, soy sauce, vinegar and calamansi at panciterias across Cagayan."
+    },
+    "pancit-cabagan": {
+        "description": "Pancit Cabagan comes from the town of Cabagan in Isabela and uses fresh miki noodles cooked in a thick, saucy broth with pork, vegetables and quail eggs. It is topped with lechon carajay, crisp fried pork belly, and sometimes chopped onion. Locals eat it with a dip of soy sauce, calamansi and onion, and it is sold in eateries across Isabela and Cagayan."
+    },
+    "pancit-habhab": {
+        "description": "Pancit habhab is dried miki noodles from Lucban, Quezon, sauteed with pork, shrimp, chayote and other vegetables, then served on a square of banana leaf. Habhab means to eat straight from the leaf by mouth, and it is splashed with cane vinegar first. It is sold at stalls around town and is especially popular during the Pahiyas Festival in May."
+    },
+    "longganisa-regional": {
+        "description": "Longganisa is the Filipino sausage, and each town makes its own. Vigan's is small, garlicky and slightly sour, Lucban's is garlicky with oregano and a vinegar tang, Alaminos in Pangasinan colors its links with annatto and ties them with bamboo sticks, and Calumpit in Bulacan and Guagua in Pampanga keep their own recipes. It is fried for breakfast with garlic rice and egg as longsilog, with a vinegar dip."
+    },
+    "laing": {
+        "description": "Laing is dried taro leaves simmered slowly in coconut milk with chili, ginger, garlic, shrimp paste and bits of pork or dried fish until the leaves soften and the coconut oil separates. It comes from Bicol, where cooks finish it with thick coconut cream for richness. It is eaten as ulam with rice and is also a common side dish to fried or grilled meat across Luzon."
+    },
+    "sinantol": {
+        "description": "Sinantol is the grated rind of santol fruit, squeezed to remove some of its sourness, then simmered in coconut milk with shrimp or pork, garlic, onion, chili and shrimp paste. The result is creamy, tangy and slightly fibrous. It is a Quezon and Bicol dish, cooked when santol is in season around the middle of the year and eaten as ulam with rice."
+    },
+    "kinalas": {
+        "description": "Kinalas is a Naga City noodle soup of soft noodles in a rich broth, topped with meat scraped off a boiled pig or cow head and a thick brown sauce. The name comes from kalas, the falling away of meat from the bone. It is finished with scallions and fried garlic, often with a boiled egg, and eaten with calamansi at small eateries around Naga and Camarines Sur."
+    },
+    "sinunong": {
+        "description": "Sinunong, more often written sinugno, is tilapia grilled over coals until the skin chars, then simmered in coconut milk with chili, ginger and sometimes vegetables. The name is said to come from sinunog, meaning burned, after the grilling step. It is a Southern Tagalog freshwater dish associated with the lakes and fishponds of Quezon and Laguna, eaten as ulam with rice."
+    },
+    "puto-bumbong": {
+        "description": "Puto bumbong is glutinous rice, traditionally the purple pirurutong variety, soaked, ground and packed into bamboo tubes, then steamed until it slides out in soft purple logs. It is served on banana leaf with margarine or butter, muscovado sugar and grated coconut. Vendors set up outside churches during Simbang Gabi, the December dawn masses, which makes it a Christmas season food across Luzon."
+    },
+    "tamales": {
+        "description": "Filipino tamales are made from ground rice cooked with coconut milk into a thick paste, layered with an annatto-tinted peanut sauce, and topped with chicken or pork and slices of salted or boiled egg. Each portion is wrapped in banana leaf and steamed. Pampanga and Cavite are best known for them, and they are eaten as breakfast or merienda, especially during the Christmas season."
+    },
+    "kansi": {
+        "description": "Kansi is an Ilonggo soup of beef shank and bone marrow, soured with batuan, a tart native fruit, and cooked with unripe jackfruit, lemongrass, annatto and long green chilies. It looks like bulalo but tastes closer to sinigang. It is associated with Iloilo and Bacolod, where eateries serve it in big bowls with rice and the marrow is scooped out first."
+    },
+    "kbl": {
+        "description": "KBL stands for kadyos, baboy, langka, a Hiligaynon stew of pigeon peas, pork hock or belly and unripe jackfruit, soured with batuan. The kadyos turns the broth a deep purple-brown, and some cooks add lemongrass. It is everyday Ilonggo home cooking in Iloilo and the rest of Western Visayas, eaten with rice for lunch or dinner."
+    },
+    "kadyos-manok-ubad": {
+        "description": "Kadyos, manok, kag ubad, or KMU, is a Western Visayas stew of native chicken and pigeon peas cooked with ubad, the soft white core of a banana trunk, often with lemongrass and sometimes soured with batuan. Getting the ubad means cutting down a banana tree, stripping it to its center and pulling out the fibers. It is Ilonggo home cooking eaten with rice, a close cousin of KBL."
+    },
+    "la-paz-batchoy": {
+        "description": "La Paz batchoy comes from the La Paz district of Iloilo City and is fresh miki noodles in a rich pork broth, topped with sliced pork, liver, intestines, crushed chicharon, fried garlic and scallions. Some versions add a raw egg cracked into the hot bowl. It is eaten at the La Paz public market and at noodle shops across Iloilo, from early morning until late at night."
+    },
+    "pancit-molo": {
+        "description": "Pancit molo is a clear chicken broth with wonton-style dumplings filled with ground pork and shrimp, garnished with shredded chicken, fried garlic and scallions. It comes from the Molo district of Iloilo City, where Chinese traders settled, and unlike most pancit it has no noodles, since the dumpling wrappers take their place. It is a rainy-day soup and a common starter at Ilonggo gatherings."
+    },
+    "chicken-binakol": {
+        "description": "Chicken binakol is native chicken simmered in fresh coconut water with strips of young coconut meat, ginger, lemongrass, garlic and chili leaves or malunggay. It was traditionally cooked inside a bamboo tube set over an open fire, which gives it a light smoky edge. It is a Western Visayas dish, common in Aklan, Capiz and Iloilo, served as a clear, slightly sweet soup with rice."
+    },
+    "humba": {
+        "description": "Humba is pork belly or hock braised slowly in soy sauce, vinegar, brown sugar, garlic, bay leaf and star anise, often with salted black beans and dried banana blossoms. The long simmer melts the fat and leaves a thick, sweet and salty sauce. It is a Visayan fiesta and family dish, made across Cebu, Bohol and Leyte and eaten with rice, often tasting better the next day."
+    },
+    "kinilaw": {
+        "description": "Kinilaw is fresh raw fish, often tanigue, tuna or malasugi, cut into cubes and dressed in coconut or palm vinegar with ginger, onion, chili and calamansi or dayap. The vinegar firms the flesh, and in Mindanao some cooks add coconut milk or the juice of the tabon-tabon fruit. It is eaten across the Visayas and Mindanao as pulutan or part of a seafood meal, and the method predates Spanish arrival."
+    },
+    "sinuglaw": {
+        "description": "Sinuglaw combines sinugba, grilled pork belly, with kinilaw, fresh tuna or other fish cured in vinegar, ginger, onion, chili and calamansi. The smoky, fatty pork and the sharp, cool fish are tossed together and served in one bowl. It is most associated with Davao and other parts of Mindanao and the Visayas, and is a common pulutan and seafood restaurant starter."
+    },
+    "inun-unan": {
+        "description": "Inun-unan is the Visayan version of paksiw, fish such as mackerel, sardines or milkfish simmered in vinegar with plenty of ginger, garlic and salt, sometimes with bitter melon or eggplant. Very little water is used, so the fish cooks in the vinegar until the sauce reduces. It keeps for a day or two without spoiling, which makes it a practical everyday ulam in Cebu and across the Visayas."
+    },
+    "paksiyo-baboy-bisaya": {
+        "description": "Paksiyo baboy is the Visayan way with pork paksiw, pork belly or hock simmered in vinegar, soy sauce, garlic, bay leaf, peppercorns and a little brown sugar until tender. It is less sweet than humba and has no black beans, so the vinegar stays forward. It is home cooking across the Visayas, made in big batches because it keeps well, and eaten with rice."
+    },
+    "chorizo-de-cebu": {
+        "description": "Chorizo de Cebu is a small, round, deep red pork sausage cured with sugar, salt, garlic and paprika or annatto, then dried and tied in links. It is sweeter than most Luzon longganisa, with a garlicky finish and caramelized edges once fried. Cebuanos eat it for breakfast with rice and egg or with puso, and it is a common pasalubong from Cebu City markets."
+    },
+    "ngohiong": {
+        "description": "Ngohiong is a Cebuano spring roll filled with ubod or bamboo shoots and ground pork, seasoned with Chinese five-spice powder, which gives it its name. The roll is coated in a light batter and deep-fried, then served with a sweet and spicy chili sauce. It is a Chinese-Filipino snack sold at Cebu City carinderias and street stalls, often eaten with puso as a quick meal."
+    },
+    "puso-hanging-rice": {
+        "description": "Puso is rice cooked inside a small pouch hand-woven from young coconut leaves, filled about halfway with raw rice and boiled until the grains swell to fill it. The pouches keep the rice compact and easy to carry, and they hang in bunches at lechon, barbecue and sutukil stalls. It is the standard rice of Cebu and much of the Visayas and Mindanao, eaten by tearing the pouch open by hand."
+    },
+    "bam-i": {
+        "description": "Bam-i is a Cebuano pancit that mixes rice vermicelli and egg canton noodles in one pan with pork, chicken, shrimp, Chinese sausage and vegetables. The two noodle textures give it more body than either one alone. It is a fixture at Cebuano birthdays and fiestas, cooked in big batches and eaten with puso, rice or bread."
+    },
+    "sutukil": {
+        "description": "SuTuKil stands for sugba, tuwa and kilaw, meaning grilled, simmered in a ginger broth, and raw in vinegar. At the seafood stalls of Lapu-Lapu City on Mactan Island, diners choose fresh seafood by weight, then ask for each part to be cooked one of the three ways. It is eaten family style with puso and a soy and calamansi dip, especially in the area around the Mactan Shrine."
+    },
+    "piyanggang-manok": {
+        "description": "Piyanggang manok is a Tausug grilled chicken marinated in turmeric, ginger, garlic, lemongrass and chili, then coated in a dark sauce of burnt coconut paste and coconut milk. The charred coconut, called pamapa itum, gives the chicken its black color and smoky, nutty flavor. It comes from Sulu and is served at weddings, Eid and other gatherings in Tausug communities in Sulu, Zamboanga and Basilan."
+    },
+    "tiyula-itum": {
+        "description": "Tiyula itum is a Tausug soup of beef or goat simmered with turmeric, ginger, lemongrass, chili and burnt coconut meat, which turns the broth nearly black. The charred coconut gives it a smoky, slightly bitter depth unlike other Filipino broths. It is a centerpiece at weddings, Eid and other special occasions in Sulu and Tausug communities in Zamboanga, served with rice."
+    },
+    "satti": {
+        "description": "Satti is small skewers of chicken or beef grilled over charcoal and served swimming in a spicy red sauce made with chili, peanuts and spices. It comes with ta'mu, rice cakes boiled in woven coconut leaves, and is eaten as a hearty breakfast. Satti is Tausug in origin and is now a Zamboanga City staple, sold from small eateries early in the morning."
+    },
+    "pastil": {
+        "description": "Pastil is steamed rice topped with kagikit, shredded chicken, beef or fish cooked down in oil and spices, then wrapped in a banana leaf. It is a Maguindanaon food from Cotabato City and Maguindanao, eaten for breakfast or as a quick meal on the go. The parcels are sold stacked at sidewalk stalls and markets, sometimes with a dab of chili."
+    },
+    "beef-rendang": {
+        "description": "Maranao beef rendang, sometimes called randang, is beef simmered slowly in coconut milk with palapa, turmeric, ginger, garlic, lemongrass and chili until the sauce reduces to a thick, oily coat. It is a celebration dish in Lanao del Sur, prepared for weddings, Eid and other family gatherings. It is eaten with rice and keeps for days, since the spices and coconut help preserve it."
+    },
+    "curacha": {
+        "description": "Curacha is the spanner crab, a deep red, box-shaped crab caught in the waters around Zamboanga, where it is a local specialty. It is steamed or cooked in Alavar sauce, a rich mix of coconut milk, crab fat, garlic and spices created by a Zamboanga restaurant family. It is eaten by hand with rice at seafood restaurants in Zamboanga City, and supply depends on the day's catch."
+    },
+    "dodol": {
+        "description": "Dodol is a dense, chewy sweet made by cooking glutinous rice flour, coconut milk and brown or coconut sugar in a wide pan, stirred for hours until it turns thick and dark. It is made by Tausug, Maranao and Maguindanaon cooks, especially for Eid, weddings and other celebrations. The finished dodol is cut into bars and wrapped, and it keeps for weeks."
+    },
+    "tinagtag": {
+        "description": "Tinagtag is a Maguindanaon rice fritter made from a batter of ground rice and sugar, drizzled through a perforated shell or cup into hot oil in a lacy, net-like pattern. The fritters are folded into half-moons or rolled into tubes while warm, then stiffen and turn crisp as they cool. They keep for months, are eaten with coffee, and have close Maranao and Tausug cousins called tiyatug and jaa."
+    },
+    "binignit": {
+        "description": "Binignit is a Visayan sweet soup of coconut milk simmered with glutinous rice or sago, saba banana, sweet potato, taro, purple yam and ripe jackfruit, sweetened with brown sugar. It is the Cebuano counterpart of ginataang halo-halo and is cooked in big pots on Good Friday, when many families avoid meat. It is served warm or cold in Cebu and the Cebuano-speaking parts of Mindanao."
+    },
+    "palapa": {
+        "description": "Palapa is a Maranao condiment of thinly sliced sakurab, a local white scallion, pounded with ginger, turmeric and chili, then mixed with toasted grated coconut. It is cooked briefly and stored in jars, where it keeps for weeks. Maranao cooks use it to season almost everything, from rendang to piaparan, and it is also eaten on its own with rice."
+    },
+    "daral": {
+        "description": "Daral is a thin crepe of rice flour, sometimes flavored and colored with pandan, rolled around a filling of grated coconut cooked with brown sugar. It is a Tausug sweet from Sulu and Zamboanga, and the Maranao make a similar one called balolon. It is served as a snack with coffee or tea and often appears at gatherings and during Ramadan."
+    },
+    "piarun": {
+        "description": "Piarun, also called piaparan, is meat or fish cooked with freshly grated coconut, turmeric, ginger, chili and palapa until the coconut coats the pieces in a thick yellow sauce. The name refers to the shredded coconut at its base, and it is most closely tied to Maranao kitchens, with similar coconut-cooked dishes among the Tausug. It is everyday ulam and festive food in Muslim Mindanao, eaten with rice."
+    },
+    "syagul": {
+        "description": "Syagul, also spelled siyagul, is a Tausug dish of stingray, and sometimes shark or eel, washed in vinegar and simmered with onion, garlic, ginger, turmeric, lemongrass and chili. Burnt grated coconut and coconut milk are added once the liquid reduces, giving the sauce a dark, smoky color. It is home cooking in Sulu and in Tausug communities in Zamboanga, eaten with rice."
+    },
+    "halo-halo": {
+        "description": "Halo-halo means mix-mix, and it is a tall glass of shaved ice over sweetened beans, saba, jackfruit, kaong, nata de coco and gulaman, drowned in evaporated milk. It is topped with ube halaya, leche flan, toasted pinipig and often ice cream, then stirred together before eating. It is a summer merienda across the country, and Pampanga is known for simpler versions with just a few ingredients."
+    },
+    "taho": {
+        "description": "Taho is warm, soft silken tofu spooned into a cup and topped with arnibal, a dark brown sugar syrup, and chewy sago pearls. Vendors called magtataho carry it in two aluminum buckets hung from a shoulder pole, calling out through neighborhoods in the morning. It traces back to Chinese douhua, and Baguio sells a version with strawberry syrup."
+    },
+    "champorado": {
+        "description": "Champorado is glutinous rice cooked with tablea, the local pure cacao tablets, and sugar until it becomes a thick chocolate porridge. It is served warm with a swirl of evaporated or condensed milk, and many families pair it with fried tuyo for a salty contrast. The dish arrived by way of the Manila galleon trade with Mexico and is eaten for breakfast or merienda, especially on rainy days."
+    },
+    "suman": {
+        "description": "Suman is glutinous rice cooked with coconut milk and salt, wrapped in banana leaves, coconut leaves or buri palm, and steamed or boiled. Suman sa ibus is rolled in young palm leaves in the Tagalog provinces, suman sa latik comes with a thick coconut caramel, and moron from Leyte is swirled with chocolate. It is eaten as merienda or breakfast with sugar, ripe mango or hot chocolate, and Antipolo is known for it."
+    },
+    "puto": {
+        "description": "Puto is a small, round steamed cake made from galapong, a soaked and ground rice batter, though many modern versions use flour. Toppings vary by town, from cheese to salted egg, and Calasiao in Pangasinan and Binan in Laguna are known for their own styles. It is eaten as merienda, bought as pasalubong, and served beside dinuguan or pancit."
+    },
+    "kutsinta": {
+        "description": "Kutsinta is a chewy steamed cake of rice flour or tapioca starch, brown sugar and a little lye water, which gives it a springy, jelly-like texture and an amber color often deepened with annatto. It is steamed in small cup molds and served with freshly grated coconut. Sellers usually offer it alongside puto, and it is a common merienda found at markets and bakeries across the country."
+    },
+    "bibingka": {
+        "description": "Bibingka is a rice cake of rice flour or galapong and coconut milk, poured into a clay pot lined with banana leaf and cooked with hot coals both below and on top. It is finished with salted egg slices, white cheese, butter, sugar and grated coconut. It is sold outside churches during the December dawn masses, often next to puto bumbong, and the Visayas have their own variations."
+    },
+    "sapin-sapin": {
+        "description": "Sapin-sapin is a layered sticky cake of glutinous rice flour and coconut milk, each layer colored and flavored separately with ube, jackfruit or plain coconut, then steamed one layer at a time and topped with latik, toasted coconut curds. Sapin means layer. It is cut into colorful slices for merienda, fiestas and birthdays and sold at markets across Luzon."
+    },
+    "buko-pie": {
+        "description": "Buko pie is a double-crust pie filled with strips of young coconut meat in a thick, lightly sweet custard of milk and cornstarch. It is closely tied to Laguna, especially the highway towns around Los Banos, where bakeries sell it warm from the oven. Travelers heading back north buy it by the box to bring home, and it is best eaten within a day or two."
+    },
+    "leche-flan": {
+        "description": "Leche flan is a dense custard of egg yolks, condensed milk and evaporated milk, sometimes scented with calamansi or lemon zest, steamed in an oval tin called a llanera lined with caramelized sugar. It comes from the Spanish flan but is richer, with more yolks. It is a dessert at fiestas, Noche Buena and family parties, and a slice often tops halo-halo."
+    },
+    "turon": {
+        "description": "Turon is saba banana, often with a strip of ripe jackfruit, rolled in a spring roll wrapper with brown sugar and fried until the sugar melts into a crisp, glassy coating. It is sold hot by street vendors and carinderias in the afternoon. It is a standard merienda across the country, usually eaten with coffee or a soft drink, and some stalls add sesame seeds."
+    },
+    "banana-cue": {
+        "description": "Banana cue is ripe saba banana deep-fried with brown sugar, which melts and coats the fruit in a crackly caramel, then skewered two or three to a bamboo stick. The name borrows from barbecue because of the stick, not because it is grilled. It is sold at roadside stalls and outside schools in the afternoon and is one of the most common merienda in the country."
+    },
+    "kamote-cue": {
+        "description": "Kamote cue is sweet potato cut into thick chunks or wedges and deep-fried with brown sugar until the outside is coated in a crunchy caramel. It is skewered on bamboo sticks and sold from the same roadside carts as banana cue and turon. The flesh is denser and earthier than banana, and it is an afternoon merienda staple across the country."
+    },
+    "carioca": {
+        "description": "Carioca, also spelled karioka, is a ball of glutinous rice flour mixed with grated coconut, deep-fried until golden, then coated in a sticky brown sugar glaze and skewered three or four to a stick. The outside is crisp and the inside chewy. It is a common merienda sold from street carts and market stalls across the country."
+    },
+    "ginataang-bilo-bilo": {
+        "description": "Ginataang bilo-bilo is a warm dessert soup of small glutinous rice balls simmered in coconut milk with saba banana, sweet potato, taro, jackfruit and sago, sweetened with sugar. Bilo-bilo refers to the hand-rolled rice balls. It is cooked in big pots for merienda, especially on rainy afternoons, and is the Tagalog cousin of the Visayan binignit."
+    },
+    "piaya": {
+        "description": "Piaya is an unleavened flatbread filled with muscovado sugar, flattened with a rolling pin, sprinkled with sesame seeds and cooked on a griddle until the sugar inside melts. It comes from Negros Occidental, especially Bacolod and Silay, where sugarcane is the main crop. It is sold in packs as pasalubong, now also in ube and other flavors, and is eaten warm with coffee or hot chocolate."
+    },
+    "binagol": {
+        "description": "Binagol is a sweet pudding of mashed talyan, a giant taro, cooked with coconut milk and sugar, packed into a half coconut shell, wrapped in banana leaves and tied with string before steaming. The name comes from bagol, the Waray word for coconut shell. It is closely associated with Dagami in Leyte and is a popular pasalubong sold in Tacloban."
+    },
+    "ensaymada": {
+        "description": "Ensaymada is a soft, coiled bread made from a rich brioche-like dough, brushed with butter and topped with sugar and grated cheese. It traces back to the ensaimada of Mallorca in Spain, and Pampanga bakers make rich versions with salted egg or queso de bola. It is eaten for breakfast or merienda with coffee or hot chocolate and given as a Christmas gift."
+    },
+    "maja-blanca": {
+        "description": "Maja blanca is a soft, white coconut pudding made by cooking coconut milk, sugar and cornstarch until thick, often with sweet corn kernels and sometimes condensed milk. It is poured into a tray to set, then topped with latik or toasted grated coconut. It is a standard dessert at fiestas, Christmas parties and potlucks across the country, cut into squares."
+    },
+    "buko-pandan": {
+        "description": "Buko pandan is a cold dessert of young coconut strips and cubes of green gulaman flavored with pandan leaf, folded into cream and condensed milk and chilled. Some versions add tapioca pearls or nata de coco. It is a party dessert at birthdays, fiestas and Christmas gatherings across the country, and is also sold as a drink in summer."
+    },
+    "cassava-cake": {
+        "description": "Cassava cake is grated fresh cassava mixed with coconut milk, condensed milk, eggs and butter, baked in a tray until set, then finished with a custard topping broiled until golden. Some cooks add grated cheese or macapuno on top. It is a common dessert at parties and a market merienda, sold by the slice or by the tray across the country."
+    },
+    "yema": {
+        "description": "Yema is a soft candy made by cooking egg yolks and condensed milk with a little butter until it forms a thick paste, then shaping it into balls or small pyramids and rolling them in sugar. Each piece is wrapped in colored cellophane. It is a Spanish-era sweet sold as pasalubong in many provinces, and some makers now sell it as a spread in jars."
+    },
+    "polvoron": {
+        "description": "Polvoron is a crumbly shortbread of toasted flour, powdered milk, sugar and butter, pressed into oval molds and wrapped in colored paper. It comes from the Spanish polvoron, named for the powder it crumbles into. Filipino versions come plain or with pinipig, cashew, ube or cookies and cream, and are given as pasalubong and Christmas gifts."
+    },
+    "kalamay": {
+        "description": "Kalamay is a sticky sweet of glutinous rice, coconut milk and brown sugar cooked and stirred for hours until it thickens into a dark, chewy paste. Bohol's version, especially from Jagna, is packed into coconut shells and sealed with red paper, while Mindoro and other provinces have their own kalamay. It is eaten as merienda or spread on bread and is a common pasalubong."
+    },
+    "tibok-tibok": {
+        "description": "Tibok-tibok is a Kapampangan pudding of carabao milk thickened with rice flour or galapong and cooked slowly until it sets into a dense, smooth custard. It is topped with latik, toasted coconut curds, and sometimes dayap zest for aroma. The name means heartbeat, after the slow bubbles that pulse in the pan as it cooks, and it is served at fiestas and Christmas in Pampanga."
+    }
+}

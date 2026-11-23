@@ -75,15 +75,53 @@ class GuideHtml
      * photo for that name, the spot's own photo, the tourist-spot library by
      * name; a generic town photo is not used (the card gets a panel).
      */
-    private static function spotPhoto(string $name, string $src): string
+    private static function spotPhoto(string $name, string $src, string $place = ''): string
     {
         if (!self::$track) return $src;
+        $checked = self::subjectPhoto('place', $name, $place);
+        if ($checked !== '') return $checked;
         $key = self::nameKey($name);
         if ($key !== '' && isset(self::$prefer[$key])) return self::$prefer[$key];
         $generic = $src === '' || self::isPlaceholder($src) || preg_match('~/rg-media/destinations/~', $src);
         if (!$generic) return $src;
         $lib = self::spotLibrary();
         return $key !== '' && isset($lib[$key]) ? $lib[$key] : '';
+    }
+
+    /**
+     * The photo checked for a named place, dish or festival (rg_media rows with
+     * source "subject-photo", written by tools/image-audit/apply_subjects.php).
+     * Looked up by name + place; by name alone only when the name is specific
+     * ("Kawasan Falls", not "Public Market").
+     */
+    public static function subjectPhoto(string $kind, string $name, string $place = ''): string
+    {
+        $k = self::nameKey($name);
+        if ($k === '') return '';
+        $reg = self::registry()[$kind] ?? [];
+        $hit = $reg[$k . '|' . self::nameKey($place)] ?? '';
+        if ($hit !== '' || $kind === 'food') return $hit !== '' ? $hit : ($reg[$k . '|'] ?? '');
+        $generic = ['public', 'market', 'plaza', 'church', 'cathedral', 'beach', 'hall', 'park', 'museum', 'town', 'city', 'municipal',
+            'capitol', 'shrine', 'old', 'heritage', 'house', 'mall', 'river', 'falls', 'lake', 'boulevard', 'baywalk', 'pier', 'port',
+            'parish', 'san', 'santa', 'santo', 'st', 'the', 'and', 'of', 'de', 'la', 'ng', 'sa', 'main', 'central', 'downtown', 'strip'];
+        $specific = array_diff(explode(' ', $k), $generic);
+        return count($specific) >= 1 && count(explode(' ', $k)) >= 2 ? ($reg[$k . '|'] ?? '') : '';
+    }
+
+    /**
+     * database/data/subject_photos.json (kept in the repo so it ships with each deploy):
+     * {"place": {"<name key>|<place key>": "/storage/...", ...}, "food": {...}, ...,
+     *  "_blocked": {"/storage/...": "reason"}}. Written by tools/image-audit/apply_subjects.php
+     * and block_photos.php. A name-only entry ("<name key>|") is added for the first photo
+     * of each name.
+     */
+    private static function registry(): array
+    {
+        static $reg = null;
+        if ($reg !== null) return $reg;
+        $file = database_path('data/subject_photos.json');
+        $reg = is_file($file) ? (json_decode((string) file_get_contents($file), true) ?: []) : [];
+        return $reg;
     }
 
     /** Published tourist spots with their own photo, by normalised name (cached). */
@@ -115,6 +153,18 @@ class GuideHtml
         return self::$track;
     }
 
+    /** Has this photo (same file content) already been shown on the page? Does not record it. */
+    public static function seen(string $src): bool
+    {
+        return self::$track && isset(self::$seen[self::photoKey(trim($src))]);
+    }
+
+    /** Content key of a photo: two files with the same picture share it. */
+    public static function photoId(string $src): string
+    {
+        return self::photoKey(trim($src));
+    }
+
     /** True when $src is a real photo not yet shown on this page (and records it). */
     public static function claim(string $src): bool
     {
@@ -128,7 +178,10 @@ class GuideHtml
 
     public static function isPlaceholder(string $src): bool
     {
-        return (bool) preg_match('~placeholder|placehold\.co|/images/brand/~i', $src);
+        if (preg_match('~placeholder|placehold\.co|/images/brand/~i', $src)) return true;
+        // photos found to show something else (a different place, a book scan): never shown
+        $blocked = self::registry()['_blocked'] ?? [];
+        return $blocked && isset($blocked[(string) strtok(preg_replace('~^https?://[^/]+~i', '', $src), '?')]);
     }
 
     /** Same file content = same photo, even under two names. */
@@ -220,6 +273,7 @@ class GuideHtml
     private static function spots(DOMElement $el, string $h2): string
     {
         $intro = self::first('.//div[1]/p', $el);
+        $place = preg_match('~^Tourist spots (?:in|near|around) (.+)$~i', trim($h2), $pm) ? trim($pm[1]) : '';
 
         // pass 1: read every card and settle its photo (claim() runs once per card)
         $cards = [];
@@ -230,7 +284,7 @@ class GuideHtml
             $body = $h3 ? $h3->parentNode : $art;
             $name = self::text($h3);
             $own = $img ? trim($img->getAttribute('src')) : '';
-            $src = self::spotPhoto($name, $own);
+            $src = self::spotPhoto($name, $own, $place);
             if ($src !== '' && !self::claim($src)) $src = '';
             if ($src === '' && !self::$track && $own !== '') $src = $own;
             $score = ''; $count = '';
@@ -305,8 +359,16 @@ class GuideHtml
             }
             $paras = [];
             foreach ($body->childNodes as $c) if ($c instanceof DOMElement && strtolower($c->tagName) === 'p') $paras[] = self::inner($c);
-            // a generic town photo is not a picture of the festival: use the panel
-            if ($img && self::$track && preg_match('~/rg-media/destinations/~', (string) $img->getAttribute('src'))) $img = null;
+            // a checked festival photo first; a generic town photo is not a picture of the festival
+            $fplace = preg_match('~^Notable festivals (?:in|near|around) (.+)$~i', trim($h2), $fm) ? trim($fm[1]) : '';
+            $checked = self::$track ? self::subjectPhoto('festival', self::text($h3), $fplace) : '';
+            if ($checked !== '') {
+                if (!$img) $img = self::$doc->createElement('img');
+                $img->setAttribute('src', $checked);
+                $img->setAttribute('alt', self::text($h3));
+            } elseif ($img && self::$track && preg_match('~/rg-media/destinations/~', (string) $img->getAttribute('src'))) {
+                $img = null;
+            }
             $out .= '<article class="gh-fest">' . self::photo($img, '', 'gh-fest__img', $when !== '' ? '<span class="gh-date">' . self::cal() . self::e($when) . '</span>' : '', self::text($h3), 'star');
             $out .= '<div class="gh-fest__body"><h3 class="gh-fest__name">' . self::e(self::text($h3)) . '</h3>';
             foreach ($paras as $i => $p) {
@@ -391,6 +453,16 @@ class GuideHtml
             $cap = self::text(self::one('.//figcaption', $card));
             $h3 = self::one('.//h3', $card);
             $p = self::one('.//p', $card);
+            $checked = self::$track ? self::subjectPhoto('food', self::text($h3)) : '';
+            if ($checked !== '') {
+                if (!$img) $img = self::$doc->createElement('img');
+                $img->setAttribute('src', $checked);
+                $img->setAttribute('alt', self::text($h3));
+                $cap = '';
+            } elseif ($img && self::$track && preg_match('~/rg-media/(destinations|food-locations)/~', (string) $img->getAttribute('src'))) {
+                $img = null;
+                $cap = '';
+            }
             $out .= '<article class="gh-food">' . self::photo($img, '', 'gh-food__img', '', self::text($h3), 'food');
             $out .= '<div class="gh-food__body"><h3 class="gh-food__name">' . self::e(self::text($h3)) . '</h3>';
             if ($p) $out .= '<p class="gh-food__text">' . self::inner($p) . '</p>';

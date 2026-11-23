@@ -86,6 +86,8 @@ class BlogHtml
                 continue;
             }
             if ($tag === 'div' && trim($n->textContent) === '' && !$n->getElementsByTagName('img')->length) continue;
+            // a figure whose photo was found to show something else is left out
+            if ($tag === 'figure' && ($fi = $n->getElementsByTagName('img')->item(0)) && GuideHtml::isPlaceholder((string) $fi->getAttribute('src'))) continue;
             $items[] = ['kind' => 'node', 'html' => self::$doc->saveHTML($n), 'tint' => $tint];
         }
     }
