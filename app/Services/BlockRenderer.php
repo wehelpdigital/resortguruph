@@ -96,7 +96,7 @@ class BlockRenderer
             'quick_facts' => $this->quickFacts($p),
             'editor_rating' => $this->editorRating($p),
             'listing_block' => $this->listingBlock($p, $context),
-            'attractions' => $this->attractions($p),
+            'attractions' => !empty($context['fiesta']) ? $this->fiestaHighlights($p) : $this->attractions($p),
             'how_to_get_to' => $this->howToGetTo($p),
             'text_section' => $this->textSection($p),
             // New standardized templates covering the section patterns
@@ -964,6 +964,59 @@ class BlockRenderer
      * name, image, short tagline, longer blurb, and an outbound URL with
      * rel="nofollow noopener" per Resort Guru Rule 11.
      */
+    /**
+     * Festival highlights ("Highlights at Sinulog Festival"): a numbered list of the events.
+     * An event with a checked photo (subject photo registry, name used on one festival only)
+     * shows it as a thumbnail with its credit; the others read as plain rows, never as an
+     * empty image box.
+     */
+    private function fiestaHighlights(array $p): string
+    {
+        $items = array_values(array_filter($p['items'] ?? [], fn ($i) => trim((string) ($i['name'] ?? '')) !== ''));
+        if (!$items) return '';
+        static $nameUse = null;
+        if ($nameUse === null) {
+            $nameUse = [];
+            foreach (DB::table('rg_content_blocks')->where('owner_type', 'fiesta')->where('block_type', 'attractions')->get(['owner_id', 'payload_json']) as $b) {
+                foreach ((array) (json_decode((string) $b->payload_json, true)['items'] ?? []) as $it) {
+                    $k = \App\Support\GuideHtml::nameKey((string) ($it['name'] ?? ''));
+                    if ($k !== '') $nameUse[$k][$b->owner_id] = true;
+                }
+            }
+        }
+        $out = '<section class="fx-hl not-prose" data-rg-attractions>';
+        $out .= '<h2 class="fx-hl__title">' . $this->e($p['heading'] ?? 'Highlights') . '</h2>';
+        if (trim((string) ($p['intro'] ?? '')) !== '') $out .= '<p class="fx-hl__intro">' . $this->e($p['intro']) . '</p>';
+        $out .= '<ol class="fx-hl__list">';
+        foreach ($items as $i => $it) {
+            $name = (string) $it['name'];
+            $img = trim((string) ($it['image'] ?? ''));
+            if ($img === '' && !empty($it['images'][0])) $img = is_array($it['images'][0]) ? (string) ($it['images'][0]['src'] ?? '') : (string) $it['images'][0];
+            if ($img === '') {
+                $k = \App\Support\GuideHtml::nameKey($name);
+                if (count($nameUse[$k] ?? []) === 1) $img = \App\Support\GuideHtml::subjectPhoto('place', $name, '');
+            }
+            if ($img !== '' && !\App\Support\GuideHtml::usable($img)) $img = '';
+            $meta = $img !== '' ? \App\Support\GuideHtml::mediaMeta($img) : null;
+            $out .= '<li class="fx-hl__item' . ($img !== '' ? ' fx-hl__item--photo' : '') . '">';
+            $out .= '<span class="fx-hl__num">' . str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) . '</span>';
+            $out .= '<div class="fx-hl__body"><h3 class="fx-hl__name">' . $this->e($name) . '</h3>';
+            if (trim((string) ($it['short'] ?? '')) !== '') $out .= '<p class="fx-hl__when">' . $this->e($it['short']) . '</p>';
+            if (trim((string) ($it['blurb'] ?? '')) !== '') $out .= '<p class="fx-hl__text">' . $this->e(ucfirst(trim((string) $it['blurb']))) . '</p>';
+            $out .= '</div>';
+            if ($img !== '') {
+                $out .= '<figure class="fx-hl__fig"><img src="' . $this->e($this->normalizeMediaUrl($img)) . '" alt="' . $this->e($name) . '" loading="lazy">';
+                if (!empty($meta['credit'])) {
+                    $cap = $this->e((string) $meta['credit']);
+                    $out .= '<figcaption>' . (!empty($meta['source_url']) ? '<a href="' . $this->e((string) $meta['source_url']) . '" target="_blank" rel="noopener nofollow">' . $cap . '</a>' : $cap) . '</figcaption>';
+                }
+                $out .= '</figure>';
+            }
+            $out .= '</li>';
+        }
+        return $out . '</ol></section>';
+    }
+
     private function attractions(array $p): string
     {
         $items = $p['items'] ?? [];

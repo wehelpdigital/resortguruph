@@ -418,6 +418,23 @@
 
     /* ---------- cross-check links + hashtag chips (externalGuides / tagPills) ---------- */
     .xg { margin: 3.25rem 0; }
+    /* festival highlights: numbered rows, a photo (with credit) where a checked one exists */
+    .fx-hl { margin: 3.25rem 0; }
+    .fx-hl__title { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800 !important; font-size: clamp(1.5rem, 2.6vw, 2rem) !important; line-height: 1.15; color: #0b1b2b !important; margin: 0 0 .5rem !important; }
+    .fx-hl__intro { color: #5b6b80 !important; margin: 0 0 1.25rem !important; }
+    .fx-hl__list { list-style: none !important; margin: 1.25rem 0 0 !important; padding: 0 !important; display: grid; gap: .75rem; }
+    .fx-hl__item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; padding: 1.1rem 1.2rem; border: 1px solid #e3e9f0; border-radius: 1.15rem; background: #fff; margin: 0 !important; }
+    .fx-hl__item--photo { grid-template-columns: auto minmax(0, 1fr); }
+    @media (min-width: 640px) { .fx-hl__item--photo { grid-template-columns: auto minmax(0, 1fr) 13rem; align-items: center; } }
+    .fx-hl__num { width: 2.3rem; height: 2.3rem; border-radius: 999px; background: #fff4ef; color: #d9472b; font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800; font-size: .85rem; display: inline-flex; align-items: center; justify-content: center; }
+    .fx-hl__name { font-family: "Plus Jakarta Sans", Inter, sans-serif; font-weight: 800 !important; font-size: 1.08rem !important; line-height: 1.3; color: #0b1b2b !important; margin: .2rem 0 0 !important; }
+    .fx-hl__when { margin: .2rem 0 0 !important; font-size: .78rem !important; font-weight: 700; color: #d9472b !important; }
+    .fx-hl__text { margin: .4rem 0 0 !important; font-size: .95rem !important; line-height: 1.6 !important; color: #475569 !important; }
+    .fx-hl__fig { margin: 0 !important; grid-column: 1 / -1; }
+    @media (min-width: 640px) { .fx-hl__fig { grid-column: auto; } }
+    .fx-hl__fig img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: .85rem !important; margin: 0 !important; }
+    .fx-hl__fig figcaption { margin-top: .35rem; font-size: .68rem; line-height: 1.35; color: #94a3b8; }
+    .fx-hl__fig figcaption a { color: inherit !important; text-decoration: none !important; }
     .xg__grid { display: grid; gap: .8rem; }
     @media (min-width: 768px) { .xg__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .xg__card { position: relative; display: flex; align-items: flex-start; gap: .9rem; padding: 1rem 2.6rem 1rem 1rem; border-radius: 1.15rem; border: 1px solid #e3e9f0; background: #fff; text-decoration: none !important; transition: box-shadow .3s ease, border-color .3s ease, transform .3s ease; }
